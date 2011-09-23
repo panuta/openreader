@@ -1,0 +1,9 @@
+{% extends 'base_authenticated.html' %}
+
+{% block content %}
+<ul>
+{% for periodical in periodicals %}
+<li><a href="{% url view_periodical periodical.id %}">{{periodical.title}}</a></li>
+{% endfor %}
+</ul>
+{% endblock %}

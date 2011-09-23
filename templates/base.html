@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<title>Open Reader | {% block head_title %}{% endblock %}</title>
+		<script type="text/javascript" src="{{STATIC_URL}}lib/jquery-1.6.4.min.js"></script>
+		{% block html_head %}{% endblock %}
+		<link rel="stylesheet" href="{{STATIC_URL}}css/style.css" type="text/css" media="all">
+	</head>
+	<body>
+		<div class="header">
+			<ul>
+				<li><a href="/">Home</a></li>
+			{% if user.is_authenticated %}
+				<li>Welcome, {{ user.username }}. <a href="{% url auth_logout %}">Log out</a></li>
+			{% else %}
+				<li><a href="{% url registration_register %}">Register</a></li>
+				<li><a href="{% url auth_login %}">Log in</a></li>
+			{% endif %}
+			</ul>
+		</div>
+		<div class="main">
+			{% block section %}{% endblock %}
+			<h1>{% block page_title %}{% endblock %}</h1>
+			{% if messages %}
+				<div class="messages">
+					<ul>
+						{% for message in messages %}
+							<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+						{% endfor %}
+					</ul>
+				</div>
+			{% endif %}
+			{% block main %}{% endblock %}
+		</div>
+		<div class="footer">
+		</div>
+	</body>
+</html>

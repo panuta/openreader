@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block head_title %}Login{% endblock %}
+{% block page_title %}Login{% endblock %}
+
+{% block main %}
+	<form method="POST">
+		{{ form.non_field_errors }}
+		<div>
+			<label for="username">Username:</label><br />
+			{{ form.username }}
+			{{ form.username.errors }}
+		</div>
+		<div>
+			<label for="password">Password:</label><br />
+			{{ form.password }}
+			{{ form.username.errors }}
+		</div>
+		<div>
+			<input type="submit" value="Log in" />
+		</div>
+		{% csrf_token %}
+		<a href="{% url auth_password_reset %}">Forgot your password?</a>
+	</form>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'base_authenticated.html' %}
+
+{% block content %}
+{{periodical.title}}
+
+<ul>
+{% for issue in issues %}
+<li>{{issue.name}}</li>
+{% endfor %}
+</ul>
+{% endblock %}

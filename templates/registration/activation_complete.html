@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{% block title %}Account activation complete{% endblock %}
+
+{% block main %}
+	<p>Congratulations, your account has been activated. {% if user.is_anonymous %}<a href="/accounts/login/">Log in</a>{% endif %}</p>
+{% endblock %}
