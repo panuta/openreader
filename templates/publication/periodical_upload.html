@@ -3,8 +3,8 @@
 {% block content %}
 
 
-<div id="block_file_upload">
-	<form id="form_file_upload" action="{% url uploading_periodical_issue publisher.id %}" method="POST" enctype="multipart/form-data">
+<div id="block_upload_file">
+	<form id="form_upload_file" action="{% url uploading_periodical_issue publisher.id %}" method="POST" enctype="multipart/form-data">
 		{% csrf_token %}
 		<input type="file" name="publication" id="id_publication" />
 		<input type="hidden" id="X-Progress-ID" name="X-Progress-ID" value=""/>
@@ -13,27 +13,19 @@
 	</form>
 </div>
 
-<div id="block_file_details" style="display:none;">
-	<form id="form_file_details" action="{% url upload_periodical_issue publisher.id %}" method="POST">
+<div id="block_upload_details" style="display:none;">
+	<form id="form_upload_details" action="{% url upload_periodical_issue publisher.id %}" method="POST">
 		{% csrf_token %}
-		<select>
-			<option>Magazine 1</option>
-			<option>Magazine 2</option>
-		</select>
-		<label for="id_title">Title:</label>
-		<input type="text" name="title" id="id_title"/>
+		{{form.periodical}}
+		{{form.publication_uid}}
+		
+		<label for="id_issue_name">Issue Name:</label>
+		{{form.issue_name}}
 
 		<label for="id_description">Description:</label>
-		<input type="text" name="description" id="id_description"/>
+		{{form.description}}
 
-		<label for="id_author">Author:</label>
-		<input type="text" name="author" id="id_author"/>
-
-		<label for="id_isbn">ISBN:</label>
-		<input type="text" name="isbn" id="id_isbn"/>
-
-		<input type="checkbox" name="category" value="1"/>
-		<input type="checkbox" name="category" value="2"/>
+		{{form.categories}}
 
 		<input type="submit" value="Create Publication" disabled="disabled" />
 	</form>
@@ -47,7 +39,6 @@
 <script>
 var g_progress_intv;
 function startProgressBarUpdate(upload_id) {
-	$("#uploadprogressbar").fadeIn();
 	if(g_progress_intv != 0) clearInterval(g_progress_intv);
 	g_progress_intv = setInterval(function() {
 		$.getJSON("/get_upload_progress?X-Progress-ID=" + upload_id, function(data) {
@@ -60,55 +51,41 @@ function startProgressBarUpdate(upload_id) {
 			var percentage = Math.floor(100 * parseInt(data.uploaded) / parseInt(data.length));
 			$("#upload_progressbar").progressBar(percentage);
 		});
-	}, 1000);
+	}, 4000);
 }
 
-function showRequest(arr, $form, options) {
-	$("#form_file_upload").hide();
-	$("#block_upload_file").append('<div class="progress">uploading</div>');
-	$("#block_upload_details").show();
-}
+$('#X-Progress-ID').val((new Date()).getTime());
 
-function showResponse(responseXML) {
-	console.log(responseXML);
-	$('#block_upload_file .progress').remove();
-	$('#block_upload_file').append('<div class="progress">uploaded successfully</div>');
-	$('#block_upload_details input[type="submit"]').attr("disabled", false);
-}
-
-var d = new Date();
-$('#X-Progress-ID').val(d.getTime());
-
-$('#form_file_upload').submit(function() {
+$('#form_upload_file').submit(function() {
 	var options = {
-		dataType: 'xml',
+		dataType: 'text',
 		url: '{% url uploading_periodical_issue publisher.id %}?X-Progress-ID='+$('#X-Progress-ID').val(),
-		beforeSubmit: showRequest,
-		success: showResponse
+		beforeSubmit: function() {
+			$("#form_upload_file").hide();
+			$('#block_upload_file').append('<span id="upload_progressbar"></span>');
+			$('#upload_progressbar').progressBar({
+				boxImage:'{{STATIC_URL}}lib/progressbar/images/progressbar.gif',
+				barImage: {
+					0:	'{{STATIC_URL}}lib/progressbar/images/progressbg_red.gif',
+					30: '{{STATIC_URL}}lib/progressbar/images/progressbg_orange.gif',
+					70: '{{STATIC_URL}}lib/progressbar/images/progressbg_green.gif'
+				}
+			});
+			
+			$("#block_upload_details").show();
+		},
+		success: function(publication_uid) {
+			$('#upload_progressbar').remove();
+			$('#block_upload_file').append('<div class="progress>Uploaded successfully</div>');
+
+			$('#id_publication_uid').val(publication_uid);
+			$('#form_upload_details input[type="submit"]').attr("disabled", false);
+		}
 	};
-	$('#form_file_upload').ajaxSubmit(options);
+	$('#form_upload_file').ajaxSubmit(options);
 	startProgressBarUpdate($('#X-Progress-ID').val());
 	return false; 
 });
-
-$('#form_file_details').submit(function() {
-	
-	return false; 
-});
-
-$('#block_file_upload').append('<span id="upload_progressbar"></span>');
-$('#upload_progressbar').progressBar({
-	boxImage:'{{STATIC_URL}}lib/progressbar/images/progressbar.gif',
-	barImage: {
-		0:	'{{STATIC_URL}}lib/progressbar/images/progressbg_red.gif',
-		30: '{{STATIC_URL}}lib/progressbar/images/progressbg_orange.gif',
-		70: '{{STATIC_URL}}lib/progressbar/images/progressbg_green.gif'
-	}
-});
-
 </script>
-
-
-
 
 {% endblock %}

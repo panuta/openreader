@@ -19,12 +19,11 @@ class UploadingPublication(models.Model):
     UPLOADING_BOOK = 1
     UPLOADING_PERIODICAL_ISSUE = 2
 
-    uid = models.CharField(max_length=200)
+    uid = models.CharField(max_length=200, db_index=True)
     publisher = models.ForeignKey('Publisher')
     publication_type = models.IntegerField(default=UPLOADING_UNDEFINED)
     periodical = models.ForeignKey('Periodical', null=True)
 
-    dir_path = models.CharField(max_length=1000)
     file_name = models.CharField(max_length=200)
     file_ext = models.CharField(max_length=10)
 
@@ -37,17 +36,16 @@ class UploadingPublication(models.Model):
         super(UploadingPublication, self).save()
 
 class Publication(models.Model):
-    PUBLISH_STATUS_PENDING = 0 # Uploading or Uploaded but have not saved by user
     PUBLISH_STATUS_UNPUBLISHED = 1
     PUBLISH_STATUS_PUBLISHED = 2
     PUBLISH_STATUS_TO_BE_PUBLISH = 3
 
-    uid = models.CharField(max_length=200)
+    uid = models.CharField(max_length=200, db_index=True)
     
     file_path = models.CharField(max_length=1000)
     file_ext = models.CharField(max_length=10)
 
-    publish_status = models.IntegerField(default=PUBLISH_STATUS_PENDING)
+    publish_status = models.IntegerField(default=PUBLISH_STATUS_UNPUBLISHED)
     to_be_publish = models.DateTimeField(null=True)
     published = models.DateTimeField(auto_now_add=True)
     published_by = models.ForeignKey(User, related_name='publication_published_by')
@@ -65,6 +63,9 @@ class Publication(models.Model):
 class PublicationCategory(models.Model):
     name = models.CharField(max_length=200)
     slug = models.CharField(max_length=200)
+
+    def __unicode__(self):
+        return self.name
 
 # Book ############################################################
 
