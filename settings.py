@@ -50,7 +50,7 @@ STATICFILES_FINDERS = (
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': '/Users/apple/Projects/OpenReader/openreader-m2/openreader/media/cache',
+        'LOCATION': os.path.join(base_path, 'media/cache/'),
     }
 }
 
@@ -91,29 +91,30 @@ INSTALLED_APPS = (
     'registration',
     #'private_files',
 
-    'common',
-    'membership',
-    'publication',
+    'openreader.common',
+    'openreader.membership',
+    'openreader.publication',
 )
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
-# the site admins on every HTTP 500 error.
+# the site admins on every HTTP 500 error.django 
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'class': 'django.utils.log.AdminEmailHandler'
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(base_path, 'logs/') + 'django.log',
         }
     },
     'loggers': {
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
+        'django': {
+            'handlers': ['file'],
+            'level': 'INFO',
             'propagate': True,
         },
     }
