@@ -1,6 +1,6 @@
 {% extends 'base_authenticated.html' %}
 
-{% block content %}
+{% block body_authenticated %}
 <ul>
 {% for book in books %}
 <li><a href="{% url view_book book.id %}">{{book.title}}</a></li>

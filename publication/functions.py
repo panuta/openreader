@@ -11,7 +11,7 @@ def upload_publication(uploaded_by, uploading_file, publisher, publication_type,
 
     (file_name, separator, file_ext) = uploading_file.name.rpartition('.')
 
-    publication = UploadingPublication(publisher=publisher, periodical=periodical, dir_path=dir_path, file_name=file_name, file_ext=file_ext, uploaded_by=uploaded_by)
+    publication = UploadingPublication(publisher=publisher, periodical=periodical, file_name=file_name, file_ext=file_ext, uploaded_by=uploaded_by)
     if publication_type == 'periodical':
         publication.publication_type = UploadingPublication.UPLOADING_PERIODICAL_ISSUE
     elif publication_type == 'book':

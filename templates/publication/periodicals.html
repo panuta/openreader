@@ -1,6 +1,6 @@
 {% extends 'base_authenticated.html' %}
 
-{% block content %}
+{% block body_authenticated %}
 <ul>
 {% for periodical in periodicals %}
 <li><a href="{% url view_periodical periodical.id %}">{{periodical.title}}</a></li>

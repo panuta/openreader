@@ -5,7 +5,8 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^', include('openreader.membership.urls')),
+    url(r'^', include('openreader.accounts.urls')),
+    url(r'^', include('openreader.homepage.urls')),
     url(r'^', include('openreader.publication.urls')),
     
     url(r'^accounts/', include('registration.urls')),

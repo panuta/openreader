@@ -1,3 +1,5 @@
+# -*- encoding: utf-8 -*-
+
 import os
 base_path = os.path.dirname(__file__)
 
@@ -23,10 +25,11 @@ DATABASES = {
     }
 }
 
-SITE_ID = 1
-
 TIME_ZONE = 'Asia/Bangkok'
 LANGUAGE_CODE = 'th'
+
+SITE_ID = 1
+
 USE_I18N = True
 USE_L10N = True
 
@@ -36,6 +39,7 @@ ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 STATIC_ROOT = os.path.join(base_path, 'sitestatic/')
 STATIC_URL = '/static/'
+ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 STATICFILES_DIRS = (
     os.path.join(base_path, 'static'),
@@ -50,12 +54,23 @@ STATICFILES_FINDERS = (
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': '/Users/apple/Projects/OpenReader/openreader-m2/openreader/media/cache',
+        'LOCATION': os.path.join(base_path, 'media/cache/'),
     }
 }
 
-SECRET_KEY = '-73!l!kmu@h)1g!qjv4@9-l39*=mc_6tm^_+j)w0(tar_%twt5'
+AUTH_PROFILE_MODULE = 'accounts.UserProfile'
+LOGIN_REDIRECT_URL = '/dashboard/'
 
+# EMAIL_USE_TLS = True
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_HOST_USER = 'username@gmail.com'
+# EMAIL_HOST_PASSWORD = 'password'
+# EMAIL_PORT = 587
+
+# Make this unique, and don't share it with anybody.
+SECRET_KEY = '*r3geszk-gvq8cl==g1_o^2ivx&wx6vuz*osszca2mtivv=u*@'
+
+# List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
@@ -63,6 +78,7 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'openreader.middleware.AJAXSimpleExceptionResponse',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -87,13 +103,13 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     'registration',
     #'private_files',
 
-    'common',
-    'membership',
-    'publication',
+    'openreader.accounts',
+    'openreader.common',
+    'openreader.publication',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -105,19 +121,24 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'class': 'django.utils.log.AdminEmailHandler'
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(base_path, 'logs/') + 'django.log',
         }
     },
     'loggers': {
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
+        'django': {
+            'handlers': ['file'],
+            'level': 'INFO',
             'propagate': True,
         },
     }
 }
 
-##### Open Reader Settings #####
+########## Open Reader Settings ########## 
+
 PUBLICATION_ROOT = MEDIA_ROOT + 'publication/'
+
+
+#######################################################
