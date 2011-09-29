@@ -2,9 +2,7 @@
 
 {% block head_title %}{% endblock %}
 
-{% block page_title %}{% endblock %}
-
-{% block section %}
+{% block body_body %}
 	{% block meta %}{% endblock %}
 	{% block tabs %}
 		{% if publisher %}
@@ -16,14 +14,9 @@
 			</ul>
 		{% endif %}
 	{% endblock %}
-{% endblock %}
 
-{% block main %}
-	<div class="navigation">
-		{% block navigation %}{% endblock %}
-	</div>
-	<div class="content">
-		{% block content %}{% endblock %}
+	<div id="body_content">
+		{% block body_content %}{% endblock %}
 	</div>
 {% endblock %}
 
