@@ -10,7 +10,7 @@ from publication import functions as publication_functions
 from forms import *
 from models import *
 
-from membership.models import UserPublisher
+from accounts.models import UserPublisher
 
 # Publisher Dashboard ######################################################################
 
@@ -108,16 +108,21 @@ def upload_periodical_issue(request, publisher_id):
         form = UploadPeriodicalIssueForm(request.POST)
         if form.is_valid():
             publication_uid = form.cleaned_data['publication_uid']
+            periodical_title = form.cleaned_data['periodical_title']
             periodical = form.cleaned_data['periodical']
             issue_name = form.cleaned_data['issue_name']
             description = form.cleaned_data['description']
 
             uploading_publication = UploadingPublication.objects.get(uid=publication_uid)
 
+            if periodical_title:
+                periodical = Periodical.objects.create(publisher=publisher, title=periodical_title, created_by=request.user, modified_by=request.user,)
+
             publication = Publication.objects.create(
                 uid=publication_uid,
                 file_path='%d/%s.%s' % (publisher.id, publication_uid, uploading_publication.file_ext),
                 file_ext=uploading_publication.file_ext,
+                publication_type='',
                 publish_status=Publication.PUBLISH_STATUS_UNPUBLISHED,
                 uploaded_by=request.user,
                 modified_by=request.user,
@@ -155,8 +160,6 @@ def uploading_periodical_issue(request, publisher_id):
             else:
                 return HttpResponse('')
         except:
-            import sys
-            print sys.exc_info()
             return HttpResponse('')
     
     else:

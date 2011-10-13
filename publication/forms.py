@@ -14,7 +14,7 @@ class PublisherPeriodicalChoiceField(forms.ModelChoiceField):
 class PublisherForm(forms.ModelForm):
     class Meta:
         model = Publisher
-        fields = ('name', 'address', 'telephone', 'website')
+        fields = ('name')
 
 class UploadPeriodicalIssueForm(forms.Form):
     def __init__(self, *args, **kwargs):
@@ -22,13 +22,24 @@ class UploadPeriodicalIssueForm(forms.Form):
         forms.Form.__init__(self, *args, **kwargs)
 
         if publisher:
-            self.fields["periodical"].queryset = Periodical.objects.filter(publisher=publisher).order_by('title')
+            self.fields['periodical'].queryset = Periodical.objects.filter(publisher=publisher).order_by('title')
             self.publisher = publisher
 
     publication_uid = forms.CharField(widget=forms.HiddenInput)
-    periodical = PublisherPeriodicalChoiceField()
+    periodical_title = forms.CharField(required=False)
+    periodical = PublisherPeriodicalChoiceField(required=False)
     issue_name = forms.CharField()
     description = forms.CharField(required=False, widget=forms.Textarea)
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        periodical_title = cleaned_data.get('periodical_title')
+        periodical = cleaned_data.get('periodical')
+
+        if not periodical_title and periodical:
+            raise forms.ValidationError('Choose a periodical or create a new periodical')
+        
+        return cleaned_data
 
 class UploadBookForm(forms.Form):
     publication_uid = forms.CharField(widget=forms.HiddenInput)

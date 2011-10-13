@@ -1,7 +1,9 @@
 {% extends 'base_authenticated.html' %}
 
-{% block body_content %}
+{% block body_authenticated %}
 
+
+{{form.errors}}
 
 <div id="block_upload_file">
 	<form id="form_upload_file" action="{% url uploading_periodical_issue publisher.id %}" method="POST" enctype="multipart/form-data">
@@ -16,6 +18,7 @@
 <div id="block_upload_details" style="display:none;">
 	<form id="form_upload_details" action="{% url upload_periodical_issue publisher.id %}" method="POST">
 		{% csrf_token %}
+		{{form.periodical_title}}
 		{{form.periodical}}
 		{{form.publication_uid}}
 		
@@ -33,8 +36,8 @@
 
 <!-- JAVASCRIPT -->
 
-<script type="text/javascript" src="{{STATIC_URL}}lib/jquery.form.js"></script>
-<script type="text/javascript" src="{{STATIC_URL}}lib/progressbar/jquery.progressbar.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}libs/jquery.form.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}libs/progressbar/jquery.progressbar.js"></script>
 
 <script>
 var g_progress_intv;
@@ -56,22 +59,12 @@ function startProgressBarUpdate(upload_id) {
 
 $('#X-Progress-ID').val((new Date()).getTime());
 
-$('#form_upload_file').submit(function() {
+$('#form_upload_file input[type="submit"]').click(function(e) {
 	var options = {
 		dataType: 'text',
 		url: '{% url uploading_periodical_issue publisher.id %}?X-Progress-ID='+$('#X-Progress-ID').val(),
 		beforeSubmit: function() {
 			$("#form_upload_file").hide();
-			$('#block_upload_file').append('<span id="upload_progressbar"></span>');
-			$('#upload_progressbar').progressBar({
-				boxImage:'{{STATIC_URL}}lib/progressbar/images/progressbar.gif',
-				barImage: {
-					0:	'{{STATIC_URL}}lib/progressbar/images/progressbg_red.gif',
-					30: '{{STATIC_URL}}lib/progressbar/images/progressbg_orange.gif',
-					70: '{{STATIC_URL}}lib/progressbar/images/progressbg_green.gif'
-				}
-			});
-			
 			$("#block_upload_details").show();
 		},
 		success: function(publication_uid) {
@@ -83,8 +76,19 @@ $('#form_upload_file').submit(function() {
 		}
 	};
 	$('#form_upload_file').ajaxSubmit(options);
+
+	$('#block_upload_file').append('<span id="upload_progressbar"></span>');
+	$('#upload_progressbar').progressBar({
+		boxImage:'{{STATIC_URL}}lib/progressbar/images/progressbar.gif',
+		barImage: {
+			0:	'{{STATIC_URL}}lib/progressbar/images/progressbg_red.gif',
+			30: '{{STATIC_URL}}lib/progressbar/images/progressbg_orange.gif',
+			70: '{{STATIC_URL}}lib/progressbar/images/progressbg_green.gif'
+		}
+	});
+	
 	startProgressBarUpdate($('#X-Progress-ID').val());
-	return false; 
+	return false;
 });
 </script>
 

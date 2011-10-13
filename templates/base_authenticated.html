@@ -2,8 +2,8 @@
 
 {% block head_title %}{% endblock %}
 
-{% block body_body %}
-	{% block meta %}{% endblock %}
+{% block body %}
+	
 	{% block tabs %}
 		{% if publisher %}
 			<ul>
@@ -16,7 +16,7 @@
 	{% endblock %}
 
 	<div id="body_content">
-		{% block body_content %}{% endblock %}
+		{% block body_authenticated %}{% endblock %}
 	</div>
 {% endblock %}
 

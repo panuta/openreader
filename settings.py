@@ -56,7 +56,8 @@ CACHES = {
     }
 }
 
-AUTH_PROFILE_MODULE = 'membership.UserProfile'
+AUTH_PROFILE_MODULE = 'accounts.UserProfile'
+LOGIN_REDIRECT_URL = '/dashboard/'
 
 # EMAIL_USE_TLS = True
 # EMAIL_HOST = 'smtp.gmail.com'
@@ -102,8 +103,8 @@ INSTALLED_APPS = (
     'registration',
     #'private_files',
 
+    'openreader.accounts',
     'openreader.common',
-    'openreader.membership',
     'openreader.publication',
 )
 

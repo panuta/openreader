@@ -1,6 +1,6 @@
 {% extends 'base_authenticated.html' %}
 
-{% block body_content %}
+{% block body_authenticated %}
 	<form method="POST">
 		{% csrf_token %}
 		{{ form.non_field_errors }}

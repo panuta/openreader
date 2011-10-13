@@ -5,9 +5,6 @@ from django.db import models
 
 class Publisher(models.Model):
     name = models.CharField(max_length=200)
-    address = models.CharField(max_length=500, blank=True)
-    telephone = models.CharField(max_length=50, blank=True)
-    website = models.CharField(max_length=200, blank=True)
 
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='publisher_created_by')
@@ -15,14 +12,8 @@ class Publisher(models.Model):
     modified_by = models.ForeignKey(User, related_name='publisher_modified_by')
 
 class UploadingPublication(models.Model):
-    UPLOADING_UNDEFINED = 0
-    UPLOADING_BOOK = 1
-    UPLOADING_PERIODICAL_ISSUE = 2
-
     uid = models.CharField(max_length=200, db_index=True)
     publisher = models.ForeignKey('Publisher')
-    publication_type = models.IntegerField(default=UPLOADING_UNDEFINED)
-    periodical = models.ForeignKey('Periodical', null=True)
 
     file_name = models.CharField(max_length=200)
     file_ext = models.CharField(max_length=10)
@@ -30,35 +21,40 @@ class UploadingPublication(models.Model):
     uploaded = models.DateTimeField(auto_now_add=True)
     uploaded_by = models.ForeignKey(User, related_name='uploading_publication_uploaded_by')
 
-    def save(self):
+    def save(self, *args, **kwargs):
         if not self.uid:
             self.uid = uuid.uuid4()
-        super(UploadingPublication, self).save()
+        super(UploadingPublication, self).save(*args, **kwargs)
 
 class Publication(models.Model):
     PUBLISH_STATUS_UNPUBLISHED = 1
     PUBLISH_STATUS_PUBLISHED = 2
     PUBLISH_STATUS_TO_BE_PUBLISH = 3
 
+    publisher = models.ForeignKey('Publisher')
+
     uid = models.CharField(max_length=200, db_index=True)
+    title = models.CharField(max_length=500)
+    description = models.TextField(blank=True)
+    publication_type = models.CharField(max_length=50)
     
     file_path = models.CharField(max_length=1000)
     file_ext = models.CharField(max_length=10)
 
     publish_status = models.IntegerField(default=PUBLISH_STATUS_UNPUBLISHED)
     to_be_publish = models.DateTimeField(null=True)
-    published = models.DateTimeField(auto_now_add=True)
-    published_by = models.ForeignKey(User, related_name='publication_published_by')
+    published = models.DateTimeField(null=True, auto_now_add=True)
+    published_by = models.ForeignKey(User, null=True, related_name='publication_published_by')
 
     uploaded = models.DateTimeField(auto_now_add=True)
     uploaded_by = models.ForeignKey(User, related_name='publication_uploaded_by')
     modified = models.DateTimeField(auto_now=True)
     modified_by = models.ForeignKey(User, related_name='publication_modified_by')
 
-    def save(self):
+    def save(self, *args, **kwargs):
         if not self.uid:
             self.uid = uuid.uuid4()
-        super(Publication, self).save()
+        super(Publication, self).save(*args, **kwargs)
 
 class PublicationCategory(models.Model):
     name = models.CharField(max_length=200)
@@ -67,27 +63,20 @@ class PublicationCategory(models.Model):
     def __unicode__(self):
         return self.name
 
-# Book ############################################################
+# Publication - Book ############################################################
 
 class Book(models.Model):
-    publisher = models.ForeignKey('Publisher')
     publication = models.ForeignKey('Publication')
-    title = models.CharField(max_length=255)
-    description = models.TextField(blank=True)
     author = models.CharField(max_length=200)
     isbn = models.CharField(max_length=13)
     categories = models.ManyToManyField('PublicationCategory', related_name='book_categories')
-    created = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, related_name='book_created_by')
-    modified = models.DateTimeField(auto_now=True)
-    modified_by = models.ForeignKey(User, related_name='book_modified_by')
 
 class BookContent(models.Model):
     book = models.ForeignKey('Book')
     title = models.CharField(max_length=255)
     start_page = models.IntegerField()
 
-# Periodical ############################################################
+# Publication - Periodical ############################################################
 
 class Periodical(models.Model):
     publisher = models.ForeignKey('Publisher')
@@ -104,12 +93,6 @@ class Periodical(models.Model):
 class PeriodicalIssue(models.Model):
     publication = models.ForeignKey('Publication')
     periodical = models.ForeignKey('Periodical')
-    issue_name = models.CharField(max_length=255)
-    description = models.TextField(blank=True)
-    created = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, related_name='periodical_issue_created_by')
-    modified = models.DateTimeField(auto_now=True)
-    modified_by = models.ForeignKey(User, related_name='periodical_issue_modified_by')
 
 class PeriodicalIssueContent(models.Model):
     issue = models.ForeignKey('PeriodicalIssue')
