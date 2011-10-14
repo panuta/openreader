@@ -11,10 +11,8 @@ class PublisherPeriodicalChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return '%s' % (obj.title)
 
-class PublisherForm(forms.ModelForm):
-    class Meta:
-        model = Publisher
-        fields = ('name')
+class PublisherForm(forms.Form):
+    name = forms.CharField()
 
 class UploadPeriodicalIssueForm(forms.Form):
     def __init__(self, *args, **kwargs):
