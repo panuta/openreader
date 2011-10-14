@@ -1,7 +1,16 @@
 import uuid
 
+from django.conf import settings
 from django.contrib.auth.models import Permission, User
 from django.db import models
+
+from private_files import PrivateFileField
+
+def is_downloadable(request, instance):
+    return True
+
+def publication_media_dir(instance, filename):
+    return '%s%s/%s' % (settings.PUBLICATION_ROOT, instance.publisher.id, filename)
 
 class Publisher(models.Model):
     name = models.CharField(max_length=200)
@@ -12,8 +21,12 @@ class Publisher(models.Model):
     modified_by = models.ForeignKey(User, related_name='publisher_modified_by')
 
 class UploadingPublication(models.Model):
-    uid = models.CharField(max_length=200, db_index=True)
     publisher = models.ForeignKey('Publisher')
+
+    uid = models.CharField(max_length=200, db_index=True)
+    publication_type = models.CharField(max_length=50)
+
+    uploaded_file = models.FileField(upload_to=publication_media_dir, max_length=500)
 
     file_name = models.CharField(max_length=200)
     file_ext = models.CharField(max_length=10)
@@ -28,8 +41,9 @@ class UploadingPublication(models.Model):
 
 class Publication(models.Model):
     PUBLISH_STATUS_UNPUBLISHED = 1
-    PUBLISH_STATUS_PUBLISHED = 2
-    PUBLISH_STATUS_TO_BE_PUBLISH = 3
+    PUBLISH_STATUS_READY_TO_PUBLISH = 2
+    PUBLISH_STATUS_PUBLISHED = 3
+    PUBLISH_STATUS_SCHEDULE_TO_PUBLISH = 4
 
     publisher = models.ForeignKey('Publisher')
 
@@ -37,12 +51,13 @@ class Publication(models.Model):
     title = models.CharField(max_length=500)
     description = models.TextField(blank=True)
     publication_type = models.CharField(max_length=50)
-    
-    file_path = models.CharField(max_length=1000)
+
+    uploaded_file = PrivateFileField(upload_to=publication_media_dir, condition=is_downloadable, max_length=500)
+    file_name = models.CharField(max_length=300)
     file_ext = models.CharField(max_length=10)
 
     publish_status = models.IntegerField(default=PUBLISH_STATUS_UNPUBLISHED)
-    to_be_publish = models.DateTimeField(null=True)
+    publish_schedule = models.DateTimeField(null=True)
     published = models.DateTimeField(null=True, auto_now_add=True)
     published_by = models.ForeignKey(User, null=True, related_name='publication_published_by')
 

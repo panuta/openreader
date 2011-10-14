@@ -1,0 +1,72 @@
+{% extends 'base_authenticated.html' %}
+
+{% block body_authenticated %}
+
+<form id="form_upload_file" action="{% url upload_publication publisher.id %}" method="POST" enctype="multipart/form-data">
+	{% csrf_token %}
+	{{form.errors}}
+	{{form.publication}}
+	<input type="submit" value="Upload" />
+</form>
+
+<div id="upload_progress"></div>
+
+<!-- JAVASCRIPT -->
+
+<script type="text/javascript" src="{{STATIC_URL}}libs/jquery.form.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}libs/progressbar/jquery.progressbar.js"></script>
+
+<script>
+var g_progress_intv;
+function startProgressBarUpdate(upload_id) {
+	if(g_progress_intv != 0) clearInterval(g_progress_intv);
+	g_progress_intv = setInterval(function() {
+		$.getJSON("/get_upload_progress?X-Progress-ID=" + upload_id, function(data) {
+			if (data == null) {
+				$("#upload_progressbar").progressBar(100);
+				clearInterval(g_progress_intv);
+				g_progress_intv = 0;
+				return;
+			}
+			var percentage = Math.floor(100 * parseInt(data.uploaded) / parseInt(data.length));
+			$("#upload_progressbar").progressBar(percentage);
+		});
+	}, 4000);
+}
+
+$('#X-Progress-ID').val((new Date()).getTime());
+
+$('#form_upload_file input[type="submit"]').click(function(e) {
+	var options = {
+		dataType: 'text',
+		url: '{% url upload_publication publisher.id %}?X-Progress-ID='+$('#X-Progress-ID').val(),
+		beforeSubmit: function() {
+			$("#form_upload_file").hide();
+		},
+		success: function(publication_id) {
+			console.log(publication_id);
+			$("#upload_progressbar").progressBar(100);
+			clearInterval(g_progress_intv);
+			g_progress_intv = 0;
+
+			$('#upload_progress').append('<div class="progress">Uploaded successfully <a href="/publication/' + publication_id + '/finish_upload/">Click to fill out details</a></div>');
+		}
+	};
+	$('#form_upload_file').ajaxSubmit(options);
+
+	$('#upload_progress').append('<span id="upload_progressbar"></span>');
+	$('#upload_progressbar').progressBar({
+		boxImage:'{{STATIC_URL}}libs/progressbar/images/progressbar.gif',
+		barImage: {
+			0:	'{{STATIC_URL}}libs/progressbar/images/progressbg_red.gif',
+			30: '{{STATIC_URL}}libs/progressbar/images/progressbg_orange.gif',
+			70: '{{STATIC_URL}}libs/progressbar/images/progressbg_green.gif'
+		}
+	});
+	
+	startProgressBarUpdate($('#X-Progress-ID').val());
+	return false;
+});
+</script>
+
+{% endblock %}

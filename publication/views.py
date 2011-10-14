@@ -5,6 +5,8 @@ from django.core.cache import cache
 from django.http import HttpResponse, HttpResponseServerError, Http404
 from django.shortcuts import get_object_or_404, redirect, render
 
+from private_files.views import get_file as private_files_get_file
+
 from publication import functions as publication_functions
 
 from forms import *
@@ -31,6 +33,7 @@ def view_publisher_dashboard(request, publisher_id):
     publisher = get_object_or_404(Publisher, pk=publisher_id)
     return render(request, 'publication/dashboard.html', {'publisher':publisher})
 
+@login_required
 def select_publisher(request):
     user_publishers = UserPublisher.objects.filter(user=request.user)
     return render(request, 'publication/publisher_select.html', {'user_publishers':user_publishers})
@@ -63,7 +66,9 @@ def update_publisher(request, publisher_id):
     if request.method == 'POST':
         form = PublisherForm(request.POST)
         if form.is_valid():
-            publisher = form.save(commit=False)
+            publisher_name = form.cleaned_data['name']
+
+            publisher.name = publisher_name
             publisher.modified_by = request.user
             publisher.save()
 
@@ -73,8 +78,132 @@ def update_publisher(request, publisher_id):
     
     return render(request, 'publication/publisher_update.html', {'form': form})
 
+@login_required
 def deactivate_publisher(request, publisher_id):
     pass
+
+# Publication ######################################################################
+
+@login_required
+def upload_publication(request, publisher_id):
+    publisher = get_object_or_404(Publisher, pk=publisher_id)
+
+    if request.method == 'POST':
+        try:
+            uploading_file = request.FILES['publication']
+
+            if uploading_file:
+                uploading_publication = publication_functions.upload_publication(request.user, uploading_file, publisher)
+                return HttpResponse(uploading_publication.id)
+            else:
+                return HttpResponse('')
+        except:
+            return HttpResponse('')
+    
+    else:
+        form = UploadPublicationForm()
+        return render(request, 'publication/publication_upload.html', {'publisher':publisher, 'form':form})
+
+@login_required
+def finish_upload_publication(request, publication_id):
+    uploading_publication = get_object_or_404(UploadingPublication, pk=publication_id)
+
+    if request.method == 'POST':
+
+        if 'periodical_submit_button' in request.POST:
+            periodical_form = FinishUploadPeriodicalIssueForm(request.POST)
+            if periodical_form.is_valid():
+                periodical_title = periodical_form.cleaned_data['periodical_title']
+                periodical = periodical_form.cleaned_data['periodical']
+                issue_name = periodical_form.cleaned_data['title']
+                description = periodical_form.cleaned_data['description']
+
+                if not periodical:
+                    periodical = Periodical.objects.create(publisher=uploading_publication.publisher, title=periodical_title, created_by=request.user, modified_by=request.user)
+
+                publication = Publication.objects.create(
+                    publisher=uploading_publication.publisher,
+                    uid=uploading_publication.uid,
+                    uploaded_file=uploading_publication.uploaded_file,
+                    file_name=uploading_publication.file_name,
+                    file_ext=uploading_publication.file_ext,
+                    publication_type='periodical',
+                    publish_status=Publication.PUBLISH_STATUS_UNPUBLISHED,
+                    uploaded_by=request.user,
+                    modified_by=request.user,
+                )
+
+                issue = PeriodicalIssue.objects.create(
+                    publication=publication,
+                    periodical=periodical,
+                )
+
+                uploading_publication.delete()
+
+                return redirect('view_publication', publication_id=publication.id)
+
+        else:
+            periodical_form = FinishUploadPeriodicalIssueForm()
+
+        if 'book_submit_button' in request.POST:
+            book_form = FinishUploadBookForm(request.POST)
+            if book_form.is_valid():
+                pass
+        else:
+            book_form = FinishUploadBookForm()
+        
+        
+        # if 'picture_submit_button' in request.POST:
+        #     picture_form = FinishUploadPictureForm(request.POST)
+        #     if picture_form.is_valid():
+        #         pass
+        # else:
+        #     picture_form = FinishUploadPictureForm()
+        
+    else:
+        periodical_form = FinishUploadPeriodicalIssueForm()
+        book_form = FinishUploadBookForm()
+        # picture_form = FinishUploadPictureForm()
+    
+    return render(request, 'publication/publication_finish_upload.html', {'uploading_publication':uploading_publication, 
+        'book_form':book_form, 
+        'periodical_form':periodical_form, 
+        #'picture_form':picture_form,
+        })
+
+@login_required
+def get_upload_progress(request):
+    """
+    Return JSON object with information about the progress of an upload.
+    """
+    progress_id = ''
+    if 'X-Progress-ID' in request.GET:
+        progress_id = request.GET['X-Progress-ID']
+    elif 'X-Progress-ID' in request.META:
+        progress_id = request.META['X-Progress-ID']
+    if progress_id:
+        from django.utils import simplejson
+        cache_key = "%s_%s" % (request.META['REMOTE_ADDR'], progress_id)
+        data = cache.get(cache_key)
+        return HttpResponse(simplejson.dumps(data))
+    else:
+        return HttpResponseServerError('Server Error: You must provide X-Progress-ID header or query param.')
+
+@login_required
+def view_publication(request, publication_id):
+    publication = get_object_or_404(Publication, pk=publication_id)
+    return render(request, 'publication/periodicals.html', {'publication':publication})
+
+@login_required
+def download_publication(request, publication_id):
+    
+    return HttpResponse(publication_id)
+
+@login_required
+def get_publication(request, publication_uid):
+    publication = get_object_or_404(Publication, uid=publication_uid)
+    
+    return private_files_get_file(request, 'publication', 'Publication', 'uploaded_file', str(publication.id), 'sample.pdf')
 
 # Publisher Periodicals ######################################################################
 
@@ -144,45 +273,6 @@ def upload_periodical_issue(request, publisher_id):
     
     return render(request, 'publication/periodical_upload.html', {'publisher':publisher, 'form':form})
 
-@login_required
-def uploading_periodical_issue(request, publisher_id):
-    publisher = get_object_or_404(Publisher, pk=publisher_id)
-
-    if request.method == 'POST':
-        try:
-            periodical = request.POST.get('periodical', None)
-            uploading_file = request.FILES['publication']
-
-            if uploading_file:
-                uid = publication_functions.upload_publication(request.user, uploading_file, publisher, UploadingPublication.UPLOADING_PERIODICAL_ISSUE, periodical)
-                return HttpResponse(uid)
-            else:
-                return HttpResponse('')
-        except:
-            return HttpResponse('')
-    
-    else:
-        raise Http404
-
-@login_required
-def get_upload_progress(request):
-    """
-    Return JSON object with information about the progress of an upload.
-    """
-    progress_id = ''
-    if 'X-Progress-ID' in request.GET:
-        progress_id = request.GET['X-Progress-ID']
-    elif 'X-Progress-ID' in request.META:
-        progress_id = request.META['X-Progress-ID']
-    if progress_id:
-        from django.utils import simplejson
-        cache_key = "%s_%s" % (request.META['REMOTE_ADDR'], progress_id)
-        print "get_progress -> key -> %s" % cache_key
-        data = cache.get(cache_key)
-        print data
-        return HttpResponse(simplejson.dumps(data))
-    else:
-        return HttpResponseServerError('Server Error: You must provide X-Progress-ID header or query param.')
 
 
 # Publisher Books ######################################################################

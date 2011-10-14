@@ -136,7 +136,11 @@ LOGGING = {
     }
 }
 
-########## Open Reader Settings ########## 
+########## Django Private Files ##########
+
+FILE_PROTECTION_METHOD = 'basic'
+
+########## Open Reader Settings ##########
 
 PUBLICATION_ROOT = MEDIA_ROOT + 'publication/'
 

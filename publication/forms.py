@@ -14,7 +14,10 @@ class PublisherPeriodicalChoiceField(forms.ModelChoiceField):
 class PublisherForm(forms.Form):
     name = forms.CharField()
 
-class UploadPeriodicalIssueForm(forms.Form):
+class UploadPublicationForm(forms.Form):
+    publication = forms.FileField()
+
+class FinishUploadPeriodicalIssueForm(forms.Form):
     def __init__(self, *args, **kwargs):
         publisher = kwargs.pop('publisher', None)
         forms.Form.__init__(self, *args, **kwargs)
@@ -22,11 +25,10 @@ class UploadPeriodicalIssueForm(forms.Form):
         if publisher:
             self.fields['periodical'].queryset = Periodical.objects.filter(publisher=publisher).order_by('title')
             self.publisher = publisher
-
-    publication_uid = forms.CharField(widget=forms.HiddenInput)
+    
     periodical_title = forms.CharField(required=False)
     periodical = PublisherPeriodicalChoiceField(required=False)
-    issue_name = forms.CharField()
+    title = forms.CharField()
     description = forms.CharField(required=False, widget=forms.Textarea)
 
     def clean(self):
@@ -34,16 +36,20 @@ class UploadPeriodicalIssueForm(forms.Form):
         periodical_title = cleaned_data.get('periodical_title')
         periodical = cleaned_data.get('periodical')
 
-        if not periodical_title and periodical:
+        if not periodical_title and not periodical:
             raise forms.ValidationError('Choose a periodical or create a new periodical')
         
         return cleaned_data
 
-class UploadBookForm(forms.Form):
-    publication_uid = forms.CharField(widget=forms.HiddenInput)
+class FinishUploadBookForm(forms.Form):
     title = forms.CharField()
     description = forms.CharField(required=False, widget=forms.Textarea)
     author = forms.CharField()
     isbn = forms.CharField(required=False)
 
     categories = forms.ModelMultipleChoiceField(required=False, queryset=PublicationCategory.objects.all(), widget=forms.CheckboxSelectMultiple())    
+
+
+# class FinishUploadPictureForm(forms.Form):
+#     title = forms.CharField()
+#     description = forms.CharField(required=False, widget=forms.Textarea)
