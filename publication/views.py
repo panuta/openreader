@@ -40,10 +40,9 @@ def create_publisher(request):
     if request.method == 'POST':
         form = PublisherForm(request.POST)
         if form.is_valid():
-            publisher = form.save(commit=False)
-            publisher.created_by = request.user
-            publisher.modified_by = request.user
-            publisher.save()
+            publisher_name = form.cleaned_data['name']
+
+            publisher = Publisher.objects.create(name=publisher_name, created_by=request.user, modified_by=request.user)
 
             user_publisher = UserPublisher.objects.create(user=request.user, publisher=publisher)
 
