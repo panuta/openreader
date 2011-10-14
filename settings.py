@@ -3,7 +3,9 @@
 import os
 base_path = os.path.dirname(__file__)
 
-DEBUG = False
+from django.conf import global_settings
+
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -14,7 +16,7 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'openreader',
         'USER': 'openreader',
         'PASSWORD': 'openreader',
@@ -91,6 +93,8 @@ TEMPLATE_DIRS = (
     os.path.join(base_path, 'templates'),
 )
 
+FILE_UPLOAD_HANDLERS = ('openreader.handlers.UploadProgressCachedHandler', ) + global_settings.FILE_UPLOAD_HANDLERS
+
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
@@ -138,5 +142,3 @@ PUBLICATION_ROOT = MEDIA_ROOT + 'publication/'
 
 
 #######################################################
-
-from dev_settings import *
