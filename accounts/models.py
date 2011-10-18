@@ -11,13 +11,7 @@ class UserPublisher(models.Model):
     is_default = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
 
-class UserBookLibrary(models.Model):
+class UserPurchasedPublication(models.Model):
     user = models.ForeignKey(User)
-    book = models.ForeignKey('publication.Book')
+    publication = models.ForeignKey('Publication')
     created = models.DateTimeField(auto_now_add=True)
-
-class UserPeriodicalIssueLibrary(models.Model):
-    user = models.ForeignKey(User)
-    issue = models.ForeignKey('publication.PeriodicalIssue')
-    created = models.DateTimeField(auto_now_add=True)
-

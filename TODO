@@ -1,0 +1,41 @@
+TODO
+- Thinking how to manage app user
+	- No need to sign up before using app
+	- Use in-app purchase
+
+- Use email for logging in (https://bitbucket.org/jokull/django-email-login/overview)
+- Check device id (https://github.com/gekitz/UIDevice-with-UniqueIdentifier-for-iOS-5)
+
+- http://allseeing-i.com/ASIHTTPRequest/
+
+########## Security Scheme ##########
+- Man in the middle
+- Extract resources from device
+- Download from website, not from device
+
+Read this
+http://stackoverflow.com/questions/7262299/json-reject-server-requests-from-third-parties
+http://en.wikipedia.org/wiki/Public-key_cryptography
+http://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange
+
+
+Register iPad app
+1. Generate a unique id for a device (https://github.com/gekitz/UIDevice-with-UniqueIdentifier-for-iOS-5)
+2. Generate a pair of public/private key, store the private key to Keychain
+3. Send the device id and the public key to server
+4. Server will check if the device key is already registered, if not, then add to the user's devices list. (Also limit a number of devices per user)
+5. Server will also keep the public key of this user (one public key per user device)
+6. Server will generate 
+
+Download Publication
+1. App will send a secret key to server
+
+
+
+
+1. Register iPad app by generating a unique id for a device and send it to server
+2. By downloading a publication, server will send an encrypted publication along with a master key that was used to encrypted the publication. (The publication is sent by HTTP protocol but a master key is sent by HTTPS protocol)
+3. A device will generate an user key 
+
+Resources
+- http://aptogo.co.uk/2010/07/protecting-resources/
