@@ -61,6 +61,11 @@ CACHES = {
 AUTH_PROFILE_MODULE = 'accounts.UserProfile'
 LOGIN_REDIRECT_URL = '/dashboard/'
 
+AUTHENTICATION_BACKENDS = (
+    'openreader.backends.EmailAuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
 # EMAIL_USE_TLS = True
 # EMAIL_HOST = 'smtp.gmail.com'
 # EMAIL_HOST_USER = 'username@gmail.com'
@@ -104,7 +109,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'registration',
     #'private_files',
 
     'openreader.accounts',

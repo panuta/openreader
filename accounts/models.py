@@ -62,5 +62,5 @@ class PublisherUserPermission(models.Model):
 
 class UserPurchasedPublication(models.Model):
     user = models.ForeignKey(User)
-    publication = models.ForeignKey('Publication')
+    publication = models.ForeignKey('publication.Publication')
     created = models.DateTimeField(auto_now_add=True)

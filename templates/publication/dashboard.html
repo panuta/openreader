@@ -1,6 +1,14 @@
 {% extends 'base_authenticated.html' %}
 
 {% block body_authenticated %}
-DASHBOARD
-<a href="{% url upload_publication publisher.id %}">Upload</a>
+<div class="publisher_dashboard">
+  <div class="row">
+    <div class="span11">
+      TEST
+    </div>
+    <div class="span5 sidebar">
+      <a href="{% url upload_publication publisher.id %}">Upload Publication</a>
+    </div>
+  </div>
+</div>
 {% endblock %}

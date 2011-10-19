@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
+{% load url from future %}
+
+{% block head_title %}Homepage{% endblock %}
 
 {% block body %}
-Welcome to Open Reader website!
+<p>Welcome to Open Reader website!<p>
+<p>Are you a publisher? <a href="{% url 'django.contrib.auth.views.login' %}">Login here</a>.</p>
 {% endblock %}

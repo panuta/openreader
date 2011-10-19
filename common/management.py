@@ -9,7 +9,7 @@ def after_syncdb(sender, **kwargs):
         
     except User.DoesNotExist:
         random_password = 'panuta'
-        admin_user = User.objects.create_user('panuta', 'panuta@gmail.com', random_password)
+        admin_user = User.objects.create_user('panuta@gmail.com', 'panuta@gmail.com', random_password)
         admin_user.is_superuser = True
         admin_user.is_staff = True
         admin_user.save()

@@ -8,8 +8,8 @@ urlpatterns = patterns('',
     url('', include('openreader.accounts.urls')),
     url('', include('openreader.homepage.urls')),
     url('', include('openreader.publication.urls')),
-    
-    url(r'^accounts/', include('registration.urls')),
+
+    url(r'^accounts/', include('django.contrib.auth.urls')),
     url(r'^admin/', include(admin.site.urls)),
     
 )

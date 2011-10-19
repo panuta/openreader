@@ -3,28 +3,34 @@
 {% block head_title %}{% endblock %}
 
 {% block body %}
-	
-	{% block tabs %}
-		{% if publisher %}
-			<ul>
-				<li><a href="{% url view_publisher_dashboard publisher.id %}">Dashboard</a></li>
-				<li><a href="{% url view_publisher_periodicals publisher.id %}">Magazines</a></li>
-				<li><a href="{% url view_publisher_books publisher.id %}">Books</a></li>
-				<li><a href="{% url view_publisher_profile publisher.id %}">Manage Publisher</a></li>
-			</ul>
-		{% endif %}
-	{% endblock %}
+<div class="publisher-topbar-wrapper">
+  <div class="topbar" id="topbar-example" data-dropdown="dropdown">
+    <div class="topbar-inner">
+      <div class="container">
+        <h3><a href="#">{{publisher.name}}</a></h3>
+        <ul class="nav">
+          <li><a href="{% url view_publisher_dashboard publisher.id %}">Dashboard</a></li>
+          <li><a href="{% url view_publisher_periodicals publisher.id %}">Magazines</a></li>
+          <li><a href="{% url view_publisher_books publisher.id %}">Books</a></li>
+          <li><a href="{% url view_publisher_profile publisher.id %}">Manage Publisher</a></li>
+        </ul>
 
-	<div id="body_content">
-		{% block body_authenticated %}{% endblock %}
-	</div>
-{% endblock %}
+        <ul class="nav secondary-nav">
+          <li class="dropdown">
+        	  <a class="dropdown-toggle" href="#">Switch Publisher</a>
+            <ul class="dropdown-menu">
+              <li><a href="#">Publisher1</a></li>
+              <li><a href="#">Publisher2</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
 
-{% block js_base %}
-	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ajax-csrf.js"></script>
-	<script type="text/javascript">
-		var l = function(str) {
-			console.log(str);	
-		};
-	</script>
+<div id="body_content">
+  {% block body_authenticated %}{% endblock %}
+</div>
+
 {% endblock %}

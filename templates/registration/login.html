@@ -1,25 +1,35 @@
 {% extends 'base.html' %}
+{% load url from future %}
 
 {% block head_title %}Login{% endblock %}
 {% block page_title %}Login{% endblock %}
 
 {% block body %}
-	<form method="POST">
-		{{ form.non_field_errors }}
-		<div>
-			<label for="username">Username:</label><br />
-			{{ form.username }}
-			{{ form.username.errors }}
-		</div>
-		<div>
-			<label for="password">Password:</label><br />
-			{{ form.password }}
-			{{ form.username.errors }}
-		</div>
-		<div>
-			<input type="submit" value="Log in" />
-		</div>
-		{% csrf_token %}
-		<a href="{% url auth_password_reset %}">Forgot your password?</a>
-	</form>
+<form method="POST" action="{% url 'django.contrib.auth.views.login' %}">
+  {% csrf_token %}
+  {{form.non_field_errors}}
+  <fieldset>
+    <legend>User Login</legend>
+    <div class="clearfix">
+      <label for="id_email">Email:</label>
+      <div class="input">
+        {{form.email}}
+      </div>
+      {{form.email.errors}}
+    </div>
+
+    <div class="clearfix">
+      <label for="id_password">Password:</label>
+      <div class="input">
+        {{form.password}}
+      </div>
+      {{form.password.errors}}
+    </div>
+
+    <div class="actions">
+      <input type="submit" value="Login" class="btn primary">
+      <a href="{% url 'django.contrib.auth.views.password_reset' %}">Forgot your password?</a>
+    </div>
+  </fieldset>
+</form>
 {% endblock %}
