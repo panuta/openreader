@@ -20,6 +20,17 @@ class Publisher(models.Model):
     modified = models.DateTimeField(auto_now=True)
     modified_by = models.ForeignKey(User, related_name='publisher_modified_by')
 
+# class SystemShelf(models.Model):
+#     name = models.CharField(max_length=200)
+
+class PublisherShelf(models.Model):
+    name = models.CharField(max_length=200)
+    description = models.CharField(max_length=500)
+    created = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, related_name='publisher_shelf_created_by')
+
+# Publication ############################################################
+
 class UploadingPublication(models.Model):
     publisher = models.ForeignKey('Publisher')
 
@@ -42,9 +53,9 @@ class UploadingPublication(models.Model):
 class Publication(models.Model):
     PUBLISH_STATUS_UNPUBLISHED = 1
     PUBLISH_STATUS_READY_TO_PUBLISH = 2
-    PUBLISH_STATUS_PUBLISHED = 3
-    PUBLISH_STATUS_SCHEDULE_TO_PUBLISH = 4
-
+    PUBLISH_STATUS_SCHEDULE_TO_PUBLISH = 3
+    PUBLISH_STATUS_PUBLISHED = 4
+    
     publisher = models.ForeignKey('Publisher')
 
     uid = models.CharField(max_length=200, db_index=True)
