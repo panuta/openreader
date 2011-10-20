@@ -29,6 +29,11 @@ form .actions a {margin-left:10px;}
   
 }
 
+/* Publisher Management */
+.publisher_manage .table_actions {
+  margin:25px 0px 15px;
+}
+
 /* Footer */
 
 .footer {

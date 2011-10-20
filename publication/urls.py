@@ -22,9 +22,15 @@ urlpatterns = patterns('publication.views',
     url(r'^publisher/(?P<publisher_id>\d+)/books/$', 'view_publisher_books', name='view_publisher_books'),
     
     # Publisher Management
+    url(r'^publisher/(?P<publisher_id>\d+)/publisher/management/$', 'view_publisher_management', name='view_publisher_management'),
     url(r'^publisher/(?P<publisher_id>\d+)/publisher/profile/$', 'view_publisher_profile', name='view_publisher_profile'),
-    url(r'^publisher/(?P<publisher_id>\d+)/publisher/team/$', 'view_publisher_team', name='view_publisher_team'),
-    url(r'^publisher/(?P<publisher_id>\d+)/publisher/team/invite/$', 'view_publisher_team_invite', name='view_publisher_team_invite'),
+    
+    url(r'^publisher/(?P<publisher_id>\d+)/publisher/shelfs/$', 'view_publisher_shelfs', name='view_publisher_shelfs'),
+    url(r'^publisher/(?P<publisher_id>\d+)/publisher/shelfs/create/$', 'view_publisher_shelfs_create', name='view_publisher_shelfs_create'),
+    
+    url(r'^publisher/(?P<publisher_id>\d+)/publisher/users/$', 'view_publisher_users', name='view_publisher_users'),
+    url(r'^publisher/(?P<publisher_id>\d+)/publisher/users/add/$', 'view_publisher_users_add', name='view_publisher_users_add'),
+    url(r'^publisher/(?P<publisher_id>\d+)/publisher/billing/$', 'view_publisher_billing', name='view_publisher_billing'),
 
     # Publication
     url(r'^publication/(?P<publication_id>\d+)/$', 'view_publication', name='view_publication'),

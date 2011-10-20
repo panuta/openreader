@@ -1,0 +1,42 @@
+{% extends 'base_authenticated.html' %}
+
+{% block head_title %}Publisher Management - Shelfs{% endblock %}
+
+{% block body_authenticated %}
+<div class="publisher_manage">
+  <ul class="breadcrumb">
+    <li><a href="{% url view_publisher_management publisher.id %}">Publisher Management</a> <span class="divider">/</span></li>
+    <li class="active">Shelfs</li>
+  </ul>
+
+  <div class="table_actions">
+    <a href="{% url view_publisher_shelfs_create publisher.id %}" class="btn">Create new shelf</a>
+  </div>
+
+  <table class="zebra-striped">
+    <col align="left" />
+    <col width="240"/>
+    <thead>
+      <tr>
+        <th>Shelf name</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Shelf 1</td>
+        <td>
+          <a href="#">Edit shelf</a> | <a href="#">Staff</a> | <a href="#">Delete shelf</a>
+        </td>
+      </tr>
+      <tr>
+        <td>Shelf 1</td>
+        <td>
+          <a href="#">Edit shelf</a> | <a href="#">Staff</a> | <a href="#">Delete shelf</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
+{% endblock %}

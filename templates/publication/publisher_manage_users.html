@@ -1,0 +1,48 @@
+{% extends 'base_authenticated.html' %}
+
+{% block head_title %}Publisher Management - Users{% endblock %}
+
+{% block body_authenticated %}
+<div class="publisher_manage">
+  <ul class="breadcrumb">
+    <li><a href="{% url view_publisher_management publisher.id %}">Publisher Management</a> <span class="divider">/</span></li>
+    <li class="active">Users</li>
+  </ul>
+
+  <div class="table_actions">
+    <a href="{% url view_publisher_users_add publisher.id %}" class="btn">Add user</a>
+  </div>
+
+  <table class="zebra-striped">
+    <col align="left" />
+    <col width="240"/>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email address</th>
+        <th>Role</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Panu Tangchalermkul</td>
+        <td>panuta@gmail.com</td>
+        <td>Administrator</td>
+        <td>
+          <a href="#">Edit user</a> | <a href="#">Delete user</a>
+        </td>
+      </tr>
+      <tr>
+        <td>Panu Tangchalermkul</td>
+        <td>panuta@gmail.com</td>
+        <td>Administrator</td>
+        <td>
+          <a href="#">Edit user</a> | <a href="#">Delete user</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
+{% endblock %}

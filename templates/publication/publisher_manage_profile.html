@@ -1,0 +1,32 @@
+{% extends 'base_authenticated.html' %}
+
+{% block head_title %}Publisher Management - Update profile{% endblock %}
+
+{% block body_authenticated %}
+<div class="publisher_manage">
+  <ul class="breadcrumb">
+    <li><a href="{% url view_publisher_management publisher.id %}">Publisher Management</a> <span class="divider">/</span></li>
+    <li class="active">Update profile</li>
+  </ul>
+
+  <form method="POST" action="{% url view_publisher_profile publisher.id %}">
+    {% csrf_token %}
+    {{form.non_field_errors}}
+    <fieldset>
+      <legend>Publisher profile</legend>
+      <div class="clearfix">
+        <label for="id_name">Name:</label>
+        <div class="input">
+          {{form.name}}
+        </div>
+        {{form.name.errors}}
+      </div>
+
+      <div class="actions">
+        <input type="submit" value="Update" class="btn primary">
+      </div>
+    </fieldset>
+  </form>
+
+</div>
+{% endblock %}

@@ -46,6 +46,7 @@ def create_publisher(request):
             publisher_name = form.cleaned_data['name']
 
             publisher = Publisher.objects.create(name=publisher_name, created_by=request.user, modified_by=request.user)
+            PublisherShelf.objects.create(publisher=publisher, created_by=request.user)
 
             user_publisher = UserPublisher.objects.create(user=request.user, publisher=publisher)
 
@@ -236,10 +237,10 @@ def upload_periodical_issue(request, publisher_id):
         form = UploadPeriodicalIssueForm(request.POST)
         if form.is_valid():
             publication_uid = form.cleaned_data['publication_uid']
-            periodical_title = form.cleaned_data['periodical_title']
+            periodical_title = form.cleaned_data['periodical_title'].strip()
             periodical = form.cleaned_data['periodical']
-            issue_name = form.cleaned_data['issue_name']
-            description = form.cleaned_data['description']
+            issue_name = form.cleaned_data['issue_name'].strip()
+            description = form.cleaned_data['description'].strip()
 
             uploading_publication = UploadingPublication.objects.get(uid=publication_uid)
 
@@ -279,7 +280,8 @@ def upload_periodical_issue(request, publisher_id):
 
 @login_required
 def view_publisher_books(request, publisher_id):
-    return render(request, 'publication/books.html', {})
+    publisher = get_object_or_404(Publisher, pk=publisher_id)
+    return render(request, 'publication/books.html', {'publisher':publisher, })
 
 @login_required
 def view_book(request, book_id):
@@ -295,14 +297,69 @@ def upload_book(request, publisher_id):
 # Publisher Management ######################################################################
 
 @login_required
+def view_publisher_management(request, publisher_id):
+    publisher = get_object_or_404(Publisher, pk=publisher_id)
+    return render(request, 'publication/publisher_manage.html', {'publisher':publisher, })
+���
+@login_required
 def view_publisher_profile(request, publisher_id):
-    return render(request, 'publication/publisher_profile.html', {})
+    publisher = get_object_or_404(Publisher, pk=publisher_id)
+
+    if request.method == 'POST':
+        form = PublisherProfileForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['name'].strip()
+
+            publisher.name = name
+            publisher.save()
+
+            return redirect('view_publisher_management', publisher_id=publisher.id)
+
+    else:
+        form = PublisherProfileForm(initial={'name':publisher.name})
+    
+    return render(request, 'publication/publisher_manage_profile.html', {'publisher':publisher, 'form':form})
 
 @login_required
-def view_publisher_team(request, publisher_id):
-    return render(request, 'publication/publisher_team.html', {})
+def view_publisher_shelfs(request, publisher_id):
+    publisher = get_object_or_404(Publisher, pk=publisher_id)
+    return render(request, 'publication/publisher_manage_shelfs.html', {'publisher':publisher, })
 
 @login_required
-def view_publisher_team_invite(request, publisher_id):
-    return render(request, 'publication/publisher_team_invite.html', {})
+def view_publisher_shelfs_create(request, publisher_id):
+    publisher = get_object_or_404(Publisher, pk=publisher_id)
+
+    if request.method == 'POST':
+        form = PublisherShelfForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['name']
+            description = form.cleaned_data['description']
+
+            PublisherShelf.objects.create(publisher=publisher, name=name, description=description, created_by=request.user)
+
+            # TODO: Message
+
+            return redirect('view_publisher_management', publisher_id=publisher.id)
+
+    else:
+        form = PublisherShelfForm()
+
+    return render(request, 'publication/publisher_manage_shelfs_create.html', {'publisher':publisher, 'form':form})
+
+@login_required
+def view_publisher_users(request, publisher_id):
+    publisher = get_object_or_404(Publisher, pk=publisher_id)
+    return render(request, 'publication/publisher_manage_users.html', {'publisher':publisher, })
+
+@login_required
+def view_publisher_users_add(request, publisher_id):
+    publisher = get_object_or_404(Publisher, pk=publisher_id)
+    return render(request, 'publication/publisher_manage_users_add.html', {'publisher':publisher, })
+
+@login_required
+def view_publisher_billing(request, publisher_id):
+    publisher = get_object_or_404(Publisher, pk=publisher_id)
+    return render(request, 'publication/publisher_manage_billing.html', {'publisher':publisher, })    
+
+
 

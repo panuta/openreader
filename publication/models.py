@@ -24,8 +24,10 @@ class Publisher(models.Model):
 #     name = models.CharField(max_length=200)
 
 class PublisherShelf(models.Model):
-    name = models.CharField(max_length=200)
-    description = models.CharField(max_length=500)
+    publisher = models.ForeignKey('Publisher')
+
+    name = models.CharField(max_length=200, default='Default Shelf')
+    description = models.CharField(max_length=500, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='publisher_shelf_created_by')
 

@@ -1,5 +1,7 @@
 from django import forms
 
+from common.forms import StrippedCharField
+
 from publication.models import Publisher, Periodical, PublicationCategory
 
 class PublisherPeriodicalChoiceField(forms.ModelChoiceField):
@@ -12,7 +14,7 @@ class PublisherPeriodicalChoiceField(forms.ModelChoiceField):
         return '%s' % (obj.title)
 
 class PublisherForm(forms.Form):
-    name = forms.CharField()
+    name = StrippedCharField()
 
 class UploadPublicationForm(forms.Form):
     publication = forms.FileField()
@@ -49,6 +51,14 @@ class FinishUploadBookForm(forms.Form):
 
     categories = forms.ModelMultipleChoiceField(required=False, queryset=PublicationCategory.objects.all(), widget=forms.CheckboxSelectMultiple())    
 
+# Publisher Management
+
+class PublisherProfileForm(forms.Form):
+    name = forms.CharField(max_length=200)
+
+class PublisherShelfForm(forms.Form):
+    name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'span9'}))
+    description = StrippedCharField(widget=forms.Textarea(attrs={'class':'span9', 'rows':'3'}))
 
 # class FinishUploadPictureForm(forms.Form):
 #     title = forms.CharField()
