@@ -14,7 +14,7 @@ TODO
 - http://allseeing-i.com/ASIHTTPRequest/
 
 
-########## 3rd Library ##########
+########## 3rd Library + Resources ##########
 https://github.com/dcramer/django-sentry
 https://github.com/dcramer/nexus
 https://github.com/django-debug-toolbar/django-debug-toolbar
@@ -30,6 +30,14 @@ SSL
 http://stackoverflow.com/questions/2131727/django-and-ssl-question
 http://www.redrobotstudios.com/blog/2009/02/18/securing-django-with-ssl/
 https://www.rapidsslonline.com/
+
+PDF Thumbnails Generator
+http://www.cyberciti.biz/tips/howto-linux-creating-a-image-thumbnails-from-shell-prompt.html#comment-19317
+http://www.imagemagick.org/script/index.php
+http://linux.die.net/man/1/thumbpdf
+http://stackoverflow.com/questions/5328401/efficient-thumbnail-generation-of-huge-pdf-file
+http://blog.prashanthellina.com/2008/02/03/create-pdf-thumbnails-using-imagemagick-on-linux/
+
 
 ########## Security Scheme ##########
 
