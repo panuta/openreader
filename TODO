@@ -13,13 +13,21 @@ TODO
 
 - http://allseeing-i.com/ASIHTTPRequest/
 
+########## Shelf ##########
+- One publisher can have many shelf, or no shelf at all
+- 1 App can configured to show one shelf, a set of shelf, or all shelf
+- Publication can be in a shelf, or not in any shelf at all
+- A shelf can contain many publication, or no publication at all
+- OpenReader's official app will have only 1 shelf
+- 
+
 ########## Security Scheme ##########
 
 Prevent from
 - Man in the middle
 - Extract resources from device
 - Send request directly from browser, not from a device
-    
+
 Read this
 http://stackoverflow.com/questions/7262299/json-reject-server-requests-from-third-parties
 http://en.wikipedia.org/wiki/Public-key_cryptography

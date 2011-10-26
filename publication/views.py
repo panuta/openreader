@@ -300,7 +300,7 @@ def upload_book(request, publisher_id):
 def view_publisher_management(request, publisher_id):
     publisher = get_object_or_404(Publisher, pk=publisher_id)
     return render(request, 'publication/publisher_manage.html', {'publisher':publisher, })
-���
+
 @login_required
 def view_publisher_profile(request, publisher_id):
     publisher = get_object_or_404(Publisher, pk=publisher_id)

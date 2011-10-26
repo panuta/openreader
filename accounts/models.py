@@ -15,7 +15,7 @@ User Type
     
     * Ignore UserShelfPermission by letting this user access all shelf within its publisher
 
-3. Publisher/Staff [is_publisher=True, is_admin=False, is_staff=True (UserShelfPermission)]
+3. Publisher/Staff [is_publisher=True, is_admin=False, is_staff=True (UserPublisherShelf)]
    This user can do
       - Publication management (Upload/Edit/Delete) on permitted shelf
       - View permitted publication
@@ -23,7 +23,7 @@ User Type
     * Use UserShelfPermission to determine user's permission on a specific shelf
     * If no UserShelfPermission row for a specific shelf, then it will assume that the user doesn't have any permission
 
-4. Publisher/User [is_publisher=True, is_admin=False, is_staff=False (UserShelfPermission)]
+4. Publisher/User [is_publisher=True, is_admin=False, is_staff=False (UserPublisherShelf)]
    This user can do
       - View permitted publication
 
@@ -47,7 +47,7 @@ class UserPublisher(models.Model):
     is_default = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
 
-class UserShelfPermission(models.Model):
+class UserPublisherShelf(models.Model):
     user = models.ForeignKey(User)
     shelf = models.ForeignKey('publication.PublisherShelf')
     is_staff = models.BooleanField()
