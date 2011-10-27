@@ -18,6 +18,7 @@ urlpatterns = patterns('publication.views',
     url(r'^publisher/(?P<publisher_id>\d+)/dashboard/$', 'view_publisher_dashboard', name='view_publisher_dashboard'),
 
     url(r'^publisher/(?P<publisher_id>\d+)/periodicals/$', 'view_publisher_periodicals', name='view_publisher_periodicals'),
+    url(r'^publisher/(?P<publisher_id>\d+)/periodicals/create/$', 'create_publisher_periodical', name='create_publisher_periodical'),
 
     url(r'^publisher/(?P<publisher_id>\d+)/books/$', 'view_publisher_books', name='view_publisher_books'),
     
@@ -39,6 +40,7 @@ urlpatterns = patterns('publication.views',
 
     url(r'^periodical/(?P<periodical_id>\d+)/$', 'view_periodical', name='view_periodical'),
     url(r'^periodical/issue/(?P<periodical_issue_id>\d+)/$', 'view_periodical_issue', name='view_periodical_issue'),
+    url(r'^periodical/(?P<periodical_id>\d+)/edit/$', 'edit_periodical', name='edit_periodical'),
 
     url(r'^book/(?P<book_id>\d+)/$', 'view_book', name='view_book'),
 )

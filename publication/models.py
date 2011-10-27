@@ -18,7 +18,7 @@ class Publisher(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='publisher_created_by')
     modified = models.DateTimeField(auto_now=True)
-    modified_by = models.ForeignKey(User, related_name='publisher_modified_by')
+    modified_by = models.ForeignKey(User, related_name='publisher_modified_by', null=True)
 
 # class SystemShelf(models.Model):
 #     name = models.CharField(max_length=200)
@@ -77,7 +77,7 @@ class Publication(models.Model):
     uploaded = models.DateTimeField(auto_now_add=True)
     uploaded_by = models.ForeignKey(User, related_name='publication_uploaded_by')
     modified = models.DateTimeField(auto_now=True)
-    modified_by = models.ForeignKey(User, related_name='publication_modified_by')
+    modified_by = models.ForeignKey(User, related_name='publication_modified_by', null=True)
 
     def save(self, *args, **kwargs):
         if not self.uid:
@@ -116,7 +116,7 @@ class Periodical(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='periodical_created_by')
     modified = models.DateTimeField(auto_now=True)
-    modified_by = models.ForeignKey(User, related_name='periodical_modified_by')
+    modified_by = models.ForeignKey(User, related_name='periodical_modified_by', null=True)
 
 class PeriodicalIssue(models.Model):
     publication = models.ForeignKey('Publication')

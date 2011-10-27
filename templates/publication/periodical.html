@@ -1,11 +1,43 @@
 {% extends 'base_authenticated.html' %}
 
-{% block body_authenticated %}
-{{periodical.title}}
+{% block head_title %}{{periodical.title}}{% endblock %}
 
-<ul>
-{% for issue in issues %}
-<li>{{issue.name}}</li>
-{% endfor %}
-</ul>
+{% block body_authenticated %}
+<div class="publisher_periodicals">
+  <ul class="breadcrumb">
+    <li><a href="{% url view_publisher_periodicals publisher.id %}">Periodicals</a> <span class="divider">/</span></li>
+    <li class="active">{{periodical.title}}</li>
+  </ul>
+
+  <div class="table_actions">
+    <a href="{% url upload_publication publisher.id %}?periodical={{periodical.id}}" class="btn">Upload new issue</a>
+    <a href="{% url edit_periodical periodical.id %}" class="btn">Edit periodical</a>
+  </div>
+
+  <div class="periodical">
+    <div class="description">
+      <h3>Description</h3>
+      <div>{{periodical.description}}</div>
+    </div>
+
+    {% if periodical.issues %}
+    <div class="backissues">
+      <h3>Back issues</h3>
+      <ul>
+        {% for issue in periodical.issues %}
+        <li>
+          <div>{{issue.name}}</div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% else %}
+    <div class="backissues">
+      <h3>Back issues</h3>
+      <div class="no_row">No back issues</div>
+    </div>
+    {% endif %}
+  </div>
+  
+</div>
 {% endblock %}

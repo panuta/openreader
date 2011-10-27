@@ -2,6 +2,17 @@
 
 form .actions a {margin-left:10px;}
 
+.no_row {
+  text-align:center;
+  font-size:1.1em;
+  background-color:#F5F5F5;
+  padding:10px 0px;
+}
+
+.table_actions a {
+  margin-right:15px;
+}
+
 /* Publisher Top Navigation Bar */
 
 .publisher-topbar-wrapper {
@@ -27,6 +38,53 @@ form .actions a {margin-left:10px;}
 /* Publisher Dashboard */
 .publisher_dashboard .sidebar {
   
+}
+
+/* Publisher Periodicals */
+
+.publisher_periodicals .periodicals .no_row {
+  margin-top:20px;
+}
+
+.publisher_periodicals .periodicals ul {
+  margin:0px;
+  padding:0px;
+}
+
+.publisher_periodicals .periodicals li {
+  margin-top:20px;
+  list-style:none;
+  padding:10px;
+  border:1px solid #CCC;
+}
+
+.publisher_periodicals .periodicals li .title {
+  font-size:1.2em;
+  font-weight:bold;
+
+}
+
+.publisher_periodicals .periodicals li .links {
+  margin-top:10px;
+}
+
+.publisher_periodicals .periodical .description {
+  margin-top:10px;
+}
+
+.publisher_periodicals .periodical .description h3 {
+  color:#666;
+  font-size:1.1em;
+  
+}
+
+.publisher_periodicals .periodical .backissues {
+  margin-top:10px;
+}
+
+.publisher_periodicals .periodical .backissues h3 {
+  color:#666;
+  font-size:1.1em;
 }
 
 /* Publisher Management */

@@ -4,11 +4,8 @@ TODO
     - Setup account for publisher
 - Write a new wireframe
 
-- Thinking how to manage app user
-	- No need to sign up before using app
-	- Use in-app purchase
+- Download file from another server
 
-- Use email for logging in (https://bitbucket.org/jokull/django-email-login/overview)
 - Check device id (https://github.com/gekitz/UIDevice-with-UniqueIdentifier-for-iOS-5)
 
 - http://allseeing-i.com/ASIHTTPRequest/

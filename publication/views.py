@@ -211,15 +211,58 @@ def get_publication(request, publication_uid):
 @login_required
 def view_publisher_periodicals(request, publisher_id):
     publisher = get_object_or_404(Publisher, pk=publisher_id)
-    return render(request, 'publication/periodicals.html', {'publisher':publisher})
+
+    periodicals = Periodical.objects.filter(publisher=publisher).order_by('-created')
+
+    return render(request, 'publication/periodicals.html', {'publisher':publisher, 'periodicals':periodicals})
+
+@login_required
+def create_publisher_periodical(request, publisher_id):
+    publisher = get_object_or_404(Publisher, pk=publisher_id)
+
+    if request.method == 'POST':
+        form = PublisherPeriodicalForm(request.POST)
+        if form.is_valid():
+            title = form.cleaned_data['title']
+            description = form.cleaned_data['description']
+
+            Periodical.objects.create(publisher=publisher, title=title, description=description, created_by=request.user)
+            
+            return redirect('view_publisher_periodicals', publisher_id=publisher.id)
+
+    else:
+        form = PublisherPeriodicalForm()
+
+    return render(request, 'publication/periodicals_create.html', {'publisher':publisher, 'form':form})
 
 @login_required
 def view_periodical(request, periodical_id):
-    return render(request, 'publication/periodical.html', {})
+    periodical = get_object_or_404(Periodical, pk=periodical_id)
+    publisher = periodical.publisher
+
+    periodical.issues = PeriodicalIssue.objects.filter(periodical=periodical).order_by('publication__uploaded')
+
+    return render(request, 'publication/periodical.html', {'publisher':publisher, 'periodical':periodical})
 
 @login_required
-def update_periodical(request, periodical_id):
-    return render(request, 'publication/periodical_update.html', {})
+def edit_periodical(request, periodical_id):
+    periodical = get_object_or_404(Periodical, pk=periodical_id)
+    publisher = periodical.publisher
+
+    if request.method == 'POST':
+        form = PublisherPeriodicalForm(request.POST)
+        if form.is_valid():
+            periodical.title = form.cleaned_data['title']
+            periodical.description = form.cleaned_data['description']
+
+            periodical.save()
+
+            return redirect('view_periodical', periodical_id=periodical.id)
+
+    else:
+        form = PublisherPeriodicalForm(initial={'title':periodical.title, 'description':periodical.description})
+    
+    return render(request, 'publication/periodical_edit.html', {'publisher':publisher, 'periodical':periodical, 'form':form})
 
 @login_required
 def view_periodical_issue(request, periodical_issue_id):

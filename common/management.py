@@ -5,7 +5,7 @@ from publication.models import *
 
 def after_syncdb(sender, **kwargs):
     try:
-        admin_user = User.objects.get(username='panuta')
+        admin_user = User.objects.get(username='panuta@gmail.com')
         
     except User.DoesNotExist:
         random_password = 'panuta'

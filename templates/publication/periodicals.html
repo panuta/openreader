@@ -1,9 +1,40 @@
 {% extends 'base_authenticated.html' %}
 
+{% block head_title %}Periodicals{% endblock %}
+
 {% block body_authenticated %}
-<ul>
-{% for periodical in periodicals %}
-<li><a href="{% url view_periodical periodical.id %}">{{periodical.title}}</a></li>
-{% endfor %}
-</ul>
+<div class="publisher_periodicals">
+  <ul class="breadcrumb">
+    <li class="active">Periodicals</li>
+  </ul>
+
+  {% if periodicals %}
+
+  <div class="table_actions">
+    <a href="{% url create_publisher_periodical publisher.id %}" class="btn">Create new periodical</a>
+  </div>
+
+  <div class="periodicals">
+    <ul>
+      {% for periodical in periodicals %}
+      <li>
+        <div><a href="{% url view_periodical periodical.id %}" class="title">{{periodical.title}}</a></div>
+        <div class="links">
+          <a href="{% url upload_publication publisher.id %}?periodical={{periodical.id}}">Upload new issue</a>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  
+  {% else %}
+  
+  <div class="periodicals">
+    <div class="no_row">No periodical, <a href="{% url view_publisher_periodicals_create publisher.id %}">create a new one</a></div>
+  </div>
+  
+  {% endif %}
+
+</div>
+
 {% endblock %}

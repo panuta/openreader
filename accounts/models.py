@@ -13,25 +13,25 @@ User Type
       - Publication management (Upload/Edit/Delete)
       - View all publication
     
-    * Ignore UserShelfPermission by letting this user access all shelf within its publisher
+    * Ignore UserPublisherShelf by letting this user access all shelf within its publisher
 
-3. Publisher/Staff [is_publisher=True, is_admin=False, is_staff=True (UserPublisherShelf)]
+3. Publisher/Staff [is_publisher=True, is_admin=False, can_manage=True (UserPublisherShelf)]
    This user can do
       - Publication management (Upload/Edit/Delete) on permitted shelf
       - View permitted publication
     
-    * Use UserShelfPermission to determine user's permission on a specific shelf
-    * If no UserShelfPermission row for a specific shelf, then it will assume that the user doesn't have any permission
+    * Use UserPublisherShelf to determine user's permission on a specific shelf
+    * If no UserPublisherShelf row for a specific shelf, then it will assume that the user doesn't have any permission
 
-4. Publisher/User [is_publisher=True, is_admin=False, is_staff=False (UserPublisherShelf)]
+4. Publisher/User [is_publisher=True, is_admin=False, can_manage=False (UserPublisherShelf)]
    This user can do
       - View permitted publication
 
-    * Use UserShelfPermission to determine user's permission on a specific shelf
+    * Use UserPublisherShelf to determine user's permission on a specific shelf
 
-UserShelfPermission
-    - is_staff = True : User can Upload/Edit/Delete/Read
-    - is_staff = False : User can Read
+UserPublisherShelf
+    - can_manage = True : User can Upload/Edit/Delete/Read
+    - can_manage = False : User can Read
     - no row : User cannot do anything
 
 """
@@ -40,6 +40,17 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User)
     is_publisher = models.BooleanField()
     is_admin = models.BooleanField()
+
+class UserDevice(models.Model):
+    user = models.ForeignKey(User)
+    device_id = models.CharField(max_length=300)
+    created = models.DateTimeField(auto_now_add=True)
+
+class UserAccessToken(models.Model):
+    user = models.ForeignKey(User)
+    token = models.CharField(max_length=300)
+    expired = models.DateField()
+    created = models.DateTimeField(auto_now_add=True)
 
 class UserPublisher(models.Model):
     user = models.ForeignKey(User)
@@ -50,7 +61,9 @@ class UserPublisher(models.Model):
 class UserPublisherShelf(models.Model):
     user = models.ForeignKey(User)
     shelf = models.ForeignKey('publication.PublisherShelf')
-    is_staff = models.BooleanField()
+    can_manage = models.BooleanField()
+    created = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, related_name='user_publisher_shelf_created_by')
 
 """
 # For finer-tuned permissions per user per publisher

@@ -1,0 +1,84 @@
+########## TASKS ##########
+
+- Login
+- Sign up
+- Update profile
+- Change password
+- Recover password
+- Logout
+- Remove account
+
+- Get purchase history
+
+----- BOOK STORE -----
+
+- Get magazine details
+- Get book details
+- Request for Download
+- Search book store
+- Get magazine preview - cover+index
+- Get magazine preview - thumbnails
+
+New Release
+- Get New Release for Magazine
+- Get New Release for Book
+
+Top Charts
+- Get Top Charts
+
+All
+- Get categories
+- Get magazines/book in category
+- Get details for book
+- Get details for magazine and back issues
+
+########## DESIGN ##########
+
+
+
+
+http://localhost/api/get/[data name]/?param=value
+
+
+########## FUNCTIONS ##########
+
+REQUEST_ACCESS (HTTPS)
+
+    This function can be used for sign in, sign up and get new access token.
+
+    If there's no record of this user in the system, it will automatically
+    create a new account based on the information received.
+
+    If the device id is unrecognized, it will automatically register this
+    device id.
+
+    Requires
+    - email address
+    - password
+    - device id
+    - app secret
+
+    Optional
+    - app id
+
+    Returns
+    - access token
+
+GET_PUBLICATION_NEW_RELEASE
+
+GET_PUBLICATION_TOP_CHART
+
+GET_PUBLICATION_CATEGORIES
+
+GET_PUBLICATION_LIST
+
+GET_PUBLICATION_COVERS
+
+GET_PUBLICATION_DETAILS
+
+SEARCH_PUBLICATION
+
+REQUEST_PUBLICATION_DOWNLOAD
+
+GET_PURCHASE_HISTORY
+

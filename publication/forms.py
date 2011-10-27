@@ -51,6 +51,14 @@ class FinishUploadBookForm(forms.Form):
 
     categories = forms.ModelMultipleChoiceField(required=False, queryset=PublicationCategory.objects.all(), widget=forms.CheckboxSelectMultiple())    
 
+# Publisher Periodicals
+
+class PublisherPeriodicalForm(forms.Form):
+    title = forms.CharField(max_length=200, widget=forms.TextInput(attrs={'class':'span9'}))
+    description = forms.CharField(widget=forms.Textarea(attrs={'class':'span9', 'rows':'3'}))
+
+    # categories = models.ManyToManyField('PublicationCategory', related_name='periodical_categories')
+
 # Publisher Management
 
 class PublisherProfileForm(forms.Form):
