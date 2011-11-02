@@ -7,18 +7,22 @@
     <meta name="keywords" content="{% block meta_keywords %}{% endblock %}" />
 
     <script type="text/javascript" src="{{STATIC_URL}}libs/jquery-1.6.4.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}libs/normalize.css">
 
     <script src="{{STATIC_URL}}libs/bootstrap/js/bootstrap-dropdown.js"></script>
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}libs/bootstrap/bootstrap.min.css">
+    <script src="{{STATIC_URL}}libs/bootstrap/js/bootstrap-modal.js"></script>
+    <link rel="stylesheet/less" type="text/css" href="{{STATIC_URL}}libs/bootstrap/less/bootstrap.less">
     
-    <!-- <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}libs/normalize.css"> -->
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/styles.css">
+    <script type="text/javascript" src="{{STATIC_URL}}js/scripts.js"></script>
+    <link rel="stylesheet/less" type="text/css" href="{{STATIC_URL}}css/styles.less">
+    
+
+    <script type="text/javascript" src="{{STATIC_URL}}libs/less-1.1.3.min.js"></script>
 
     {% block html_head %}{% endblock %}
-    {% block html_style %}{% endblock %}
-
+    
   </head>
-  <body>
+  <body class="yui-skin-sam">
 
     <div class="container">
       <div class="content">
@@ -31,8 +35,5 @@
         <p>&copy; OpenReader 2011</p>
       </div>
     </div>
-
-    
-    {% block html_script %}{% endblock %}
   </body>
 </html>

@@ -1,0 +1,457 @@
+@import "../libs/bootstrap/less/variables.less";
+
+@outstanding-ready: #b6daaf;
+@outstanding-ready-light: #d6ead2;
+@outstanding-ready-lighter: #e6f2e3;
+
+@outstanding-scheduled: #aed9d7;
+@outstanding-scheduled-light: #d1e9e8;
+@outstanding-scheduled-lighter: #e2f1f1;
+
+@outstanding-unpublished: #CCC;
+@outstanding-unpublished-light: #EEE;
+@outstanding-unpublished-lighter: #F3F3F3;
+
+@outstanding-unknown: #e2c3b5;
+@outstanding-unknown-lighter: #f0e1da;
+
+.content_link () {
+    a:link, a:active, a:visited {
+        text-decoration:underline;
+        color:@linkColor;
+    }
+
+    a:hover {
+        background-color:@linkColor !important;
+        color:#FFF !important;
+    }
+}
+
+/* *************** Common *************** */
+
+form, ul {margin:0px;padding:0px;}
+li {list-style:none;}
+a.btn:visited {color:#333333;}
+form fieldset .actions input {margin-right:10px;}
+
+.page-header h1 {margin-top:10px;}
+
+.no_row {
+    text-align:center;
+    font-size:1.1em;
+    background-color:#F5F5F5;
+    padding:10px 0px;
+}
+
+.table_actions a {
+    margin-right:15px;
+}
+
+input, textarea {
+    color:#444;
+}
+
+select {
+    color:#444;
+}
+
+ul.errorlist {
+    margin-top:5px;
+
+    li {
+        color:#c30;
+    }
+}
+
+.inputs-list .errorlist {
+    margin-bottom:20px;
+}
+
+ul.breadcrumb {
+    a:visited {
+        color:@linkColor;
+    }
+}
+
+/* Publisher Top Navigation Bar */
+
+.publisher-topbar-wrapper {
+    height: 40px;
+    margin: 5px 0 15px;
+    position: relative;
+}
+
+.publisher-topbar-wrapper .topbar {
+    position: absolute;
+}
+
+.publisher-topbar-wrapper .topbar .topbar-inner {
+    border-radius: 4px 4px 4px 4px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.publisher-topbar-wrapper .topbar .topbar-inner .container {
+    width:900px;
+}
+
+/* Publisher Dashboard */
+.publisher_dashboard .sidebar {
+  
+}
+
+
+/* *************** Upload Publication *************** */
+
+.upload_publication {
+
+    .inputs-list span {
+        margin-left:5px;
+    }
+    
+    /* Modal */
+
+    .uploading {
+        font-size:1.2em;
+        color:#555;
+        margin-bottom:10px;
+    }
+
+    .modal-body {
+        .name {
+            font-size:1.2em;
+            color:#333;
+            font-weight:bold;
+            margin:0px 0px 15px 150px;
+        }
+
+        #upload_progressbar {
+            margin-top:10px;
+        }
+
+        .errors {
+            color:#C30;
+            font-size:1.1em;
+        }
+    }
+
+    /* Page */
+
+    .periodical_name {
+        font-size:1.2em;
+        color:#333;
+        font-weight:bold;
+        margin:0px 0px 15px 150px;
+    }
+
+    .sublegend {
+        padding-left:150px;
+        margin-bottom:20px;
+        font-size:1.2em;
+        color:#555; 
+    }
+}
+
+.finishing_upload_publication {
+    .cover {
+        width:250px;
+        height:320px;
+        background-color:#ABC;
+        border:5px solid #666;
+    }
+
+    form {
+        margin:0px;
+        padding:0px;
+    }
+
+    .clearfix {
+        margin-bottom:20px;
+    }
+
+    label {
+        margin-bottom:5px;
+    }
+
+    .publication_type {
+        margin-bottom:10px;
+        color:#666;
+        font-size:1.1em;
+    }
+
+    .file_name {
+        color:#333;
+        background:url('/static/images/icons/file.png') left top no-repeat;
+        font-size:1.2em;
+        padding-left:23px;
+        margin-bottom:15px;
+        border-bottom:1px solid #CCC;
+        padding-bottom:15px;
+    }
+
+    .periodical_name {
+        font-size:1.5em;
+        margin-bottom:15px;
+    }
+
+    .schedule_date {
+        padding:10px 0px 5px 15px;
+    }
+
+    .schedule_time {
+        padding:10px 0px 20px 14px;
+    }
+
+    .actions a {
+        margin-top:10px;
+        color:#C30;
+    }
+}
+
+/* *************** Publisher Periodicals *************** */
+
+/* Periodicals */
+
+.publisher_periodicals {
+    .table_actions {
+        .upload_publication_button span {
+            background:url('/static/images/icons/button_upload_publication.png') left center no-repeat;
+            padding-left:23px;
+        }
+    }
+
+    .issue_outstanding {
+        margin:25px 0px 35px;
+        border:1px solid #CCC;
+        padding:15px;
+
+        @outstanding-number-height: 20px;
+        @outstanding-number-vertical-padding: 2px;
+
+        .numbers {
+            height:@outstanding-number-height + @outstanding-number-vertical-padding * 2;
+        }
+
+        .numbers li {
+            float:left;
+            list-style:none;
+            padding:@outstanding-number-vertical-padding 28px @outstanding-number-vertical-padding 10px;
+            font-weight:bold;
+            color:#333;
+            margin-right:@outstanding-number-height;
+            height:20px;
+            background-image:url('/static/images/down_arrow.png');
+            background-position:right center;
+            background-repeat:no-repeat;
+        }
+
+        .numbers li a {
+            color:#333;
+        }
+
+        .ready {
+            background-color:@outstanding-ready;
+        }
+
+        .scheduled {
+            background-color:@outstanding-scheduled;
+        }
+
+        .unpublished {
+            background-color:@outstanding-unpublished;
+        }
+
+        .unknown {
+            background-color:@outstanding-unknown;
+        }
+
+        #outstanding-ready {
+            background-color:@outstanding-ready-lighter;
+            border-top:8px solid @outstanding-ready;
+        }
+
+        #outstanding-scheduled {
+            background-color:@outstanding-scheduled-lighter;
+            border-top:8px solid @outstanding-scheduled;
+        }
+
+        #outstanding-unpublished {
+            background-color:@outstanding-unpublished-lighter;
+            border-top:8px solid @outstanding-unpublished;
+        }
+
+        #outstanding-unknown {
+            background-color:@outstanding-unknown-lighter;
+            border-top:8px solid @outstanding-unknown;
+        }
+
+        .list .close_list {
+            float:right;
+            margin:10px 15px;
+        }
+
+        .list .close_list a {
+            text-indent:-9999px;
+            background:url('/static/images/close_button.png') center top no-repeat;
+            display:block;
+            width:48px;
+            height:24px;
+        }
+
+        .list .close_list a:hover {
+            background-position:center bottom;
+        }
+
+        .list li {
+            height:85px;
+            padding:15px 15px 5px;
+        }
+
+        .list li.last {
+            padding-bottom:20px;
+        }
+
+        .list li .cover {
+            width:70px;
+            height:85px;
+            background-color:#D34;
+            float:left;
+        }
+
+        .list li .name {
+            .content_link;
+
+            margin:0px 0px 7px 85px;
+            font-size:1.2em;
+            color:#000;
+        }
+
+        .list li .status {
+            color:#444;
+            margin:0px 0px 10px 85px;
+        }
+
+        .list li .links {
+            margin:0px 0px 0px 85px;
+        }
+
+        .list li .links a {
+            margin-right:15px;
+        }
+    }
+
+    .periodicals {
+
+        .content_link;
+
+        .no_row {
+            margin-top:20px;
+        }
+      
+        li {
+            list-style:none;
+            margin-bottom:25px;
+            border-bottom:1px dashed #CCC;
+            padding-bottom:25px;
+        }
+
+        li.last {
+            border-bottom:none;
+            margin-bottom:10px;
+        }
+
+        .title {
+            margin-bottom:10px;
+        }
+
+        .title a {
+            font-size:1.4em;
+            font-weight:bold;
+        }
+
+        .stats {
+            margin-bottom:7px;
+        }
+
+        .stats .published {
+            font-weight:bold;
+            color:#444;
+            font-size:1.1em;
+        }
+
+        .outstanding {
+            margin-bottom:10px;
+
+            span {
+                margin-right:15px;
+                padding:0px 5px;
+                color:#444;
+            }
+
+            .ready {
+                background-color:@outstanding-ready-light;
+            }
+
+            .scheduled {
+                background-color:@outstanding-scheduled-light;
+            }
+
+            .unpublished {
+                background-color:@outstanding-unpublished-light;
+            }
+        }
+
+        .links a {
+            margin-right:15px;
+            color:#555;
+        }
+    }
+
+    .create_periodical {
+        border:1px dashed #999;
+        padding:15px 15px 15px 50px;
+        font-size:1.2em;
+        margin-bottom:40px;
+
+        background:url(/static/images/icons/button_create_periodical.png) 15px center no-repeat;
+
+        .content_link;
+    }
+}
+
+
+
+/* Periodical */
+
+.publisher_periodicals .periodical .description {
+    margin-top:10px;
+}
+
+.publisher_periodicals .periodical .description h3 {
+    color:#666;
+    font-size:1.1em;
+
+}
+
+.publisher_periodicals .periodical .backissues {
+    margin-top:10px;
+}
+
+.publisher_periodicals .periodical .backissues h3 {
+    color:#666;
+font-size:1.1em;
+}
+
+/* *************** Publisher Management *************** */
+.publisher_manage .table_actions {
+    margin:25px 0px 15px;
+}
+
+/* Footer */
+
+.footer {
+    border-top:1px solid #DDD;
+    text-align:center;
+    padding-top:10px;
+    margin-top:20px;
+}

@@ -38,10 +38,11 @@ class UploadingPublication(models.Model):
 
     uid = models.CharField(max_length=200, db_index=True)
     publication_type = models.CharField(max_length=50)
+    parent_id = models.IntegerField(null=True) # Can be used for PeriodicalID, etc.
 
     uploaded_file = models.FileField(upload_to=publication_media_dir, max_length=500)
 
-    file_name = models.CharField(max_length=200)
+    original_file_name = models.CharField(max_length=200)
     file_ext = models.CharField(max_length=10)
 
     uploaded = models.DateTimeField(auto_now_add=True)
@@ -65,13 +66,13 @@ class Publication(models.Model):
     description = models.TextField(blank=True)
     publication_type = models.CharField(max_length=50)
 
-    uploaded_file = PrivateFileField(upload_to=publication_media_dir, condition=is_downloadable, max_length=500)
-    file_name = models.CharField(max_length=300)
+    uploaded_file = PrivateFileField(upload_to=publication_media_dir, condition=is_downloadable, max_length=500, null=True)
+    original_file_name = models.CharField(max_length=300)
     file_ext = models.CharField(max_length=10)
 
     publish_status = models.IntegerField(default=PUBLISH_STATUS_UNPUBLISHED)
     publish_schedule = models.DateTimeField(null=True)
-    published = models.DateTimeField(null=True, auto_now_add=True)
+    published = models.DateTimeField(null=True)
     published_by = models.ForeignKey(User, null=True, related_name='publication_published_by')
 
     uploaded = models.DateTimeField(auto_now_add=True)
@@ -97,7 +98,7 @@ class Book(models.Model):
     publication = models.ForeignKey('Publication')
     author = models.CharField(max_length=200)
     isbn = models.CharField(max_length=13)
-    categories = models.ManyToManyField('PublicationCategory', related_name='book_categories')
+    categories = models.ManyToManyField('PublicationCategory', related_name='book_categories', null=True)
 
 class BookContent(models.Model):
     book = models.ForeignKey('Book')
@@ -111,7 +112,9 @@ class Periodical(models.Model):
 
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
-    categories = models.ManyToManyField('PublicationCategory', related_name='periodical_categories')
+    categories = models.ManyToManyField('PublicationCategory', related_name='periodical_categories', null=True)
+
+    logo = models.ImageField(upload_to=settings.PERIODICAL_LOGO_ROOT, max_length=500, null=True)
 
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='periodical_created_by')
@@ -119,7 +122,7 @@ class Periodical(models.Model):
     modified_by = models.ForeignKey(User, related_name='periodical_modified_by', null=True)
 
 class PeriodicalIssue(models.Model):
-    publication = models.ForeignKey('Publication')
+    publication = models.OneToOneField('Publication')
     periodical = models.ForeignKey('Periodical')
 
 class PeriodicalIssueContent(models.Model):

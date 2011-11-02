@@ -7,19 +7,25 @@ urlpatterns = patterns('publication.views',
     url(r'^publisher/select/$', 'select_publisher', name='select_publisher'),
 
     # Upload
-    url(r'^get_upload_progress?.*$', 'get_upload_progress', name='get_upload_progress'),
     url(r'^publisher/(?P<publisher_id>\d+)/upload/$', 'upload_publication', name='upload_publication'),
-    url(r'^publication/(?P<publication_id>\d+)/finish_upload/$', 'finish_upload_publication', name='finish_upload_publication'),
+    url(r'^publisher/(?P<publisher_id>\d+)/upload/ajax/$', 'ajax_upload_publication', name='ajax_upload_publication'),
 
+    url(r'^get_upload_progress?.*$', 'get_upload_progress', name='get_upload_progress'),
 
+    url(r'^publication/(?P<publication_id>\d+)/finishing_upload/$', 'finishing_upload_publication', name='finishing_upload_publication'),
 
-
-
+    # Dashboard
     url(r'^publisher/(?P<publisher_id>\d+)/dashboard/$', 'view_publisher_dashboard', name='view_publisher_dashboard'),
 
+    # Periodicals
     url(r'^publisher/(?P<publisher_id>\d+)/periodicals/$', 'view_publisher_periodicals', name='view_publisher_periodicals'),
     url(r'^publisher/(?P<publisher_id>\d+)/periodicals/create/$', 'create_publisher_periodical', name='create_publisher_periodical'),
 
+    url(r'^periodical/(?P<periodical_id>\d+)/$', 'view_periodical', name='view_periodical'),
+    url(r'^periodical/issue/(?P<periodical_issue_id>\d+)/$', 'view_periodical_issue', name='view_periodical_issue'),
+    url(r'^periodical/(?P<periodical_id>\d+)/edit/$', 'edit_periodical', name='edit_periodical'),
+
+    # Books
     url(r'^publisher/(?P<publisher_id>\d+)/books/$', 'view_publisher_books', name='view_publisher_books'),
     
     # Publisher Management
@@ -38,9 +44,7 @@ urlpatterns = patterns('publication.views',
     url(r'^publication/(?P<publication_id>\d+)/download/$', 'download_publication', name='download_publication'),
     url(r'^get/(?P<publication_uid>[a-zA-Z0-9\-]+)/$', 'get_publication', name='get_publication'),
 
-    url(r'^periodical/(?P<periodical_id>\d+)/$', 'view_periodical', name='view_periodical'),
-    url(r'^periodical/issue/(?P<periodical_issue_id>\d+)/$', 'view_periodical_issue', name='view_periodical_issue'),
-    url(r'^periodical/(?P<periodical_id>\d+)/edit/$', 'edit_periodical', name='edit_periodical'),
+    url(r'^publication/(?P<publication_id>\d+)/edit/$', 'edit_publication', name='edit_publication'),
 
     url(r'^book/(?P<book_id>\d+)/$', 'view_book', name='view_book'),
 )

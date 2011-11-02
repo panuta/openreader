@@ -146,6 +146,8 @@ FILE_PROTECTION_METHOD = 'basic'
 
 ########## Open Reader Settings ##########
 
+PERIODICAL_LOGO_ROOT = MEDIA_ROOT + 'periodical_logo/'
+
 PUBLICATION_ROOT = MEDIA_ROOT + 'publication/'
 
 

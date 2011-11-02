@@ -1,39 +1,65 @@
 {% extends 'base_authenticated.html' %}
+{% load page_tags %}
+
+{% block head_title %}Upload publication{% endblock %}
 
 {% block body_authenticated %}
+<div class="upload_publication">
 
-<form id="form_upload_file" action="{% url upload_publication publisher.id %}" method="POST" enctype="multipart/form-data">
-	{% csrf_token %}
-	{{form.errors}}
-	{{form.publication}}
-	<input type="submit" value="Upload" />
-</form>
+  <form id="form_upload_file" action="{% url upload_publication publisher.id %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <fieldset>
+      <legend>{% print_upload_publication_legend pre_upload_type %}</legend>
+      
+      {{form.errors}}
 
-<div id="upload_progress"></div>
+      {% if not pre_upload_type%}
+      	<div class="clearfix">
+	      	<label id="optionsRadio">Publication type</label>
+	      	<div class="input">
+	      		<ul class="inputs-list">
+	      			<li><label><input type="radio" value="periodical" name="publication_type" checked="true"><span>Magazine</span></label></li>
+	      			<li><label><input type="radio" value="book" name="publication_type"><span>Book</span></label></li>
+	      		</ul>
+	      	</div>
+	      </div>
+      {% endif %}
 
+      {% if pre_upload_type == "periodical" %}
+      	{% if pre_upload_periodical %}
+      		<div class="periodical_name">{{pre_upload_periodical.title}}</div>
+      	{% else %}
+		    	<div class="clearfix">
+		        <label for="id_periodical">Periodical</label>
+		        <div class="input">
+		          <select id="id_periodical" name="periodical">{% list_periodical publisher %}</select>
+		        </div>
+		      </div>
+		    {% endif %}
+      {% endif %}
+
+      <div class="clearfix">
+        <label for="id_publication">Publication file</label>
+        <div class="input">
+          {{form.publication}}
+        </div>
+      </div>
+
+      <input type="hidden" id="id_type" name="type" value=""/>
+      <input type="hidden" id="X-Progress-ID" name="X-Progress-ID" value=""/>
+
+      <div class="actions">
+        <input type="submit" value="Upload" class="btn primary span2">
+        <input type="reset" value="Reset" class="btn">
+      </div>
+  	</fieldset>
+  </form>
+
+  <div id="upload_progress"></div>
+</div>
 <!-- JAVASCRIPT -->
 
-<script type="text/javascript" src="{{STATIC_URL}}libs/jquery.form.js"></script>
-<script type="text/javascript" src="{{STATIC_URL}}libs/progressbar/jquery.progressbar.js"></script>
-
 <script>
-var g_progress_intv;
-function startProgressBarUpdate(upload_id) {
-	if(g_progress_intv != 0) clearInterval(g_progress_intv);
-	g_progress_intv = setInterval(function() {
-		$.getJSON("/get_upload_progress?X-Progress-ID=" + upload_id, function(data) {
-			if (data == null) {
-				$("#upload_progressbar").progressBar(100);
-				clearInterval(g_progress_intv);
-				g_progress_intv = 0;
-				return;
-			}
-			var percentage = Math.floor(100 * parseInt(data.uploaded) / parseInt(data.length));
-			$("#upload_progressbar").progressBar(percentage);
-		});
-	}, 4000);
-}
-
 $('#X-Progress-ID').val((new Date()).getTime());
 
 $('#form_upload_file input[type="submit"]').click(function(e) {
@@ -44,7 +70,6 @@ $('#form_upload_file input[type="submit"]').click(function(e) {
 			$("#form_upload_file").hide();
 		},
 		success: function(publication_id) {
-			console.log(publication_id);
 			$("#upload_progressbar").progressBar(100);
 			clearInterval(g_progress_intv);
 			g_progress_intv = 0;

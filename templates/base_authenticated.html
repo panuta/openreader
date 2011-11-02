@@ -1,6 +1,18 @@
 {% extends 'base.html' %}
+{% load page_tags %}
 
 {% block head_title %}{% endblock %}
+
+{% block html_head %}
+{{block.super}}
+<script type="text/javascript" src="{{STATIC_URL}}libs/jquery.form.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}libs/progressbar/jquery.progressbar.js"></script>
+
+<script>
+var var_publisher_id = '{{publisher.id}}';
+$(document).ready(function () {initialize();})
+</script>
+{% endblock %}
 
 {% block body %}
 <div class="publisher-topbar-wrapper">
@@ -11,7 +23,7 @@
         <ul class="nav">
           <li><a href="{% url view_publisher_dashboard publisher.id %}">Dashboard</a></li>
           <li><a href="{% url view_publisher_periodicals publisher.id %}">Periodicals</a></li>
-          <li><a href="{% url view_publisher_books publisher.id %}">Pocket Books</a></li>
+          <li><a href="{% url view_publisher_books publisher.id %}">Books</a></li>
           <li><a href="{% url view_publisher_management publisher.id %}">Publisher Management</a></li>
         </ul>
 
@@ -33,4 +45,41 @@
   {% block body_authenticated %}{% endblock %}
 </div>
 
+<div class="modal hide fade upload_publication" id="upload-publication-modal" style="display: none;">
+  <form enctype="multipart/form-data" method="POST" action="{% url ajax_upload_publication publisher.id %}">
+    <div class="modal-header">
+      <a class="close" href="#">×</a>
+      <h3>Upload publication</h3>
+    </div>
+
+    <div class="modal-body">
+      {% csrf_token %}
+      <div class="inputs">
+        <div class="custom_inputs"></div>
+        <div class="periodical_inputs">
+          <div class="clearfix">
+            <label for="id_periodical">Periodical</label>
+            <div class="input">
+              <select id="id_periodical" name="periodical">{% list_periodical publisher %}</select>
+            </div>
+          </div>
+        </div>
+        <div class="form_inputs">
+          <div class="clearfix">
+            <label for="id_publication">Publication file</label>
+            <div class="input">
+              <input type="file" id="id_publication" name="publication">
+            </div>
+          </div>
+          <input type="hidden" id="id_type" name="type" value=""/>
+          <input type="hidden" id="X-Progress-ID" name="X-Progress-ID" value=""/>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <input class="btn primary" type="submit" value="Upload" />
+    </div>
+  </form>
+</div>
 {% endblock %}

@@ -1,0 +1,47 @@
+/* Clear calendar's float, using dialog inbuilt form element */
+#container .bd form {
+    clear:left;
+}
+
+#container .bd {
+    padding:0;
+    border:none;
+}
+
+/* Prevent border-collapse:collapse from bleeding through in IE6, IE7 */
+#container_c.yui-overlay-hidden table {
+    *display:none;
+}
+
+#container {
+	border:none;
+}
+
+.yui-calendar {
+	border:none;
+}
+
+.yui-calendar td {
+	border-radius:0px !important;
+}
+
+.yui_date_picker {
+	cursor:pointer;
+	margin-right:5px;
+	vertical-align:top;
+	background:url(/static/images/input/date_picker.png) no-repeat;
+	height:24px;
+	width:24px;
+	text-indent:-9999px;
+}
+
+.yui_date_picker_textbox {
+	border:1px solid #BBB;
+	display:inline-block;
+	padding:3px 10px;
+	height:20px;
+	width:140px;
+	text-align:center;
+	vertical-align:middle;
+	color:#333;
+}
