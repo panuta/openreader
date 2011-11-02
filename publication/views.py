@@ -99,62 +99,19 @@ def upload_publication(request, publisher_id):
     pre_upload_type = request.GET.get('type', '')
     pre_upload_periodical = request.GET.get('periodical', '')
 
-    if pre_upload_type == 'periodical' and pre_upload_periodical:
+    if pre_upload_type == 'periodical-issue' and pre_upload_periodical:
         try:
             pre_upload_periodical = Periodical.objects.get(id=pre_upload_periodical)
         except Periodical.DoesNotExist:
             raise Http404
 
-    
-
-
-    if request.method == 'POST':
-        form = UploadPublicationForm(request.POST, request.FILES)
-        if form.is_valid():
-            publication_type = form.cleaned_data['type']
-            uploading_file = form.cleaned_data['publication']
-
-            periodical_id = None
-
-            return HttpResponse(simplejson.dumps({'error':'something', 'any':'thing'}))
-
-            if publication_type == 'periodical-issue':
-                publication_type = 'periodical'
-                periodical_id = request.POST.get('periodical')
-                if not periodical_id or not Periodical.objects.filter(id=periodical_id).exists():
-                    return 'error'
-
-            elif not publication_type:
-                publication_type = request.POST.get('publication_type')
-                if publication_type and publication_type in ('periodical', 'book'):
-                    publication_type = publication_type
-                else:
-                    return 'error'
-            
-            try:
-                uploading_publication = publication_functions.upload_publication(request.user, uploading_file, publisher, publication_type, periodical_id)
-            except:
-                form.errors['publication'] = 'ERROR'
-                # TODO add message
-            
-            if request.is_ajax():
-                return HttpResponse(reverse('finishing_upload_publication', args=[uploading_publication.id]))
-            else:
-                return redirect('finishing_upload_publication', uploading_publication.id)
-
-        else:
-            if request.is_ajax():
-                # TODO
-                return 'error-code'
-
-    else:
-        form = UploadPublicationForm()
+    if request.method == 'GET':
+        form = UploadPublicationForm(initial={'upload_type':pre_upload_type})
     
     return render(request, 'publication/publication_upload.html', {'publisher':publisher, 'form':form, 'pre_upload_type':pre_upload_type, 'pre_upload_periodical':pre_upload_periodical})
 
 @login_required
 def ajax_upload_publication(request, publisher_id):
-
     if request.method == 'POST':
         try:
             publisher = Publisher.objects.get(id=publisher_id)
@@ -163,7 +120,7 @@ def ajax_upload_publication(request, publisher_id):
 
         form = UploadPublicationForm(request.POST, request.FILES)
         if form.is_valid():
-            upload_type = form.cleaned_data['type']
+            upload_type = form.cleaned_data['upload_type']
             uploading_file = form.cleaned_data['publication']
             periodical_id = None
 
@@ -199,44 +156,6 @@ def ajax_upload_publication(request, publisher_id):
         
     else:
         raise Http404
-
-"""
-@login_required
-def upload_publication(request, publisher_id):
-    publisher = get_object_or_404(Publisher, pk=publisher_id)
-
-    pre_upload_type = request.GET.get('type', '')
-    pre_upload_periodical = request.GET.get('periodical', '')
-
-    if pre_upload_type == 'periodical' and pre_upload_periodical:
-        try:
-            periodical = Periodical.objects.get(id=pre_upload_periodical)
-        except Periodical.DoesNotExist:
-            periodical = None
-    else:
-        periodical = None
-
-    if request.method == 'POST':
-        form = UploadPublicationForm(request.POST)
-        if form.is_valid():
-            uploading_file = form.cleaned_data['publication']
-
-            try:
-                uploading_publication = publication_functions.upload_publication(request.user, uploading_file, publisher)
-            except:
-                # TODO add message
-                pass
-            else:
-                if request.is_ajax():
-                    return HttpResponse(uploading_publication.id)
-                else:
-                    return response('finish_upload_publication', publication.id)
-    
-    else:
-        form = UploadPublicationForm()
-    
-    return render(request, 'publication/publication_upload.html', {'publisher':publisher, 'form':form, 'pre_upload_type':pre_upload_type, 'periodical':periodical})
-"""
 
 @login_required
 def finishing_upload_publication(request, publication_id):
@@ -316,7 +235,7 @@ def finishing_upload_periodical_issue(request, publisher, uploading_publication)
 
 def finishing_upload_book(request, publisher, uploading_publication):
     if request.method == 'POST':
-        form = FinishUploadPeriodicalIssueForm(request.POST, publisher=publisher, uploading_publication=uploading_publication)
+        form = FinishUploadBookForm(request.POST, uploading_publication=uploading_publication)
         if form.is_valid():
             title = form.cleaned_data['title']
             description = form.cleaned_data['description']
@@ -332,76 +251,9 @@ def finishing_upload_book(request, publisher, uploading_publication):
             return redirect('view_publication', publication_id=publication.id)
             
     else:
-        form = FinishUploadPeriodicalIssueForm(publisher=publisher, uploading_publication=uploading_publication)
+        form = FinishUploadBookForm(uploading_publication=uploading_publication)
     
     return render(request, 'publication/publication_finishing_book_upload.html', {'publisher':publisher, 'uploading_publication':uploading_publication, 'form':form})
-
-
-"""
-
-    if request.method == 'POST':
-
-        if 'periodical_submit_button' in request.POST:
-            periodical_form = FinishUploadPeriodicalIssueForm(request.POST)
-            if periodical_form.is_valid():
-                periodical_title = periodical_form.cleaned_data['periodical_title']
-                periodical = periodical_form.cleaned_data['periodical']
-                issue_name = periodical_form.cleaned_data['title']
-                description = periodical_form.cleaned_data['description']
-
-                if not periodical:
-                    periodical = Periodical.objects.create(publisher=uploading_publication.publisher, title=periodical_title, created_by=request.user, modified_by=request.user)
-
-                publication = Publication.objects.create(
-                    publisher=uploading_publication.publisher,
-                    uid=uploading_publication.uid,
-                    uploaded_file=uploading_publication.uploaded_file,
-                    file_name=uploading_publication.file_name,
-                    file_ext=uploading_publication.file_ext,
-                    publication_type='periodical',
-                    publish_status=Publication.PUBLISH_STATUS_UNPUBLISHED,
-                    uploaded_by=request.user,
-                    modified_by=request.user,
-                )
-
-                issue = PeriodicalIssue.objects.create(
-                    publication=publication,
-                    periodical=periodical,
-                )
-
-                uploading_publication.delete()
-
-                return redirect('view_publication', publication_id=publication.id)
-
-        else:
-            periodical_form = FinishUploadPeriodicalIssueForm()
-
-        if 'book_submit_button' in request.POST:
-            book_form = FinishUploadBookForm(request.POST)
-            if book_form.is_valid():
-                pass
-        else:
-            book_form = FinishUploadBookForm()
-        
-        
-        # if 'picture_submit_button' in request.POST:
-        #     picture_form = FinishUploadPictureForm(request.POST)
-        #     if picture_form.is_valid():
-        #         pass
-        # else:
-        #     picture_form = FinishUploadPictureForm()
-        
-    else:
-        periodical_form = FinishUploadPeriodicalIssueForm()
-        book_form = FinishUploadBookForm()
-        # picture_form = FinishUploadPictureForm()
-    
-    return render(request, 'publication/publication_finish_upload.html', {'uploading_publication':uploading_publication, 
-        'book_form':book_form, 
-        'periodical_form':periodical_form, 
-        #'picture_form':picture_form,
-        })
-"""
 
 @login_required
 def get_upload_progress(request):
@@ -501,9 +353,15 @@ def view_periodical(request, periodical_id):
     periodical = get_object_or_404(Periodical, pk=periodical_id)
     publisher = periodical.publisher
 
-    periodical.issues = PeriodicalIssue.objects.filter(periodical=periodical).order_by('publication__uploaded')
+    periodical.issues = PeriodicalIssue.objects.filter(periodical=periodical, publication__publish_status=Publication.PUBLISH_STATUS_PUBLISHED).order_by('publication__uploaded')
 
-    return render(request, 'publication/periodical.html', {'publisher':publisher, 'periodical':periodical})
+    outstandings = {
+        'ready': PeriodicalIssue.objects.filter(periodical=periodical, publication__publish_status=Publication.PUBLISH_STATUS_READY_TO_PUBLISH),
+        'scheduled': PeriodicalIssue.objects.filter(periodical=periodical, publication__publish_status=Publication.PUBLISH_STATUS_SCHEDULE_TO_PUBLISH),
+        'unpublished': PeriodicalIssue.objects.filter(periodical=periodical, publication__publish_status=Publication.PUBLISH_STATUS_UNPUBLISHED),
+    }
+
+    return render(request, 'publication/periodical.html', {'publisher':publisher, 'periodical':periodical, 'outstandings':outstandings})
 
 @login_required
 def edit_periodical(request, periodical_id):

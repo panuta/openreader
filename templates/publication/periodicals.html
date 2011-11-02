@@ -1,5 +1,5 @@
 {% extends 'base_authenticated.html' %}
-{% load helper_tags %}
+{% load helper_tags page_tags %}
 
 {% block head_title %}Periodicals{% endblock %}
 
@@ -7,18 +7,18 @@
 {{block.super}}
 <script>
 $(document).ready(function () {
-  $(".issue_outstanding .numbers li a").click(function(e) {
+  $(".issue_outstandings .numbers li a").click(function(e) {
     var target = $(this).attr("href");
 
-    $(".issue_outstanding " + target).slideToggle("fast");
+    $(".issue_outstandings " + target).slideToggle("fast");
 
-    $(".issue_outstanding .list[id!='" + target.substring(1) + "']").hide();
+    $(".issue_outstandings .list[id!='" + target.substring(1) + "']").hide();
 
     return false;
   });
 
-  $(".issue_outstanding .list .close_list").click(function(e) {
-    $(".issue_outstanding .list").slideUp("fast");
+  $(".issue_outstandings .list .close_list").click(function(e) {
+    $(".issue_outstandings .list").slideUp("fast");
     return false;
   });
 })
@@ -34,26 +34,25 @@ $(document).ready(function () {
   {% if periodicals %}
 
   <div class="table_actions">
-    <a href="{% url upload_publication publisher.id %}" upload-publication="" class="btn"><span>Upload</span></a>
     <a href="{% url upload_publication publisher.id %}?type=periodical" upload-publication="periodical" class="btn upload_publication_button"><span>Upload periodical issue</span></a>
   </div>
 
   {% if publications.ready or publications.scheduled or publications.unpublished or publications.unknown %}
-  <div class="issue_outstanding">
+  <div class="issue_outstandings">
     <div class="numbers">
       <ul>
-        {% if publications.ready %}<li class="ready"><a href="#outstanding-ready">{{publications.ready|length}} issues - Ready to Publish</a></li>{% endif %}
-        {% if publications.scheduled %}<li class="scheduled"><a href="#outstanding-scheduled">{{publications.scheduled|length}} issues - Scheduled to publish</a></li>{% endif %}
-        {% if publications.unpublished %}<li class="unpublished"><a href="#outstanding-unpublished">{{publications.unpublished|length}} issues - Unpublished</a></li>{% endif %}
-        {% if publications.unknown %}<li class="unknown"><a href="#outstanding-unknown">{{publications.unknown|length}} issues - Unknown</a></li>{% endif %}
+        {% if publications.ready %}<li class="ready"><a href="#outstanding-ready">Ready to publish ({{publications.ready|length}} issues)</a></li>{% endif %}
+        {% if publications.scheduled %}<li class="scheduled"><a href="#outstanding-scheduled">Scheduled to publish ({{publications.scheduled|length}} issues)</a></li>{% endif %}
+        {% if publications.unpublished %}<li class="unpublished"><a href="#outstanding-unpublished">Unpublished ({{publications.unpublished|length}} issues)</a></li>{% endif %}
+        {% if publications.unknown %}<li class="unknown"><a href="#outstanding-unknown">Unknown ({{publications.unknown|length}} issues)</a></li>{% endif %}
       </ul>
     </div>
 
     {% if publications.ready %}
     <div class="list" id="outstanding-ready" style="display:none;">
       <div class="close_list"><a href="#">Close List</a></div>
-      {% for publication in publications.ready %}
-        <ul>
+      <ul>
+        {% for publication in publications.ready %}
           <li {% if forloop.last %}class="last"{% endif %}>
             <div class="cover"></div>
             <div class="name"><a href="#">{{publication.periodicalissue.periodical.title}} - {{publication.title}}</a></div>
@@ -64,16 +63,16 @@ $(document).ready(function () {
               <a href="#">Revert to In-Progress status</a>
             </div>
           </li>
-        </ul>
-      {% endfor %}
+        {% endfor %}
+      </ul>
     </div>
     {% endif %}
 
     {% if publications.scheduled %}
     <div class="list" id="outstanding-scheduled" style="display:none;">
       <div class="close_list"><a href="#">Close List</a></div>
-      {% for publication in publications.scheduled %}
-        <ul>
+      <ul>
+        {% for publication in publications.scheduled %}
           <li {% if forloop.last %}class="last"{% endif %}>
             <div class="cover"></div>
             <div class="name"><a href="#">{{publication.periodicalissue.periodical.title}} - {{publication.title}}</a></div>
@@ -83,16 +82,16 @@ $(document).ready(function () {
               <a href="#">Cancel schedule</a>
             </div>
           </li>
-        </ul>
-      {% endfor %}
+        {% endfor %}
+      </ul>
     </div>
     {% endif %}
 
     {% if publications.unpublished %}
     <div class="list" id="outstanding-unpublished" style="display:none;">
       <div class="close_list"><a href="#">Close List</a></div>
-      {% for publication in publications.unpublished %}
-        <ul>
+      <ul>
+        {% for publication in publications.unpublished %}
           <li {% if forloop.last %}class="last"{% endif %}>
             <div class="cover"></div>
             <div class="name"><a href="#">{{publication.periodicalissue.periodical.title}} - {{publication.title}}</a></div>
@@ -102,15 +101,16 @@ $(document).ready(function () {
               <a href="#" class="btn">Publish Now</a>
             </div>
           </li>
-        </ul>
-      {% endfor %}
+        {% endfor %}
+      </ul>
     </div>
     {% endif %}
 
     {% if publications.unknown %}
     <div class="list" id="outstanding-unknown" style="display:none;">
-      {% for publication in publications.unknown %}
-        <ul>
+      <div class="close_list"><a href="#">Close List</a></div>
+      <ul>
+        {% for publication in publications.unknown %}
           <li {% if forloop.last %}class="last"{% endif %}>
             <div class="cover"></div>
             <div class="name">{{publication.original_file_name}}.{{publication.file_ext}}</div>
@@ -119,8 +119,8 @@ $(document).ready(function () {
               <a href="{% url finishing_upload_publication publication.id %}" class="btn">Finishing Upload</a>
             </div>
           </li>
-        </ul>
-      {% endfor %}
+        {% endfor %}
+      </ul>
     </div>
     {% endif %}
 
@@ -141,8 +141,8 @@ $(document).ready(function () {
         </div>
         {% endif %}
         <div class="links">
-          <a href="{% url upload_publication publisher.id %}?periodical={{periodical.id}}">Edit Magazine</a>
-          <a href="{% url upload_publication publisher.id %}?periodical={{periodical.id}}" upload-publication="periodical-issue">Upload Issue</a>
+          <a href="{% url upload_publication publisher.id %}?periodical={{periodical.id}}">Edit periodical</a>
+          <a href="{% url upload_publication publisher.id %}?type=periodical-issue&periodical={{periodical.id}}" upload-publication="periodical-issue">Upload issue</a>
         </div>
       </li>
       {% endfor %}
@@ -160,7 +160,8 @@ $(document).ready(function () {
   </div>
   
   {% endif %}
-
 </div>
+
+{% generate_upload_publication_modal publisher csrf_token %}
 
 {% endblock %}

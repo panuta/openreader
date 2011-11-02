@@ -103,39 +103,26 @@ ul.breadcrumb {
 
 /* *************** Upload Publication *************** */
 
-.upload_publication {
+#upload-publication-form {
 
     .inputs-list span {
         margin-left:5px;
     }
     
-    /* Modal */
-
     .uploading {
         font-size:1.2em;
         color:#555;
         margin-bottom:10px;
-    }
-
-    .modal-body {
-        .name {
-            font-size:1.2em;
-            color:#333;
-            font-weight:bold;
-            margin:0px 0px 15px 150px;
-        }
 
         #upload_progressbar {
             margin-top:10px;
         }
-
-        .errors {
-            color:#C30;
-            font-size:1.1em;
-        }
     }
 
-    /* Page */
+    .error_message {
+        color:#C30;
+        font-size:1.1em;
+    }
 
     .periodical_name {
         font-size:1.2em;
@@ -143,12 +130,15 @@ ul.breadcrumb {
         font-weight:bold;
         margin:0px 0px 15px 150px;
     }
+}
 
-    .sublegend {
-        padding-left:150px;
-        margin-bottom:20px;
-        font-size:1.2em;
-        color:#555; 
+.upload_publication_page {
+    .uploading {
+        margin-left:150px;
+    }
+
+    .error_message {
+        margin-left:150px;
     }
 }
 
@@ -210,29 +200,19 @@ ul.breadcrumb {
 
 /* *************** Publisher Periodicals *************** */
 
-/* Periodicals */
+.issue_outstanding_styles() {
+    margin:20px 0px;
+    background-color:#FFE;
+    border:1px solid #DDD;
+    padding:10px;
 
-.publisher_periodicals {
-    .table_actions {
-        .upload_publication_button span {
-            background:url('/static/images/icons/button_upload_publication.png') left center no-repeat;
-            padding-left:23px;
-        }
-    }
+    @outstanding-number-height: 20px;
+    @outstanding-number-vertical-padding: 2px;
 
-    .issue_outstanding {
-        margin:25px 0px 35px;
-        border:1px solid #CCC;
-        padding:15px;
+    .numbers {
+        height:@outstanding-number-height + @outstanding-number-vertical-padding * 2;
 
-        @outstanding-number-height: 20px;
-        @outstanding-number-vertical-padding: 2px;
-
-        .numbers {
-            height:@outstanding-number-height + @outstanding-number-vertical-padding * 2;
-        }
-
-        .numbers li {
+        li {
             float:left;
             list-style:none;
             padding:@outstanding-number-vertical-padding 28px @outstanding-number-vertical-padding 10px;
@@ -243,10 +223,10 @@ ul.breadcrumb {
             background-image:url('/static/images/down_arrow.png');
             background-position:right center;
             background-repeat:no-repeat;
-        }
 
-        .numbers li a {
-            color:#333;
+            a {
+                color:#333;
+            }
         }
 
         .ready {
@@ -264,61 +244,62 @@ ul.breadcrumb {
         .unknown {
             background-color:@outstanding-unknown;
         }
+    }
 
-        #outstanding-ready {
-            background-color:@outstanding-ready-lighter;
-            border-top:8px solid @outstanding-ready;
-        }
+    #outstanding-ready {
+        background-color:@outstanding-ready-lighter;
+        border-top:8px solid @outstanding-ready;
+    }
 
-        #outstanding-scheduled {
-            background-color:@outstanding-scheduled-lighter;
-            border-top:8px solid @outstanding-scheduled;
-        }
+    #outstanding-scheduled {
+        background-color:@outstanding-scheduled-lighter;
+        border-top:8px solid @outstanding-scheduled;
+    }
 
-        #outstanding-unpublished {
-            background-color:@outstanding-unpublished-lighter;
-            border-top:8px solid @outstanding-unpublished;
-        }
+    #outstanding-unpublished {
+        background-color:@outstanding-unpublished-lighter;
+        border-top:8px solid @outstanding-unpublished;
+    }
 
-        #outstanding-unknown {
-            background-color:@outstanding-unknown-lighter;
-            border-top:8px solid @outstanding-unknown;
-        }
+    #outstanding-unknown {
+        background-color:@outstanding-unknown-lighter;
+        border-top:8px solid @outstanding-unknown;
+    }
 
-        .list .close_list {
+    .list {
+        .close_list {
             float:right;
             margin:10px 15px;
+
+            a {
+                text-indent:-9999px;
+                background:url('/static/images/close_button.png') center top no-repeat;
+                display:block;
+                width:48px;
+                height:24px;
+            }
+
+            a:hover {
+                background-position:center bottom;
+            }
         }
 
-        .list .close_list a {
-            text-indent:-9999px;
-            background:url('/static/images/close_button.png') center top no-repeat;
-            display:block;
-            width:48px;
-            height:24px;
-        }
-
-        .list .close_list a:hover {
-            background-position:center bottom;
-        }
-
-        .list li {
-            height:85px;
+        li {
             padding:15px 15px 5px;
+
+            &.last {
+                padding-bottom:20px;
+            }
         }
 
-        .list li.last {
-            padding-bottom:20px;
-        }
-
-        .list li .cover {
+        .cover {
             width:70px;
             height:85px;
             background-color:#D34;
             float:left;
         }
 
-        .list li .name {
+        .name {
             .content_link;
 
             margin:0px 0px 7px 85px;
@@ -326,23 +307,41 @@ ul.breadcrumb {
             color:#000;
         }
 
-        .list li .status {
+        .status {
             color:#444;
             margin:0px 0px 10px 85px;
         }
 
-        .list li .links {
+        .links {
             margin:0px 0px 0px 85px;
-        }
 
-        .list li .links a {
-            margin-right:15px;
+            a {
+                margin-right:15px;
+            }
         }
+    }
+}
+
+
+/* Periodicals */
+
+.publisher_periodicals {
+    .table_actions {
+        .upload_publication_button span {
+            background:url('/static/images/icons/button_upload_publication.png') left center no-repeat;
+            padding-left:23px;
+        }
+    }
+
+    .issue_outstandings {
+        .issue_outstanding_styles;
     }
 
     .periodicals {
 
         .content_link;
+
+        margin-top:25px;
 
         .no_row {
             margin-top:20px;
@@ -419,9 +418,94 @@ ul.breadcrumb {
     }
 }
 
-
-
 /* Periodical */
+
+.publisher_periodical_page {
+    .breadcrumb {
+        margin-bottom:7px;
+    }
+
+    .periodical_name {
+        margin:10px 0px 15px;
+
+        h2 {
+            font-size:1.4em;
+            padding-right:10px;
+        }
+
+        div {
+            color:#666;
+        }
+    }
+
+    .periodical {
+        margin-top:15px;
+    }
+
+    .issue_outstandings {
+        .issue_outstanding_styles;
+    }
+
+    h3 {
+        font-size:1.2em;
+        margin-bottom:15px;
+
+        span {
+            font-size:0.9em;
+            color:#666;
+            padding-left:10px;
+        }
+    }
+
+    .published_issues {
+        .content_link;
+
+        li {
+            padding-bottom:10px;
+            margin-bottom:15px;
+            border-bottom:1px dashed #CCC;
+            min-height:95px;
+        }
+
+        li.last {
+            border-bottom:none;
+        }
+
+        .cover {
+            width:70px;
+            height:85px;
+            background-color:#D34;
+            float:left;
+        }
+ 
+        .name {
+            margin:0px 0px 7px 85px;
+            font-size:1.2em;
+            color:#000;
+        }
+
+        .status {
+            color:#444;
+            margin:0px 0px 10px 85px;
+        }
+
+        .links {
+            margin:0px 0px 0px 85px;
+
+            a {
+                color:#555;
+                margin-right:15px;
+            }
+        }
+
+        .statistics {
+            float:right;
+            width:300px;
+            height:85px;
+            background-color:#CCC;
+        }
+    }
+}
 
 .publisher_periodicals .periodical .description {
     margin-top:10px;

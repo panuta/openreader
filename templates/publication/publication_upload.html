@@ -4,94 +4,60 @@
 {% block head_title %}Upload publication{% endblock %}
 
 {% block body_authenticated %}
-<div class="upload_publication">
+<div class="upload_publication_page">
 
-  <form id="form_upload_file" action="{% url upload_publication publisher.id %}" method="POST" enctype="multipart/form-data">
+  <form id="upload-publication-form" action="{% url ajax_upload_publication publisher.id %}" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <fieldset>
       <legend>{% print_upload_publication_legend pre_upload_type %}</legend>
       
       {{form.errors}}
 
-      {% if not pre_upload_type%}
-      	<div class="clearfix">
-	      	<label id="optionsRadio">Publication type</label>
-	      	<div class="input">
-	      		<ul class="inputs-list">
-	      			<li><label><input type="radio" value="periodical" name="publication_type" checked="true"><span>Magazine</span></label></li>
-	      			<li><label><input type="radio" value="book" name="publication_type"><span>Book</span></label></li>
-	      		</ul>
-	      	</div>
-	      </div>
-      {% endif %}
+      <div class="inputs">
+        {% if not pre_upload_type %}
+          <div class="clearfix">
+            <label id="optionsRadio">Publication type</label>
+            <div class="input">
+              <ul class="inputs-list">
+                <li><label><input type="radio" value="periodical" name="publication_type" checked="true"><span>Magazine</span></label></li>
+                <li><label><input type="radio" value="book" name="publication_type"><span>Book</span></label></li>
+              </ul>
+            </div>
+          </div>
+        {% endif %}
 
-      {% if pre_upload_type == "periodical" %}
-      	{% if pre_upload_periodical %}
-      		<div class="periodical_name">{{pre_upload_periodical.title}}</div>
-      	{% else %}
-		    	<div class="clearfix">
-		        <label for="id_periodical">Periodical</label>
-		        <div class="input">
-		          <select id="id_periodical" name="periodical">{% list_periodical publisher %}</select>
-		        </div>
-		      </div>
-		    {% endif %}
-      {% endif %}
+        {% if pre_upload_type == "periodical" %}
+          <div class="clearfix">
+            <label for="id_periodical">Periodical</label>
+            <div class="input">
+              <select id="id_periodical" name="periodical">{% list_periodical publisher %}</select>
+            </div>
+          </div>
+        {% endif %}
 
-      <div class="clearfix">
-        <label for="id_publication">Publication file</label>
-        <div class="input">
-          {{form.publication}}
+        {% if pre_upload_type == "periodical-issue" %}
+            <div class="periodical_name">{{pre_upload_periodical.title}}</div>
+            <input type="hidden" id="id_periodical_id" name="periodical_id" value="{{pre_upload_periodical.id}}"/>
+        {% endif %}
+
+        <div class="clearfix">
+          <label for="id_publication">Publication file</label>
+          <div class="input">
+            {{form.publication}}
+          </div>
+        </div>
+
+        {{form.upload_type}}
+        <input type="hidden" id="X-Progress-ID" name="X-Progress-ID" value=""/>
+
+        <div class="actions">
+          <input type="submit" value="Upload" class="btn primary span2">
+          <input type="reset" value="Reset" class="btn">
         </div>
       </div>
 
-      <input type="hidden" id="id_type" name="type" value=""/>
-      <input type="hidden" id="X-Progress-ID" name="X-Progress-ID" value=""/>
-
-      <div class="actions">
-        <input type="submit" value="Upload" class="btn primary span2">
-        <input type="reset" value="Reset" class="btn">
-      </div>
-  	</fieldset>
+    </fieldset>
   </form>
-
-  <div id="upload_progress"></div>
 </div>
-<!-- JAVASCRIPT -->
-
-<script>
-$('#X-Progress-ID').val((new Date()).getTime());
-
-$('#form_upload_file input[type="submit"]').click(function(e) {
-	var options = {
-		dataType: 'text',
-		url: '{% url upload_publication publisher.id %}?X-Progress-ID='+$('#X-Progress-ID').val(),
-		beforeSubmit: function() {
-			$("#form_upload_file").hide();
-		},
-		success: function(publication_id) {
-			$("#upload_progressbar").progressBar(100);
-			clearInterval(g_progress_intv);
-			g_progress_intv = 0;
-
-			$('#upload_progress').append('<div class="progress">Uploaded successfully <a href="/publication/' + publication_id + '/finish_upload/">Click to fill out details</a></div>');
-		}
-	};
-	$('#form_upload_file').ajaxSubmit(options);
-
-	$('#upload_progress').append('<span id="upload_progressbar"></span>');
-	$('#upload_progressbar').progressBar({
-		boxImage:'{{STATIC_URL}}libs/progressbar/images/progressbar.gif',
-		barImage: {
-			0:	'{{STATIC_URL}}libs/progressbar/images/progressbg_red.gif',
-			30: '{{STATIC_URL}}libs/progressbar/images/progressbg_orange.gif',
-			70: '{{STATIC_URL}}libs/progressbar/images/progressbg_green.gif'
-		}
-	});
-	
-	startProgressBarUpdate($('#X-Progress-ID').val());
-	return false;
-});
-</script>
 
 {% endblock %}

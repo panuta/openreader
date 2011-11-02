@@ -22,7 +22,7 @@ class PublisherForm(forms.Form):
     name = StrippedCharField()
 
 class UploadPublicationForm(forms.Form):
-    type = forms.CharField(max_length=50, required=False)
+    upload_type = forms.CharField(widget=forms.HiddenInput(), max_length=50, required=False)
     publication = forms.FileField()
 
 class FinishUploadPeriodicalIssueForm(forms.Form):
@@ -58,27 +58,17 @@ class FinishUploadPeriodicalIssueForm(forms.Form):
         
         return cleaned_data
 
-class FinishUploadPeriodicalIssueForm(forms.Form):
-    periodical = PublisherPeriodicalChoiceField(required=False)
+class FinishUploadBookForm(forms.Form):
     title = forms.CharField(widget=forms.TextInput(attrs={'class':'span10'}))
     description = forms.CharField(required=False, widget=forms.Textarea(attrs={'class':'span10', 'rows':'5'}))
+    author = forms.CharField(widget=forms.TextInput(attrs={'class':'span10'}))
     publish_status = forms.ChoiceField(choices=(('unpublished', 'Unpulished'), ('scheduled', 'Scheduled'), ('published', 'Published')))
     schedule_date = forms.DateField(widget=YUICalendar(attrs={'id':'id_schedule_date'}), required=False)
     schedule_time = forms.TimeField(widget=HourOnlyTimeInput(), required=False)
 
     def __init__(self, *args, **kwargs):
-        self.publisher = kwargs.pop('publisher', None)
         self.uploading_publication = kwargs.pop('uploading_publication', None)
         forms.Form.__init__(self, *args, **kwargs)
-        
-        self.fields['periodical'].queryset = Periodical.objects.filter(publisher=self.publisher).order_by('title')
-    
-    def clean_periodical(self):
-        data = self.cleaned_data.get('periodical')
-        if not self.uploading_publication.parent_id and not data:
-            raise forms.ValidationError(_(u'This field is required.'))
-        
-        return data
     
     def clean(self):
         cleaned_data = self.cleaned_data
@@ -91,36 +81,7 @@ class FinishUploadPeriodicalIssueForm(forms.Form):
         
         return cleaned_data
 
-
-"""
-    def __init__(self, *args, **kwargs):
-        publisher = kwargs.pop('publisher', None)
-        forms.Form.__init__(self, *args, **kwargs)
-
-        if publisher:
-            self.fields['periodical'].queryset = Periodical.objects.filter(publisher=publisher).order_by('title')
-            self.publisher = publisher
-"""
-
-"""
-    def clean(self):
-        cleaned_data = self.cleaned_data
-        periodical_title = cleaned_data.get('periodical_title')
-        periodical = cleaned_data.get('periodical')
-
-        if not periodical_title and not periodical:
-            raise forms.ValidationError('Choose a periodical or create a new periodical')
-        
-        return cleaned_data
-"""
-
-class FinishUploadBookForm(forms.Form):
-    title = forms.CharField()
-    description = forms.CharField(required=False, widget=forms.Textarea)
-    author = forms.CharField()
-    isbn = forms.CharField(required=False)
-
-    categories = forms.ModelMultipleChoiceField(required=False, queryset=PublicationCategory.objects.all(), widget=forms.CheckboxSelectMultiple())    
+    # categories = forms.ModelMultipleChoiceField(required=False, queryset=PublicationCategory.objects.all(), widget=forms.CheckboxSelectMultiple())    
 
 # Publisher Periodicals
 
