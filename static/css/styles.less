@@ -200,7 +200,7 @@ ul.breadcrumb {
 
 /* *************** Publisher Periodicals *************** */
 
-.issue_outstanding_styles() {
+.publication_outstanding_styles() {
     margin:20px 0px;
     background-color:#FFE;
     border:1px solid #DDD;
@@ -333,8 +333,8 @@ ul.breadcrumb {
         }
     }
 
-    .issue_outstandings {
-        .issue_outstanding_styles;
+    .publication_outstandings {
+        .publication_outstanding_styles;
     }
 
     .periodicals {
@@ -442,8 +442,8 @@ ul.breadcrumb {
         margin-top:15px;
     }
 
-    .issue_outstandings {
-        .issue_outstanding_styles;
+    .publication_outstandings {
+        .publication_outstanding_styles;
     }
 
     h3 {
@@ -457,7 +457,7 @@ ul.breadcrumb {
         }
     }
 
-    .published_issues {
+    .published_publications {
         .content_link;
 
         li {
@@ -507,23 +507,76 @@ ul.breadcrumb {
     }
 }
 
-.publisher_periodicals .periodical .description {
-    margin-top:10px;
-}
+/* *************** Publisher Books *************** */
 
-.publisher_periodicals .periodical .description h3 {
-    color:#666;
-    font-size:1.1em;
+.publisher_books_page {
+    .books {
+        margin-top:15px;
+    }
 
-}
+    .publication_outstandings {
+        .publication_outstanding_styles;
+    }
 
-.publisher_periodicals .periodical .backissues {
-    margin-top:10px;
-}
+    h3 {
+        font-size:1.2em;
+        margin-bottom:15px;
 
-.publisher_periodicals .periodical .backissues h3 {
-    color:#666;
-font-size:1.1em;
+        span {
+            font-size:0.9em;
+            color:#666;
+            padding-left:10px;
+        }
+    }
+
+    .published_publications {
+        .content_link;
+
+        li {
+            padding-bottom:10px;
+            margin-bottom:15px;
+            border-bottom:1px dashed #CCC;
+            min-height:95px;
+        }
+
+        li.last {
+            border-bottom:none;
+        }
+
+        .cover {
+            width:70px;
+            height:85px;
+            background-color:#D34;
+            float:left;
+        }
+ 
+        .name {
+            margin:0px 0px 7px 85px;
+            font-size:1.2em;
+            color:#000;
+        }
+
+        .status {
+            color:#444;
+            margin:0px 0px 10px 85px;
+        }
+
+        .links {
+            margin:0px 0px 0px 85px;
+
+            a {
+                color:#555;
+                margin-right:15px;
+            }
+        }
+
+        .statistics {
+            float:right;
+            width:300px;
+            height:85px;
+            background-color:#CCC;
+        }
+    }
 }
 
 /* *************** Publisher Management *************** */

@@ -7,18 +7,18 @@
 {{block.super}}
 <script>
 $(document).ready(function () {
-  $(".issue_outstandings .numbers li a").click(function(e) {
+  $(".publication_outstandings .numbers li a").on('click', function(e) {
     var target = $(this).attr("href");
 
-    $(".issue_outstandings " + target).slideToggle("fast");
+    $(".publication_outstandings " + target).slideToggle("fast");
 
-    $(".issue_outstandings .list[id!='" + target.substring(1) + "']").hide();
+    $(".publication_outstandings .list[id!='" + target.substring(1) + "']").hide();
 
     return false;
   });
 
-  $(".issue_outstandings .list .close_list").click(function(e) {
-    $(".issue_outstandings .list").slideUp("fast");
+  $(".publication_outstandings .list .close_list").on('click', function(e) {
+    $(".publication_outstandings .list").slideUp("fast");
     return false;
   });
 })
@@ -38,14 +38,14 @@ $(document).ready(function () {
   </div>
 
   <div class="table_actions">
-    <a href="{% url upload_publication publisher.id %}?periodical={{periodical.id}}" class="btn">Upload new issue</a>
+    <a href="{% url upload_publication publisher.id %}?type=periodical-issue&periodical={{periodical.id}}" class="btn">Upload new issue</a>
     <a href="{% url edit_periodical periodical.id %}" class="btn">Edit periodical</a>
   </div>
 
   <div class="periodical">
 
     {% if outstandings.ready or outstandings.scheduled or outstandings.unpublished %}
-    <div class="issue_outstandings">
+    <div class="publication_outstandings">
       <div class="numbers">
         <ul>
           {% if outstandings.ready %}<li class="ready"><a href="#outstanding-ready">Ready to publish ({{outstandings.ready|length}} issues)</a></li>{% endif %}
@@ -117,7 +117,7 @@ $(document).ready(function () {
 
     <h3>Published issues<span>({{periodical.issues|length}} issues)</span></h3>
     {% if periodical.issues %}
-    <ul class="published_issues">
+    <ul class="published_publications">
       {% for issue in periodical.issues %}
       <li {% if forloop.last %}class="last"{% endif %}>
         <div class="cover"></div>
@@ -134,7 +134,7 @@ $(document).ready(function () {
     </ul>
     
     {% else %}
-    <div class="no_row">No back issues</div>
+    <div class="no_row">No published issues</div>
     {% endif %}
   </div>
   

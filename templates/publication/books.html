@@ -1,9 +1,138 @@
 {% extends 'base_authenticated.html' %}
+{% load helper_tags page_tags %}
+
+{% block head_title %}Books{% endblock %}
+
+{% block html_head %}
+{{block.super}}
+<script>
+$(document).ready(function () {
+  $(".issue_outstandings .numbers li a").click(function(e) {
+    var target = $(this).attr("href");
+
+    $(".issue_outstandings " + target).slideToggle("fast");
+
+    $(".issue_outstandings .list[id!='" + target.substring(1) + "']").hide();
+
+    return false;
+  });
+
+  $(".issue_outstandings .list .close_list").click(function(e) {
+    $(".issue_outstandings .list").slideUp("fast");
+    return false;
+  });
+})
+</script>
+{% endblock %}
 
 {% block body_authenticated %}
-<ul>
-{% for book in books %}
-<li><a href="{% url view_book book.id %}">{{book.title}}</a></li>
-{% endfor %}
-</ul>
+<div class="publisher_books_page">
+  <ul class="breadcrumb">
+    <li class="active">Books</li>
+  </ul>
+
+  <div class="table_actions">
+    <a href="{% url upload_publication publisher.id %}?periodical={{periodical.id}}" upload-publication="book" class="btn">Upload new book</a>
+  </div>
+
+  <div class="books">
+
+    {% if outstandings.ready or outstandings.scheduled or outstandings.unpublished %}
+    <div class="publication_outstandings">
+      <div class="numbers">
+        <ul>
+          {% if outstandings.ready %}<li class="ready"><a href="#outstanding-ready">Ready to publish ({{outstandings.ready|length}} issues)</a></li>{% endif %}
+          {% if outstandings.scheduled %}<li class="scheduled"><a href="#outstanding-scheduled">Scheduled to publish ({{outstandings.scheduled|length}} issues)</a></li>{% endif %}
+          {% if outstandings.unpublished %}<li class="unpublished"><a href="#outstanding-unpublished">Unpublished ({{outstandings.unpublished|length}} issues)</a></li>{% endif %}
+        </ul>
+      </div>
+
+      {% if outstandings.ready %}
+      <div class="list" id="outstanding-ready" style="display:none;">
+        <div class="close_list"><a href="#">Close List</a></div>
+        <ul>
+          {% for issue in outstandings.ready %}
+            <li {% if forloop.last %}class="last"{% endif %}>
+              <div class="cover"></div>
+              <div class="name"><a href="#">{{issue.publication.title}}</a></div>
+              <div class="status">Marked as ready to publish on {{issue.publication.publish_schedule|format_abbr_datetime}}</div>
+              <div class="links">
+                <a href="#" class="btn">Publish Now</a>
+                <a href="#" class="btn">Schedule to publish</a>
+                <a href="#">Revert to In-Progress status</a>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      {% if outstandings.scheduled %}
+      <div class="list" id="outstanding-scheduled" style="display:none;">
+        <div class="close_list"><a href="#">Close List</a></div>
+        <ul>
+          {% for issue in outstandings.scheduled %}
+            <li {% if forloop.last %}class="last"{% endif %}>
+              <div class="cover"></div>
+              <div class="name"><a href="#">{{issue.publication.title}}</a></div>
+              <div class="status">Marked as ready to publish on Thu 14, October 2011 - 12:14</div>
+              <div class="links">
+                <a href="#" class="btn">Reschedule</a>
+                <a href="#">Cancel schedule</a>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      {% if outstandings.unpublished %}
+      <div class="list" id="outstanding-unpublished" style="display:none;">
+        <div class="close_list"><a href="#">Close List</a></div>
+        <ul>
+          {% for issue in outstandings.unpublished %}
+            <li {% if forloop.last %}class="last"{% endif %}>
+              <div class="cover"></div>
+              <div class="name"><a href="#">{{issue.publication.title}}</a></div>
+              <div class="status">Marked as ready to publish on Thu 14, October 2011 - 12:14</div>
+              <div class="links">
+                <a href="#" class="btn">Edit Issue</a>
+                <a href="#" class="btn">Publish Now</a>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+    </div>
+    {% endif %}
+
+    <h3>Published books<span>({{books|length}} issues)</span></h3>
+    {% if books %}
+    <ul class="published_publications">
+      {% for publication in books %}
+      <li {% if forloop.last %}class="last"{% endif %}>
+        <div class="cover"></div>
+        <div class="statistics"></div>
+        <div class="name"><a href="{% url view_publication publication.id %}">{{publication.title}}</a></div>
+        <div class="status">Published on {{publication.published|format_abbr_datetime}}</div>
+        <div class="stats"></div>
+        <div class="links">
+          <a href="{% url edit_publication publication.id %}">Edit publication</a>
+        </div>
+
+      </li>
+      {% endfor %}
+    </ul>
+    
+    {% else %}
+    <div class="no_row">No published books</div>
+    {% endif %}
+  </div>
+  
+</div>
+
+{% generate_upload_publication_modal publisher csrf_token %}
+
 {% endblock %}

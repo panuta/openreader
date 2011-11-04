@@ -37,7 +37,7 @@ class UploadingPublication(models.Model):
     publisher = models.ForeignKey('Publisher')
 
     uid = models.CharField(max_length=200, db_index=True)
-    publication_type = models.CharField(max_length=50)
+    publication_type = models.IntegerField()
     parent_id = models.IntegerField(null=True) # Can be used for PeriodicalID, etc.
 
     uploaded_file = models.FileField(upload_to=publication_media_dir, max_length=500)
@@ -58,13 +58,16 @@ class Publication(models.Model):
     PUBLISH_STATUS_READY_TO_PUBLISH = 2
     PUBLISH_STATUS_SCHEDULE_TO_PUBLISH = 3
     PUBLISH_STATUS_PUBLISHED = 4
+
+    PUBLICATION_TYPE_BOOK = 1
+    PUBLICATION_TYPE_PERIODICAL = 2
     
     publisher = models.ForeignKey('Publisher')
 
     uid = models.CharField(max_length=200, db_index=True)
     title = models.CharField(max_length=500)
     description = models.TextField(blank=True)
-    publication_type = models.CharField(max_length=50)
+    publication_type = models.IntegerField()
 
     uploaded_file = PrivateFileField(upload_to=publication_media_dir, condition=is_downloadable, max_length=500, null=True)
     original_file_name = models.CharField(max_length=300)
@@ -95,7 +98,7 @@ class PublicationCategory(models.Model):
 # Publication - Book ############################################################
 
 class Book(models.Model):
-    publication = models.ForeignKey('Publication')
+    publication = models.OneToOneField('Publication')
     author = models.CharField(max_length=200)
     isbn = models.CharField(max_length=13)
     categories = models.ManyToManyField('PublicationCategory', related_name='book_categories', null=True)

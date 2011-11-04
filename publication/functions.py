@@ -5,6 +5,8 @@ from django.conf import settings
 from exceptions import FileUploadTypeUnknown
 from models import UploadingPublication
 
+from common.utilities import convert_publication_type
+
 def upload_publication(uploaded_by, uploading_file, publisher, publication_type=None, parent_id=None):
     # dir_path = '%s%d/' % (settings.PUBLICATION_ROOT, publisher.id)
     # if not os.path.exists(dir_path):
@@ -27,6 +29,8 @@ def upload_publication(uploaded_by, uploading_file, publisher, publication_type=
         else:
             raise FileUploadTypeUnknown()
     
+    publication_type = convert_publication_type(publication_type)
+
     publication = UploadingPublication.objects.create(publisher=publisher, publication_type=publication_type, parent_id=parent_id, original_file_name=file_name, file_ext=file_ext, uploaded_by=uploaded_by)
     publication.uploaded_file.save('%s.%s' % (publication.uid, file_ext), uploading_file)
 

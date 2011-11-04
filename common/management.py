@@ -25,7 +25,7 @@ def after_syncdb(sender, **kwargs):
         publisher=publisher, 
         title='Issue Name 1', 
         publish_status=Publication.PUBLISH_STATUS_UNPUBLISHED, 
-        publication_type='periodical', 
+        publication_type=Publication.PUBLICATION_TYPE_PERIODICAL,
         original_file_name='a', file_ext='pdf', uploaded_by=admin_user)
     PeriodicalIssue.objects.get_or_create(periodical=periodical, publication=publication)
 
@@ -33,7 +33,7 @@ def after_syncdb(sender, **kwargs):
         publisher=publisher, 
         title='Issue Name 2', 
         publish_status=Publication.PUBLISH_STATUS_READY_TO_PUBLISH, 
-        publication_type='periodical', 
+        publication_type=Publication.PUBLICATION_TYPE_PERIODICAL,
         original_file_name='a', file_ext='pdf', uploaded_by=admin_user)
     publication.publish_schedule = datetime.datetime.today()
     publication.save()
@@ -43,7 +43,7 @@ def after_syncdb(sender, **kwargs):
         publisher=publisher, 
         title='Issue Name 3', 
         publish_status=Publication.PUBLISH_STATUS_SCHEDULE_TO_PUBLISH, 
-        publication_type='periodical', 
+        publication_type=Publication.PUBLICATION_TYPE_PERIODICAL,
         original_file_name='a', file_ext='pdf', uploaded_by=admin_user)
     publication.publish_schedule = datetime.datetime.today()
     publication.save()
@@ -53,7 +53,7 @@ def after_syncdb(sender, **kwargs):
         publisher=publisher, 
         title='Issue Name 4', 
         publish_status=Publication.PUBLISH_STATUS_PUBLISHED, 
-        publication_type='periodical', 
+        publication_type=Publication.PUBLICATION_TYPE_PERIODICAL,
         original_file_name='a', file_ext='pdf', uploaded_by=admin_user)
     publication.published = datetime.datetime.today()
     publication.save()
@@ -63,7 +63,7 @@ def after_syncdb(sender, **kwargs):
         publisher=publisher, 
         title='Issue Name 5', 
         publish_status=Publication.PUBLISH_STATUS_PUBLISHED, 
-        publication_type='periodical', 
+        publication_type=Publication.PUBLICATION_TYPE_PERIODICAL,
         original_file_name='a', file_ext='pdf', uploaded_by=admin_user)
     publication.published = datetime.datetime.today()
     publication.save()

@@ -7,18 +7,18 @@
 {{block.super}}
 <script>
 $(document).ready(function () {
-  $(".issue_outstandings .numbers li a").click(function(e) {
+  $(".publication_outstandings .numbers li a").on('click', function(e) {
     var target = $(this).attr("href");
 
-    $(".issue_outstandings " + target).slideToggle("fast");
+    $(".publication_outstandings " + target).slideToggle("fast");
 
-    $(".issue_outstandings .list[id!='" + target.substring(1) + "']").hide();
+    $(".publication_outstandings .list[id!='" + target.substring(1) + "']").hide();
 
     return false;
   });
 
-  $(".issue_outstandings .list .close_list").click(function(e) {
-    $(".issue_outstandings .list").slideUp("fast");
+  $(".publication_outstandings .list .close_list").on('click', function(e) {
+    $(".publication_outstandings .list").slideUp("fast");
     return false;
   });
 })
@@ -38,7 +38,7 @@ $(document).ready(function () {
   </div>
 
   {% if publications.ready or publications.scheduled or publications.unpublished or publications.unknown %}
-  <div class="issue_outstandings">
+  <div class="publication_outstandings">
     <div class="numbers">
       <ul>
         {% if publications.ready %}<li class="ready"><a href="#outstanding-ready">Ready to publish ({{publications.ready|length}} issues)</a></li>{% endif %}

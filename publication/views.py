@@ -158,15 +158,33 @@ def ajax_upload_publication(request, publisher_id):
         raise Http404
 
 @login_required
+def get_upload_progress(request):
+    """
+    Return JSON object with information about the progress of an upload.
+    """
+    progress_id = ''
+    if 'X-Progress-ID' in request.GET:
+        progress_id = request.GET['X-Progress-ID']
+    elif 'X-Progress-ID' in request.META:
+        progress_id = request.META['X-Progress-ID']
+    if progress_id:
+        from django.utils import simplejson
+        cache_key = "%s_%s" % (request.META['REMOTE_ADDR'], progress_id)
+        data = cache.get(cache_key)
+        return HttpResponse(simplejson.dumps(data))
+    else:
+        return HttpResponseServerError('Server Error: You must provide X-Progress-ID header or query param.')
+
+@login_required
 def finishing_upload_publication(request, publication_id):
     uploading_publication = get_object_or_404(UploadingPublication, pk=publication_id)
     publisher = uploading_publication.publisher
 
-    if uploading_publication.publication_type == 'periodical':
-        return finishing_upload_periodical_issue(request, publisher, uploading_publication)
+    if uploading_publication.publication_type == Publication.PUBLICATION_TYPE_PERIODICAL:
+        return _finishing_upload_periodical_issue(request, publisher, uploading_publication)
         
-    elif uploading_publication.publication_type == 'book':
-        return finishing_upload_book(request, publisher, uploading_publication)
+    elif uploading_publication.publication_type == Publication.PUBLICATION_TYPE_BOOK:
+        return _finishing_upload_book(request, publisher, uploading_publication)
 
     else:
         raise Http404
@@ -209,7 +227,7 @@ def _finishing_upload(publisher, uploading_publication, title, description, publ
     
     return publication
 
-def finishing_upload_periodical_issue(request, publisher, uploading_publication):
+def _finishing_upload_periodical_issue(request, publisher, uploading_publication):
     if request.method == 'POST':
         form = FinishUploadPeriodicalIssueForm(request.POST, publisher=publisher, uploading_publication=uploading_publication)
         if form.is_valid():
@@ -233,7 +251,7 @@ def finishing_upload_periodical_issue(request, publisher, uploading_publication)
     
     return render(request, 'publication/publication_finishing_periodical_upload.html', {'publisher':publisher, 'uploading_publication':uploading_publication, 'form':form})
 
-def finishing_upload_book(request, publisher, uploading_publication):
+def _finishing_upload_book(request, publisher, uploading_publication):
     if request.method == 'POST':
         form = FinishUploadBookForm(request.POST, uploading_publication=uploading_publication)
         if form.is_valid():
@@ -256,28 +274,26 @@ def finishing_upload_book(request, publisher, uploading_publication):
     return render(request, 'publication/publication_finishing_book_upload.html', {'publisher':publisher, 'uploading_publication':uploading_publication, 'form':form})
 
 @login_required
-def get_upload_progress(request):
-    """
-    Return JSON object with information about the progress of an upload.
-    """
-    progress_id = ''
-    if 'X-Progress-ID' in request.GET:
-        progress_id = request.GET['X-Progress-ID']
-    elif 'X-Progress-ID' in request.META:
-        progress_id = request.META['X-Progress-ID']
-    if progress_id:
-        from django.utils import simplejson
-        cache_key = "%s_%s" % (request.META['REMOTE_ADDR'], progress_id)
-        data = cache.get(cache_key)
-        return HttpResponse(simplejson.dumps(data))
-    else:
-        return HttpResponseServerError('Server Error: You must provide X-Progress-ID header or query param.')
-
-@login_required
 def view_publication(request, publication_id):
     publication = get_object_or_404(Publication, pk=publication_id)
     publisher = publication.publisher
-    return render(request, 'publication/publication_view.html', {'publisher':publisher, 'publication':publication})
+    
+    if publication.publication_type == Publication.PUBLICATION_TYPE_PERIODICAL:
+        return _view_periodical_issue(request, publisher, publication)
+        
+    elif publication.publication_type == Publication.PUBLICATION_TYPE_BOOK:
+        return _view_book(request, publisher, publication)
+
+    else:
+        raise Http404
+
+def _view_periodical_issue(request, publisher, publication):
+
+    return render(request, 'publication/periodical_issue.html', {'publisher':publisher, 'publication':publication})
+
+def _view_book(request, publisher, publication):
+
+    return render(request, 'publication/book.html', {'publisher':publisher, 'publication':publication})
 
 @login_required
 def download_publication(request, publication_id):
@@ -353,7 +369,7 @@ def view_periodical(request, periodical_id):
     periodical = get_object_or_404(Periodical, pk=periodical_id)
     publisher = periodical.publisher
 
-    periodical.issues = PeriodicalIssue.objects.filter(periodical=periodical, publication__publish_status=Publication.PUBLISH_STATUS_PUBLISHED).order_by('publication__uploaded')
+    periodical.issues = PeriodicalIssue.objects.filter(periodical=periodical, publication__publication_type=Publication.PUBLICATION_TYPE_PERIODICAL, publication__publish_status=Publication.PUBLISH_STATUS_PUBLISHED).order_by('publication__uploaded')
 
     outstandings = {
         'ready': PeriodicalIssue.objects.filter(periodical=periodical, publication__publish_status=Publication.PUBLISH_STATUS_READY_TO_PUBLISH),
@@ -391,59 +407,21 @@ def view_periodical_issue(request, periodical_issue_id):
 def update_periodical_issue_details(request, periodical_issue_id):
     return render(request, 'publication/periodical_issue_update_details.html', {})
 
-@login_required
-def upload_periodical_issue(request, publisher_id):
-    publisher = get_object_or_404(Publisher, pk=publisher_id)
-
-    if request.method == 'POST':
-        form = UploadPeriodicalIssueForm(request.POST)
-        if form.is_valid():
-            publication_uid = form.cleaned_data['publication_uid']
-            periodical_title = form.cleaned_data['periodical_title'].strip()
-            periodical = form.cleaned_data['periodical']
-            issue_name = form.cleaned_data['issue_name'].strip()
-            description = form.cleaned_data['description'].strip()
-
-            uploading_publication = UploadingPublication.objects.get(uid=publication_uid)
-
-            if periodical_title:
-                periodical = Periodical.objects.create(publisher=publisher, title=periodical_title, created_by=request.user, modified_by=request.user,)
-
-            publication = Publication.objects.create(
-                uid=publication_uid,
-                file_path='%d/%s.%s' % (publisher.id, publication_uid, uploading_publication.file_ext),
-                file_ext=uploading_publication.file_ext,
-                publication_type='',
-                publish_status=Publication.PUBLISH_STATUS_UNPUBLISHED,
-                uploaded_by=request.user,
-                modified_by=request.user,
-            )
-
-            issue = PeriodicalIssue.objects.create(
-                publication=publication,
-                periodical=periodical,
-                issue_name=issue_name,
-                description=description,
-
-                created_by=request.user,
-                modified_by=request.user,
-            )
-
-            return redirect('view_periodical_issue', periodical_issue_id=issue.id)
-
-    else:
-        form = UploadPeriodicalIssueForm()
-    
-    return render(request, 'publication/periodical_upload.html', {'publisher':publisher, 'form':form})
-
-
-
 # Publisher Books ######################################################################
 
 @login_required
 def view_publisher_books(request, publisher_id):
     publisher = get_object_or_404(Publisher, pk=publisher_id)
-    return render(request, 'publication/books.html', {'publisher':publisher, })
+
+    books = Publication.objects.filter(publisher=publisher, publication_type=Publication.PUBLICATION_TYPE_BOOK, publish_status=Publication.PUBLISH_STATUS_PUBLISHED).order_by('uploaded')
+
+    outstandings = {
+        'ready': Publication.objects.filter(publisher=publisher, publication_type=Publication.PUBLICATION_TYPE_BOOK, publish_status=Publication.PUBLISH_STATUS_READY_TO_PUBLISH),
+        'scheduled': Publication.objects.filter(publisher=publisher, publication_type=Publication.PUBLICATION_TYPE_BOOK, publish_status=Publication.PUBLISH_STATUS_SCHEDULE_TO_PUBLISH),
+        'unpublished': Publication.objects.filter(publisher=publisher, publication_type=Publication.PUBLICATION_TYPE_BOOK, publish_status=Publication.PUBLISH_STATUS_UNPUBLISHED),
+    }
+
+    return render(request, 'publication/books.html', {'publisher':publisher, 'books':books, 'outstandings':outstandings})
 
 @login_required
 def view_book(request, book_id):
