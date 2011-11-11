@@ -1,6 +1,7 @@
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 
-from widgets import YUICalendar, HourOnlyTimeInput
+from widgets import YUICalendar, HourOnlyTimeInput, HourMinuteTimeInput
 
 from publication.forms import GeneralUploadPublicationForm
 from publication.magazine.models import Magazine
@@ -35,7 +36,7 @@ class FinishUploadMagazineIssueForm(forms.Form):
     description = forms.CharField(required=False, widget=forms.Textarea(attrs={'class':'span10', 'rows':'5'}))
     publish_status = forms.ChoiceField(choices=(('unpublished', 'Unpulished'), ('scheduled', 'Scheduled'), ('published', 'Published')))
     schedule_date = forms.DateField(widget=YUICalendar(attrs={'id':'id_schedule_date'}), required=False)
-    schedule_time = forms.TimeField(widget=HourOnlyTimeInput(), required=False)
+    schedule_time = forms.TimeField(widget=HourMinuteTimeInput(), required=False)
 
     def __init__(self, *args, **kwargs):
         self.publisher = kwargs.pop('publisher', None)
@@ -57,7 +58,10 @@ class FinishUploadMagazineIssueForm(forms.Form):
         schedule_date = cleaned_data.get('schedule_date')
         schedule_time = cleaned_data.get('schedule_time')
 
-        if publish_status == 'scheduled' and not (schedule_date or schedule_time):
-            self._errors['publish_status'] = self.error_class([_(u'This field is required.')])
+        if publish_status == 'scheduled' and not schedule_date:
+            self._errors['schedule_date'] = self.error_class([_(u'This field is required.')])
+
+        if publish_status == 'scheduled' and not schedule_time:
+            self._errors['schedule_time'] = self.error_class([_(u'This field is required.')])
         
         return cleaned_data

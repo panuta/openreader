@@ -31,7 +31,7 @@ $(document).ready(function () {
     <a href="{% url upload_module_publication publisher.id 'magazine' %}" class="btn upload_publication_button"><span>Upload magazine issue</span></a>
   </div>
 
-  {% include 'publication/snippets/publication_outstandings.html' with ready=publications.ready scheduled=publications.scheduled unpublished=publications.unpublished unknown=publications.unknown %}
+  {% include 'publication/snippets/publication_outstandings.html' with ready=outstandings.ready scheduled=outstandings.scheduled unpublished=outstandings.unpublished %}
 
   <div class="magazines">
     <ul>

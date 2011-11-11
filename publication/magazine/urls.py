@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import patterns, include, url
 
 urlpatterns = patterns('publication.magazine.views',
-    url(r'^publisher/(?P<publisher_id>\d+)/magazines/$', 'view_magazine_front', name='view_magazine_front'),
+    url(r'^publisher/(?P<publisher_id>\d+)/magazines/$', 'view_publisher_magazines', name='view_publisher_magazines'),
 
     url(r'^publisher/(?P<publisher_id>\d+)/magazines/create/$', 'create_publisher_magazine', name='create_publisher_magazine'),
 

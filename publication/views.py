@@ -177,23 +177,13 @@ def finishing_upload_publication(request, publication_id):
 def view_publication(request, publication_id):
     publication = get_object_or_404(Publication, pk=publication_id)
     publisher = publication.publisher
-    
-    if publication.publication_type == Publication.PUBLICATION_TYPE_MAGAZINE:
-        return _view_magazine_issue(request, publisher, publication)
-        
-    elif publication.publication_type == Publication.PUBLICATION_TYPE_BOOK:
-        return _view_book(request, publisher, publication)
 
+    views_module = get_publication_module(publication.publication_type, 'views')
+
+    if views_module:
+        return views_module.view_publication(request, publisher, publication)
     else:
         raise Http404
-
-def _view_magazine_issue(request, publisher, publication):
-
-    return render(request, 'publication/magazine/magazine_issue.html', {'publisher':publisher, 'publication':publication})
-
-def _view_book(request, publisher, publication):
-
-    return render(request, 'publication/book/book.html', {'publisher':publisher, 'publication':publication})
 
 @login_required
 def download_publication(request, publication_id):

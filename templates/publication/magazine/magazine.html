@@ -42,42 +42,9 @@ $(document).ready(function () {
     <a href="{% url edit_magazine magazine.id %}" class="btn">Edit magazine</a>
   </div>
 
+  {% include 'publication/snippets/publication_outstandings.html' with ready=outstandings.ready scheduled=outstandings.scheduled unpublished=outstandings.unpublished %}
+
   <div class="magazine">
-
-    {% if outstandings.ready or outstandings.scheduled or outstandings.unpublished %}
-    <div class="publication_outstandings">
-      <div class="numbers">
-        <ul>
-          {% if outstandings.ready %}<li class="ready"><a href="#outstanding-ready">Ready to publish ({{outstandings.ready|length}} issues)</a></li>{% endif %}
-          {% if outstandings.scheduled %}<li class="scheduled"><a href="#outstanding-scheduled">Scheduled to publish ({{outstandings.scheduled|length}} issues)</a></li>{% endif %}
-          {% if outstandings.unpublished %}<li class="unpublished"><a href="#outstanding-unpublished">Unpublished ({{outstandings.unpublished|length}} issues)</a></li>{% endif %}
-        </ul>
-      </div>
-
-      {% if outstandings.ready %}
-      <div class="list" id="outstanding-ready" style="display:none;">
-        <div class="close_list"><a href="#">Close List</a></div>
-        <ul>{% for issue in outstandings.ready %}{% generate_ready_to_publish_publication issue.publication %}{% endfor %}</ul>
-      </div>
-      {% endif %}
-
-      {% if outstandings.scheduled %}
-      <div class="list" id="outstanding-scheduled" style="display:none;">
-        <div class="close_list"><a href="#">Close List</a></div>
-        <ul>{% for issue in outstandings.scheduled %}{% generate_schedule_to_publish_publication issue.publication %}{% endfor %}</ul>
-      </div>
-      {% endif %}
-
-      {% if outstandings.unpublished %}
-      <div class="list" id="outstanding-unpublished" style="display:none;">
-        <div class="close_list"><a href="#">Close List</a></div>
-        <ul>{% for issue in outstandings.unpublished %}{% generate_unpublish_publication issue.publication %}{% endfor %}</ul>
-      </div>
-      {% endif %}
-
-    </div>
-    {% endif %}
-
     <h3>Published issues<span>({{magazine.issues|length}} issues)</span></h3>
     {% if magazine.issues %}
     <ul class="published_publications">

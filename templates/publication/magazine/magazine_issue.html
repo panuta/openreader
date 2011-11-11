@@ -16,7 +16,7 @@ $(document).ready(function () {
 <div class="magazine_issue_page">
   <ul class="breadcrumb">
     <li><a href="{% url view_publisher_magazines publisher.id %}">Magazines</a> <span class="divider">/</span></li>
-    <li><a href="{% url view_publisher_magazines publisher.id %}">{{publication.magazineissue.magazine.title}}</a> <span class="divider">/</span></li>
+    <li><a href="{% url view_magazine publication.magazineissue.magazine.id %}">{{publication.magazineissue.magazine.title}}</a> <span class="divider">/</span></li>
     <li class="active">{{publication.title}}</li>
   </ul>
 

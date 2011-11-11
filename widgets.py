@@ -3,6 +3,7 @@
 from datetime import date
 
 from django.conf import settings
+from django.forms.util import flatatt
 from django.forms.widgets import Input, TimeInput
 from django.utils import datetime_safe
 from django.utils.dateformat import format
@@ -61,6 +62,43 @@ class YUICalendar(Input):
             settings.STATIC_URL + 'libs/yui/build/calendar/calendar-min.js',
             settings.STATIC_URL + 'js/yui.calendar.widget.js',
         )
+
+class HourMinuteTimeInput(TimeInput):
+    format = '%H:%M'
+
+    def render(self, name, value, attrs=None):
+        final_attrs = self.build_attrs(attrs, name=name)
+        input_id = final_attrs.get('id')
+
+        if not value:
+            hour_value = None
+            minute_value = None
+        else:
+            (hour_value, minute_value) = value.split(':')
+            hour_value = int(hour_value)
+            minute_value = int(minute_value)
+        
+        hour_options = ['<option></option>']
+        for hour in range(0, 24):
+            selected_html = (hour == hour_value) and u' selected="selected"' or ''
+            hour_options.append('<option value="%d"%s>%02d</option>' % (hour, selected_html, hour))
+        
+        minute_options = ['<option></option>']
+        for minute in range(0, 60, 15):
+            selected_html = (minute == minute_value) and u' selected="selected"' or ''
+            minute_options.append('<option value="%d"%s>%02d</option>' % (minute, selected_html, minute))
+
+        return mark_safe(u'<select name="%s_hour" id="%s_hour">%s</select>:<select name="%s_minute" id="%s_minute">%s</select> น.' % (name, input_id, hour_options, name, input_id, minute_options))
+    
+    def value_from_datadict(self, data, files, name):
+        return '%s:%s' % (data.get(name + '_hour'), data.get(name + '_minute')) if data.get(name + '_hour') and data.get(name + '_minute') else ''
+    
+    class Media:
+        css = {
+            'all': (
+                settings.STATIC_URL + 'css/hour_only_time.widget.css',
+            ),
+        }
 
 class HourOnlyTimeInput(TimeInput):
     format = '%H:%M'

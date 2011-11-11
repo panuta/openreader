@@ -10,11 +10,12 @@ from django.utils import simplejson
 from publication import functions as publication_functions
 from publication.models import *
 
+from publication.magazine import MODULE_CODE
 #from exceptions import *
 from forms import *
 from models import *
 
-# UPLOAD PUBLICATION ################################################################################
+# PUBLICATION ################################################################################
 
 def finishing_upload_publication(request, publisher, uploading_publication):
     if request.method == 'POST':
@@ -27,23 +28,27 @@ def finishing_upload_publication(request, publisher, uploading_publication):
             schedule_date = form.cleaned_data['schedule_date']
             schedule_time = form.cleaned_data['schedule_time']
 
-            publication = _finishing_upload(publisher, uploading_publication, title, description, publish_status, schedule_date, schedule_time)
+            publication = publication_functions.finishing_upload_publication(request, publisher, uploading_publication, title, description, publish_status, schedule_date, schedule_time)
 
             if uploading_publication.parent_id:
                 magazine = Magazine.objects.get(id=uploading_publication.parent_id)
             MagazineIssue.objects.create(publication=publication, magazine=magazine)
             
             return redirect('view_publication', publication_id=publication.id)
-            
+
     else:
         form = FinishUploadMagazineIssueForm(publisher=publisher, uploading_publication=uploading_publication)
     
     return render(request, 'publication/magazine/publication_finishing.html', {'publisher':publisher, 'uploading_publication':uploading_publication, 'form':form})
 
+def view_publication(request, publisher, publication):
+
+    return render(request, 'publication/magazine/magazine_issue.html', {'publisher':publisher, 'publication':publication})
+
 # MAGAZINE VIEWS ################################################################################
 
 @login_required
-def view_magazine_front(request, publisher_id):
+def view_publisher_magazines(request, publisher_id):
     publisher = get_object_or_404(Publisher, pk=publisher_id)
     magazines = Magazine.objects.filter(publisher=publisher).order_by('-created')
 
@@ -61,13 +66,13 @@ def view_magazine_front(request, publisher_id):
             'unpublished': MagazineIssue.objects.filter(magazine=magazine, publication__publish_status=Publication.PUBLISH_STATUS_UNPUBLISHED).count(),
         }
 
-    publications = {
+    outstandings = {
         'ready': Publication.objects.filter(publisher=publisher, publish_status=Publication.PUBLISH_STATUS_READY_TO_PUBLISH),
         'scheduled': Publication.objects.filter(publisher=publisher, publish_status=Publication.PUBLISH_STATUS_SCHEDULE_TO_PUBLISH),
         'unpublished': Publication.objects.filter(publisher=publisher, publish_status=Publication.PUBLISH_STATUS_UNPUBLISHED)
     }
 
-    return render(request, 'publication/magazine/magazines.html', {'publisher':publisher, 'magazines':magazines, 'publications':publications})
+    return render(request, 'publication/magazine/magazines.html', {'publisher':publisher, 'magazines':magazines, 'outstandings':outstandings})
 
 @login_required
 def create_publisher_magazine(request, publisher_id):
@@ -93,12 +98,12 @@ def view_magazine(request, magazine_id):
     magazine = get_object_or_404(Magazine, pk=magazine_id)
     publisher = magazine.publisher
 
-    magazine.issues = MagazineIssue.objects.filter(magazine=magazine, publication__publication_type=Publication.PUBLICATION_TYPE_MAGAZINE, publication__publish_status=Publication.PUBLISH_STATUS_PUBLISHED).order_by('publication__uploaded')
+    magazine.issues = MagazineIssue.objects.filter(magazine=magazine, publication__publication_type=MODULE_CODE, publication__publish_status=Publication.PUBLISH_STATUS_PUBLISHED).order_by('-publication__uploaded')
 
     outstandings = {
-        'ready': MagazineIssue.objects.filter(magazine=magazine, publication__publish_status=Publication.PUBLISH_STATUS_READY_TO_PUBLISH),
-        'scheduled': MagazineIssue.objects.filter(magazine=magazine, publication__publish_status=Publication.PUBLISH_STATUS_SCHEDULE_TO_PUBLISH),
-        'unpublished': MagazineIssue.objects.filter(magazine=magazine, publication__publish_status=Publication.PUBLISH_STATUS_UNPUBLISHED),
+        'ready': Publication.objects.filter(magazineissue__magazine=magazine, publish_status=Publication.PUBLISH_STATUS_READY_TO_PUBLISH),
+        'scheduled': Publication.objects.filter(magazineissue__magazine=magazine, publish_status=Publication.PUBLISH_STATUS_SCHEDULE_TO_PUBLISH),
+        'unpublished': Publication.objects.filter(magazineissue__magazine=magazine, publish_status=Publication.PUBLISH_STATUS_UNPUBLISHED),
     }
 
     return render(request, 'publication/magazine/magazine.html', {'publisher':publisher, 'magazine':magazine, 'outstandings':outstandings})

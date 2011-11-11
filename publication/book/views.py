@@ -13,7 +13,7 @@ from publication.models import Publisher, Publication
 from forms import *
 from models import *
 
-# UPLOAD PUBLICATION ################################################################################
+# PUBLICATION ################################################################################
 
 def finishing_upload_publication(request, publisher, uploading_publication):
     if request.method == 'POST':
@@ -37,10 +37,14 @@ def finishing_upload_publication(request, publisher, uploading_publication):
     
     return render(request, 'publication/book/publication_finishing_book_upload.html', {'publisher':publisher, 'uploading_publication':uploading_publication, 'form':form})
 
+def view_publication(request, publisher, publication):
+
+    return render(request, 'publication/book/book.html', {'publisher':publisher, 'publication':publication})
+
 # BOOK PUBLICATION ################################################################################
 
 @login_required
-def view_book_front(request, publisher_id):
+def view_publisher_books(request, publisher_id):
     publisher = get_object_or_404(Publisher, pk=publisher_id)
 
     books = Publication.objects.filter(publisher=publisher, publication_type='book', publish_status=Publication.PUBLISH_STATUS_PUBLISHED).order_by('uploaded')

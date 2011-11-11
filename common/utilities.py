@@ -45,11 +45,3 @@ def convert_publish_status(status_string):
         return Publication.PUBLISH_STATUS_PUBLISHED
     else:
         return 0
-
-def convert_publication_type(type_string):
-    if type_string == 'book':
-        return Publication.PUBLICATION_TYPE_BOOK
-    elif type_string == 'magazine':
-        return Publication.PUBLICATION_TYPE_MAGAZINE
-    else:
-        return 0
