@@ -1,7 +1,7 @@
 {% extends 'base_authenticated.html' %}
-{% load helper_tags %}
+{% load helper_tags page_tags %}
 
-{% block head_title %}{{periodical.title}}{% endblock %}
+{% block head_title %}{{magazine.title}}{% endblock %}
 
 {% block html_head %}
 {{block.super}}
@@ -26,23 +26,23 @@ $(document).ready(function () {
 {% endblock %}
 
 {% block body_authenticated %}
-<div class="publisher_periodical_page">
+<div class="publisher_magazine_page">
   <ul class="breadcrumb">
-    <li><a href="{% url view_publisher_periodicals publisher.id %}">Periodicals</a> <span class="divider">/</span></li>
-    <li class="active">{{periodical.title}}</li>
+    <li><a href="{% url view_publisher_magazines publisher.id %}">Magazines</a> <span class="divider">/</span></li>
+    <li class="active">{{magazine.title}}</li>
   </ul>
 
-  <div class="periodical_name">
-    <h2>{{periodical.title}}</h2>
-    {% if periodical.description %}<div>{{periodical.description}}</div>{% endif %}
+  <div class="magazine_name">
+    <h2>{{magazine.title}}</h2>
+    {% if magazine.description %}<div>{{magazine.description}}</div>{% endif %}
   </div>
 
   <div class="table_actions">
-    <a href="{% url upload_publication publisher.id %}?type=periodical-issue&periodical={{periodical.id}}" class="btn">Upload new issue</a>
-    <a href="{% url edit_periodical periodical.id %}" class="btn">Edit periodical</a>
+    <a href="{% url upload_publication publisher.id %}?type=magazine-issue&magazine={{magazine.id}}" class="btn">Upload new issue</a>
+    <a href="{% url edit_magazine magazine.id %}" class="btn">Edit magazine</a>
   </div>
 
-  <div class="periodical">
+  <div class="magazine">
 
     {% if outstandings.ready or outstandings.scheduled or outstandings.unpublished %}
     <div class="publication_outstandings">
@@ -57,68 +57,31 @@ $(document).ready(function () {
       {% if outstandings.ready %}
       <div class="list" id="outstanding-ready" style="display:none;">
         <div class="close_list"><a href="#">Close List</a></div>
-        <ul>
-          {% for issue in outstandings.ready %}
-            <li {% if forloop.last %}class="last"{% endif %}>
-              <div class="cover"></div>
-              <div class="name"><a href="#">{{issue.publication.title}}</a></div>
-              <div class="status">Marked as ready to publish on {{issue.publication.publish_schedule|format_abbr_datetime}}</div>
-              <div class="links">
-                <a href="#" class="btn">Publish Now</a>
-                <a href="#" class="btn">Schedule to publish</a>
-                <a href="#">Revert to In-Progress status</a>
-              </div>
-            </li>
-          {% endfor %}
-        </ul>
+        <ul>{% for issue in outstandings.ready %}{% generate_ready_to_publish_publication issue.publication %}{% endfor %}</ul>
       </div>
       {% endif %}
 
       {% if outstandings.scheduled %}
       <div class="list" id="outstanding-scheduled" style="display:none;">
         <div class="close_list"><a href="#">Close List</a></div>
-        <ul>
-          {% for issue in outstandings.scheduled %}
-            <li {% if forloop.last %}class="last"{% endif %}>
-              <div class="cover"></div>
-              <div class="name"><a href="#">{{issue.publication.title}}</a></div>
-              <div class="status">Marked as ready to publish on Thu 14, October 2011 - 12:14</div>
-              <div class="links">
-                <a href="#" class="btn">Reschedule</a>
-                <a href="#">Cancel schedule</a>
-              </div>
-            </li>
-          {% endfor %}
-        </ul>
+        <ul>{% for issue in outstandings.scheduled %}{% generate_schedule_to_publish_publication issue.publication %}{% endfor %}</ul>
       </div>
       {% endif %}
 
       {% if outstandings.unpublished %}
       <div class="list" id="outstanding-unpublished" style="display:none;">
         <div class="close_list"><a href="#">Close List</a></div>
-        <ul>
-          {% for issue in outstandings.unpublished %}
-            <li {% if forloop.last %}class="last"{% endif %}>
-              <div class="cover"></div>
-              <div class="name"><a href="#">{{issue.publication.title}}</a></div>
-              <div class="status">Marked as ready to publish on Thu 14, October 2011 - 12:14</div>
-              <div class="links">
-                <a href="#" class="btn">Edit Issue</a>
-                <a href="#" class="btn">Publish Now</a>
-              </div>
-            </li>
-          {% endfor %}
-        </ul>
+        <ul>{% for issue in outstandings.unpublished %}{% generate_unpublish_publication issue.publication %}{% endfor %}</ul>
       </div>
       {% endif %}
 
     </div>
     {% endif %}
 
-    <h3>Published issues<span>({{periodical.issues|length}} issues)</span></h3>
-    {% if periodical.issues %}
+    <h3>Published issues<span>({{magazine.issues|length}} issues)</span></h3>
+    {% if magazine.issues %}
     <ul class="published_publications">
-      {% for issue in periodical.issues %}
+      {% for issue in magazine.issues %}
       <li {% if forloop.last %}class="last"{% endif %}>
         <div class="cover"></div>
         <div class="statistics"></div>

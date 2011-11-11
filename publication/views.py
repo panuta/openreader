@@ -12,7 +12,7 @@ from private_files.views import get_file as private_files_get_file
 
 from common.shortcuts import response_json, response_json_error
 
-from publication import SUPPORT_PUBLICATION_TYPE
+from publication import get_publication_module
 from publication import functions as publication_functions
 
 from exceptions import *
@@ -93,75 +93,61 @@ def deactivate_publisher(request, publisher_id):
 # Publication ######################################################################
 
 @login_required
-def upload_publication(request, publisher_id):
+def upload_publication(request, publisher_id, module_name=''):
     publisher = get_object_or_404(Publisher, pk=publisher_id)
 
-    pre_upload_type = request.GET.get('type', '')
-    pre_upload_periodical = request.GET.get('periodical', '')
-
-    if pre_upload_type == 'periodical-issue' and pre_upload_periodical:
-        try:
-            pre_upload_periodical = Periodical.objects.get(id=pre_upload_periodical)
-        except Periodical.DoesNotExist:
-            raise Http404
-
-    if request.method == 'GET':
-        form = UploadPublicationForm(initial={'upload_type':pre_upload_type})
-    
-    return render(request, 'publication/publication_upload.html', {'publisher':publisher, 'form':form, 'pre_upload_type':pre_upload_type, 'pre_upload_periodical':pre_upload_periodical})
-
-@login_required
-def ajax_upload_publication(request, publisher_id):
     if request.method == 'POST':
         try:
             publisher = Publisher.objects.get(id=publisher_id)
         except Publisher.DoesNotExist:
             return response_json_error('publisher-notexist')
+        
+        if not module_name:
+            form = GeneralUploadPublicationForm(request.POST, request.FILES)
+        else:
+            if not PublisherModule.objects.filter(publisher=publisher, module_name=module_name).exists():
+                return response_json_error('module-denied')
+            
+            forms_module = get_publication_module(module_name, 'forms')
+            if forms_module:
+                form = forms_module.UploadPublicationForm(request.POST, request.FILES, publisher=publisher)
+            else:
+                return response_json_error('module-invalid')
 
-        form = UploadPublicationForm(request.POST, request.FILES)
         if form.is_valid():
-            upload_type = form.cleaned_data['upload_type']
+            module = form.cleaned_data['module']
             uploading_file = form.cleaned_data['publication']
-            periodical_id = None
 
-            if upload_type == 'periodical':
-                periodical_id = request.POST.get('periodical')
-                if not periodical_id or not Periodical.objects.filter(id=periodical_id).exists():
-                    return response_json_error('invalid-periodical')
-
-            elif upload_type == 'periodical-issue':
-                upload_type = 'periodical'
-                periodical_id = request.POST.get('periodical_id')
-                if not periodical_id or not Periodical.objects.filter(id=periodical_id).exists():
-                    return response_json_error('invalid-periodical')
-            
-            elif not upload_type:
-                publication_type = request.POST.get('publication_type')
-                if publication_type and publication_type in SUPPORT_PUBLICATION_TYPE:
-                    upload_type = publication_type
-                else:
-                    return response_json_error('invalid-publication_type')
-            
             try:
-                uploading_publication = publication_functions.upload_publication(request.user, uploading_file, publisher, upload_type, periodical_id)
-            except FileUploadTypeUnknown:
-                return response_json_error('upload-unknown')
+                uploading_publication = publication_functions.upload_publication(request, module, uploading_file, publisher)
             except:
                 return response_json_error('upload')
+            
+            form.persist(uploading_publication)
             
             return response_json({'next_url':reverse('finishing_upload_publication', args=[uploading_publication.id])})
 
         else:
-            return response_json_error('missing-fields')
-        
+            return response_json_error('form-input-invalid')
+    
     else:
-        raise Http404
+        if not module_name:
+            form = GeneralUploadPublicationForm()
+        else:
+            if not PublisherModule.objects.filter(publisher=publisher, module_name=module_name).exists():
+                raise Http404
+            
+            forms_module = get_publication_module(module_name, 'forms')
+            if forms_module:
+                form = forms_module.UploadPublicationForm(initial={'module':module_name}, publisher=publisher)
+            else:
+                raise Http404
+        
+        return render(request, 'publication/%s/publication_upload.html' % module_name, {'publisher':publisher, 'form':form})
 
 @login_required
 def get_upload_progress(request):
-    """
-    Return JSON object with information about the progress of an upload.
-    """
+    # Return JSON object with information about the progress of an upload.
     progress_id = ''
     if 'X-Progress-ID' in request.GET:
         progress_id = request.GET['X-Progress-ID']
@@ -180,106 +166,20 @@ def finishing_upload_publication(request, publication_id):
     uploading_publication = get_object_or_404(UploadingPublication, pk=publication_id)
     publisher = uploading_publication.publisher
 
-    if uploading_publication.publication_type == Publication.PUBLICATION_TYPE_PERIODICAL:
-        return _finishing_upload_periodical_issue(request, publisher, uploading_publication)
-        
-    elif uploading_publication.publication_type == Publication.PUBLICATION_TYPE_BOOK:
-        return _finishing_upload_book(request, publisher, uploading_publication)
+    views_module = get_publication_module(uploading_publication.publication_type, 'views')
 
+    if views_module:
+        return views_module.finishing_upload_publication(request, publisher, uploading_publication)
     else:
         raise Http404
-
-def _finishing_upload(publisher, uploading_publication, title, description, publish_status, schedule_date, schedule_time):
-    from common.utilities import convert_publish_status
-    publish_status = convert_publish_status(publish_status)
-
-    if publish_status == Publication.PUBLISH_STATUS_SCHEDULE_TO_PUBLISH:
-        publish_schedule = datetime.datetime(schedule_date.year, schedule_date.month, schedule_date.day, schedule_time.hour, schedule_time.minute)
-    else:
-        publish_schedule = None
-
-    if publish_status == Publication.PUBLISH_STATUS_PUBLISHED:
-        published = datetime.datetime.today()
-        published_by = request.user
-    else:
-        published = None
-        published_by = None
-    
-    publication = Publication.objects.create(
-        publisher = publisher,
-        uid = uploading_publication.uid,
-        title = title,
-        description = description,
-        publication_type = uploading_publication.publication_type,
-        uploaded_file = uploading_publication.uploaded_file,
-        original_file_name = uploading_publication.original_file_name,
-        file_ext = uploading_publication.file_ext,
-
-        publish_status = publish_status,
-        published = published,
-        published_by = published_by,
-
-        uploaded = uploading_publication.uploaded,
-        uploaded_by = uploading_publication.uploaded_by,
-    )
-
-    uploading_publication.delete()
-    
-    return publication
-
-def _finishing_upload_periodical_issue(request, publisher, uploading_publication):
-    if request.method == 'POST':
-        form = FinishUploadPeriodicalIssueForm(request.POST, publisher=publisher, uploading_publication=uploading_publication)
-        if form.is_valid():
-            periodical = form.cleaned_data['periodical']
-            title = form.cleaned_data['title']
-            description = form.cleaned_data['description']
-            publish_status = form.cleaned_data['publish_status']
-            schedule_date = form.cleaned_data['schedule_date']
-            schedule_time = form.cleaned_data['schedule_time']
-
-            publication = _finishing_upload(publisher, uploading_publication, title, description, publish_status, schedule_date, schedule_time)
-
-            if uploading_publication.parent_id:
-                periodical = Periodical.objects.get(id=uploading_publication.parent_id)
-            PeriodicalIssue.objects.create(publication=publication, periodical=periodical)
-            
-            return redirect('view_publication', publication_id=publication.id)
-            
-    else:
-        form = FinishUploadPeriodicalIssueForm(publisher=publisher, uploading_publication=uploading_publication)
-    
-    return render(request, 'publication/publication_finishing_periodical_upload.html', {'publisher':publisher, 'uploading_publication':uploading_publication, 'form':form})
-
-def _finishing_upload_book(request, publisher, uploading_publication):
-    if request.method == 'POST':
-        form = FinishUploadBookForm(request.POST, uploading_publication=uploading_publication)
-        if form.is_valid():
-            title = form.cleaned_data['title']
-            description = form.cleaned_data['description']
-            author = form.cleaned_data['author']
-            publish_status = form.cleaned_data['publish_status']
-            schedule_date = form.cleaned_data['schedule_date']
-            schedule_time = form.cleaned_data['schedule_time']
-
-            publication = _finishing_upload(publisher, uploading_publication, title, description, publish_status, schedule_date, schedule_time)
-
-            # Create Book object
-            
-            return redirect('view_publication', publication_id=publication.id)
-            
-    else:
-        form = FinishUploadBookForm(uploading_publication=uploading_publication)
-    
-    return render(request, 'publication/publication_finishing_book_upload.html', {'publisher':publisher, 'uploading_publication':uploading_publication, 'form':form})
 
 @login_required
 def view_publication(request, publication_id):
     publication = get_object_or_404(Publication, pk=publication_id)
     publisher = publication.publisher
     
-    if publication.publication_type == Publication.PUBLICATION_TYPE_PERIODICAL:
-        return _view_periodical_issue(request, publisher, publication)
+    if publication.publication_type == Publication.PUBLICATION_TYPE_MAGAZINE:
+        return _view_magazine_issue(request, publisher, publication)
         
     elif publication.publication_type == Publication.PUBLICATION_TYPE_BOOK:
         return _view_book(request, publisher, publication)
@@ -287,13 +187,13 @@ def view_publication(request, publication_id):
     else:
         raise Http404
 
-def _view_periodical_issue(request, publisher, publication):
+def _view_magazine_issue(request, publisher, publication):
 
-    return render(request, 'publication/periodical_issue.html', {'publisher':publisher, 'publication':publication})
+    return render(request, 'publication/magazine/magazine_issue.html', {'publisher':publisher, 'publication':publication})
 
 def _view_book(request, publisher, publication):
 
-    return render(request, 'publication/book.html', {'publisher':publisher, 'publication':publication})
+    return render(request, 'publication/book/book.html', {'publisher':publisher, 'publication':publication})
 
 @login_required
 def download_publication(request, publication_id):
@@ -308,131 +208,107 @@ def get_publication(request, publication_uid):
 
 @login_required
 def edit_publication(request, publication_id):
-    publication = get_object_or_404(Publication, uid=publication_uid)
+    publication = get_object_or_404(Publication, id=publication_id)
+    publisher = publication.publisher
 
-    # 
+    if request.method == 'POST':
+        form = MagazineIssueForm(request.POST)
+        if form.is_valid():
+            publication.title = form.cleaned_data['title']
+            publication.description = form.cleaned_data['description']
+            publication.save()
 
-    return render(request, 'publication/publication_edit.html', {'publication':publication})
+            return response('view_publication', publication.id)
+    else:
+        form = MagazineIssueForm(initial={'title':publication.title, 'description':publication.description})
 
-# Publisher Periodicals ######################################################################
+    return render(request, 'publication/magazine/magazine_edit.html', {'publisher':publisher, 'publication':publication, 'form':form})
+
+def edit_publication_status(request, publication_id):
+    publication = get_object_or_404(Publication, id=publication_id)
+    publisher = publication.publisher
+
+    if request.method == 'POST':
+        form = PublicationStatusForm(request.POST)
+        if form.is_valid():
+            publication.title = form.cleaned_data['title']
+            publication.description = form.cleaned_data['description']
+            publication.save()
+
+            return response('view_publication', publication.id)
+    else:
+        form = PublicationStatusForm(initial={'title':publication.title, 'description':publication.description})
+
+    return render(request, 'publication/publication_edit_status.html', {'publisher':publisher, 'publication':publication, 'form':form})
 
 @login_required
-def view_publisher_periodicals(request, publisher_id):
-    publisher = get_object_or_404(Publisher, pk=publisher_id)
+def set_publication_published(request, publication_id):
+    publication = get_object_or_404(Publication, id=publication_id)
 
-    periodicals = Periodical.objects.filter(publisher=publisher).order_by('-created')
+    if request.method == 'POST' and request.is_ajax():
+        publication.publish_status = Publication.PUBLISH_STATUS_PUBLISHED
+        publication.publish_schedule = None
+        publication.published = datetime.datetime.today()
+        publication.published_by = request.user
+        publication.save()
 
-    for periodical in periodicals:
-        periodical.published_count = PeriodicalIssue.objects.filter(periodical=periodical, publication__publish_status=Publication.PUBLISH_STATUS_PUBLISHED).count()
+        return HttpResponse('')
+    else:
+        raise Http404
 
-        try:
-            periodical.last_published = PeriodicalIssue.objects.filter(periodical=periodical, publication__publish_status=Publication.PUBLISH_STATUS_PUBLISHED).latest('publication__published')
-        except PeriodicalIssue.DoesNotExist:
-            periodical.last_published = None
+@login_required
+def set_publication_schedule(request, publication_id):
+    publication = get_object_or_404(Publication, id=publication_id)
+
+    if request.method == 'POST' and request.is_ajax():
+        if publication.publish_status == Publication.PUBLISH_STATUS_PUBLISHED:
+            return HttpResponse(simplejson.dumps({'error':'pubished'}))
         
-        periodical.outstanding = {
-            'ready': PeriodicalIssue.objects.filter(periodical=periodical, publication__publish_status=Publication.PUBLISH_STATUS_READY_TO_PUBLISH).count(),
-            'scheduled': PeriodicalIssue.objects.filter(periodical=periodical, publication__publish_status=Publication.PUBLISH_STATUS_SCHEDULE_TO_PUBLISH).count(),
-            'unpublished': PeriodicalIssue.objects.filter(periodical=periodical, publication__publish_status=Publication.PUBLISH_STATUS_UNPUBLISHED).count(),
-        }
+        datetime_string = request.POST.get('schedule')
+        (s_year, s_month, s_day, s_hour, s_minute) = datetime_string.split('-')
+        schedule = datetime.datetime(s_year, s_month, s_day, s_hour, s_minute, 0)
+        publication.publish_status = Publication.PUBLISH_STATUS_SCHEDULE_TO_PUBLISH
+        publication.publish_schedule = schedule
+        publication.published_by = request.user
+        publication.save()
 
-    publications = {
-        'ready': Publication.objects.filter(publisher=publisher, publish_status=Publication.PUBLISH_STATUS_READY_TO_PUBLISH),
-        'scheduled': Publication.objects.filter(publisher=publisher, publish_status=Publication.PUBLISH_STATUS_SCHEDULE_TO_PUBLISH),
-        'unpublished': Publication.objects.filter(publisher=publisher, publish_status=Publication.PUBLISH_STATUS_UNPUBLISHED),
-        'unknown': UploadingPublication.objects.filter(publisher=publisher),
-    }
-
-    return render(request, 'publication/periodicals.html', {'publisher':publisher, 'periodicals':periodicals, 'publications':publications})
-
-@login_required
-def create_publisher_periodical(request, publisher_id):
-    publisher = get_object_or_404(Publisher, pk=publisher_id)
-
-    if request.method == 'POST':
-        form = PublisherPeriodicalForm(request.POST)
-        if form.is_valid():
-            title = form.cleaned_data['title']
-            description = form.cleaned_data['description']
-
-            Periodical.objects.create(publisher=publisher, title=title, description=description, created_by=request.user)
-            
-            return redirect('view_publisher_periodicals', publisher_id=publisher.id)
-
+        return HttpResponse('')
     else:
-        form = PublisherPeriodicalForm()
-
-    return render(request, 'publication/periodicals_create.html', {'publisher':publisher, 'form':form})
+        raise Http404
 
 @login_required
-def view_periodical(request, periodical_id):
-    periodical = get_object_or_404(Periodical, pk=periodical_id)
-    publisher = periodical.publisher
+def set_publication_cancel_schedule(request, publication_id):
+    publication = get_object_or_404(Publication, id=publication_id)
 
-    periodical.issues = PeriodicalIssue.objects.filter(periodical=periodical, publication__publication_type=Publication.PUBLICATION_TYPE_PERIODICAL, publication__publish_status=Publication.PUBLISH_STATUS_PUBLISHED).order_by('publication__uploaded')
+    if request.method == 'POST' and request.is_ajax():
+        if publication.publish_status != Publication.PUBLISH_STATUS_SCHEDULE_TO_PUBLISH:
+            return HttpResponse(simplejson.dumps({'error':'no-schedule'}))
+        
+        publication.publish_status = Publication.PUBLISH_STATUS_UNPUBLISHED
+        publication.publish_schedule = None
+        publication.published_by = None
+        publication.save()
 
-    outstandings = {
-        'ready': PeriodicalIssue.objects.filter(periodical=periodical, publication__publish_status=Publication.PUBLISH_STATUS_READY_TO_PUBLISH),
-        'scheduled': PeriodicalIssue.objects.filter(periodical=periodical, publication__publish_status=Publication.PUBLISH_STATUS_SCHEDULE_TO_PUBLISH),
-        'unpublished': PeriodicalIssue.objects.filter(periodical=periodical, publication__publish_status=Publication.PUBLISH_STATUS_UNPUBLISHED),
-    }
-
-    return render(request, 'publication/periodical.html', {'publisher':publisher, 'periodical':periodical, 'outstandings':outstandings})
-
-@login_required
-def edit_periodical(request, periodical_id):
-    periodical = get_object_or_404(Periodical, pk=periodical_id)
-    publisher = periodical.publisher
-
-    if request.method == 'POST':
-        form = PublisherPeriodicalForm(request.POST)
-        if form.is_valid():
-            periodical.title = form.cleaned_data['title']
-            periodical.description = form.cleaned_data['description']
-
-            periodical.save()
-
-            return redirect('view_periodical', periodical_id=periodical.id)
-
+        return HttpResponse('')
     else:
-        form = PublisherPeriodicalForm(initial={'title':periodical.title, 'description':periodical.description})
-    
-    return render(request, 'publication/periodical_edit.html', {'publisher':publisher, 'periodical':periodical, 'form':form})
+        raise Http404
 
 @login_required
-def view_periodical_issue(request, periodical_issue_id):
-    return render(request, 'publication/periodical_issue.html', {})
+def set_publication_revert(request, publication_id):
+    publication = get_object_or_404(Publication, id=publication_id)
 
-@login_required
-def update_periodical_issue_details(request, periodical_issue_id):
-    return render(request, 'publication/periodical_issue_update_details.html', {})
+    if request.method == 'POST' and request.is_ajax():
+        if publication.publish_status != Publication.PUBLISH_STATUS_READY_TO_PUBLISH:
+            return HttpResponse(simplejson.dumps({'error':'not-ready'}))
+        
+        publication.publish_status = Publication.PUBLISH_STATUS_UNPUBLISHED
+        publication.publish_schedule = None
+        publication.published_by = None
+        publication.save()
 
-# Publisher Books ######################################################################
-
-@login_required
-def view_publisher_books(request, publisher_id):
-    publisher = get_object_or_404(Publisher, pk=publisher_id)
-
-    books = Publication.objects.filter(publisher=publisher, publication_type=Publication.PUBLICATION_TYPE_BOOK, publish_status=Publication.PUBLISH_STATUS_PUBLISHED).order_by('uploaded')
-
-    outstandings = {
-        'ready': Publication.objects.filter(publisher=publisher, publication_type=Publication.PUBLICATION_TYPE_BOOK, publish_status=Publication.PUBLISH_STATUS_READY_TO_PUBLISH),
-        'scheduled': Publication.objects.filter(publisher=publisher, publication_type=Publication.PUBLICATION_TYPE_BOOK, publish_status=Publication.PUBLISH_STATUS_SCHEDULE_TO_PUBLISH),
-        'unpublished': Publication.objects.filter(publisher=publisher, publication_type=Publication.PUBLICATION_TYPE_BOOK, publish_status=Publication.PUBLISH_STATUS_UNPUBLISHED),
-    }
-
-    return render(request, 'publication/books.html', {'publisher':publisher, 'books':books, 'outstandings':outstandings})
-
-@login_required
-def view_book(request, book_id):
-    return render(request, 'publication/book.html', {})
-
-@login_required
-def update_book_details(request, book_id):
-    return render(request, 'publication/book_update_details.html', {})
-
-def upload_book(request, publisher_id):
-    return render(request, 'publication/book_upload.html', {'form': form})
+        return HttpResponse('')
+    else:
+        raise Http404
 
 # Publisher Management ######################################################################
 

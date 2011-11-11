@@ -1,0 +1,49 @@
+{% extends 'base_authenticated.html' %}
+{% load helper_tags %}
+
+{% block head_title %}{{publication.title}}{% endblock %}
+
+{% block html_head %}
+{{block.super}}
+<script>
+$(document).ready(function () {
+  
+})
+</script>
+{% endblock %}
+
+{% block body_authenticated %}
+<div class="magazine_issue_page">
+  <ul class="breadcrumb">
+    <li><a href="{% url view_publisher_magazines publisher.id %}">Magazines</a> <span class="divider">/</span></li>
+    <li><a href="{% url view_publisher_magazines publisher.id %}">{{publication.magazineissue.magazine.title}}</a> <span class="divider">/</span></li>
+    <li class="active">{{publication.title}}</li>
+  </ul>
+
+  <div class="publication_name">
+    <h2>{{publication.title}}</h2>
+  </div>
+
+  <div class="status">status status status [<a href="{% url edit_publication_status publication.id %}">Change status</a>]</div>
+
+  <div class="page_actions">
+    <a href="{% url edit_publication publication.id %}" class="btn">Edit publication</a>
+  </div>
+
+  <div class="row">
+    <div class="span5">
+      <div class="cover"></div>
+    </div>
+    <div class="span11">
+      <div class="description">description description description description description</div>
+      <div class=""></div>
+    </div>
+  </div>
+
+  <div class="statistics">
+    <h3>Statistics</h3>
+    statistics
+  </div>
+    
+</div>
+{% endblock %}

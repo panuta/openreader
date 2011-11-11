@@ -114,6 +114,9 @@ INSTALLED_APPS = (
     'openreader.accounts',
     'openreader.common',
     'openreader.publication',
+
+    'openreader.publication.book',
+    'openreader.publication.magazine',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -146,7 +149,7 @@ FILE_PROTECTION_METHOD = 'basic'
 
 ########## Open Reader Settings ##########
 
-PERIODICAL_LOGO_ROOT = MEDIA_ROOT + 'periodical_logo/'
+MAGAZINE_LOGO_ROOT = MEDIA_ROOT + 'magazine_logo/'
 
 PUBLICATION_ROOT = MEDIA_ROOT + 'publication/'
 

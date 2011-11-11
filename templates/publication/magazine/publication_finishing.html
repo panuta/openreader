@@ -1,5 +1,5 @@
 {% extends 'base_authenticated.html' %}
-{% load page_tags %}
+{% load page_tags magazine_tags %}
 
 {% block head_title %}Finishing upload{% endblock %}
 
@@ -26,19 +26,19 @@ $(document).ready(function () {
       <div class="cover"></div>
     </div>
     <div class="span11">
-      <div class="publication_type">Uploaded periodical file</div>
+      <div class="publication_type">Uploaded magazine file</div>
       <div class="file_name">{{uploading_publication.original_file_name}}.{{uploading_publication.file_ext}}</div>
 
       <form class="form-stacked" action="." method="post">
         {% csrf_token %}
 
         {% if uploading_publication.parent_id %}
-        <div class="periodical_name">{% print_periodical_name uploading_publication.parent_id %}</div>
+        <div class="magazine_name">{% print_magazine_name uploading_publication.parent_id %}</div>
         {% else %}
         <div class="clearfix">
-          <label for="id_periodical">Periodical</label>
+          <label for="id_magazine">Magazine</label>
           <div class="input">
-            {{form.periodical}}
+            {{form.magazine}}
           </div>
         </div>
         {% endif %}

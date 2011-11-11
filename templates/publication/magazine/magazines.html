@@ -1,0 +1,69 @@
+{% extends 'base_authenticated.html' %}
+{% load helper_tags module_tags %}
+
+{% block head_title %}Magazines{% endblock %}
+
+{% block html_head %}
+{{block.super}}
+<script>
+$(document).ready(function () {
+  bind_upload_publication_modal();
+  bind_upload_publication_form();
+  bind_publication_outstandings();
+
+  $('.upload_publication_button').on('click', function(e) {
+    open_upload_publication_modal();
+    return false;
+  });
+})
+</script>
+{% endblock %}
+
+{% block body_authenticated %}
+<div class="publisher_magazines">
+  <ul class="breadcrumb">
+    <li class="active">Magazines</li>
+  </ul>
+
+  {% if magazines %}
+
+  <div class="table_actions">
+    <a href="{% url upload_module_publication publisher.id 'magazine' %}" class="btn upload_publication_button"><span>Upload magazine issue</span></a>
+  </div>
+
+  {% include 'publication/snippets/publication_outstandings.html' with ready=publications.ready scheduled=publications.scheduled unpublished=publications.unpublished unknown=publications.unknown %}
+
+  <div class="magazines">
+    <ul>
+      {% for magazine in magazines %}
+      <li {% if forloop.last %}class="last"{% endif %} magazine-id="{{magazine.id}}" magazine-title="{{magazine.title}}">
+        <div class="title"><a href="{% url view_magazine magazine.id %}">{{magazine.title}}</a></div>
+        <div class="stats"><span class="published">{{magazine.published_count}} issues published</span>{% if magazine.last_published %} (Latest issue is <a href="#">{{magazine.last_published.publication.title}}</a>){% endif %}</div>
+        {% if magazine.outstanding.ready or magazine.outstanding.scheduled or magazine.outstanding.unpublished %}
+        <div class="outstanding">
+          {% if magazine.outstanding.ready %}<span class="ready">{{magazine.outstanding.ready}} ready to publish</span>{% endif %}
+          {% if magazine.outstanding.scheduled %}<span class="scheduled">{{magazine.outstanding.scheduled}} scheduled to publish</span>{% endif %}
+          {% if magazine.outstanding.unpublished %}<span class="unpublished">{{magazine.outstanding.unpublished}} unpublished</span>{% endif %}
+        </div>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="create_magazine">
+    <a href="{% url create_publisher_magazine publisher.id %}"><span>Create new magazine</span></a>
+  </div>
+
+  {% else %}
+  
+  <div class="magazines">
+    <div class="no_row">No magazine, <a href="{% url view_publisher_magazines_create publisher.id %}">upload first one</a></div>
+  </div>
+  
+  {% endif %}
+</div>
+
+{% generate_publication_module_upload_modal 'magazine' publisher %}
+
+{% endblock %}

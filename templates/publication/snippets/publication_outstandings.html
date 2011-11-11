@@ -1,0 +1,73 @@
+{% load helper_tags %}
+
+{% if ready or scheduled or unpublished or unknown %}
+
+<div class="publication_outstandings">
+  <div class="numbers">
+    <ul>
+      {% if ready %}<li class="ready"><a href="#outstanding-ready">Ready to publish ({{ready|length}} issues)</a></li>{% endif %}
+      {% if scheduled %}<li class="scheduled"><a href="#outstanding-scheduled">Scheduled to publish ({{scheduled|length}} issues)</a></li>{% endif %}
+      {% if unpublished %}<li class="unpublished"><a href="#outstanding-unpublished">Unpublished ({{unpublished|length}} issues)</a></li>{% endif %}
+    </ul>
+  </div>
+
+  {% if ready %}
+  <div class="list" id="outstanding-ready" style="display:none;">
+    <div class="close_list"><a href="#">Close List</a></div>
+    <ul>
+      {% for publication in ready %}
+      <li>
+          <div class="cover"></div>
+          <div class="name"><a href="#">{{publication.get_publication_title}}</a></div>
+          <div class="status">Marked as ready to publish on {{publication.publish_schedule|format_abbr_datetime}} by {{publication.published_by.get_profile.get_fullname}}</div>
+          <div class="links">
+            <a href="{% url set_publication_published publication.id %}" publish-action="publish" class="btn">Publish Now</a>
+            <a href="{% url set_publication_schedule publication.id %}" publish-action="schedule" class="btn">Schedule to publish</a>
+            <a href="{% url set_publication_revert publication.id %}" publish-action="revert">Revert to Unpublished status</a>
+          </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  {% if scheduled %}
+  <div class="list" id="outstanding-scheduled" style="display:none;">
+    <div class="close_list"><a href="#">Close List</a></div>
+    <ul>
+      {% for publication in scheduled %}
+      <li>
+          <div class="cover"></div>
+          <div class="name"><a href="#">{{publication.get_publication_title}}</a></div>
+          <div class="status">Scheduled to publish on {{publication.publish_schedule|format_abbr_datetime}} by {{publication.published_by.get_profile.get_fullname}}</div>
+          <div class="links">
+            <a href="{% url set_publication_schedule publication.id %}" publish-action="schedule" class="btn">Reschedule</a>
+            <a href="{% url set_publication_cancel_schedule publication.id %}" publish-action="cancel-schedule">Cancel schedule</a>
+          </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  {% if unpublished %}
+  <div class="list" id="outstanding-unpublished" style="display:none;">
+    <div class="close_list"><a href="#">Close List</a></div>
+    <ul>
+      {% for publication in unpublished %}
+      <li>
+          <div class="cover"></div>
+          <div class="name"><a href="#">{{publication.get_publication_title}}</a></div>
+          <div class="status">Uploaded on {{publication.uploaded|format_abbr_datetime}} by {{publication.uploaded_by.get_profile.get_fullname}}</div>
+          <div class="links">
+            <a href="{% url edit_publication publication.id %}" class="btn">Edit Issue</a>
+            <a href="{% url set_publication_published publication.id %}" publish-action="publish" class="btn">Publish Now</a>
+          </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+</div>
+{% endif %}

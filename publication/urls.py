@@ -7,27 +7,15 @@ urlpatterns = patterns('publication.views',
     url(r'^publisher/select/$', 'select_publisher', name='select_publisher'),
 
     # Upload
+    url(r'^publisher/(?P<publisher_id>\d+)/upload/(?P<module_name>\w+)/$', 'upload_publication', name='upload_module_publication'),
     url(r'^publisher/(?P<publisher_id>\d+)/upload/$', 'upload_publication', name='upload_publication'),
-    url(r'^publisher/(?P<publisher_id>\d+)/upload/ajax/$', 'ajax_upload_publication', name='ajax_upload_publication'),
-
-    url(r'^get_upload_progress?.*$', 'get_upload_progress', name='get_upload_progress'),
-
     url(r'^publication/(?P<publication_id>\d+)/finishing_upload/$', 'finishing_upload_publication', name='finishing_upload_publication'),
+    
+    url(r'^get_upload_progress?.*$', 'get_upload_progress', name='get_upload_progress'),
 
     # Dashboard
     url(r'^publisher/(?P<publisher_id>\d+)/dashboard/$', 'view_publisher_dashboard', name='view_publisher_dashboard'),
 
-    # Periodicals
-    url(r'^publisher/(?P<publisher_id>\d+)/periodicals/$', 'view_publisher_periodicals', name='view_publisher_periodicals'),
-    url(r'^publisher/(?P<publisher_id>\d+)/periodicals/create/$', 'create_publisher_periodical', name='create_publisher_periodical'),
-
-    url(r'^periodical/(?P<periodical_id>\d+)/$', 'view_periodical', name='view_periodical'),
-    url(r'^periodical/issue/(?P<periodical_issue_id>\d+)/$', 'view_periodical_issue', name='view_periodical_issue'),
-    url(r'^periodical/(?P<periodical_id>\d+)/edit/$', 'edit_periodical', name='edit_periodical'),
-
-    # Books
-    url(r'^publisher/(?P<publisher_id>\d+)/books/$', 'view_publisher_books', name='view_publisher_books'),
-    
     # Publisher Management
     url(r'^publisher/(?P<publisher_id>\d+)/publisher/management/$', 'view_publisher_management', name='view_publisher_management'),
     url(r'^publisher/(?P<publisher_id>\d+)/publisher/profile/$', 'view_publisher_profile', name='view_publisher_profile'),
@@ -45,6 +33,11 @@ urlpatterns = patterns('publication.views',
     url(r'^get/(?P<publication_uid>[a-zA-Z0-9\-]+)/$', 'get_publication', name='get_publication'),
 
     url(r'^publication/(?P<publication_id>\d+)/edit/$', 'edit_publication', name='edit_publication'),
+    url(r'^publication/(?P<publication_id>\d+)/edit/status/$', 'edit_publication_status', name='edit_publication_status'),
 
-    url(r'^book/(?P<book_id>\d+)/$', 'view_book', name='view_book'),
+    url(r'^publication/(?P<publication_id>\d+)/set/published/$', 'set_publication_published', name='set_publication_published'),
+    url(r'^publication/(?P<publication_id>\d+)/set/schedule/$', 'set_publication_schedule', name='set_publication_schedule'),
+    url(r'^publication/(?P<publication_id>\d+)/set/cancel_schedule/$', 'set_publication_cancel_schedule', name='set_publication_cancel_schedule'),
+    url(r'^publication/(?P<publication_id>\d+)/set/revert/$', 'set_publication_revert', name='set_publication_revert'),
+
 )

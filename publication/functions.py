@@ -7,38 +7,12 @@ from models import UploadingPublication
 
 from common.utilities import convert_publication_type
 
-def upload_publication(uploaded_by, uploading_file, publisher, publication_type=None, parent_id=None):
-    # dir_path = '%s%d/' % (settings.PUBLICATION_ROOT, publisher.id)
-    # if not os.path.exists(dir_path):
-    #     os.mkdir(dir_path)
+from publication import get_publication_module
 
+def upload_publication(request, module, uploading_file, publisher):
     (file_name, separator, file_ext) = uploading_file.name.rpartition('.')
 
-    if publication_type in ('periodical', 'book'):
-        if file_ext not in ('pdf'):
-            raise FileUploadTypeUnknown()
+    uploading_publication = UploadingPublication.objects.create(publisher=publisher, publication_type=module, original_file_name=file_name, file_ext=file_ext, uploaded_by=request.user)
+    uploading_publication.uploaded_file.save('%s.%s' % (uploading_publication.uid, file_ext), uploading_file)
 
-    elif publication_type == 'video':
-        if file_ext not in ('mov', 'avi', 'mp4'):
-            raise FileUploadTypeUnknown()
-
-    elif not publication_type:
-        # Check publication type from file extension
-        if file_ext in ('mov', 'avi', 'mp4'):
-            publication_type = 'video'
-        else:
-            raise FileUploadTypeUnknown()
-    
-    publication_type = convert_publication_type(publication_type)
-
-    publication = UploadingPublication.objects.create(publisher=publisher, publication_type=publication_type, parent_id=parent_id, original_file_name=file_name, file_ext=file_ext, uploaded_by=uploaded_by)
-    publication.uploaded_file.save('%s.%s' % (publication.uid, file_ext), uploading_file)
-
-    """
-    destination = open('%s%s.%s' % (dir_path, publication.uid, file_ext), 'wb+')
-    for chunk in uploading_file.chunks():
-        destination.write(chunk)
-    destination.close()
-    """
-
-    return publication
+    return uploading_publication

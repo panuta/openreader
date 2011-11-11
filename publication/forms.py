@@ -5,12 +5,13 @@ from widgets import YUICalendar, HourOnlyTimeInput
 
 from common.forms import StrippedCharField
 
-from publication.models import Publisher, Periodical, PublicationCategory
+from publication.models import Publisher, PublicationCategory
+from publication.magazine.models import Magazine
 
-class PublisherPeriodicalChoiceField(forms.ModelChoiceField):
+class PublisherMagazineChoiceField(forms.ModelChoiceField):
     def __init__(self, *args, **kwargs):
         kwargs['empty_label'] = ''
-        kwargs['queryset'] = Periodical.objects.all().order_by('title')
+        kwargs['queryset'] = Magazine.objects.all().order_by('title')
         forms.ModelChoiceField.__init__(self, *args, **kwargs)
 
     def label_from_instance(self, obj):
@@ -21,32 +22,27 @@ class PublisherPeriodicalChoiceField(forms.ModelChoiceField):
 class PublisherForm(forms.Form):
     name = StrippedCharField()
 
-class UploadPublicationForm(forms.Form):
-    upload_type = forms.CharField(widget=forms.HiddenInput(), max_length=50, required=False)
+class GeneralUploadPublicationForm(forms.Form):
+    module = forms.CharField(widget=forms.HiddenInput(), max_length=50)
     publication = forms.FileField()
 
-class FinishUploadPeriodicalIssueForm(forms.Form):
-    periodical = PublisherPeriodicalChoiceField(required=False)
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        # TODO: Check eligible file type from all available modules
+        return cleaned_data
+    
+    def persist(self, uploading_publication):
+        pass
+
+class MagazineIssueForm(forms.Form):
     title = forms.CharField(widget=forms.TextInput(attrs={'class':'span10'}))
     description = forms.CharField(required=False, widget=forms.Textarea(attrs={'class':'span10', 'rows':'5'}))
+
+class PublicationStatusForm(forms.Form):
     publish_status = forms.ChoiceField(choices=(('unpublished', 'Unpulished'), ('scheduled', 'Scheduled'), ('published', 'Published')))
     schedule_date = forms.DateField(widget=YUICalendar(attrs={'id':'id_schedule_date'}), required=False)
     schedule_time = forms.TimeField(widget=HourOnlyTimeInput(), required=False)
 
-    def __init__(self, *args, **kwargs):
-        self.publisher = kwargs.pop('publisher', None)
-        self.uploading_publication = kwargs.pop('uploading_publication', None)
-        forms.Form.__init__(self, *args, **kwargs)
-
-        self.fields['periodical'].queryset = Periodical.objects.filter(publisher=self.publisher).order_by('title')
-    
-    def clean_periodical(self):
-        data = self.cleaned_data.get('periodical')
-        if not self.uploading_publication.parent_id and not data:
-            raise forms.ValidationError(_(u'This field is required.'))
-        
-        return data
-    
     def clean(self):
         cleaned_data = self.cleaned_data
         publish_status = cleaned_data.get('publish_status')
@@ -58,38 +54,13 @@ class FinishUploadPeriodicalIssueForm(forms.Form):
         
         return cleaned_data
 
-class FinishUploadBookForm(forms.Form):
-    title = forms.CharField(widget=forms.TextInput(attrs={'class':'span10'}))
-    description = forms.CharField(required=False, widget=forms.Textarea(attrs={'class':'span10', 'rows':'5'}))
-    author = forms.CharField(widget=forms.TextInput(attrs={'class':'span10'}))
-    publish_status = forms.ChoiceField(choices=(('unpublished', 'Unpulished'), ('scheduled', 'Scheduled'), ('published', 'Published')))
-    schedule_date = forms.DateField(widget=YUICalendar(attrs={'id':'id_schedule_date'}), required=False)
-    schedule_time = forms.TimeField(widget=HourOnlyTimeInput(), required=False)
+# Publisher Magazines
 
-    def __init__(self, *args, **kwargs):
-        self.uploading_publication = kwargs.pop('uploading_publication', None)
-        forms.Form.__init__(self, *args, **kwargs)
-    
-    def clean(self):
-        cleaned_data = self.cleaned_data
-        publish_status = cleaned_data.get('publish_status')
-        schedule_date = cleaned_data.get('schedule_date')
-        schedule_time = cleaned_data.get('schedule_time')
-
-        if publish_status == 'scheduled' and not (schedule_date or schedule_time):
-            self._errors['publish_status'] = self.error_class([_(u'This field is required.')])
-        
-        return cleaned_data
-
-    # categories = forms.ModelMultipleChoiceField(required=False, queryset=PublicationCategory.objects.all(), widget=forms.CheckboxSelectMultiple())    
-
-# Publisher Periodicals
-
-class PublisherPeriodicalForm(forms.Form):
+class PublisherMagazineForm(forms.Form):
     title = forms.CharField(max_length=200, widget=forms.TextInput(attrs={'class':'span9'}))
     description = forms.CharField(widget=forms.Textarea(attrs={'class':'span9', 'rows':'3'}))
 
-    # categories = models.ManyToManyField('PublicationCategory', related_name='periodical_categories')
+    # categories = models.ManyToManyField('PublicationCategory', related_name='magazine_categories')
 
 # Publisher Management
 

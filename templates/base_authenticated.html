@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load page_tags %}
+{% load page_tags module_tags %}
 
 {% block head_title %}{% endblock %}
 
@@ -7,6 +7,9 @@
 {{block.super}}
 <script type="text/javascript" src="{{STATIC_URL}}libs/jquery.form.js"></script>
 <script type="text/javascript" src="{{STATIC_URL}}libs/progressbar/jquery.progressbar.js"></script>
+
+<script type="text/javascript" src="{{STATIC_URL}}js/binding.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}js/scripts.js"></script>
 
 <script>
 var var_publisher_id = '{{publisher.id}}';
@@ -22,8 +25,7 @@ $(document).ready(function () {initialize();})
         <h3><a href="{% url view_publisher_dashboard publisher.id %}">{{publisher.name}}</a></h3>
         <ul class="nav">
           <li><a href="{% url view_publisher_dashboard publisher.id %}">Dashboard</a></li>
-          <li><a href="{% url view_publisher_periodicals publisher.id %}">Periodicals</a></li>
-          <li><a href="{% url view_publisher_books publisher.id %}">Books</a></li>
+          {% generate_publication_menu publisher %}
           <li><a href="{% url view_publisher_management publisher.id %}">Publisher Management</a></li>
         </ul>
 

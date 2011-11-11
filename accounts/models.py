@@ -38,8 +38,14 @@ UserPublisherShelf
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
+    first_name = models.CharField(max_length=200) # first_name and last_name in contrib.auth.User is too short
+    last_name = models.CharField(max_length=200)
     is_publisher = models.BooleanField()
     is_admin = models.BooleanField()
+
+
+    def get_fullname(self):
+      return '%s %s' % (self.first_name, self.last_name)
 
 class UserDevice(models.Model):
     user = models.ForeignKey(User)

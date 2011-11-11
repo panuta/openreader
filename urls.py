@@ -9,6 +9,9 @@ urlpatterns = patterns('',
     url('', include('openreader.homepage.urls')),
     url('', include('openreader.publication.urls')),
 
+    url('', include('openreader.publication.book.urls')),
+    url('', include('openreader.publication.magazine.urls')),
+
     url(r'^accounts/', include('django.contrib.auth.urls')),
     url(r'^admin/', include(admin.site.urls)),
     

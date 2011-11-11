@@ -23,10 +23,19 @@ class Publisher(models.Model):
 # class SystemShelf(models.Model):
 #     name = models.CharField(max_length=200)
 
+class PublisherModule(models.Model):
+    publisher = models.ForeignKey('Publisher')
+    module_name = models.CharField(max_length=100)
+    module_type = models.CharField(max_length=50)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def get_module_object(self):
+        return __import__('publication.%s' % self.module_name, fromlist=['publication'])
+
 class PublisherShelf(models.Model):
     publisher = models.ForeignKey('Publisher')
 
-    name = models.CharField(max_length=200, default='Default Shelf')
+    name = models.CharField(max_length=200)
     description = models.CharField(max_length=500, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='publisher_shelf_created_by')
@@ -37,8 +46,8 @@ class UploadingPublication(models.Model):
     publisher = models.ForeignKey('Publisher')
 
     uid = models.CharField(max_length=200, db_index=True)
-    publication_type = models.IntegerField()
-    parent_id = models.IntegerField(null=True) # Can be used for PeriodicalID, etc.
+    publication_type = models.CharField(max_length=50)
+    parent_id = models.IntegerField(null=True) # Can be used for Magazine ID, etc.
 
     uploaded_file = models.FileField(upload_to=publication_media_dir, max_length=500)
 
@@ -59,15 +68,12 @@ class Publication(models.Model):
     PUBLISH_STATUS_SCHEDULE_TO_PUBLISH = 3
     PUBLISH_STATUS_PUBLISHED = 4
 
-    PUBLICATION_TYPE_BOOK = 1
-    PUBLICATION_TYPE_PERIODICAL = 2
-    
     publisher = models.ForeignKey('Publisher')
 
     uid = models.CharField(max_length=200, db_index=True)
     title = models.CharField(max_length=500)
     description = models.TextField(blank=True)
-    publication_type = models.IntegerField()
+    publication_type = models.CharField(max_length=50) # Also module_code
 
     uploaded_file = PrivateFileField(upload_to=publication_media_dir, condition=is_downloadable, max_length=500, null=True)
     original_file_name = models.CharField(max_length=300)
@@ -87,6 +93,10 @@ class Publication(models.Model):
         if not self.uid:
             self.uid = uuid.uuid4()
         super(Publication, self).save(*args, **kwargs)
+    
+    def get_publication_title(self):
+        from publication import get_publication_module
+        return get_publication_module(self.publication_type).get_publication_title(self)
 
 class PublicationCategory(models.Model):
     name = models.CharField(max_length=200)
@@ -95,41 +105,4 @@ class PublicationCategory(models.Model):
     def __unicode__(self):
         return self.name
 
-# Publication - Book ############################################################
 
-class Book(models.Model):
-    publication = models.OneToOneField('Publication')
-    author = models.CharField(max_length=200)
-    isbn = models.CharField(max_length=13)
-    categories = models.ManyToManyField('PublicationCategory', related_name='book_categories', null=True)
-
-class BookContent(models.Model):
-    book = models.ForeignKey('Book')
-    title = models.CharField(max_length=255)
-    start_page = models.IntegerField()
-
-# Publication - Periodical ############################################################
-
-class Periodical(models.Model):
-    publisher = models.ForeignKey('Publisher')
-
-    title = models.CharField(max_length=255)
-    description = models.TextField(blank=True)
-    categories = models.ManyToManyField('PublicationCategory', related_name='periodical_categories', null=True)
-
-    logo = models.ImageField(upload_to=settings.PERIODICAL_LOGO_ROOT, max_length=500, null=True)
-
-    created = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, related_name='periodical_created_by')
-    modified = models.DateTimeField(auto_now=True)
-    modified_by = models.ForeignKey(User, related_name='periodical_modified_by', null=True)
-
-class PeriodicalIssue(models.Model):
-    publication = models.OneToOneField('Publication')
-    periodical = models.ForeignKey('Periodical')
-
-class PeriodicalIssueContent(models.Model):
-    issue = models.ForeignKey('PeriodicalIssue')
-    title = models.CharField(max_length=255)
-    author = models.CharField(max_length=255)
-    start_page = models.IntegerField()
