@@ -1,10 +1,13 @@
 from django.conf.urls.defaults import patterns, include, url
 
 urlpatterns = patterns('publication.views',
-    url(r'^dashboard/$', 'view_dashboard', name='view_dashboard'),
 
     url(r'^publisher/create/$', 'create_publisher', name='create_publisher'),
     url(r'^publisher/select/$', 'select_publisher', name='select_publisher'),
+
+    # Dashboard
+    url(r'^dashboard/$', 'view_dashboard', name='view_dashboard'),
+    url(r'^publisher/(?P<publisher_id>\d+)/dashboard/$', 'view_publisher_dashboard', name='view_publisher_dashboard'),
 
     # Upload
     url(r'^publisher/(?P<publisher_id>\d+)/upload/(?P<module_name>\w+)/$', 'upload_publication', name='upload_module_publication'),
@@ -12,9 +15,6 @@ urlpatterns = patterns('publication.views',
     url(r'^publication/(?P<publication_id>\d+)/finishing_upload/$', 'finishing_upload_publication', name='finishing_upload_publication'),
     
     url(r'^get_upload_progress?.*$', 'get_upload_progress', name='get_upload_progress'),
-
-    # Dashboard
-    url(r'^publisher/(?P<publisher_id>\d+)/dashboard/$', 'view_publisher_dashboard', name='view_publisher_dashboard'),
 
     # Publisher Management
     url(r'^publisher/(?P<publisher_id>\d+)/publisher/management/$', 'view_publisher_management', name='view_publisher_management'),

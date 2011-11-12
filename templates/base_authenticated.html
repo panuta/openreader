@@ -29,15 +29,9 @@ $(document).ready(function () {initialize();})
           <li><a href="{% url view_publisher_management publisher.id %}">Publisher Management</a></li>
         </ul>
 
-        <ul class="nav secondary-nav">
-          <li class="dropdown">
-        	  <a class="dropdown-toggle" href="#">Switch Publisher</a>
-            <ul class="dropdown-menu">
-              <li><a href="#">Publisher1</a></li>
-              <li><a href="#">Publisher2</a></li>
-            </ul>
-          </li>
-        </ul>
+        {% generate_publisher_menu user %}
+
+        
       </div>
     </div>
   </div>

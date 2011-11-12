@@ -38,25 +38,15 @@ UserPublisherShelf
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
-    first_name = models.CharField(max_length=200) # first_name and last_name in contrib.auth.User is too short
-    last_name = models.CharField(max_length=200)
+    first_name = models.CharField(max_length=200, blank=True) # first_name and last_name in contrib.auth.User is too short
+    last_name = models.CharField(max_length=200, blank=True)
     is_publisher = models.BooleanField()
     is_admin = models.BooleanField()
-
 
     def get_fullname(self):
       return '%s %s' % (self.first_name, self.last_name)
 
-class UserDevice(models.Model):
-    user = models.ForeignKey(User)
-    device_id = models.CharField(max_length=300)
-    created = models.DateTimeField(auto_now_add=True)
-
-class UserAccessToken(models.Model):
-    user = models.ForeignKey(User)
-    token = models.CharField(max_length=300)
-    expired = models.DateField()
-    created = models.DateTimeField(auto_now_add=True)
+# Publisher
 
 class UserPublisher(models.Model):
     user = models.ForeignKey(User)
@@ -71,15 +61,30 @@ class UserPublisherShelf(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='user_publisher_shelf_created_by')
 
+# Reader
+
+class UserDevice(models.Model):
+    user = models.ForeignKey(User)
+    device_id = models.CharField(max_length=300)
+    created = models.DateTimeField(auto_now_add=True)
+
+class UserAccessToken(models.Model):
+    user = models.ForeignKey(User)
+    token = models.CharField(max_length=300)
+    expired = models.DateField()
+    created = models.DateTimeField(auto_now_add=True)
+
+class UserPurchasedPublication(models.Model):
+    user = models.ForeignKey(User)
+    publication = models.ForeignKey('publication.Publication')
+    created = models.DateTimeField(auto_now_add=True)
+
 """
-# For finer-tuned permissions per user per publisher
+# For fine-tuned permissions per user per publisher
 class PublisherUserPermission(models.Model):
     publisher = models.ForeignKey('publication.Publisher')
     user = models.ForeignKey(User)
     permissions = models.ManyToManyField(Permission, blank=True)
 """
 
-class UserPurchasedPublication(models.Model):
-    user = models.ForeignKey(User)
-    publication = models.ForeignKey('publication.Publication')
-    created = models.DateTimeField(auto_now_add=True)
+
