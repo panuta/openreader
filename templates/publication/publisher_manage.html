@@ -1,4 +1,5 @@
 {% extends 'base_authenticated.html' %}
+{% load module_tags %}
 
 {% block head_title %}Publisher Management{% endblock %}
 
@@ -11,7 +12,7 @@
 
   <ul>
     <li><a href="{% url view_publisher_profile publisher.id %}">Update profile</a> - Publisher name</li>
-    <li><a href="{% url view_publisher_shelfs publisher.id %}">Shelfs</a> - Create/Edit/Delete shelf</li>
+    {% has_module publisher 'shelf' %}<li><a href="{% url view_publisher_shelfs publisher.id %}">Shelfs</a> - Create/Edit/Delete shelf</li>{% end_has_module %}
     <li><a href="{% url view_publisher_users publisher.id %}">Users</a> - Add a new user, user permission</li>
     <li><a href="{% url view_publisher_billing publisher.id %}">Billing</a> - Billing</li>
   </ul>

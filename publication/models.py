@@ -20,6 +20,19 @@ class Publisher(models.Model):
     modified = models.DateTimeField(auto_now=True)
     modified_by = models.ForeignKey(User, related_name='publisher_modified_by', null=True)
 
+    def can_view(self, user):
+        from accounts.models import UserPublisher
+        return UserPublisher.objects.filter(user=user, publisher=self).exists()
+    
+    def can_magage(self, user):
+        from accounts.models import UserPublisher
+        return UserPublisher.objects.filter(user=user, publisher=self, ).exists()
+        try:
+            user_publisher = UserPublisher.objects.get(user=user, publisher=self, )
+        except:
+            return False
+        return 
+
 # class SystemShelf(models.Model):
 #     name = models.CharField(max_length=200)
 
@@ -95,7 +108,7 @@ class Publication(models.Model):
         super(Publication, self).save(*args, **kwargs)
     
     def get_publication_title(self):
-        from publication import get_publication_module
+        from common.modules import get_publication_module
         return get_publication_module(self.publication_type).get_publication_title(self)
 
 class PublicationCategory(models.Model):

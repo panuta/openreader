@@ -3,7 +3,6 @@ from django.conf.urls.defaults import patterns, include, url
 urlpatterns = patterns('publication.views',
 
     url(r'^publisher/create/$', 'create_publisher', name='create_publisher'),
-    url(r'^publisher/select/$', 'select_publisher', name='select_publisher'),
 
     # Dashboard
     url(r'^dashboard/$', 'view_dashboard', name='view_dashboard'),

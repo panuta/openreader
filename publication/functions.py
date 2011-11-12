@@ -6,7 +6,7 @@ from django.conf import settings
 from exceptions import FileUploadTypeUnknown
 from models import UploadingPublication, Publication
 
-from publication import get_publication_module
+from common.modules import get_publication_module
 
 def upload_publication(request, module, uploading_file, publisher):
     (file_name, separator, file_ext) = uploading_file.name.rpartition('.')

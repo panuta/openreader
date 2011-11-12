@@ -28,6 +28,7 @@ def after_syncdb(sender, **kwargs):
 
     PublisherModule.objects.get_or_create(publisher=publisher, module_name='magazine', module_type='publication')
     PublisherModule.objects.get_or_create(publisher=publisher, module_name='book', module_type='publication')
+    PublisherModule.objects.get_or_create(publisher=publisher, module_name='shelf', module_type='feature')
 
     magazine, created = Magazine.objects.get_or_create(publisher=publisher, title='Magazine 1', created_by=admin_user)
 

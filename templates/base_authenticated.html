@@ -28,10 +28,7 @@ $(document).ready(function () {initialize();})
           {% generate_publication_menu publisher %}
           <li><a href="{% url view_publisher_management publisher.id %}">Publisher Management</a></li>
         </ul>
-
         {% generate_publisher_menu user %}
-
-        
       </div>
     </div>
   </div>

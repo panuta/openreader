@@ -4,10 +4,46 @@ from django import template
 register = template.Library()
 
 from django.core.urlresolvers import reverse
+from django.template import NodeList
+
+from common.modules import *
 
 from publication.models import PublisherModule
 
-from publication import get_publication_module
+class HasModuleNode(template.Node):
+    def __init__(self, nodelist_true, nodelist_false, publisher, module_name):
+        self.nodelist_true = nodelist_true
+        self.nodelist_false = nodelist_false
+        self.publisher = template.Variable(publisher)
+        self.module_name = module_name.strip(' \"\'')
+    
+    def render(self, context):
+        publisher = self.publisher.resolve(context)
+        module_name = self.module_name
+        
+        if has_module(publisher=publisher, module_name=module_name):
+            output = self.nodelist_true.render(context)
+            return output
+        else:
+            output = self.nodelist_false.render(context)
+            return output
+
+@register.tag(name="has_module")
+def do_has_module(parser, token):
+    try:
+        tag_name, publisher, module_name = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError, "has_module tag raise ValueError"
+    
+    nodelist_true = parser.parse(('else', 'end_has_module'))
+    token = parser.next_token()
+    if token.contents == 'else':
+        nodelist_false = parser.parse(('end_has_module',))
+        parser.delete_first_token()
+    else:
+        nodelist_false = NodeList()
+    
+    return HasModuleNode(nodelist_true, nodelist_false, publisher, module_name)
 
 @register.simple_tag
 def generate_publication_menu(publisher):

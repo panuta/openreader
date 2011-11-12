@@ -10,9 +10,9 @@ from django.utils import simplejson
 
 from private_files.views import get_file as private_files_get_file
 
+from common.modules import get_publication_module
 from common.shortcuts import response_json, response_json_error
 
-from publication import get_publication_module
 from publication import functions as publication_functions
 
 from exceptions import *
@@ -32,18 +32,17 @@ def view_dashboard(request):
         if UserPublisher.objects.filter(user=request.user).count() == 0:
             return redirect('view_user_welcome')
         else:
-            # If a user does not set any default publisher, redirect to publisher selection
-            return redirect('select_publisher')
+            # If a user does not set any default publisher, pick the first one
+            publisher = UserPublisher.objects.filter(user=request.user).order_by('created')[0]
+            return redirect('view_publisher_dashboard', publisher_id=publisher.id)
 
 @login_required
 def view_publisher_dashboard(request, publisher_id):
     publisher = get_object_or_404(Publisher, pk=publisher_id)
-    return render(request, 'publication/dashboard.html', {'publisher':publisher})
 
-@login_required
-def select_publisher(request):
-    user_publishers = UserPublisher.objects.filter(user=request.user)
-    return render(request, 'publication/publisher_select.html', {'user_publishers':user_publishers})
+    print request.user.get_profile().can('view', publisher)
+
+    return render(request, 'publication/dashboard.html', {'publisher':publisher})
 
 @login_required
 def create_publisher(request):

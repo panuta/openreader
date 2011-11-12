@@ -43,6 +43,10 @@ class UserProfile(models.Model):
     is_publisher = models.BooleanField()
     is_admin = models.BooleanField()
 
+    def can(self, action, object):
+      from common.permissions import can
+      return can(self.user, action, object)
+
     def get_fullname(self):
       return '%s %s' % (self.first_name, self.last_name)
 

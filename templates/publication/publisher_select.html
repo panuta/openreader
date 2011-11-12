@@ -1,9 +1,0 @@
-{% extends 'base_authenticated.html' %}
-
-{% block body_authenticated %}
-<ul>
-{% for user_publisher in user_publishers %}
-<li><a href="{% url view_publisher_dashboard user_publisher.publisher.id %}">{{user_publisher.publisher.name}}</a></li>
-{% endfor %}
-</ul>
-{% endblock %}
