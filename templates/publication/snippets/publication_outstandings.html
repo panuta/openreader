@@ -1,16 +1,15 @@
 {% load helper_tags %}
 
-{% if ready or scheduled or unpublished %}
-
 <div class="publication_outstandings">
   <div class="numbers">
     <ul>
-      {% if ready %}<li class="ready"><a href="#outstanding-ready">Ready to publish ({{ready|length}} issues)</a></li>{% endif %}
+      {% comment %}{% if ready %}<li class="ready"><a href="#outstanding-ready">Ready to publish ({{ready|length}} issues)</a></li>{% endif %}{% endcomment %}
       {% if scheduled %}<li class="scheduled"><a href="#outstanding-scheduled">Scheduled to publish ({{scheduled|length}} issues)</a></li>{% endif %}
       {% if unpublished %}<li class="unpublished"><a href="#outstanding-unpublished">Unpublished ({{unpublished|length}} issues)</a></li>{% endif %}
     </ul>
   </div>
 
+  {% comment %}
   {% if ready %}
   <div class="list" id="outstanding-ready" style="display:none;">
     <div class="close_list"><a href="#">Close List</a></div>
@@ -30,6 +29,7 @@
     </ul>
   </div>
   {% endif %}
+  {% endcomment %}
 
   {% if scheduled %}
   <div class="list" id="outstanding-scheduled" style="display:none;">
@@ -68,6 +68,4 @@
     </ul>
   </div>
   {% endif %}
-
 </div>
-{% endif %}

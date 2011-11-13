@@ -3,10 +3,11 @@
 from django import template
 register = template.Library()
 
+from django.template import NodeList
+
 from common import utilities
 
 # DATE TIME #################################################################
-
 
 @register.filter(name='format_datetime')
 def format_datetime(datetime):
@@ -24,7 +25,46 @@ def format_date(datetime):
 def format_abbr_date(datetime):
     return utilities.format_abbr_date(datetime)
 
+# PERMISSION #################################################################
 
+class CanNode(template.Node):
+    def __init__(self, nodelist_true, nodelist_false, user, action, object):
+        self.nodelist_true = nodelist_true
+        self.nodelist_false = nodelist_false
+        self.user = template.Variable(user)
+        self.action = action.strip(' \"\'')
+        self.object = template.Variable(object)
+    
+    def render(self, context):
+        user = self.user.resolve(context)
+        object = self.object.resolve(context)
+        action = self.action
+
+        from common.permissions import can
+        
+        if can(user, action, object):
+            output = self.nodelist_true.render(context)
+            return output
+        else:
+            output = self.nodelist_false.render(context)
+            return output
+
+@register.tag(name="can")
+def do_can(parser, token):
+    try:
+        tag_name, user, action, object = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError, "can tag raise ValueError"
+    
+    nodelist_true = parser.parse(('else', 'endcan'))
+    token = parser.next_token()
+    if token.contents == 'else':
+        nodelist_false = parser.parse(('endcan',))
+        parser.delete_first_token()
+    else:
+        nodelist_false = NodeList()
+    
+    return CanNode(nodelist_true, nodelist_false, user, action, object)
 
 
 

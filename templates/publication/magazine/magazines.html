@@ -7,14 +7,19 @@
 {{block.super}}
 <script>
 $(document).ready(function () {
+  {% can user 'upload' publisher %}
   bind_upload_publication_modal();
   bind_upload_publication_form();
-  bind_publication_outstandings();
 
   $('.upload_publication_button').on('click', function(e) {
     open_upload_publication_modal();
     return false;
   });
+  {% endcan %}
+  
+  {% if outstandings %}
+  bind_publication_outstandings();
+  {% endif %}
 })
 </script>
 {% endblock %}
@@ -27,43 +32,49 @@ $(document).ready(function () {
 
   {% if magazines %}
 
-  <div class="table_actions">
-    <a href="{% url upload_module_publication publisher.id 'magazine' %}" class="btn upload_publication_button"><span>Upload magazine issue</span></a>
-  </div>
+    {% can user 'upload' publisher %}
+    <div class="table_actions">
+      <a href="{% url upload_module_publication publisher.id 'magazine' %}" class="btn upload_publication_button"><span>Upload magazine issue</span></a>
+    </div>
+    {% endcan %}
 
-  {% include 'publication/snippets/publication_outstandings.html' with ready=outstandings.ready scheduled=outstandings.scheduled unpublished=outstandings.unpublished %}
+    {% if outstandings.scheduled or outstandings.unpublished %}
+    {% include 'publication/snippets/publication_outstandings.html' with scheduled=outstandings.scheduled unpublished=outstandings.unpublished %}
+    {% endif %}
 
-  <div class="magazines">
-    <ul>
-      {% for magazine in magazines %}
-      <li {% if forloop.last %}class="last"{% endif %} magazine-id="{{magazine.id}}" magazine-title="{{magazine.title}}">
-        <div class="title"><a href="{% url view_magazine magazine.id %}">{{magazine.title}}</a></div>
-        <div class="stats"><span class="published">{{magazine.published_count}} issues published</span>{% if magazine.last_published %} (Latest issue is <a href="#">{{magazine.last_published.publication.title}}</a>){% endif %}</div>
-        {% if magazine.outstanding.ready or magazine.outstanding.scheduled or magazine.outstanding.unpublished %}
-        <div class="outstanding">
-          {% if magazine.outstanding.ready %}<span class="ready">{{magazine.outstanding.ready}} ready to publish</span>{% endif %}
-          {% if magazine.outstanding.scheduled %}<span class="scheduled">{{magazine.outstanding.scheduled}} scheduled to publish</span>{% endif %}
-          {% if magazine.outstanding.unpublished %}<span class="unpublished">{{magazine.outstanding.unpublished}} unpublished</span>{% endif %}
-        </div>
-        {% endif %}
-      </li>
-      {% endfor %}
-    </ul>
-  </div>
+    <div class="magazines">
+      <ul>
+        {% for magazine in magazines %}
+        <li {% if forloop.last %}class="last"{% endif %} magazine-id="{{magazine.id}}" magazine-title="{{magazine.title}}">
+          <div class="title"><a href="{% url view_magazine magazine.id %}">{{magazine.title}}</a></div>
+          <div class="stats"><span class="published">{{magazine.published_count}} issues published</span>{% if magazine.last_published %} (Latest issue is <a href="#">{{magazine.last_published.publication.title}}</a>){% endif %}</div>
+          {% if magazine.outstanding.scheduled or magazine.outstanding.unpublished %}
+          <div class="outstanding">
+            {% if magazine.outstanding.scheduled %}<span class="scheduled">{{magazine.outstanding.scheduled}} scheduled to publish</span>{% endif %}
+            {% if magazine.outstanding.unpublished %}<span class="unpublished">{{magazine.outstanding.unpublished}} unpublished</span>{% endif %}
+          </div>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
 
-  <div class="create_magazine">
-    <a href="{% url create_publisher_magazine publisher.id %}"><span>Create new magazine</span></a>
-  </div>
+    {% can user 'manage' publisher %}
+    <div class="create_magazine">
+      <a href="{% url create_publisher_magazine publisher.id %}"><span>Create new magazine</span></a>
+    </div>
+    {% endcan %}
 
   {% else %}
-  
-  <div class="magazines">
-    <div class="no_row">No magazine, <a href="{% url view_publisher_magazines_create publisher.id %}">upload first one</a></div>
-  </div>
-  
+    <div class="no_magazine">
+      <p>Your publisher currently has no magazine</p>
+      {% can user 'manage' publisher %}
+      <div><a href="{% url create_publisher_magazine publisher.id %}" class="btn">Create magazine</a></div>
+      {% endcan %}
+    </div>  
   {% endif %}
-</div>
 
+</div>
 {% generate_publication_module_upload_modal 'magazine' publisher %}
 
 {% endblock %}

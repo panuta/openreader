@@ -65,3 +65,9 @@ class FinishUploadMagazineIssueForm(forms.Form):
             self._errors['schedule_time'] = self.error_class([_(u'This field is required.')])
         
         return cleaned_data
+
+class PublisherMagazineForm(forms.Form):
+    title = forms.CharField(max_length=200, widget=forms.TextInput(attrs={'class':'span9'}))
+    description = forms.CharField(widget=forms.Textarea(attrs={'class':'span9', 'rows':'3'}))
+
+    # categories = models.ManyToManyField('PublicationCategory', related_name='magazine_categories')

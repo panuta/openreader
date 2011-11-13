@@ -54,13 +54,6 @@ class PublicationStatusForm(forms.Form):
         
         return cleaned_data
 
-# Publisher Magazines
-
-class PublisherMagazineForm(forms.Form):
-    title = forms.CharField(max_length=200, widget=forms.TextInput(attrs={'class':'span9'}))
-    description = forms.CharField(widget=forms.Textarea(attrs={'class':'span9', 'rows':'3'}))
-
-    # categories = models.ManyToManyField('PublicationCategory', related_name='magazine_categories')
 
 # Publisher Management
 

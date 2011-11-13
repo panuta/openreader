@@ -41,7 +41,6 @@ class UserProfile(models.Model):
     first_name = models.CharField(max_length=200, blank=True) # first_name and last_name in contrib.auth.User is too short
     last_name = models.CharField(max_length=200, blank=True)
     is_publisher = models.BooleanField()
-    is_admin = models.BooleanField()
 
     def can(self, action, object):
       from common.permissions import can

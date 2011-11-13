@@ -7,6 +7,8 @@ from django.http import HttpResponse, HttpResponseServerError, Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import simplejson
 
+from common.permissions import can
+
 from publication import functions as publication_functions
 from publication.models import *
 
@@ -50,7 +52,13 @@ def view_publication(request, publisher, publication):
 @login_required
 def view_publisher_magazines(request, publisher_id):
     publisher = get_object_or_404(Publisher, pk=publisher_id)
+
+    if not can(request.user, 'view', publisher):
+        raise Http404
+
     magazines = Magazine.objects.filter(publisher=publisher).order_by('-created')
+
+    can_upload_publish = can(request.user, 'upload+publish', publisher)
 
     for magazine in magazines:
         magazine.published_count = MagazineIssue.objects.filter(magazine=magazine, publication__publish_status=Publication.PUBLISH_STATUS_PUBLISHED).count()
@@ -60,17 +68,19 @@ def view_publisher_magazines(request, publisher_id):
         except MagazineIssue.DoesNotExist:
             magazine.last_published = None
         
-        magazine.outstanding = {
-            'ready': MagazineIssue.objects.filter(magazine=magazine, publication__publish_status=Publication.PUBLISH_STATUS_READY_TO_PUBLISH).count(),
-            'scheduled': MagazineIssue.objects.filter(magazine=magazine, publication__publish_status=Publication.PUBLISH_STATUS_SCHEDULE_TO_PUBLISH).count(),
-            'unpublished': MagazineIssue.objects.filter(magazine=magazine, publication__publish_status=Publication.PUBLISH_STATUS_UNPUBLISHED).count(),
-        }
+        if can_upload_publish:
+            magazine.outstanding = {
+                'scheduled': MagazineIssue.objects.filter(magazine=magazine, publication__publish_status=Publication.PUBLISH_STATUS_SCHEDULE_TO_PUBLISH).count(),
+                'unpublished': MagazineIssue.objects.filter(magazine=magazine, publication__publish_status=Publication.PUBLISH_STATUS_UNPUBLISHED).count(),
+            }
 
-    outstandings = {
-        'ready': Publication.objects.filter(publisher=publisher, publish_status=Publication.PUBLISH_STATUS_READY_TO_PUBLISH),
-        'scheduled': Publication.objects.filter(publisher=publisher, publish_status=Publication.PUBLISH_STATUS_SCHEDULE_TO_PUBLISH),
-        'unpublished': Publication.objects.filter(publisher=publisher, publish_status=Publication.PUBLISH_STATUS_UNPUBLISHED)
-    }
+    if can_upload_publish:
+        outstandings = {
+            'scheduled': Publication.objects.filter(publisher=publisher, publish_status=Publication.PUBLISH_STATUS_SCHEDULE_TO_PUBLISH),
+            'unpublished': Publication.objects.filter(publisher=publisher, publish_status=Publication.PUBLISH_STATUS_UNPUBLISHED)
+        }
+    else:
+        outstandings = None
 
     return render(request, 'publication/magazine/magazines.html', {'publisher':publisher, 'magazines':magazines, 'outstandings':outstandings})
 

@@ -3,6 +3,7 @@ import uuid
 from django.conf import settings
 from django.contrib.auth.models import Permission, User
 from django.db import models
+from django.db.models import Q
 
 from private_files import PrivateFileField
 
@@ -23,15 +24,15 @@ class Publisher(models.Model):
     def can_view(self, user):
         from accounts.models import UserPublisher
         return UserPublisher.objects.filter(user=user, publisher=self).exists()
+
+    def can_publish(self, user):
+        return user.groups.filter(Q(name='publisher_admin') | Q(name='publisher_staff')).exists()
     
-    def can_magage(self, user):
-        from accounts.models import UserPublisher
-        return UserPublisher.objects.filter(user=user, publisher=self, ).exists()
-        try:
-            user_publisher = UserPublisher.objects.get(user=user, publisher=self, )
-        except:
-            return False
-        return 
+    def can_upload(self, user):
+        return self.can_publish(user)
+    
+    def can_manage(self, user):
+        return user.groups.filter(name='publisher_admin').exists()
 
 # class SystemShelf(models.Model):
 #     name = models.CharField(max_length=200)
