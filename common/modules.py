@@ -4,16 +4,14 @@ Module structure
 - 'module_name' folder in templates
 """
 
-from publication.models import PublisherModule
+from publication.models import Module, PublisherModule
 
 def get_publication_module(module_name, sub_module=''):
-    if sub_module: sub_module = '.' + sub_module
     try:
-        return __import__('publication.%s%s' % (module_name, sub_module), fromlist=['publication'])
-    except:
-        import sys
-        print sys.exc_info()
+        module = Module.objects.get(module_name=module_name)
+    except Module.DoesNotExist:
         return None
+    return module.get_module_object(sub_module)
 
 def has_module(publisher, module_name):
-    return PublisherModule.objects.filter(publisher=publisher, module_name=module_name).exists()
+    return PublisherModule.objects.filter(publisher=publisher, module__module_name=module_name).exists()

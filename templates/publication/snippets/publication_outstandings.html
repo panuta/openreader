@@ -1,35 +1,31 @@
 {% load helper_tags %}
-
+{% if unfinished or scheduled or unpublished %}
 <div class="publication_outstandings">
   <div class="numbers">
     <ul>
-      {% comment %}{% if ready %}<li class="ready"><a href="#outstanding-ready">Ready to publish ({{ready|length}} issues)</a></li>{% endif %}{% endcomment %}
+      {% if unfinished %}<li class="unfinished"><a href="#outstanding-unfinished">Unfinished uploading ({{unfinished|length}} issues)</a></li>{% endif %}
       {% if scheduled %}<li class="scheduled"><a href="#outstanding-scheduled">Scheduled to publish ({{scheduled|length}} issues)</a></li>{% endif %}
       {% if unpublished %}<li class="unpublished"><a href="#outstanding-unpublished">Unpublished ({{unpublished|length}} issues)</a></li>{% endif %}
     </ul>
   </div>
 
-  {% comment %}
-  {% if ready %}
-  <div class="list" id="outstanding-ready" style="display:none;">
+  {% if unfinished %}
+  <div class="list" id="outstanding-unfinished" style="display:none;">
     <div class="close_list"><a href="#">Close List</a></div>
     <ul>
-      {% for publication in ready %}
+      {% for uploading_publication in unfinished %}
       <li>
           <div class="cover"></div>
-          <div class="name"><a href="#">{{publication.get_publication_title}}</a></div>
-          <div class="status">Marked as ready to publish on {{publication.publish_schedule|format_abbr_datetime}} by {{publication.published_by.get_profile.get_fullname}}</div>
+          <div class="name">{{uploading_publication.original_file_name}}.{{uploading_publication.file_ext}}</div>
+          <div class="status">Uploaded on <span>{{uploading_publication.uploaded|format_abbr_datetime}}</span> by <span>{{uploading_publication.uploaded_by.get_profile.get_fullname}}</span></div>
           <div class="links">
-            <a href="{% url set_publication_published publication.id %}" publish-action="publish" class="btn">Publish Now</a>
-            <a href="{% url set_publication_schedule publication.id %}" publish-action="schedule" class="btn">Schedule to publish</a>
-            <a href="{% url set_publication_revert publication.id %}" publish-action="revert">Revert to Unpublished status</a>
+            <a href="{% url finishing_upload_publication uploading_publication.id %}" class="btn">Finishing upload</a>
           </div>
       </li>
       {% endfor %}
     </ul>
   </div>
   {% endif %}
-  {% endcomment %}
 
   {% if scheduled %}
   <div class="list" id="outstanding-scheduled" style="display:none;">
@@ -38,11 +34,11 @@
       {% for publication in scheduled %}
       <li>
           <div class="cover"></div>
-          <div class="name"><a href="#">{{publication.get_publication_title}}</a></div>
-          <div class="status">Scheduled to publish on {{publication.publish_schedule|format_abbr_datetime}} by {{publication.published_by.get_profile.get_fullname}}</div>
+          <div class="name"><a href="{% url view_publication publication.id %}">{{publication.get_publication_title}}</a></div>
+          <div class="status">Scheduled to publish on <span>{{publication.publish_schedule|format_abbr_datetime}}</span> by <span>{{publication.published_by.get_profile.get_fullname}}</span></div>
           <div class="links">
-            <a href="{% url set_publication_schedule publication.id %}" publish-action="schedule" class="btn">Reschedule</a>
-            <a href="{% url set_publication_cancel_schedule publication.id %}" publish-action="cancel-schedule">Cancel schedule</a>
+            <a href="{% url set_publication_schedule publication.id %}" class="btn action-schedule">Reschedule</a>
+            <a href="{% url set_publication_cancel_schedule publication.id %}" class="link danger action-cancel-schedule">Cancel schedule</a>
           </div>
       </li>
       {% endfor %}
@@ -57,11 +53,12 @@
       {% for publication in unpublished %}
       <li>
           <div class="cover"></div>
-          <div class="name"><a href="#">{{publication.get_publication_title}}</a></div>
-          <div class="status">Uploaded on {{publication.uploaded|format_abbr_datetime}} by {{publication.uploaded_by.get_profile.get_fullname}}</div>
+          <div class="name"><a href="{% url view_publication publication.id %}">{{publication.get_publication_title}}</a></div>
+          <div class="status">Uploaded on <span>{{publication.uploaded|format_abbr_datetime}}</span> by <span>{{publication.uploaded_by.get_profile.get_fullname}}</span></div>
           <div class="links">
-            <a href="{% url edit_publication publication.id %}" class="btn">Edit Issue</a>
-            <a href="{% url set_publication_published publication.id %}" publish-action="publish" class="btn">Publish Now</a>
+            <a href="{% url set_publication_schedule publication.id %}" class="btn action-schedule">Schedule</a>
+            <a href="{% url set_publication_published publication.id %}" class="btn action-publish">Publish Now</a>
+            <a href="{% url edit_publication publication.id %}" class="link">Edit Issue</a>
           </div>
       </li>
       {% endfor %}
@@ -69,3 +66,4 @@
   </div>
   {% endif %}
 </div>
+{% endif %}

@@ -5,7 +5,12 @@
     <div class="modal-body">
       <div class="inputs">
         {% csrf_token %}
-        <div class="clearfix"><label for="id_magazine">Magazine</label><div class="input"><select name="magazine" id="id_magazine">{% generate_magazine_option_list publisher %}</select></div></div>
+        {% if not magazine %}
+          <div class="clearfix"><label for="id_magazine">Magazine</label><div class="input"><select name="magazine" id="id_magazine">{% generate_magazine_option_list publisher %}</select></div></div>
+        {% else %}
+          <div class="parent_name">{{magazine.title}}</div>
+          <input type="hidden" name="magazine" id="id_magazine" value="{{magazine.id}}" />
+        {% endif %}
         <div class="clearfix"><label for="id_publication">Publication file</label><div class="input"><input type="file" id="id_publication" name="publication"></div></div>
         <input type="hidden" id="X-Progress-ID" name="X-Progress-ID" value=""/>
         <input type="hidden" id="id_module" name="module" value="magazine"/>

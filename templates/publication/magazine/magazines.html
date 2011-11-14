@@ -25,7 +25,7 @@ $(document).ready(function () {
 {% endblock %}
 
 {% block body_authenticated %}
-<div class="publisher_magazines">
+<div class="publisher_magazines_page">
   <ul class="breadcrumb">
     <li class="active">Magazines</li>
   </ul>
@@ -34,22 +34,21 @@ $(document).ready(function () {
 
     {% can user 'upload' publisher %}
     <div class="table_actions">
-      <a href="{% url upload_module_publication publisher.id 'magazine' %}" class="btn upload_publication_button"><span>Upload magazine issue</span></a>
+      <a href="#" class="btn upload_publication_button"><span>Upload magazine issue</span></a>
     </div>
     {% endcan %}
 
-    {% if outstandings.scheduled or outstandings.unpublished %}
-    {% include 'publication/snippets/publication_outstandings.html' with scheduled=outstandings.scheduled unpublished=outstandings.unpublished %}
-    {% endif %}
+    {% include 'publication/snippets/publication_outstandings.html' with unfinished=outstandings.unfinished scheduled=outstandings.scheduled unpublished=outstandings.unpublished %}
 
     <div class="magazines">
       <ul>
         {% for magazine in magazines %}
         <li {% if forloop.last %}class="last"{% endif %} magazine-id="{{magazine.id}}" magazine-title="{{magazine.title}}">
           <div class="title"><a href="{% url view_magazine magazine.id %}">{{magazine.title}}</a></div>
-          <div class="stats"><span class="published">{{magazine.published_count}} issues published</span>{% if magazine.last_published %} (Latest issue is <a href="#">{{magazine.last_published.publication.title}}</a>){% endif %}</div>
-          {% if magazine.outstanding.scheduled or magazine.outstanding.unpublished %}
+          <div class="stats"><span class="published">{{magazine.published_count}} issues published</span>{% if magazine.last_published %} (Latest issue is <a href="{% url view_publication magazine.last_published.publication.id %}">{{magazine.last_published.publication.title}}</a>){% endif %}</div>
+          {% if magazine.outstanding.unfinished or magazine.outstanding.scheduled or magazine.outstanding.unpublished %}
           <div class="outstanding">
+            {% if magazine.outstanding.unfinished %}<span class="unfinished">{{magazine.outstanding.unfinished}} unfinished uploading</span>{% endif %}
             {% if magazine.outstanding.scheduled %}<span class="scheduled">{{magazine.outstanding.scheduled}} scheduled to publish</span>{% endif %}
             {% if magazine.outstanding.unpublished %}<span class="unpublished">{{magazine.outstanding.unpublished}} unpublished</span>{% endif %}
           </div>
@@ -61,7 +60,7 @@ $(document).ready(function () {
 
     {% can user 'manage' publisher %}
     <div class="create_magazine">
-      <a href="{% url create_publisher_magazine publisher.id %}"><span>Create new magazine</span></a>
+      <a href="{% url create_magazine publisher.id %}"><span>Create new magazine</span></a>
     </div>
     {% endcan %}
 
@@ -69,12 +68,12 @@ $(document).ready(function () {
     <div class="no_magazine">
       <p>Your publisher currently has no magazine</p>
       {% can user 'manage' publisher %}
-      <div><a href="{% url create_publisher_magazine publisher.id %}" class="btn">Create magazine</a></div>
+      <div><a href="{% url create_magazine publisher.id %}" class="btn">Create magazine</a></div>
       {% endcan %}
     </div>  
   {% endif %}
 
 </div>
-{% generate_publication_module_upload_modal 'magazine' publisher %}
+{% generate_publication_module_upload_modal 'magazine' %}
 
 {% endblock %}

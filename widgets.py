@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 
-from datetime import date
+from datetime import date, time
 
 from django.conf import settings
 from django.forms.util import flatatt
@@ -73,6 +73,9 @@ class HourMinuteTimeInput(TimeInput):
         if not value:
             hour_value = None
             minute_value = None
+        elif isinstance(value, time):
+            hour_value = int(value.hour)
+            minute_value = int(value.minute)
         else:
             (hour_value, minute_value) = value.split(':')
             hour_value = int(hour_value)
@@ -88,7 +91,7 @@ class HourMinuteTimeInput(TimeInput):
             selected_html = (minute == minute_value) and u' selected="selected"' or ''
             minute_options.append('<option value="%d"%s>%02d</option>' % (minute, selected_html, minute))
 
-        return mark_safe(u'<select name="%s_hour" id="%s_hour">%s</select>:<select name="%s_minute" id="%s_minute">%s</select> น.' % (name, input_id, hour_options, name, input_id, minute_options))
+        return mark_safe(u'<select name="%s_hour" id="%s_hour">%s</select>:<select name="%s_minute" id="%s_minute">%s</select> น.' % (name, input_id, ''.join(hour_options), name, input_id, ''.join(minute_options)))
     
     def value_from_datadict(self, data, files, name):
         return '%s:%s' % (data.get(name + '_hour'), data.get(name + '_minute')) if data.get(name + '_hour') and data.get(name + '_minute') else ''

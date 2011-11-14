@@ -1,10 +1,65 @@
 {% extends 'base_authenticated.html' %}
+{% load helper_tags page_tags %}
+
+{% block head_title %}{{publication.title}}{% endblock %}
+
+{% block html_head %}
+{{block.super}}
+<script>
+$(document).ready(function () {
+  
+})
+</script>
+{% endblock %}
 
 {% block body_authenticated %}
-<div class="publisher_books">
-  
+<div class="book_page">
+  <ul class="breadcrumb">
+    <li><a href="{% url view_books publisher.id %}">Books</a> <span class="divider">/</span></li>
+    <li class="active">{{publication.title}}</li>
+  </ul>
+
+  <h2>{{publication.title}}</h2>
+
+  <div class="page_actions">
+    <a href="{% url edit_publication publication.id %}" class="btn">Edit book</a>
+  </div>
+
+  <div class="row details">
+    <div class="span11">
+
+      <div class="status">
+        <div class="label">Status</div>
+        <ul>
+          <li>{% print_publication_status publication %}</li>
+          <li>Uploaded on <span>{{publication.uploaded|format_abbr_datetime}}</span> by <span>{{publication.uploaded_by.get_profile.get_fullname}}</span></li>
+        </ul>
+      </div>
+
+      <div class="author">
+        <div class="label">Author</div>
+        <p>{{publication.book.author}}</p>
+      </div>
+
+      <div class="description">
+        <div class="label">Description</div>
+        {% if publication.description %}
+        <p>{{publication.description}}</p>
+        {% else %}
+        <div class="no">No description</div>
+        {% endif %}
+      </div>
+      
+    </div>
+    <div class="span5 right_panel">
+      <div class="cover"></div>
+    </div>
+  </div>
+
+  <div class="statistics">
+    <h3>Statistics</h3>
+    statistics
+  </div>
+    
 </div>
-
-
-{{book.title}}
 {% endblock %}

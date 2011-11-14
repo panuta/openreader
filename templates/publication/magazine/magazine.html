@@ -1,5 +1,5 @@
 {% extends 'base_authenticated.html' %}
-{% load helper_tags page_tags %}
+{% load helper_tags module_tags %}
 
 {% block head_title %}{{magazine.title}}{% endblock %}
 
@@ -7,20 +7,19 @@
 {{block.super}}
 <script>
 $(document).ready(function () {
-  $(".publication_outstandings .numbers li a").on('click', function(e) {
-    var target = $(this).attr("href");
+  {% can user 'upload' publisher %}
+  bind_upload_publication_modal();
+  bind_upload_publication_form();
 
-    $(".publication_outstandings " + target).slideToggle("fast");
-
-    $(".publication_outstandings .list[id!='" + target.substring(1) + "']").hide();
-
+  $('.upload_publication_button').on('click', function(e) {
+    open_upload_publication_modal();
     return false;
   });
+  {% endcan %}
 
-  $(".publication_outstandings .list .close_list").on('click', function(e) {
-    $(".publication_outstandings .list").slideUp("fast");
-    return false;
-  });
+  {% if outstandings %}
+  bind_publication_outstandings();
+  {% endif %}
 })
 </script>
 {% endblock %}
@@ -28,21 +27,24 @@ $(document).ready(function () {
 {% block body_authenticated %}
 <div class="publisher_magazine_page">
   <ul class="breadcrumb">
-    <li><a href="{% url view_publisher_magazines publisher.id %}">Magazines</a> <span class="divider">/</span></li>
+    <li><a href="{% url view_magazines publisher.id %}">Magazines</a> <span class="divider">/</span></li>
     <li class="active">{{magazine.title}}</li>
   </ul>
 
   <div class="magazine_name">
     <h2>{{magazine.title}}</h2>
-    {% if magazine.description %}<div>{{magazine.description}}</div>{% endif %}
   </div>
 
+  {% can user 'upload,manage' publisher %}
   <div class="table_actions">
-    <a href="{% url upload_publication publisher.id %}?type=magazine-issue&magazine={{magazine.id}}" class="btn">Upload new issue</a>
-    <a href="{% url edit_magazine magazine.id %}" class="btn">Edit magazine</a>
+    {% can user 'upload' publisher %}<a href="#" class="btn upload_publication_button">Upload new issue</a>{% endcan %}
+    {% can user 'manage' publisher %}<a href="{% url edit_magazine magazine.id %}" class="btn">Edit magazine</a>{% endcan %}
   </div>
+  {% endcan %}
 
-  {% include 'publication/snippets/publication_outstandings.html' with ready=outstandings.ready scheduled=outstandings.scheduled unpublished=outstandings.unpublished %}
+  {% if magazine.description %}<div class="description">{{magazine.description}}</div>{% endif %}
+
+  {% include 'publication/snippets/publication_outstandings.html' with unfinished=outstandings.unfinished ready=outstandings.ready scheduled=outstandings.scheduled unpublished=outstandings.unpublished %}
 
   <div class="magazine">
     <h3>Published issues<span>({{magazine.issues|length}} issues)</span></h3>
@@ -67,6 +69,7 @@ $(document).ready(function () {
     <div class="no_row">No published issues</div>
     {% endif %}
   </div>
+  {% generate_publication_module_upload_modal 'magazine' %}
   
 </div>
 {% endblock %}

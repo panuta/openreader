@@ -5,19 +5,19 @@
 {% block body_authenticated %}
 <div>
   <ul class="breadcrumb">
-    <li><a href="{% url view_magazines publisher.id %}">Magazines</a> <span class="divider">/</span></li>
-    <li><a href="{% url view_magazine publication.magazineissue.magazine.id %}">{{publication.magazineissue.magazine.title}}</a> <span class="divider">/</span></li>
+    <li><a href="{% url view_books publisher.id %}">Books</a> <span class="divider">/</span></li>
     <li><a href="{% url view_publication publication.id %}">{{publication.title}}</a> <span class="divider">/</span></li>
-    <li class="active">Edit magazine issue</li>
+    <li class="active">Edit book</li>
   </ul>
 
   <form method="POST" action="{% url edit_publication publication.id %}">
     {% csrf_token %}
     {{form.non_field_errors}}
     <fieldset>
-      <legend>Magazine issue</legend>
+      <legend>Book</legend>
 
-      <div class="clearfix"><label for="id_title">Issue name:</label><div class="input">{{form.title}}{{form.title.errors}}</div></div>
+      <div class="clearfix"><label for="id_title">Title:</label><div class="input">{{form.title}}{{form.title.errors}}</div></div>
+      <div class="clearfix"><label for="id_author">Author:</label><div class="input">{{form.author}}{{form.author.errors}}</div></div>
       <div class="clearfix"><label for="id_description">Description:</label><div class="input">{{form.description}}<span class="help-block">Optional</span>{{form.description.errors}}</div></div>
 
       <div class="clearfix">
@@ -41,7 +41,7 @@
       </div>
 
       <div class="actions">
-        <input type="submit" value="Edit magazine issue" class="btn primary">
+        <input type="submit" value="Edit book" class="btn primary">
         <input type="reset" value="Reset" class="btn">
       </div>
     </fieldset>

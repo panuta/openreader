@@ -5,6 +5,15 @@
 
 {% block html_head %}
 {{block.super}}
+<link rel="stylesheet" media="all" type="text/css" href="{{STATIC_URL}}libs/yui/build/container/assets/skins/sam/container.css">
+<link rel="stylesheet" media="all" type="text/css" href="{{STATIC_URL}}libs/yui/build/calendar/assets/skins/sam/calendar.css">
+<link rel="stylesheet" media="all" type="text/css" href="{{STATIC_URL}}css/yui.calendar.widget.css">
+<script type="text/javascript" src="{{STATIC_URL}}libs/yui/build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}libs/yui/build/element/element-min.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}libs/yui/build/container/container-min.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}libs/yui/build/calendar/calendar-min.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}js/yui.calendar.widget.js"></script>
+
 <script type="text/javascript" src="{{STATIC_URL}}libs/jquery.form.js"></script>
 <script type="text/javascript" src="{{STATIC_URL}}libs/progressbar/jquery.progressbar.js"></script>
 

@@ -1,5 +1,5 @@
 {% extends 'base_authenticated.html' %}
-{% load helper_tags %}
+{% load helper_tags page_tags %}
 
 {% block head_title %}{{publication.title}}{% endblock %}
 
@@ -15,28 +15,40 @@ $(document).ready(function () {
 {% block body_authenticated %}
 <div class="magazine_issue_page">
   <ul class="breadcrumb">
-    <li><a href="{% url view_publisher_magazines publisher.id %}">Magazines</a> <span class="divider">/</span></li>
+    <li><a href="{% url view_magazines publisher.id %}">Magazines</a> <span class="divider">/</span></li>
     <li><a href="{% url view_magazine publication.magazineissue.magazine.id %}">{{publication.magazineissue.magazine.title}}</a> <span class="divider">/</span></li>
     <li class="active">{{publication.title}}</li>
   </ul>
 
-  <div class="publication_name">
-    <h2>{{publication.title}}</h2>
-  </div>
-
-  <div class="status">status status status [<a href="{% url edit_publication_status publication.id %}">Change status</a>]</div>
+  <h2>{{publication.magazineissue.magazine.title}} <span>issue</span> {{publication.title}}</h2>
 
   <div class="page_actions">
-    <a href="{% url edit_publication publication.id %}" class="btn">Edit publication</a>
+    <a href="{% url edit_publication publication.id %}" class="btn">Edit magazine issue</a>
   </div>
 
-  <div class="row">
-    <div class="span5">
-      <div class="cover"></div>
-    </div>
+  <div class="row details">
     <div class="span11">
-      <div class="description">description description description description description</div>
-      <div class=""></div>
+
+      <div class="status">
+        <div class="label">Status</div>
+        <ul>
+          <li>{% print_publication_status publication %}</li>
+          <li>Uploaded on <span>{{publication.uploaded|format_abbr_datetime}}</span> by <span>{{publication.uploaded_by.get_profile.get_fullname}}</span></li>
+        </ul>
+      </div>
+
+      <div class="description">
+        <div class="label">Description</div>
+        {% if publication.description %}
+        <p>{{publication.description}}</p>
+        {% else %}
+        <div class="no">No description</div>
+        {% endif %}
+      </div>
+      
+    </div>
+    <div class="span5 right_panel">
+      <div class="cover"></div>
     </div>
   </div>
 

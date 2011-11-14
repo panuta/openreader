@@ -15,7 +15,7 @@ $(document).ready(function () {
 {% block body_authenticated %}
 <div class="upload_publication_page">
   <ul class="breadcrumb">
-    <li><a href="{% url view_publisher_magazines publisher.id %}">Books</a> <span class="divider">/</span></li>
+    <li><a href="{% url view_magazines publisher.id %}">Books</a> <span class="divider">/</span></li>
     <li class="active">Upload book</li>
   </ul>
 
@@ -27,12 +27,7 @@ $(document).ready(function () {
       {{form.errors}}
 
       <div class="inputs">
-        <div class="clearfix">
-          <label for="id_publication">Publication file</label>
-          <div class="input">
-            {{form.publication}}
-          </div>
-        </div>
+        <div class="clearfix"><label for="id_publication">Publication file</label><div class="input">{{form.publication}}</div></div>
 
         {{form.module}}
         <input type="hidden" id="X-Progress-ID" name="X-Progress-ID" value=""/>

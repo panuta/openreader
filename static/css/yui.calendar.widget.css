@@ -15,10 +15,16 @@
 
 #container {
 	border:none;
+	z-index:20000;
+}
+
+.yui-panel-container {
+	z-index:20000;
 }
 
 .yui-calendar {
 	border:none;
+	z-index:20000;
 }
 
 .yui-calendar td {
@@ -26,6 +32,7 @@
 }
 
 .yui_date_picker {
+	z-index:20000;
 	cursor:pointer;
 	margin-right:5px;
 	vertical-align:top;

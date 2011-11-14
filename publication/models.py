@@ -7,6 +7,8 @@ from django.db.models import Q
 
 from private_files import PrivateFileField
 
+from accounts.models import UserPublisher
+
 def is_downloadable(request, instance):
     return True
 
@@ -19,10 +21,12 @@ class Publisher(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='publisher_created_by')
     modified = models.DateTimeField(auto_now=True)
-    modified_by = models.ForeignKey(User, related_name='publisher_modified_by', null=True)
+    modified_by = models.ForeignKey(User, related_name='publisher_modified_by', null=True, blank=True)
+
+    def __unicode__(self):
+        return self.name
 
     def can_view(self, user):
-        from accounts.models import UserPublisher
         return UserPublisher.objects.filter(user=user, publisher=self).exists()
 
     def can_publish(self, user):
@@ -37,14 +41,26 @@ class Publisher(models.Model):
 # class SystemShelf(models.Model):
 #     name = models.CharField(max_length=200)
 
-class PublisherModule(models.Model):
-    publisher = models.ForeignKey('Publisher')
+class Module(models.Model):
     module_name = models.CharField(max_length=100)
     module_type = models.CharField(max_length=50)
-    created = models.DateTimeField(auto_now_add=True)
 
-    def get_module_object(self):
-        return __import__('publication.%s' % self.module_name, fromlist=['publication'])
+    def __unicode__(self):
+        return '%s [%s]' % (self.module_name, self.module_type)
+    
+    def get_module_object(self, sub_module=''):
+        if sub_module:
+            sub_module = '.' + sub_module
+        
+        try:
+            return __import__('publication.%s%s' % (self.module_name, sub_module), fromlist=['publication'])
+        except:
+            return None
+
+class PublisherModule(models.Model):
+    publisher = models.ForeignKey('Publisher')
+    module = models.ForeignKey('Module')
+    created = models.DateTimeField(auto_now_add=True)
 
 class PublisherShelf(models.Model):
     publisher = models.ForeignKey('Publisher')
@@ -54,6 +70,9 @@ class PublisherShelf(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='publisher_shelf_created_by')
 
+    def __unicode__(self):
+        return self.name
+
 # Publication ############################################################
 
 class UploadingPublication(models.Model):
@@ -61,7 +80,7 @@ class UploadingPublication(models.Model):
 
     uid = models.CharField(max_length=200, db_index=True)
     publication_type = models.CharField(max_length=50)
-    parent_id = models.IntegerField(null=True) # Can be used for Magazine ID, etc.
+    parent_id = models.IntegerField(null=True, blank=True) # Can be used for Magazine ID, etc.
 
     uploaded_file = models.FileField(upload_to=publication_media_dir, max_length=500)
 
@@ -75,12 +94,19 @@ class UploadingPublication(models.Model):
         if not self.uid:
             self.uid = uuid.uuid4()
         super(UploadingPublication, self).save(*args, **kwargs)
+    
+    def __unicode__(self):
+        return '%s.%s (%s.%s)' % (self.original_file_name, self.file_ext, self.uid, self.file_ext)
+    
+    def can_view(self, user):
+        return UserPublisher.objects.filter(user=user, publisher=self.publisher).exists()
 
 class Publication(models.Model):
-    PUBLISH_STATUS_UNPUBLISHED = 1
-    PUBLISH_STATUS_READY_TO_PUBLISH = 2
-    PUBLISH_STATUS_SCHEDULE_TO_PUBLISH = 3
-    PUBLISH_STATUS_PUBLISHED = 4
+    PUBLISH_STATUS = {
+        'UNPUBLISHED':1,
+        'SCHEDULED':2,
+        'PUBLISHED':3,
+    }
 
     publisher = models.ForeignKey('Publisher')
 
@@ -93,15 +119,18 @@ class Publication(models.Model):
     original_file_name = models.CharField(max_length=300)
     file_ext = models.CharField(max_length=10)
 
-    publish_status = models.IntegerField(default=PUBLISH_STATUS_UNPUBLISHED)
-    publish_schedule = models.DateTimeField(null=True)
-    published = models.DateTimeField(null=True)
-    published_by = models.ForeignKey(User, null=True, related_name='publication_published_by')
+    publish_status = models.IntegerField(default=PUBLISH_STATUS['UNPUBLISHED'])
+    publish_schedule = models.DateTimeField(null=True, blank=True)
+    published = models.DateTimeField(null=True, blank=True)
+    published_by = models.ForeignKey(User, null=True, blank=True, related_name='publication_published_by')
 
     uploaded = models.DateTimeField(auto_now_add=True)
     uploaded_by = models.ForeignKey(User, related_name='publication_uploaded_by')
     modified = models.DateTimeField(auto_now=True)
-    modified_by = models.ForeignKey(User, related_name='publication_modified_by', null=True)
+    modified_by = models.ForeignKey(User, related_name='publication_modified_by', null=True, blank=True)
+
+    def __unicode__(self):
+        return '%s' % (self.title)
 
     def save(self, *args, **kwargs):
         if not self.uid:
@@ -111,6 +140,9 @@ class Publication(models.Model):
     def get_publication_title(self):
         from common.modules import get_publication_module
         return get_publication_module(self.publication_type).get_publication_title(self)
+    
+    def can_view(self, user):
+        return UserPublisher.objects.filter(user=user, publisher=self.publisher).exists()
 
 class PublicationCategory(models.Model):
     name = models.CharField(max_length=200)

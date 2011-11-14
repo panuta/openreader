@@ -6,33 +6,31 @@ from django.conf import settings
 from exceptions import FileUploadTypeUnknown
 from models import UploadingPublication, Publication
 
-from common.modules import get_publication_module
-
-def upload_publication(request, module, uploading_file, publisher):
+def upload_publication(request, publication_type, uploading_file, publisher):
     (file_name, separator, file_ext) = uploading_file.name.rpartition('.')
 
-    uploading_publication = UploadingPublication.objects.create(publisher=publisher, publication_type=module, original_file_name=file_name, file_ext=file_ext, uploaded_by=request.user)
+    uploading_publication = UploadingPublication.objects.create(publisher=publisher, publication_type=publication_type, original_file_name=file_name, file_ext=file_ext, uploaded_by=request.user)
     uploading_publication.uploaded_file.save('%s.%s' % (uploading_publication.uid, file_ext), uploading_file)
 
     return uploading_publication
 
 def finishing_upload_publication(request, publisher, uploading_publication, title, description, publish_status, schedule_date, schedule_time):
-    from common.utilities import convert_publish_status
-    publish_status = convert_publish_status(publish_status)
-
-    if publish_status == Publication.PUBLISH_STATUS_SCHEDULE_TO_PUBLISH:
-        publish_schedule = datetime.datetime(schedule_date.year, schedule_date.month, schedule_date.day, schedule_time.hour, schedule_time.minute)
-        published_by = request.user
-    else:
+    
+    if publish_status == Publication.PUBLISH_STATUS['UNPUBLISHED']:
         publish_schedule = None
+        published = None
         published_by = None
 
-    if publish_status == Publication.PUBLISH_STATUS_PUBLISHED:
+    elif publish_status == Publication.PUBLISH_STATUS['SCHEDULED']:
+        publish_schedule = datetime.datetime(schedule_date.year, schedule_date.month, schedule_date.day, schedule_time.hour, schedule_time.minute)
+        published = None
+        published_by = request.user
+    
+    elif publish_status == Publication.PUBLISH_STATUS['PUBLISHED']:
+        publish_schedule = None
         published = datetime.datetime.today()
         published_by = request.user
-    else:
-        published = None
-    
+
     publication = Publication.objects.create(
         publisher = publisher,
         uid = uploading_publication.uid,
@@ -44,6 +42,7 @@ def finishing_upload_publication(request, publisher, uploading_publication, titl
         file_ext = uploading_publication.file_ext,
 
         publish_status = publish_status,
+        publish_schedule = publish_schedule,
         published = published,
         published_by = published_by,
 
@@ -54,3 +53,14 @@ def finishing_upload_publication(request, publisher, uploading_publication, titl
     uploading_publication.delete()
     
     return publication
+
+def delete_uploading_publication(uploading_publication):
+    from models import publication_media_dir
+
+    try:
+        os.remove(publication_media_dir(uploading_publication, '%s.%s' % (uploading_publication.uid, uploading_publication.file_ext)))
+    except:
+        # TODO: Log error
+        pass
+    
+    uploading_publication.delete()

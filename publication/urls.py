@@ -32,11 +32,11 @@ urlpatterns = patterns('publication.views',
     url(r'^get/(?P<publication_uid>[a-zA-Z0-9\-]+)/$', 'get_publication', name='get_publication'),
 
     url(r'^publication/(?P<publication_id>\d+)/edit/$', 'edit_publication', name='edit_publication'),
-    url(r'^publication/(?P<publication_id>\d+)/edit/status/$', 'edit_publication_status', name='edit_publication_status'),
+
+    url(r'^publication/(?P<publication_id>\d+)/delete/uploading/$', 'delete_uploading_publication', name='delete_uploading_publication'),
 
     url(r'^publication/(?P<publication_id>\d+)/set/published/$', 'set_publication_published', name='set_publication_published'),
     url(r'^publication/(?P<publication_id>\d+)/set/schedule/$', 'set_publication_schedule', name='set_publication_schedule'),
     url(r'^publication/(?P<publication_id>\d+)/set/cancel_schedule/$', 'set_publication_cancel_schedule', name='set_publication_cancel_schedule'),
-    url(r'^publication/(?P<publication_id>\d+)/set/revert/$', 'set_publication_revert', name='set_publication_revert'),
 
 )

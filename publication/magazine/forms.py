@@ -1,9 +1,12 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from widgets import YUICalendar, HourOnlyTimeInput, HourMinuteTimeInput
+from common.forms import StrippedCharField
+from widgets import YUICalendar, HourMinuteTimeInput
 
 from publication.forms import GeneralUploadPublicationForm
+
+from publication.models import Publication
 from publication.magazine.models import Magazine
 
 class PublisherMagazineChoiceField(forms.ModelChoiceField):
@@ -15,6 +18,7 @@ class PublisherMagazineChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return '%s' % (obj.title)
 
+
 class UploadPublicationForm(GeneralUploadPublicationForm):
     magazine = PublisherMagazineChoiceField(required=False)
 
@@ -24,17 +28,16 @@ class UploadPublicationForm(GeneralUploadPublicationForm):
 
         self.fields['magazine'].queryset = Magazine.objects.filter(publisher=self.publisher).order_by('title')
     
-    def persist(self, uploading_publication):
+    def after_upload(self, uploading_publication):
         magazine = self.cleaned_data['magazine']
-
         uploading_publication.parent_id = magazine.id
         uploading_publication.save()
 
 class FinishUploadMagazineIssueForm(forms.Form):
     magazine = PublisherMagazineChoiceField(required=False)
-    title = forms.CharField(widget=forms.TextInput(attrs={'class':'span10'}))
-    description = forms.CharField(required=False, widget=forms.Textarea(attrs={'class':'span10', 'rows':'5'}))
-    publish_status = forms.ChoiceField(choices=(('unpublished', 'Unpulished'), ('scheduled', 'Scheduled'), ('published', 'Published')))
+    title = StrippedCharField(widget=forms.TextInput(attrs={'class':'span10'}))
+    description = StrippedCharField(required=False, widget=forms.Textarea(attrs={'class':'span10', 'rows':'5'}))
+    publish_status = forms.ChoiceField(choices=((Publication.PUBLISH_STATUS['UNPUBLISHED'], 'Unpulished'), (Publication.PUBLISH_STATUS['SCHEDULED'], 'Scheduled'), (Publication.PUBLISH_STATUS['PUBLISHED'], 'Published')))
     schedule_date = forms.DateField(widget=YUICalendar(attrs={'id':'id_schedule_date'}), required=False)
     schedule_time = forms.TimeField(widget=HourMinuteTimeInput(), required=False)
 
@@ -66,8 +69,26 @@ class FinishUploadMagazineIssueForm(forms.Form):
         
         return cleaned_data
 
-class PublisherMagazineForm(forms.Form):
-    title = forms.CharField(max_length=200, widget=forms.TextInput(attrs={'class':'span9'}))
-    description = forms.CharField(widget=forms.Textarea(attrs={'class':'span9', 'rows':'3'}))
+class MagazineForm(forms.Form):
+    title = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'span9'}))
+    description = StrippedCharField(required=False, widget=forms.Textarea(attrs={'class':'span9', 'rows':'3'}))
 
     # categories = models.ManyToManyField('PublicationCategory', related_name='magazine_categories')
+
+class MagazineIssueForm(forms.Form):
+    title = forms.CharField(widget=forms.TextInput(attrs={'class':'span10'}))
+    description = forms.CharField(required=False, widget=forms.Textarea(attrs={'class':'span10', 'rows':'5'}))
+    publish_status = forms.ChoiceField(choices=((Publication.PUBLISH_STATUS['UNPUBLISHED'], 'Unpulished'), (Publication.PUBLISH_STATUS['SCHEDULED'], 'Scheduled'), (Publication.PUBLISH_STATUS['PUBLISHED'], 'Published')))
+    schedule_date = forms.DateField(widget=YUICalendar(attrs={'id':'id_schedule_date'}), required=False)
+    schedule_time = forms.TimeField(widget=HourMinuteTimeInput(), required=False)
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        publish_status = cleaned_data.get('publish_status')
+        schedule_date = cleaned_data.get('schedule_date')
+        schedule_time = cleaned_data.get('schedule_time')
+
+        if publish_status == 'scheduled' and not (schedule_date or schedule_time):
+            self._errors['publish_status'] = self.error_class([_(u'This field is required.')])
+        
+        return cleaned_data

@@ -1,12 +1,16 @@
 TODO
-- Finishing upload page
-- Test upload flow
-- User authorization
-	- Ready to publish
+- implement categories
+- messages
+- authorization in template
+- shelf
+- consolidate styles for similar page
 
-
+WILL DO
+- modal as a jQuery template
 - Admin Page
     - Setup account for publisher
+
+
 
 - Download file from another server
 

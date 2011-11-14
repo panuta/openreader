@@ -5,11 +5,16 @@
 {% block body_authenticated %}
 <div class="publisher_magazines">
   <ul class="breadcrumb">
-    <li><a href="{% url view_publisher_magazines publisher.id %}">Magazines</a> <span class="divider">/</span></li>
+    <li><a href="{% url view_magazines publisher.id %}">Magazines</a> <span class="divider">/</span></li>
+    {% if not magazine %}
     <li class="active">Create magazine</li>
+    {% else %}
+    <li><a href="{% url view_magazine magazine.id %}">{{magazine.title}}</a> <span class="divider">/</span></li>
+    <li class="active">Edit magazine</li>
+    {% endif %}
   </ul>
 
-  <form method="POST" action="{% url create_publisher_magazine publisher.id %}">
+  <form method="POST" action=".">
     {% csrf_token %}
     {{form.non_field_errors}}
     <fieldset>
@@ -18,8 +23,8 @@
         <label for="id_title">Title:</label>
         <div class="input">
           {{form.title}}
+          {{form.title.errors}}
         </div>
-        {{form.title.errors}}
       </div>
 
       <div class="clearfix">
@@ -27,12 +32,12 @@
         <div class="input">
           {{form.description}}
           <span class="help-block">Optional</span>
+          {{form.description.errors}}
         </div>
-        {{form.description.errors}}
       </div>
 
       <div class="actions">
-        <input type="submit" value="Create magazine" class="btn primary">
+        <input type="submit" value="{% if not magazine %}Create magazine{% else %}Edit magazine{% endif %}" class="btn primary">
         <input type="reset" value="Reset" class="btn">
       </div>
     </fieldset>

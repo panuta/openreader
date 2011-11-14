@@ -1,0 +1,24 @@
+{% extends 'base_authenticated.html' %}
+{% load helper_tags module_tags %}
+
+{% block head_title %}Delete uploading file{% endblock %}
+
+{% block body_authenticated %}
+<div class="delete_uploading_page">
+
+  <form method="POST" action=".">
+    {% csrf_token %}
+    {{form.non_field_errors}}
+    <fieldset>
+      <legend>Do you really want to delete uploading file?</legend>
+      
+      <input type="hidden" name="next" id="id_next" value="{{next}}" />
+      <div class="actions">
+        <input type="submit" name="submit-delete" value="Yes, delete it" class="btn primary">
+        <input type="submit" name="submit-cancel" value="Cancel" class="btn">
+      </div>
+    </fieldset>
+  </form>
+</div>
+
+{% endblock %}

@@ -71,9 +71,6 @@ function bind_upload_publication_form() {
       success: function(response) {
         if(response.error) {
           var message = '';
-          if(response.error == 'publisher-notexist') {message = 'This publisher not exist';}
-          if(response.error == 'module-denied') {message = 'Module is not available';}
-          if(response.error == 'module-invalid') {message = 'Module is invalid';}
           if(response.error == 'upload') {message = 'Saving file error';}
           if(response.error == 'form-input-invalid') {message = 'Form inputs is missing or invalid';}
 
@@ -137,118 +134,137 @@ function bind_publication_outstandings() {
     $('.publication_outstandings .list').slideUp("fast");
     return false;
   });
+
+  /* Publish */
+  $('.publication_outstandings .action-publish').on('click', function(e) {
+    if(!$('#publish-publication-modal').length) {
+      $('body').append('<div class="modal hide fade" id="publish-publication-modal" style="display:none;"><div class="modal-header"><a class="close" href="#">×</a><h3>Publish confirmation</h3></div><div class="modal-body">Publish this publication now?</div><div class="modal-footer"><input class="btn" type="button" value="Cancel" /><input class="btn primary" type="submit" value="Publish Now" /></div></div>');
+      $("#publish-publication-modal").modal({backdrop:'static'});
+
+      $("#publish-publication-modal input[type='submit']").on('click', function(e) {
+        $("#publish-publication-modal .modal-footer input").attr("disabled", "disabled");
+        $.post($("#publish-publication-modal").data('url'), function(response) {
+          if(response.error) {
+            var message = '';
+            if(response.error == 'published') {message = 'This publication is already published';}
+            $('#publish-publication-modal .modal-body').append('<div class="error_message">' + message + '</div>');
+          } else {
+            window.location.reload();
+          }
+        });
+
+        return false;
+      });
+
+      $("#publish-publication-modal input[type='button']").on('click', function(e) {
+        $("#publish-publication-modal").modal('hide');
+        return false;
+      });
+    }
+
+    $('#publish-publication-modal .modal-body .error_message').remove();
+    $("#publish-publication-modal").modal('show');
+    $("#publish-publication-modal").data('url', $(this).attr('href'));
+    
+    return false;
+  });
+
+  /* Schedule */
+  $('.publication_outstandings .action-schedule').on('click', function(e) {
+    if(!$('#schedule-publication-modal').length) {
+      $('body').append('<div class="modal hide fade" id="schedule-publication-modal" style="display:none;"><div class="modal-header"><a class="close" href="#">×</a><h3>Publish schedule</h3></div><div class="modal-body"><div class="schedule_date">วันที่ <span class="yui_date_picker_panel"><button class="yui_date_picker" id="id_schedule_date">Select date</button><input type="hidden" id="id_schedule_date_value" value="" name="schedule_date"><input type="text" class="yui_date_picker_textbox" id="id_schedule_date_display" value=""></span></div><div class="schedule_time">เวลา <select id="id_schedule_time_hour" name="schedule_time_hour"><option></option><option value="0">00</option><option value="1">01</option><option value="2">02</option><option value="3">03</option><option value="4">04</option><option value="5">05</option><option value="6">06</option><option value="7">07</option><option value="8">08</option><option value="9">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option></select>:<select id="id_schedule_time_minute" name="schedule_time_minute"><option></option><option value="0">00</option><option value="15">15</option><option value="30">30</option><option value="45">45</option></select> น.</div></div><div class="modal-footer"><input class="btn" type="button" value="Cancel" /><input class="btn primary" type="submit" value="Schedule" /></div></div>');
+      $("#schedule-publication-modal").modal({backdrop:'static'});
+
+      /* YUI Calendar */
+      initializeYUICalendar();
+      var date_pickers = YAHOO.util.Dom.getElementsByClassName('yui_date_picker');
+      
+      for(var i=0; i<date_pickers.length; i++) {
+        YAHOO.util.Event.on(date_pickers[i], "click", function(e) {
+          e.preventDefault();
+          activeCalendarInputID = e.target.id;
+          triggerYUICalendar();
+        });
+      }
+      
+      $(".yui_date_picker_textbox").click(function(e) {
+        activeCalendarInputID = $(this).parent().find(".yui_date_picker").attr('id');
+        triggerYUICalendar();
+      });
+
+      $("#schedule-publication-modal input[type='submit']").on('click', function(e) {
+        $("#schedule-publication-modal .modal-footer input").attr("disabled", "disabled");
+
+        var schedule_date = $('#schedule-publication-modal .schedule_date input[name="schedule_date"]').val();
+        var schedule_time_hour = $('#schedule-publication-modal [name="schedule_time_hour"] option:selected').val();
+        var schedule_time_minute = $('#schedule-publication-modal [name="schedule_time_minute"] option:selected').val();
+        var schedule_time = schedule_time_hour + ':' + schedule_time_minute;
+
+        if(schedule_date && schedule_time_hour && schedule_time_minute) {
+          $.post($("#schedule-publication-modal").data('url'), {schedule_date:schedule_date, schedule_time:schedule_time}, function(response) {
+            if(response.error) {
+              var message = '';
+              if(response.error == 'invalid') {message = 'Schedule input is invalid';}
+              $('#publish-publication-modal .modal-body').append('<div class="error_message">' + message + '</div>');
+            } else {
+              window.location.reload();
+            }
+          });
+        }
+
+        return false;
+      });
+
+      $("#schedule-publication-modal input[type='button']").on('click', function(e) {
+        $("#schedule-publication-modal").modal('hide');
+        return false;
+      });
+    }
+
+    $('#schedule-publication-modal .modal-body .error_message').remove();
+    $("#schedule-publication-modal").modal('show');
+    $("#schedule-publication-modal").data('url', $(this).attr('href'));
+    
+    return false;
+  });
+
+  /* Cancel Schedule */
+  $('.publication_outstandings .action-cancel-schedule').on('click', function(e) {
+    if(!$('#cancel-schedule-publication-modal').length) {
+      $('body').append('<div class="modal hide fade" id="cancel-schedule-publication-modal" style="display:none;"><div class="modal-header"><a class="close" href="#">×</a><h3>Cancel confirmation</h3></div><div class="modal-body">Do you really want to cancel schedule?</div><div class="modal-footer"><input class="btn" type="button" value="No, do not cancel" /><input class="btn primary" type="submit" value="Yes, cancel schedule" /></div></div>');
+      $("#cancel-schedule-publication-modal").modal({backdrop:'static'});
+
+      $("#cancel-schedule-publication-modal input[type='submit']").on('click', function(e) {
+        $("#cancel-schedule-publication-modal .modal-footer input").attr("disabled", "disabled");
+        $.post($("#cancel-schedule-publication-modal").data('url'), function(response) {
+          if(response.error) {
+            var message = '';
+            if(response.error == 'no-schedule') {message = 'This publication has no schedule';}
+            $('#cancel-schedule-publication-modal .modal-body').append('<div class="error_message">' + message + '</div>');
+          } else {
+            window.location.reload();
+          }
+        });
+
+        return false;
+      });
+
+      $("#cancel-schedule-publication-modal input[type='button']").on('click', function(e) {
+        $("#cancel-schedule-publication-modal").modal('hide');
+        return false;
+      });
+    }
+
+    $('#cancel-schedule-publication-modal .modal-body .error_message').remove();
+    $("#cancel-schedule-publication-modal").modal('show');
+    $("#cancel-schedule-publication-modal").data('url', $(this).attr('href'));
+    
+    return false;
+  });
 }
 
 
-
-
-
-
 $(document).ready(function () {
-
-/* ********** UPLOAD PUBLICATION ********** */
-
-$('[upload-publication]').bind('click', function(e) {
-  $('#upload-publication-form .inputs').show();
-  $('#upload-publication-form .uploading').remove();
-  $('#upload-publication-form .error_message').remove();
-  $('#upload-publication-form .modal-footer').show();
-  
-  var type = $(this).attr('upload-publication');
-  $('#upload-publication-form #id_upload_type').val(type);
-  
-  if(type == 'magazine') {
-    $("#upload-publication-form h3").text('Upload magazine issue');
-    $('#upload-publication-form .magazine_inputs').show();
-    $('#upload-publication-form .custom_inputs').html('');
-  
-  } else if(type == 'magazine-issue') {
-    $("#upload-publication-form h3").text('Upload magazine issue');
-    $('#upload-publication-form .magazine_inputs').hide();
-    $('#upload-publication-form .custom_inputs').html('<div class="magazine_name">' + $(this).closest('li').attr('magazine-title') + '</div><input type="hidden" id="id_magazine_id" name="magazine_id" value="' + $(this).closest('li').attr('magazine-id') + '"/>');
-
-  } else if(type == 'book') {
-    $("#upload-publication-form h3").text('Upload book');
-    $('#upload-publication-form .magazine_inputs').hide();
-    $('#upload-publication-form .custom_inputs').html('');
-
-  } else {
-    $("#upload-publication-form h3").text('Upload publication');
-    $('#upload-publication-form .magazine_inputs').hide();
-    $('#upload-publication-form .custom_inputs').html('<div class="clearfix"><label id="id_publication_type">Publication type</label><div class="input"><ul class="inputs-list"><li><label><input type="radio" value="magazine" name="publication_type" checked="true"><span>Magazine</span></label></li><li><label><input type="radio" value="book" name="publication_type"><span>Book</span></label></li></ul></div></div>');
-  }
-
-  $("#upload-publication-form #id_magazine option:first").attr('selected', 'selected');
-  $("#upload-publication-form #id_publication").val("");
-  $("#upload-publication-modal").modal('show');
-
-  return false;
-})
-
-/*
-$('#upload-publication-form input[type="submit"]').click(function(e) {
-  if(!$('#id_publication').val()) {
-    return false;
-  }
-
-  if($('#upload-publication-form #id_magazine').is(':visible') && $('#upload-publication-form #id_magazine').val() == '') {
-    return false;
-  }
-
-  if($('#upload-publication-form input[name="publication_type"]').is(':visible')) {
-    $('#upload-publication-form #id_upload_type').val($('#upload-publication-form input[name="publication_type"]:selected').val());
-  }
-
-  $('#X-Progress-ID').val(var_publisher_id + '-' + (new Date()).getTime());
-  
-  var options = {
-    dataType: 'json',
-    url: $('#upload-publication-form').attr('action'),
-    success: function(response) {
-      console.log(response);
-      if(response.error) {
-        var message = '';
-        if(response.error == 'publisher-notexist') {message = 'Publisher Not Exist';}
-        if(response.error == 'invalid-magazine') {message = 'Magazine Invalid';}
-        if(response.error == 'invalid-publication_type') {message = 'Publication Type Invalid';}
-        if(response.error == 'upload') {message = 'Upload Error';}
-        if(response.error == 'upload-unknown') {message = 'Upload File Type Unknown';}
-        if(response.error == 'missing-fields') {message = 'Missing Some Field';}
-
-        $('#upload-publication-form .uploading').hide();
-
-        var retry_url = $('#upload-publication-form').attr('action').replace('ajax/','');
-        var type = $('#upload-publication-form #id_upload_type').val();
-        retry_url = retry_url + '?type=' + type;
-        if(type == 'magazine-issue') {
-          retry_url = retry_url + '&magazine=' + $('#upload-publication-form #id_magazine_id').val();
-        }
-
-        $('#upload-publication-form .inputs').after('<div class="error_message">' + message + ' <a href="' + retry_url + '">Retry?</a></div>').hide();
-
-      } else {
-        $("#upload_progressbar").progressBar(100);
-        clearInterval(upload_progress_intv);
-        upload_progress_intv = 0;
-        window.location = response.next_url;
-      }
-    }
-  };
-  $('#upload-publication-form').ajaxSubmit(options);
-
-  $("#upload-publication-form .inputs").hide();
-  $('#upload-publication-form .modal-footer').hide();
-
-  $('#upload-publication-form .inputs').after('<div class="uploading">Uploading ...<div id="upload_progressbar"></div></div>');
-  $('#upload_progressbar').progressBar({boxImage:'/static/libs/progressbar/images/progressbar.gif', barImage:{0:'/static/libs/progressbar/images/progressbg_red.gif', 30:'/static/libs/progressbar/images/progressbg_orange.gif', 70:'/static/libs/progressbar/images/progressbg_green.gif'}});
-
-  startProgressBarUpdate($('#X-Progress-ID').val());
-
-  return false;
-});
-*/
-
-/* ********** PUBLISH ACTIONS ********** */
 
 
 })

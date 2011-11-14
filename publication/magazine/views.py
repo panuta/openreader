@@ -17,7 +17,7 @@ from publication.magazine import MODULE_CODE
 from forms import *
 from models import *
 
-# PUBLICATION ################################################################################
+# FROM PUBLICATION ################################################################################
 
 def finishing_upload_publication(request, publisher, uploading_publication):
     if request.method == 'POST':
@@ -26,7 +26,7 @@ def finishing_upload_publication(request, publisher, uploading_publication):
             magazine = form.cleaned_data['magazine']
             title = form.cleaned_data['title']
             description = form.cleaned_data['description']
-            publish_status = form.cleaned_data['publish_status']
+            publish_status = int(form.cleaned_data['publish_status'])
             schedule_date = form.cleaned_data['schedule_date']
             schedule_time = form.cleaned_data['schedule_time']
 
@@ -35,7 +35,7 @@ def finishing_upload_publication(request, publisher, uploading_publication):
             if uploading_publication.parent_id:
                 magazine = Magazine.objects.get(id=uploading_publication.parent_id)
             MagazineIssue.objects.create(publication=publication, magazine=magazine)
-            
+
             return redirect('view_publication', publication_id=publication.id)
 
     else:
@@ -47,10 +47,49 @@ def view_publication(request, publisher, publication):
 
     return render(request, 'publication/magazine/magazine_issue.html', {'publisher':publisher, 'publication':publication})
 
+def edit_publication(request, publisher, publication):
+    if request.method == 'POST':
+        form = MagazineIssueForm(request.POST)
+        if form.is_valid():
+            publication.title = form.cleaned_data['title']
+            publication.description = form.cleaned_data['description']
+            
+            publish_status = int(form.cleaned_data['publish_status'])
+            schedule_date = form.cleaned_data['schedule_date']
+            schedule_time = form.cleaned_data['schedule_time']
+
+            if publication.publish_status != publish_status:
+                publication.publish_status = publish_status
+
+                if publish_status == Publication.PUBLISH_STATUS['UNPUBLISHED']:
+                    publication.publish_schedule = None
+                    publication.published = None
+                    publication.published_by = None
+
+                elif publish_status == Publication.PUBLISH_STATUS['SCHEDULED']:
+                    publication.publish_schedule = datetime.datetime(schedule_date.year, schedule_date.month, schedule_date.day, schedule_time.hour, schedule_time.minute)
+                    publication.published = None
+                    publication.published_by = request.user
+
+                elif publish_status == Publication.PUBLISH_STATUS['PUBLISHED']:
+                    publication.publish_schedule = None
+                    publication.published = datetime.datetime.today()
+                    publication.published_by = request.user
+            
+            publication.save()
+
+            return redirect('view_publication', publication.id)
+    else:
+        schedule_date = publication.publish_schedule.date() if publication.publish_schedule else None
+        schedule_time = publication.publish_schedule.time() if publication.publish_schedule else None
+        form = MagazineIssueForm(initial={'title':publication.title, 'description':publication.description, 'publish_status':str(publication.publish_status), 'schedule_date':schedule_date, 'schedule_time':schedule_time})
+    
+    return render(request, 'publication/magazine/magazine_issue_edit.html', {'publisher':publisher, 'publication':publication, 'form':form})
+
 # MAGAZINE VIEWS ################################################################################
 
 @login_required
-def view_publisher_magazines(request, publisher_id):
+def view_magazines(request, publisher_id):
     publisher = get_object_or_404(Publisher, pk=publisher_id)
 
     if not can(request.user, 'view', publisher):
@@ -58,26 +97,28 @@ def view_publisher_magazines(request, publisher_id):
 
     magazines = Magazine.objects.filter(publisher=publisher).order_by('-created')
 
-    can_upload_publish = can(request.user, 'upload+publish', publisher)
+    can_publish = can(request.user, 'publish', publisher)
 
     for magazine in magazines:
-        magazine.published_count = MagazineIssue.objects.filter(magazine=magazine, publication__publish_status=Publication.PUBLISH_STATUS_PUBLISHED).count()
+        magazine.published_count = MagazineIssue.objects.filter(magazine=magazine, publication__publish_status=Publication.PUBLISH_STATUS['PUBLISHED']).count()
 
         try:
-            magazine.last_published = MagazineIssue.objects.filter(magazine=magazine, publication__publish_status=Publication.PUBLISH_STATUS_PUBLISHED).latest('publication__published')
+            magazine.last_published = MagazineIssue.objects.filter(magazine=magazine, publication__publish_status=Publication.PUBLISH_STATUS['PUBLISHED']).latest('publication__published')
         except MagazineIssue.DoesNotExist:
             magazine.last_published = None
         
-        if can_upload_publish:
+        if can_publish:
             magazine.outstanding = {
-                'scheduled': MagazineIssue.objects.filter(magazine=magazine, publication__publish_status=Publication.PUBLISH_STATUS_SCHEDULE_TO_PUBLISH).count(),
-                'unpublished': MagazineIssue.objects.filter(magazine=magazine, publication__publish_status=Publication.PUBLISH_STATUS_UNPUBLISHED).count(),
+                'unfinished': UploadingPublication.objects.filter(publisher=publisher, publication_type='magazine', parent_id=magazine.id).count(),
+                'scheduled': MagazineIssue.objects.filter(magazine=magazine, publication__publish_status=Publication.PUBLISH_STATUS['SCHEDULED']).count(),
+                'unpublished': MagazineIssue.objects.filter(magazine=magazine, publication__publish_status=Publication.PUBLISH_STATUS['UNPUBLISHED']).count(),
             }
 
-    if can_upload_publish:
+    if can_publish:
         outstandings = {
-            'scheduled': Publication.objects.filter(publisher=publisher, publish_status=Publication.PUBLISH_STATUS_SCHEDULE_TO_PUBLISH),
-            'unpublished': Publication.objects.filter(publisher=publisher, publish_status=Publication.PUBLISH_STATUS_UNPUBLISHED)
+            'unfinished': UploadingPublication.objects.filter(publisher=publisher, publication_type='magazine'),
+            'scheduled': Publication.objects.filter(publisher=publisher, publication_type='magazine', publish_status=Publication.PUBLISH_STATUS['SCHEDULED']),
+            'unpublished': Publication.objects.filter(publisher=publisher, publication_type='magazine', publish_status=Publication.PUBLISH_STATUS['UNPUBLISHED'])
         }
     else:
         outstandings = None
@@ -85,63 +126,66 @@ def view_publisher_magazines(request, publisher_id):
     return render(request, 'publication/magazine/magazines.html', {'publisher':publisher, 'magazines':magazines, 'outstandings':outstandings})
 
 @login_required
-def create_publisher_magazine(request, publisher_id):
+def create_magazine(request, publisher_id):
     publisher = get_object_or_404(Publisher, pk=publisher_id)
 
+    if not can(request.user, 'manage', publisher):
+        raise Http404
+
     if request.method == 'POST':
-        form = PublisherMagazineForm(request.POST)
+        form = MagazineForm(request.POST)
         if form.is_valid():
             title = form.cleaned_data['title']
             description = form.cleaned_data['description']
 
-            Magazine.objects.create(publisher=publisher, title=title, description=description, created_by=request.user)
+            magazine = Magazine.objects.create(publisher=publisher, title=title, description=description, created_by=request.user)
             
-            return redirect('view_publisher_magazines', publisher_id=publisher.id)
+            return redirect('view_magazine', magazine_id=magazine.id)
 
     else:
-        form = PublisherMagazineForm()
+        form = MagazineForm()
 
     return render(request, 'publication/magazine/magazine_modify.html', {'publisher':publisher, 'form':form})
-
-@login_required
-def view_magazine(request, magazine_id):
-    magazine = get_object_or_404(Magazine, pk=magazine_id)
-    publisher = magazine.publisher
-
-    magazine.issues = MagazineIssue.objects.filter(magazine=magazine, publication__publication_type=MODULE_CODE, publication__publish_status=Publication.PUBLISH_STATUS_PUBLISHED).order_by('-publication__uploaded')
-
-    outstandings = {
-        'ready': Publication.objects.filter(magazineissue__magazine=magazine, publish_status=Publication.PUBLISH_STATUS_READY_TO_PUBLISH),
-        'scheduled': Publication.objects.filter(magazineissue__magazine=magazine, publish_status=Publication.PUBLISH_STATUS_SCHEDULE_TO_PUBLISH),
-        'unpublished': Publication.objects.filter(magazineissue__magazine=magazine, publish_status=Publication.PUBLISH_STATUS_UNPUBLISHED),
-    }
-
-    return render(request, 'publication/magazine/magazine.html', {'publisher':publisher, 'magazine':magazine, 'outstandings':outstandings})
 
 @login_required
 def edit_magazine(request, magazine_id):
     magazine = get_object_or_404(Magazine, pk=magazine_id)
     publisher = magazine.publisher
 
+    if not can(request.user, 'manage', publisher):
+        raise Http404
+
     if request.method == 'POST':
-        form = PublisherMagazineForm(request.POST)
+        form = MagazineForm(request.POST)
         if form.is_valid():
             magazine.title = form.cleaned_data['title']
             magazine.description = form.cleaned_data['description']
-
             magazine.save()
 
             return redirect('view_magazine', magazine_id=magazine.id)
 
     else:
-        form = PublisherMagazineForm(initial={'title':magazine.title, 'description':magazine.description})
+        form = MagazineForm(initial={'title':magazine.title, 'description':magazine.description})
     
     return render(request, 'publication/magazine/magazine_modify.html', {'publisher':publisher, 'magazine':magazine, 'form':form})
 
 @login_required
-def view_magazine_issue(request, magazine_issue_id):
-    return render(request, 'publication/magazine/magazine_issue.html', {})
+def view_magazine(request, magazine_id):
+    magazine = get_object_or_404(Magazine, pk=magazine_id)
+    publisher = magazine.publisher
 
-@login_required
-def update_magazine_issue_details(request, magazine_issue_id):
-    return render(request, 'publication/magazine/magazine_issue_update_details.html', {})
+    if not can(request.user, 'view', publisher):
+        raise Http404
+
+    magazine.issues = MagazineIssue.objects.filter(magazine=magazine, publication__publication_type=MODULE_CODE, publication__publish_status=Publication.PUBLISH_STATUS['PUBLISHED']).order_by('-publication__uploaded')
+
+    if can(request.user, 'publish', publisher):
+        outstandings = {
+            'unfinished': UploadingPublication.objects.filter(publisher=publisher, publication_type='magazine', parent_id=magazine.id),
+            'scheduled': Publication.objects.filter(magazineissue__magazine=magazine, publish_status=Publication.PUBLISH_STATUS['SCHEDULED']),
+            'unpublished': Publication.objects.filter(magazineissue__magazine=magazine, publish_status=Publication.PUBLISH_STATUS['UNPUBLISHED']),
+        }
+    else:
+        outstandings = None
+
+    return render(request, 'publication/magazine/magazine.html', {'publisher':publisher, 'magazine':magazine, 'outstandings':outstandings})

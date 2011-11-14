@@ -1,12 +1,12 @@
 @import "../libs/bootstrap/less/variables.less";
 
-@outstanding-ready: #b6daaf;
-@outstanding-ready-light: #d6ead2;
-@outstanding-ready-lighter: #e6f2e3;
+@outstanding-unfinished: #e2c3b5;
+@outstanding-unfinished-light: #e9d2c7;
+@outstanding-unfinished-lighter: #f0e1da;
 
-@outstanding-scheduled: #aed9d7;
-@outstanding-scheduled-light: #d1e9e8;
-@outstanding-scheduled-lighter: #e2f1f1;
+@outstanding-scheduled: #bbd2b8;
+@outstanding-scheduled-light: #d9e6d7;
+@outstanding-scheduled-lighter: #e8f0e7;
 
 @outstanding-unpublished: #CCC;
 @outstanding-unpublished-light: #EEE;
@@ -24,12 +24,55 @@
     }
 }
 
+.schedule_date_styles () {
+    padding:10px 0px 0px 20px;
+    font-size:1.2em;
+    color:#444;
+
+    .yui_date_picker_panel {
+        margin-left:5px;
+    }
+}
+
+.schedule_time_styles () {
+    padding:10px 0px 10px 20px;
+    font-size:1.2em;
+    color:#444;
+
+    select {
+        width:60px;
+        margin:0px 5px;
+    }
+}
+
+/* *************** Form *************** */
+input, textarea {
+    color:#444;
+}
+
+select {
+    color:#444;
+}
+
+form .inputs-list li {
+    margin-bottom:10px;
+}
+
+form .inputs-list label {
+    display:inline;
+}
+
+form .inputs-list .errorlist {
+    margin-bottom:20px;
+}
+
+form fieldset .actions input {margin-right:10px;}
+
 /* *************** Common *************** */
 
 form, ul {margin:0px;padding:0px;}
 li {list-style:none;}
 a.btn:visited {color:#333333;}
-form fieldset .actions input {margin-right:10px;}
 
 .page-header h1 {margin-top:10px;}
 
@@ -44,14 +87,6 @@ form fieldset .actions input {margin-right:10px;}
     margin-right:15px;
 }
 
-input, textarea {
-    color:#444;
-}
-
-select {
-    color:#444;
-}
-
 ul.errorlist {
     margin-top:5px;
 
@@ -60,13 +95,23 @@ ul.errorlist {
     }
 }
 
-.inputs-list .errorlist {
-    margin-bottom:20px;
-}
-
 ul.breadcrumb {
     a:visited {
         color:@linkColor;
+    }
+}
+
+ul.publish_status {
+    .schedule_date {
+        .schedule_date_styles;
+    }
+
+    .schedule_time {
+        .schedule_time_styles;
+    }
+
+    label span {
+        margin-left:8px;
     }
 }
 
@@ -126,8 +171,8 @@ ul.breadcrumb {
             }
         }
 
-        .ready {
-            background-color:@outstanding-ready;
+        .unfinished {
+            background-color:@outstanding-unfinished;
         }
 
         .scheduled {
@@ -139,9 +184,9 @@ ul.breadcrumb {
         }
     }
 
-    #outstanding-ready {
-        background-color:@outstanding-ready-lighter;
-        border-top:8px solid @outstanding-ready;
+    #outstanding-unfinished {
+        background-color:@outstanding-unfinished-lighter;
+        border-top:8px solid @outstanding-unfinished;
     }
 
     #outstanding-scheduled {
@@ -196,6 +241,12 @@ ul.breadcrumb {
         .status {
             color:#444;
             margin:0px 0px 10px 85px;
+
+            span {
+                background-color:#FFF;
+                padding:0px 5px;
+                margin:0px 5px;
+            }
         }
 
         .links {
@@ -204,6 +255,14 @@ ul.breadcrumb {
             a {
                 margin-right:15px;
             }
+
+            a.link:visited {
+                color:@linkColor;
+            }
+        }
+
+        .danger {
+            color:#C30;
         }
     }
 }
@@ -211,6 +270,12 @@ ul.breadcrumb {
 /* *************** Upload Publication *************** */
 
 #upload-publication-modal {
+
+    .parent_name {
+        font-size:1.1em;
+        font-weight:bold;
+        margin:0px 0px 15px 150px;
+    }
     
     .uploading {
         font-size:1.2em;
@@ -287,30 +352,23 @@ ul.breadcrumb {
         margin-bottom:15px;
     }
 
-    .schedule_date {
-        padding:10px 0px 5px 20px;
-        font-size:1.2em;
-        color:#444;
-
-        .yui_date_picker_panel {
-            margin-left:5px;
-        }
-    }
-
-    .schedule_time {
-        padding:10px 0px 20px 20px;
-        font-size:1.2em;
-        color:#444;
-
-        select {
-            width:60px;
-            margin:0px 5px;
-        }
-    }
-
     .actions a {
         margin-top:10px;
         color:#C30;
+    }
+}
+
+/* Modal */
+
+#schedule-publication-modal {
+    .modal-body {
+        .schedule_date {
+            .schedule_date_styles;
+        }
+
+        .schedule_time {
+            .schedule_time_styles;
+        }
     }
 }
 
@@ -318,7 +376,7 @@ ul.breadcrumb {
 
 /* Magazines */
 
-.publisher_magazines {
+.publisher_magazines_page {
     .table_actions {
         .upload_publication_button span {
             background:url('/static/images/icons/button_upload_publication.png') left center no-repeat;
@@ -391,8 +449,8 @@ ul.breadcrumb {
                 color:#444;
             }
 
-            .ready {
-                background-color:@outstanding-ready-light;
+            .unfinished {
+                background-color:@outstanding-unfinished-light;
             }
 
             .scheduled {
@@ -429,17 +487,15 @@ ul.breadcrumb {
         margin-bottom:7px;
     }
 
-    .magazine_name {
-        margin:10px 0px 15px;
+    .magazine_name h2 {
+        margin:10px 0px 5px;
+        font-size:1.4em;
+        padding-right:10px;
+    }
 
-        h2 {
-            font-size:1.4em;
-            padding-right:10px;
-        }
-
-        div {
-            color:#666;
-        }
+    .description {
+        margin-top:20px;
+        color:#666;
     }
 
     .magazine {
@@ -515,18 +571,69 @@ ul.breadcrumb {
 
 .magazine_issue_page {
     h2 {
-        
-    }
-
-    .status {
-        font-size:1.1em;
+        font-size:1.6em;
+        margin:10px 0px;
+        line-height:100%;
+        span {
+            color:#999;
+        }
     }
 
     .page_actions {
-        margin:15px 0px;
+        margin:15px 0px 25px;
+    }
+
+    .details {
+        font-size:1.1em;
+
+        .label {
+            font-size:1em;
+            font-weight:normal;
+            padding:5px 7px;
+            color:#FFF;
+            background-color:#119a93;
+            margin-bottom:10px;
+        }
+
+        .status {
+            margin-bottom:25px;
+
+            span {
+                &.unpublished {
+                    background-color:@outstanding-unpublished-light;
+                }
+                
+                &.scheduled {
+                    background-color:@outstanding-scheduled-light;
+                }
+            }
+
+            li {
+                color:#333;
+                margin-bottom:15px;
+            }
+        }
+
+        .description {
+            margin-bottom:20px;
+
+            p {
+                font-size:1.1em;
+                color:#444;
+            }
+
+            .no {
+                color:#777;
+            }
+        }
+    }
+
+    .right_panel {
+        
     }
 
     .cover {
+        float:right;
         width:200px;
         height:250px;
         background-color:#CCC;
@@ -540,6 +647,15 @@ ul.breadcrumb {
 /* *************** Publisher Books *************** */
 
 .publisher_books_page {
+    .breadcrumb {
+        margin-bottom:7px;
+    }
+
+    .description {
+        margin-top:20px;
+        color:#666;
+    }
+
     .books {
         margin-top:15px;
     }
@@ -608,6 +724,87 @@ ul.breadcrumb {
         }
     }
 }
+
+.book_page {
+    h2 {
+        font-size:1.6em;
+        margin:10px 0px;
+        line-height:100%;
+        span {
+            color:#999;
+        }
+    }
+
+    .page_actions {
+        margin:15px 0px 25px;
+    }
+
+    .details {
+        font-size:1.1em;
+
+        .label {
+            font-size:1em;
+            font-weight:normal;
+            padding:5px 7px;
+            color:#FFF;
+            background-color:#119a93;
+            margin-bottom:10px;
+        }
+
+        p {
+            font-size:1.1em;
+            color:#444;
+        }
+
+        .status {
+            margin-bottom:25px;
+
+            span {
+                &.unpublished {
+                    background-color:@outstanding-unpublished-light;
+                }
+                
+                &.scheduled {
+                    background-color:@outstanding-scheduled-light;
+                }
+            }
+
+            li {
+                color:#333;
+                margin-bottom:15px;
+            }
+        }
+
+        .author {
+            margin-bottom:20px;
+        }
+
+        .description {
+            margin-bottom:20px;
+
+            .no {
+                color:#777;
+            }
+        }
+    }
+
+    .right_panel {
+        
+    }
+
+    .cover {
+        float:right;
+        width:200px;
+        height:250px;
+        background-color:#CCC;
+    }
+
+    .statistics {
+        margin-top:25px;
+    }
+}
+
+
 
 /* *************** Publisher Management *************** */
 .publisher_manage .table_actions {
