@@ -1,35 +1,22 @@
-{% extends 'base.html' %}
+{% extends 'base_single.html' %}
 {% load url from future %}
 
 {% block head_title %}Login{% endblock %}
 {% block page_title %}Login{% endblock %}
 
-{% block body %}
-<form method="POST" action="{% url 'django.contrib.auth.views.login' %}">
+{% block body_single %}
+<h1>เข้าสู่ระบบ</h1>
+<form method="POST" action="{% url 'django.contrib.auth.views.login' %}" class="form-stacked">
   {% csrf_token %}
   {{form.non_field_errors}}
-  <fieldset>
-    <legend>User Login</legend>
-    <div class="clearfix">
-      <label for="id_email">Email:</label>
-      <div class="input">
-        {{form.email}}
-      </div>
-      {{form.email.errors}}
-    </div>
 
-    <div class="clearfix">
-      <label for="id_password">Password:</label>
-      <div class="input">
-        {{form.password}}
-      </div>
-      {{form.password.errors}}
-    </div>
+  <div class="clearfix"><label for="id_email">อีเมล</label><div class="input">{{form.email}}{{form.email.errors}}</div></div>
+  <div class="clearfix"><label for="id_password">รหัสผ่าน</label><div class="input">{{form.password}}{{form.password.errors}}</div></div>
 
-    <div class="actions">
-      <input type="submit" value="Login" class="btn primary">
-      <a href="{% url 'django.contrib.auth.views.password_reset' %}">Forgot your password?</a>
-    </div>
-  </fieldset>
+  <div class="form_actions">
+    <button type="submit" class="btn primary span2">เข้าสู่ระบบ</button>
+    <a href="{% url 'django.contrib.auth.views.password_reset' %}">ลืมรหัสผ่าน?</a>
+  </div>
+
 </form>
 {% endblock %}

@@ -14,7 +14,7 @@ from publication.models import Publication
 def generate_publisher_menu(user):
     user_publishers = UserPublisher.objects.filter(user=user).order_by('publisher__name')
 
-    if len(user_publishers) > 0:
+    if len(user_publishers) > 1:
         menus = []
         for user_publisher in user_publishers:
             menus.append('<li><a href="%s">Switch to %s</a></li>' % (reverse('view_publisher_dashboard', args=[user_publisher.publisher.id]), user_publisher.publisher.name))

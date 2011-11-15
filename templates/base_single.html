@@ -5,8 +5,8 @@
 {% block html_head %}
 {{block.super}}
 
-<link rel="stylesheet/less" type="text/css" href="{{STATIC_URL}}libs/bootstrap/less/bootstrap.less">
-<link rel="stylesheet/less" type="text/css" href="{{STATIC_URL}}css/styles.less">
+<link rel="stylesheet/less" type="text/css" href="{{STATIC_URL}}libs/bootstrap/lib/bootstrap.less">
+<link rel="stylesheet/less" type="text/css" href="{{STATIC_URL}}css/styles.single.less">
 
 <script type="text/javascript" src="{{STATIC_URL}}js/scripts.js"></script>
 
@@ -18,7 +18,13 @@ $(document).ready(function () {
 {% endblock %}
 
 {% block body %}
-<div>
-  {% block body_single %}{% endblock %}
+<div class="logo">OpenReader</div>
+
+<div class="container">
+  <div class="row">
+    <div class="span8 offset4 single-content">
+      <div class="content-inner">{% block body_single %}{% endblock %}</div>
+    </div>
+  </div>
 </div>
 {% endblock %}

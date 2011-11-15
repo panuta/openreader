@@ -1,9 +1,10 @@
 TODO
-- implement categories
+- publisher management
 - messages
 - pagination
 - shelf
 - single page
+- dashboard
 
 WILL DO
 - modal as a jQuery template
