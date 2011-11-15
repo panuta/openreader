@@ -12,6 +12,8 @@ from common.permissions import can
 from publication import functions as publication_functions
 from publication.models import Publisher, Publication, UploadingPublication
 
+from publication.book import MODULE_CODE
+
 from forms import *
 from models import *
 
@@ -24,7 +26,7 @@ def finishing_upload_publication(request, publisher, uploading_publication):
             title = form.cleaned_data['title']
             description = form.cleaned_data['description']
             author = form.cleaned_data['author']
-            publish_status = int(form.cleaned_data['publish_status'])
+            publish_status = int(form.cleaned_data['publish_status']) if form.cleaned_data['publish_status'] else None
             schedule_date = form.cleaned_data['schedule_date']
             schedule_time = form.cleaned_data['schedule_time']
 
@@ -37,11 +39,11 @@ def finishing_upload_publication(request, publisher, uploading_publication):
     else:
         form = FinishUploadBookForm(uploading_publication=uploading_publication)
     
-    return render(request, 'publication/book/publication_finishing_book_upload.html', {'publisher':publisher, 'uploading_publication':uploading_publication, 'form':form})
+    return render(request, 'publication/book/publication_finishing.html', {'publisher':publisher, 'uploading_publication':uploading_publication, 'form':form})
 
 def view_publication(request, publisher, publication):
 
-    return render(request, 'publication/book/book.html', {'publisher':publisher, 'publication':publication})
+    return render(request, 'publication/book/publication.html', {'publisher':publisher, 'publication':publication})
 
 def edit_publication(request, publisher, publication):
     if request.method == 'POST':
@@ -51,11 +53,11 @@ def edit_publication(request, publisher, publication):
             author = form.cleaned_data['author']
             publication.description = form.cleaned_data['description']
             
-            publish_status = int(form.cleaned_data['publish_status'])
+            publish_status = int(form.cleaned_data['publish_status']) if form.cleaned_data['publish_status'] else None
             schedule_date = form.cleaned_data['schedule_date']
             schedule_time = form.cleaned_data['schedule_time']
 
-            if publication.publish_status != publish_status:
+            if publish_status and publication.publish_status != publish_status:
                 publication.publish_status = publish_status
 
                 if publish_status == Publication.PUBLISH_STATUS['UNPUBLISHED']:
@@ -84,7 +86,7 @@ def edit_publication(request, publisher, publication):
         schedule_time = publication.publish_schedule.time() if publication.publish_schedule else None
         form = BookForm(initial={'title':publication.title, 'description':publication.description, 'author':publication.book.author, 'publish_status':str(publication.publish_status), 'schedule_date':schedule_date, 'schedule_time':schedule_time})
 
-    return render(request, 'publication/book/book_edit.html', {'publisher':publisher, 'publication':publication, 'form':form})
+    return render(request, 'publication/book/publication_edit.html', {'publisher':publisher, 'publication':publication, 'form':form})
 
 # BOOK PUBLICATION ################################################################################
 
@@ -95,12 +97,16 @@ def view_books(request, publisher_id):
     if not can(request.user, 'view', publisher):
         raise Http404
 
-    books = Publication.objects.filter(publisher=publisher, publication_type='book', publish_status=Publication.PUBLISH_STATUS['PUBLISHED']).order_by('uploaded')
+    all_book_count = Publication.objects.filter(publisher=publisher, publication_type=MODULE_CODE).count() + UploadingPublication.objects.filter(publisher=publisher, publication_type=MODULE_CODE).count()
+    books = Publication.objects.filter(publisher=publisher, publication_type=MODULE_CODE, publish_status=Publication.PUBLISH_STATUS['PUBLISHED']).order_by('uploaded')
 
-    outstandings = {
-        'unfinished': UploadingPublication.objects.filter(publisher=publisher, publication_type='book'),
-        'scheduled': Publication.objects.filter(publisher=publisher, publication_type='book', publish_status=Publication.PUBLISH_STATUS['SCHEDULED']),
-        'unpublished': Publication.objects.filter(publisher=publisher, publication_type='book', publish_status=Publication.PUBLISH_STATUS['UNPUBLISHED']),
-    }
+    if can(request.user, 'upload,publish', publisher):
+        outstandings = {
+            'unfinished': UploadingPublication.objects.filter(publisher=publisher, publication_type=MODULE_CODE),
+            'scheduled': Publication.objects.filter(publisher=publisher, publication_type=MODULE_CODE, publish_status=Publication.PUBLISH_STATUS['SCHEDULED']),
+            'unpublished': Publication.objects.filter(publisher=publisher, publication_type=MODULE_CODE, publish_status=Publication.PUBLISH_STATUS['UNPUBLISHED']),
+        }
+    else:
+        outstandings = None
 
-    return render(request, 'publication/book/books.html', {'publisher':publisher, 'books':books, 'outstandings':outstandings})
+    return render(request, 'publication/book/books.html', {'publisher':publisher, 'all_book_count':all_book_count, 'books':books, 'outstandings':outstandings})

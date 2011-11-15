@@ -7,14 +7,19 @@
 {{block.super}}
 <script>
 $(document).ready(function () {
+  {% can user 'upload' publisher %}
   bind_upload_publication_modal();
   bind_upload_publication_form();
-  bind_publication_outstandings();
 
   $('.upload_publication_button').on('click', function(e) {
     open_upload_publication_modal();
     return false;
   });
+  {% endcan %}
+  
+  {% if outstandings %}
+  bind_publication_outstandings();
+  {% endif %}
 })
 </script>
 {% endblock %}
@@ -25,12 +30,17 @@ $(document).ready(function () {
     <li class="active">Books</li>
   </ul>
 
+  {% can user 'upload' publisher %}
+  {% if all_book_count %}
   <div class="table_actions">
     <a href="#" class="btn upload_publication_button"><span>Upload book</span></a>
   </div>
+  {% endif %}
+  {% endcan %}
 
   {% include 'publication/snippets/publication_outstandings.html' with ready=outstandings.ready scheduled=outstandings.scheduled unpublished=outstandings.unpublished %}
 
+  {% if all_book_count %}
   <div class="books">
 
     <h3>Published books<span>({{books|length}} issues)</span></h3>
@@ -43,9 +53,7 @@ $(document).ready(function () {
         <div class="name"><a href="{% url view_publication publication.id %}">{{publication.title}}</a></div>
         <div class="status">Published on {{publication.published|format_abbr_datetime}}</div>
         <div class="stats"></div>
-        <div class="links">
-          <a href="{% url edit_publication publication.id %}">Edit publication</a>
-        </div>
+        {% can user 'upload' publisher %}<div class="links"><a href="{% url edit_publication publication.id %}">Edit publication</a></div>{% endcan %}
 
       </li>
       {% endfor %}
@@ -55,9 +63,15 @@ $(document).ready(function () {
     <div class="no_row">No published books</div>
     {% endif %}
   </div>
+  {% else %}
+  <div class="no_book">
+    <div class="message">Your publisher has no book</div>
+    {% can user 'upload' publisher %}<div><a href="#" class="btn upload_publication_button">Upload new book here</a></div>{% endcan %}
+  </div>
+  {% endif %}
   
 </div>
 
-{% generate_publication_module_upload_modal 'book' %}
+{% can user 'upload' publisher %}{% generate_publication_module_upload_modal 'book' %}{% endcan %}
 
 {% endblock %}

@@ -74,7 +74,16 @@ form, ul {margin:0px;padding:0px;}
 li {list-style:none;}
 a.btn:visited {color:#333333;}
 
-.page-header h1 {margin-top:10px;}
+.page-header {
+    h1 {
+        margin-top:10px;
+    }
+
+    .accounts {
+        float:right;
+    }
+}
+
 
 .no_row {
     text-align:center;
@@ -394,7 +403,7 @@ ul.publish_status {
         padding:10px 0px;
         background-color:#FFE;
 
-        p {
+        div.message {
             font-size:1.2em;
         }
 
@@ -565,18 +574,37 @@ ul.publish_status {
             background-color:#CCC;
         }
     }
+
+    .no_magazine {
+        text-align:center;
+        margin-top:20px;
+        padding:10px 0px 20px;
+        background-color:#FFD;
+
+        div.message {
+            font-size:1.2em;
+        }
+
+        div {
+            margin-top:10px;
+        }
+    }
 }
 
 /* Magazine Issue */
 
 .magazine_issue_page {
     h2 {
-        font-size:1.6em;
-        margin:10px 0px;
+        font-size:1.3em;
+        margin-bottom:12px;
         line-height:100%;
-        span {
-            color:#999;
-        }
+        color:#888;
+    }
+
+    h3 {
+        font-size:1.6em;
+        margin-bottom:20px;
+        line-height:100%;
     }
 
     .page_actions {
@@ -648,7 +676,7 @@ ul.publish_status {
 
 .publisher_books_page {
     .breadcrumb {
-        margin-bottom:7px;
+        margin-bottom:15px;
     }
 
     .description {
@@ -721,6 +749,21 @@ ul.publish_status {
             width:300px;
             height:85px;
             background-color:#CCC;
+        }
+    }
+
+    .no_book {
+        text-align:center;
+        margin-top:20px;
+        padding:10px 0px 20px;
+        background-color:#FFD;
+
+        div.message {
+            font-size:1.2em;
+        }
+
+        div {
+            margin-top:10px;
         }
     }
 }

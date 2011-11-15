@@ -107,38 +107,35 @@ def upload_publication(request, publisher_id, module_name=''):
         raise Http404
 
     if request.method == 'POST':
-        try:
-            if not module_name:
-                form = GeneralUploadPublicationForm(request.POST, request.FILES)
-            else:
-                try:
-                    module = Module.objects.get(module_name=module_name)
-                except Module.DoesNotExist:
-                    raise Http404
-                
-                if not PublisherModule.objects.filter(publisher=publisher, module=module).exists():
-                    raise Http404
-                
-                form = module.get_module_object('forms').UploadPublicationForm(request.POST, request.FILES, publisher=publisher)
-                
-            if form.is_valid():
-                module_input = form.cleaned_data['module']
-                uploading_file = form.cleaned_data['publication']
+        if not module_name:
+            form = GeneralUploadPublicationForm(request.POST, request.FILES)
+        else:
+            try:
+                module = Module.objects.get(module_name=module_name)
+            except Module.DoesNotExist:
+                raise Http404
+            
+            if not PublisherModule.objects.filter(publisher=publisher, module=module).exists():
+                raise Http404
+            
+            form = module.get_module_object('forms').UploadPublicationForm(request.POST, request.FILES, publisher=publisher)
+            
+        if form.is_valid():
+            module_input = form.cleaned_data['module']
+            uploading_file = form.cleaned_data['publication']
 
-                try:
-                    uploading_publication = publication_functions.upload_publication(request, module_input, uploading_file, publisher)
-                except:
-                    return response_json_error('upload')
-                
-                form.after_upload(uploading_publication)
-                
-                return response_json({'next_url':reverse('finishing_upload_publication', args=[uploading_publication.id])})
+            try:
+                uploading_publication = publication_functions.upload_publication(request, module_input, uploading_file, publisher)
+            except:
+                return response_json_error('upload')
+            
+            form.after_upload(uploading_publication)
+            
+            return response_json({'next_url':reverse('finishing_upload_publication', args=[uploading_publication.id])})
 
-            else:
-                return response_json_error('form-input-invalid')
-        except:
-            import sys
-            print sys.exc_info()
+        else:
+            return response_json_error('form-input-invalid')
+    
     
     else:
         raise Http404
@@ -242,7 +239,7 @@ def edit_publication(request, publication_id):
     publication = get_object_or_404(Publication, id=publication_id)
     publisher = publication.publisher
 
-    if not can(request.user, 'upload', publisher):
+    if not can(request.user, 'upload,publish', publisher):
         raise Http404
 
     views_module = get_publication_module(publication.publication_type, 'views')

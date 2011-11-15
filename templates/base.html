@@ -26,6 +26,7 @@
     <div class="container">
       <div class="content">
         <div class="page-header">
+          {% if user.is_authenticated %}<div class="accounts">Login as {{user.get_profile.get_fullname}} [<a href="{% url auth_logout %}">Logout</a>]</div>{% endif %}
           <h1>OpenReader</h1>
         </div>
         {% block body %}{% endblock %}

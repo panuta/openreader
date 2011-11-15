@@ -37,7 +37,7 @@ $(document).ready(function () {
 
   {% can user 'upload,manage' publisher %}
   <div class="table_actions">
-    {% can user 'upload' publisher %}<a href="#" class="btn upload_publication_button">Upload new issue</a>{% endcan %}
+    {% can user 'upload' publisher %}{% if magazine.all_issue_count %}<a href="#" class="btn upload_publication_button">Upload new issue</a>{% endif %}{% endcan %}
     {% can user 'manage' publisher %}<a href="{% url edit_magazine magazine.id %}" class="btn">Edit magazine</a>{% endcan %}
   </div>
   {% endcan %}
@@ -46,8 +46,10 @@ $(document).ready(function () {
 
   {% include 'publication/snippets/publication_outstandings.html' with unfinished=outstandings.unfinished ready=outstandings.ready scheduled=outstandings.scheduled unpublished=outstandings.unpublished %}
 
+  {% if magazine.all_issue_count %}
   <div class="magazine">
     <h3>Published issues<span>({{magazine.issues|length}} issues)</span></h3>
+
     {% if magazine.issues %}
     <ul class="published_publications">
       {% for issue in magazine.issues %}
@@ -57,19 +59,23 @@ $(document).ready(function () {
         <div class="name"><a href="{% url view_publication issue.publication.id %}">{{issue.publication.title}}</a></div>
         <div class="status">Published on {{issue.publication.published|format_abbr_datetime}}</div>
         <div class="stats"></div>
-        <div class="links">
-          <a href="{% url edit_publication issue.publication.id %}">Edit publication</a>
-        </div>
-
+        {% can user 'upload,publish' publisher %}<div class="links"><a href="{% url edit_publication issue.publication.id %}">Edit publication</a></div>{% endcan %}
       </li>
       {% endfor %}
     </ul>
-    
     {% else %}
-    <div class="no_row">No published issues</div>
+    <div class="no_row">No published issue</div>
     {% endif %}
+
   </div>
-  {% generate_publication_module_upload_modal 'magazine' %}
+  {% else %}
+  <div class="no_magazine">
+    <div class="message">This magazine currently have no issue</div>
+    {% can user 'upload' publisher %}<div><a href="#" class="btn upload_publication_button">Upload new issue here</a></div>{% endcan %}
+  </div>
+  {% endif %}
+
+  {% can user 'upload' publisher %}{% generate_publication_module_upload_modal 'magazine' %}{% endcan %}
   
 </div>
 {% endblock %}

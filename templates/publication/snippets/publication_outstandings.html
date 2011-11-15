@@ -36,10 +36,13 @@
           <div class="cover"></div>
           <div class="name"><a href="{% url view_publication publication.id %}">{{publication.get_publication_title}}</a></div>
           <div class="status">Scheduled to publish on <span>{{publication.publish_schedule|format_abbr_datetime}}</span> by <span>{{publication.published_by.get_profile.get_fullname}}</span></div>
+
+          {% can user 'publish' publisher %}
           <div class="links">
             <a href="{% url set_publication_schedule publication.id %}" class="btn action-schedule">Reschedule</a>
             <a href="{% url set_publication_cancel_schedule publication.id %}" class="link danger action-cancel-schedule">Cancel schedule</a>
           </div>
+          {% endcan %}
       </li>
       {% endfor %}
     </ul>
@@ -56,9 +59,13 @@
           <div class="name"><a href="{% url view_publication publication.id %}">{{publication.get_publication_title}}</a></div>
           <div class="status">Uploaded on <span>{{publication.uploaded|format_abbr_datetime}}</span> by <span>{{publication.uploaded_by.get_profile.get_fullname}}</span></div>
           <div class="links">
+            {% can user 'upload,publish' publisher %}
+            {% can user 'publish' publisher %}
             <a href="{% url set_publication_schedule publication.id %}" class="btn action-schedule">Schedule</a>
             <a href="{% url set_publication_published publication.id %}" class="btn action-publish">Publish Now</a>
+            {% endcan %}
             <a href="{% url edit_publication publication.id %}" class="link">Edit Issue</a>
+            {% endcan %}
           </div>
       </li>
       {% endfor %}

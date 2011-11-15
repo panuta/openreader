@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load page_tags module_tags %}
+{% load page_tags module_tags helper_tags %}
 
 {% block head_title %}{% endblock %}
 
@@ -35,7 +35,7 @@ $(document).ready(function () {initialize();})
         <ul class="nav">
           <li><a href="{% url view_publisher_dashboard publisher.id %}">Dashboard</a></li>
           {% generate_publication_menu publisher %}
-          <li><a href="{% url view_publisher_management publisher.id %}">Publisher Management</a></li>
+          {% can user 'manage' publisher %}<li><a href="{% url view_publisher_management publisher.id %}">Publisher Management</a></li>{% endcan %}
         </ul>
         {% generate_publisher_menu user %}
       </div>

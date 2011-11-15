@@ -59,21 +59,17 @@ $(document).ready(function () {
     </div>
 
     {% can user 'manage' publisher %}
-    <div class="create_magazine">
-      <a href="{% url create_magazine publisher.id %}"><span>Create new magazine</span></a>
-    </div>
+    <div class="create_magazine"><a href="{% url create_magazine publisher.id %}"><span>Create new magazine</span></a></div>
     {% endcan %}
 
   {% else %}
     <div class="no_magazine">
-      <p>Your publisher currently has no magazine</p>
-      {% can user 'manage' publisher %}
-      <div><a href="{% url create_magazine publisher.id %}" class="btn">Create magazine</a></div>
-      {% endcan %}
+      <div class="message">Your publisher currently has no magazine</div>
+      {% can user 'manage' publisher %}<div><a href="{% url create_magazine publisher.id %}" class="btn">Create magazine</a></div>{% endcan %}
     </div>  
   {% endif %}
 
 </div>
-{% generate_publication_module_upload_modal 'magazine' %}
+{% can user 'upload' publisher %}{% generate_publication_module_upload_modal 'magazine' %}{% endcan %}
 
 {% endblock %}

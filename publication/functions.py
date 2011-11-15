@@ -30,6 +30,11 @@ def finishing_upload_publication(request, publisher, uploading_publication, titl
         publish_schedule = None
         published = datetime.datetime.today()
         published_by = request.user
+    else:
+        publish_status = Publication.PUBLISH_STATUS['UNPUBLISHED']
+        publish_schedule = None
+        published = None
+        published_by = None
 
     publication = Publication.objects.create(
         publisher = publisher,
