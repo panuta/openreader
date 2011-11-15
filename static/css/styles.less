@@ -1,4 +1,4 @@
-@import "../libs/bootstrap/less/variables.less";
+@import "../libs/bootstrap/lib/variables.less";
 
 @outstanding-unfinished: #e2c3b5;
 @outstanding-unfinished-light: #e9d2c7;
@@ -12,7 +12,7 @@
 @outstanding-unpublished-light: #EEE;
 @outstanding-unpublished-lighter: #F3F3F3;
 
-.content_link () {
+.content_link() {
     a:link, a:active, a:visited {
         text-decoration:underline;
         color:@linkColor;
@@ -21,11 +21,11 @@
     a:hover {
         background-color:@linkColor !important;
         color:#FFF !important;
+        text-shadow:none;
     }
 }
 
-.schedule_date_styles () {
-    padding:10px 0px 0px 20px;
+.schedule_date_styles() {
     font-size:1.2em;
     color:#444;
 
@@ -34,8 +34,7 @@
     }
 }
 
-.schedule_time_styles () {
-    padding:10px 0px 10px 20px;
+.schedule_time_styles() {
     font-size:1.2em;
     color:#444;
 
@@ -45,118 +44,9 @@
     }
 }
 
-/* *************** Form *************** */
-input, textarea {
-    color:#444;
-}
-
-select {
-    color:#444;
-}
-
-form .inputs-list li {
-    margin-bottom:10px;
-}
-
-form .inputs-list label {
-    display:inline;
-}
-
-form .inputs-list .errorlist {
-    margin-bottom:20px;
-}
-
-form fieldset .actions input {margin-right:10px;}
-
-/* *************** Common *************** */
-
-form, ul {margin:0px;padding:0px;}
-li {list-style:none;}
-a.btn:visited {color:#333333;}
-
-.page-header {
-    h1 {
-        margin-top:10px;
-    }
-
-    .accounts {
-        float:right;
-    }
-}
-
-
-.no_row {
-    text-align:center;
-    font-size:1.1em;
-    background-color:#F5F5F5;
-    padding:10px 0px;
-}
-
-.table_actions a {
-    margin-right:15px;
-}
-
-ul.errorlist {
-    margin-top:5px;
-
-    li {
-        color:#c30;
-    }
-}
-
-ul.breadcrumb {
-    a:visited {
-        color:@linkColor;
-    }
-}
-
-ul.publish_status {
-    .schedule_date {
-        .schedule_date_styles;
-    }
-
-    .schedule_time {
-        .schedule_time_styles;
-    }
-
-    label span {
-        margin-left:8px;
-    }
-}
-
-/* Publisher Top Navigation Bar */
-
-.publisher-topbar-wrapper {
-    height: 40px;
-    margin: 5px 0 15px;
-    position: relative;
-}
-
-.publisher-topbar-wrapper .topbar {
-    position: absolute;
-}
-
-.publisher-topbar-wrapper .topbar .topbar-inner {
-    border-radius: 4px 4px 4px 4px;
-    padding-left: 20px;
-    padding-right: 20px;
-}
-
-.publisher-topbar-wrapper .topbar .topbar-inner .container {
-    width:900px;
-}
-
-/* Publisher Dashboard */
-.publisher_dashboard .sidebar {
-  
-}
-
 .publication_outstanding_styles() {
-    margin:20px 0px;
-    background-color:#FFE;
-    border:1px solid #DDD;
-    padding:10px;
-
+    margin-bottom:25px;
+    
     @outstanding-number-height: 20px;
     @outstanding-number-vertical-padding: 2px;
 
@@ -174,6 +64,7 @@ ul.publish_status {
             background-image:url('/static/images/down_arrow.png');
             background-position:right center;
             background-repeat:no-repeat;
+            border-radius:3px;
 
             a {
                 color:#333;
@@ -210,6 +101,7 @@ ul.publish_status {
 
     .list {
         padding-bottom:15px;
+        margin-top:5px;
 
         .close_list {
             float:right;
@@ -276,10 +168,410 @@ ul.publish_status {
     }
 }
 
+.publication_list_styles() {
+    .unfinished_list {
+        background-color:@outstanding-unfinished-lighter;
+        border-top:8px solid @outstanding-unfinished;
+    }
+
+    .unpublished_list {
+        background-color:@outstanding-unpublished-lighter;
+        border-top:8px solid @outstanding-unpublished;
+    }
+
+    .scheduled_list {
+        background-color:@outstanding-scheduled-lighter;
+        border-top:8px solid @outstanding-scheduled;
+    }
+
+    .type {
+        font-weight:bold;
+        font-size:0.9em;
+        margin-bottom:10px;
+        color:#666;
+        padding:5px 15px 0px;
+    }
+
+    li {
+        margin-bottom:15px;
+        border-bottom:1px dashed #CCC;
+        min-height:95px;
+        padding:5px 15px 15px;
+
+        .cover {
+            width:70px;
+            height:85px;
+            background-color:#D34;
+            float:left;
+        }
+
+        .name {
+            margin:0px 0px 7px 85px;
+            font-size:1.2em;
+            color:#000;
+
+            .content_link;
+        }
+
+        .status {
+            color:#444;
+            margin:0px 0px 10px 85px;
+        }
+
+        .links {
+            margin:0px 0px 0px 85px;
+
+            a, button {
+                margin-right:15px;
+            }
+
+            a.link {
+                &:link, &:active, &:visited {
+                    color:#444;
+                    text-decoration:underline;
+                }
+
+                &:hover {
+                    background-color:@linkColor;
+                    color:#FFF;
+                }
+            }
+        }
+
+        .statistics {
+            float:right;
+            width:300px;
+            height:85px;
+            background-color:#CCC;
+        }
+    }
+}
+
+/* *************** Base *************** */
+
+body {
+    background:url(/static/images/bg.png);
+}
+
+.topbar {
+    height:50px;
+    position:absolute;
+    border-bottom:2px solid #DDD;
+
+    .fill {
+        background:url(/static/images/bg-topbar.png);
+        padding-top:10px;
+    }
+
+    h1 {
+        font-size:18px;
+        position:relative;
+        line-height:18px;
+        margin:0px;
+
+        a {
+            float: left;
+            display: block;
+            padding: 8px 20px 12px;
+            margin-left: -20px;
+            color: #ffffff;
+            font-size: 20px;
+            font-weight: 200;
+            line-height: 1;
+        }
+
+        span {
+            color:#CCC;
+        }
+    }
+
+    li a {
+        text-decoration:underline !important;
+    }
+
+    li.active a {
+        background-color:#272e34 !important;
+    }
+
+    .accounts {
+        line-height: 19px;
+        padding: 10px 5px 11px 10px;
+        color:#CCC;
+        margin-left:15px;
+
+        strong {
+            font-weight:normal;
+            color:#FFF;
+            margin-left:5px;
+        }
+    }
+}
+
+.body_authenticated {
+    margin:75px 20px 0px;
+}
+
+.container-body {
+    padding:0px;
+}
+
+.container-fluid {
+    .sidebar {
+        left:0px;
+        width:230px;
+
+        .head {
+            font-weight:bold;
+            color:#333;
+            font-size:1.2em;
+            margin:0px 0px 10px 10px;
+
+            a {
+                color:#333;
+            }
+        }
+
+        ul li {
+            margin-bottom:5px;
+            
+            padding:10px 10px 10px 25px;
+
+            a {
+                color:#444;
+                font-size:1.1em;
+                margin-left:6px;
+                display:block;
+            }
+
+            &.publication {background:url(/static/images/menu/publication.png) 10px 50% transparent no-repeat;}
+
+            &.add {
+                background:url(/static/images/menu/add.png) 10px 50% transparent no-repeat;
+                border:1px dashed #CCC;
+                margin-top:15px;
+            }
+
+            &.manage {background:url(/static/images/menu/manage.png) 10px 50% transparent no-repeat;}
+
+            &.active {
+                background-color:#FFF;
+                border-top:1px solid #EEE;
+                border-left:1px solid #EEE;
+                border-right:1px solid #CCC;
+                border-bottom:1px solid #CCC;
+
+                a {
+                    color:#000;
+                }
+            }
+        }
+    }
+
+    .content-full {
+        margin:0px;
+    }
+
+    .content, .content-full {
+        margin-right:0px;
+        padding:1px;
+        border:1px solid #EEE;
+        background-color:#DDD;
+
+        .content-inner {
+            border:1px solid #BBB;
+            padding:15px;
+            background-color:#FFF;
+        }
+
+        h2 {
+            margin-bottom:20px;
+            padding-bottom:7px;
+            border-bottom:3px solid #BBB;
+            font-size:1.8em;
+
+            div {
+                color:#666;
+                font-size:0.60em;
+                font-weight:normal;
+                line-height:1;
+                margin:10px 0px;
+            }
+        }
+
+        h3 {
+            margin:20px 0px 15px;
+            line-height:1;
+            font-size:1.4em;
+            color:#11717a;
+            font-weight:normal;
+
+            span {
+                color:#666;
+                font-size:0.9em;
+            }
+        }
+
+        .header_actions {
+            float:right;
+        }
+
+        .breadcrumb {
+            background:#FAFAFA;
+            .content_link;
+            margin-bottom:10px;
+        }
+
+        .page_actions {
+            margin-bottom:25px;
+            a, button {
+                margin-right:15px;
+            }
+        }
+    }
+}
+
+/* *************** Form *************** */
+input, textarea {
+    color:#444;
+}
+
+select {
+    color:#444;
+}
+
+form label, .form-stacked label {
+    color:#11717a;
+    font-weight:normal;
+    font-size:1.1em;
+}
+
+form .clearfix {
+    margin-bottom:15px;
+
+    label {
+        padding-top:3px;
+    }
+}
+
+form .help-block {
+    margin-top:5px;
+}
+
+ul.errorlist {
+    margin-top:5px;
+
+    li {
+        color:#c30;
+    }
+}
+
+/* Input Lists */
+
+form .inputs-list {
+    li {
+        margin-bottom:10px;
+    }
+
+    label {
+        margin-left:5px;
+        color:#444;
+    }
+
+    input[type='radio'], input[type='checkbox'] {
+        float:none;
+        margin-left:0px;
+        margin-right:8px;
+    }
+
+    .errorlist {
+        margin-bottom:20px;
+    }
+
+    .schedule_date {
+        padding:10px 0px 10px 30px;
+        .schedule_date_styles;
+    }
+
+    .schedule_time {
+        padding:10px 0px 10px 30px;
+        .schedule_time_styles;
+    }
+}
+
+form .multiple_checkbox {
+    label {
+        margin:0px 40px 0px 0px;
+        color:#444;
+        width:auto;
+        float:none;
+    }
+
+    li {
+        margin-bottom:8px;
+    }
+}
+
+form .form_actions {
+    margin:0px 0px 30px 150px;
+
+    button {
+        margin-right:15px;
+    }
+}
+
+/* *************** Default Styles *************** */
+
+form, ul {margin:0px;padding:0px;}
+li {list-style:none;}
+a.btn:visited {color:#333333;}
+
+.no_row {
+    text-align:center;
+    font-size:1.1em;
+    background-color:#F5F5F5;
+    padding:10px 0px;
+}
+
+.publication_page {
+    .cover {
+        width:200px;
+        height:250px;
+        background-color:#CCC;
+        border:1px solid #999;
+    }
+
+    h2 {
+        div .unpublished {
+            background-color:@outstanding-unpublished-light;
+        }
+        
+        div .scheduled {
+            background-color:@outstanding-scheduled-light;
+        }
+    }
+
+    .details {
+        margin-bottom:20px;
+
+        p {
+            font-size:1.1em;
+            color:#444;
+        }
+
+        .no {
+            color:#777;
+            font-size:1.1em;
+        }
+    }
+
+    .statistics {
+        margin-top:25px;
+    }
+}
+
 /* *************** Upload Publication *************** */
 
 #upload-publication-modal {
-
     .parent_name {
         font-size:1.1em;
         font-weight:bold;
@@ -319,51 +611,54 @@ ul.publish_status {
     }
 }
 
-.finishing_upload_publication {
+.finishing_upload_publication_page {
     .cover {
-        width:250px;
-        height:320px;
+        width:200px;
+        height:250px;
         background-color:#ABC;
-        border:5px solid #666;
-    }
-
-    form {
-        margin:0px;
-        padding:0px;
-    }
-
-    .clearfix {
-        margin-bottom:20px;
+        border:1px solid #999;
+        margin-left:10px;
     }
 
     label {
         margin-bottom:5px;
     }
 
-    .publication_type {
-        margin-bottom:10px;
-        color:#666;
-        font-size:1.1em;
-    }
-
     .file_name {
-        color:#333;
-        background:url('/static/images/icons/file.png') left top no-repeat;
-        font-size:1.2em;
-        padding-left:23px;
+        h3 {
+            line-height:1;
+            color:#666;
+            font-size:1.1em;
+        }
+
+        div {
+            font-size:1.2em;
+            color:#333;
+            background:url('/static/images/icons/file.png') left top no-repeat;
+            padding-left:23px;
+        }
+        
         margin-bottom:15px;
         border-bottom:1px solid #CCC;
         padding-bottom:15px;
     }
 
     .magazine_name {
-        font-size:1.5em;
-        margin-bottom:15px;
+        font-size:1.2em;
+        margin-bottom:10px;
     }
 
-    .actions a {
+    .form_actions {
+        margin:20px 0px 30px;
+    }
+
+    .form_actions a {
         margin-top:10px;
         color:#C30;
+        background-color:#fcdade;
+        padding:2px 7px;
+        float:right;
+        margin-top:8px;
     }
 }
 
@@ -372,10 +667,12 @@ ul.publish_status {
 #schedule-publication-modal {
     .modal-body {
         .schedule_date {
+            padding:0px 0px 15px;
             .schedule_date_styles;
         }
 
         .schedule_time {
+            padding:0px 0px 15px;
             .schedule_time_styles;
         }
     }
@@ -386,10 +683,15 @@ ul.publish_status {
 /* Magazines */
 
 .publisher_magazines_page {
-    .table_actions {
-        .upload_publication_button span {
-            background:url('/static/images/icons/button_upload_publication.png') left center no-repeat;
-            padding-left:23px;
+    .no_magazine {
+        text-align:center;
+        margin-top:20px;
+        background-color:#FFD;
+        padding:20px 0px;
+
+        div.message {
+            font-size:1.2em;
+            padding:10px 0px;
         }
     }
 
@@ -397,50 +699,32 @@ ul.publish_status {
         .publication_outstanding_styles;
     }
 
-    .no_magazine {
-        text-align:center;
-        margin-top:20px;
-        padding:10px 0px;
-        background-color:#FFE;
-
-        div.message {
-            font-size:1.2em;
-        }
-
-        div {
-            margin-top:10px;
-        }
-    }
-
     .magazines {
+        margin-top:25px;
 
         .content_link;
 
-        margin-top:25px;
-
         li {
+            background:url(/static/images/magazine.png) 0px 0px no-repeat;
+            padding:0px 0px 15px 50px;
+            margin-bottom:20px;
             list-style:none;
-            margin-bottom:25px;
             border-bottom:1px dashed #CCC;
-            padding-bottom:25px;
         }
 
         li.last {
-            border-bottom:none;
-            margin-bottom:10px;
+            margin-bottom:40px;
         }
 
         .title {
-            margin-bottom:10px;
-        }
-
-        .title a {
-            font-size:1.4em;
-            font-weight:bold;
+            a {
+                font-size:1.2em;
+                font-weight:bold;
+            }
         }
 
         .stats {
-            margin-bottom:7px;
+            margin-top:10px;
         }
 
         .stats .published {
@@ -450,7 +734,7 @@ ul.publish_status {
         }
 
         .outstanding {
-            margin-bottom:10px;
+            margin-top:10px;
 
             span {
                 margin-right:15px;
@@ -476,378 +760,41 @@ ul.publish_status {
             color:#555;
         }
     }
-
-    .create_magazine {
-        border:1px dashed #999;
-        padding:15px 15px 15px 50px;
-        font-size:1.2em;
-        margin-bottom:40px;
-
-        background:url(/static/images/icons/button_create_magazine.png) 15px center no-repeat;
-
-        .content_link;
-    }
 }
 
 /* Magazine */
 
 .publisher_magazine_page {
-    .breadcrumb {
-        margin-bottom:7px;
+    h4 {
+        line-height:1;
+        margin:10px 0px;
+        color:#555;
     }
-
-    .magazine_name h2 {
-        margin:10px 0px 5px;
-        font-size:1.4em;
-        padding-right:10px;
+    .categories {
+        font-size:1.1em;
+        margin-bottom:10px;
+        color:#444;
     }
 
     .description {
-        margin-top:20px;
-        color:#666;
-    }
-
-    .magazine {
-        margin-top:15px;
+        margin-bottom:10px;
+        color:#444;
+        font-size:1.1em;
     }
 
     .publication_outstandings {
-        .publication_outstanding_styles;
-    }
-
-    h3 {
-        font-size:1.2em;
-        margin-bottom:15px;
-
-        span {
-            font-size:0.9em;
-            color:#666;
-            padding-left:10px;
-        }
-    }
-
-    .published_publications {
-        .content_link;
-
-        li {
-            padding-bottom:10px;
-            margin-bottom:15px;
-            border-bottom:1px dashed #CCC;
-            min-height:95px;
-        }
-
-        li.last {
-            border-bottom:none;
-        }
-
-        .cover {
-            width:70px;
-            height:85px;
-            background-color:#D34;
-            float:left;
-        }
- 
-        .name {
-            margin:0px 0px 7px 85px;
-            font-size:1.2em;
-            color:#000;
-        }
-
-        .status {
-            color:#444;
-            margin:0px 0px 10px 85px;
-        }
-
-        .links {
-            margin:0px 0px 0px 85px;
-
-            a {
-                color:#555;
-                margin-right:15px;
-            }
-        }
-
-        .statistics {
-            float:right;
-            width:300px;
-            height:85px;
-            background-color:#CCC;
-        }
-    }
-
-    .no_magazine {
-        text-align:center;
-        margin-top:20px;
-        padding:10px 0px 20px;
-        background-color:#FFD;
-
-        div.message {
-            font-size:1.2em;
-        }
-
-        div {
-            margin-top:10px;
-        }
-    }
-}
-
-/* Magazine Issue */
-
-.magazine_issue_page {
-    h2 {
-        font-size:1.3em;
-        margin-bottom:12px;
-        line-height:100%;
-        color:#888;
-    }
-
-    h3 {
-        font-size:1.6em;
-        margin-bottom:20px;
-        line-height:100%;
-    }
-
-    .page_actions {
-        margin:15px 0px 25px;
-    }
-
-    .details {
-        font-size:1.1em;
-
-        .label {
-            font-size:1em;
-            font-weight:normal;
-            padding:5px 7px;
-            color:#FFF;
-            background-color:#119a93;
-            margin-bottom:10px;
-        }
-
-        .status {
-            margin-bottom:25px;
-
-            span {
-                &.unpublished {
-                    background-color:@outstanding-unpublished-light;
-                }
-                
-                &.scheduled {
-                    background-color:@outstanding-scheduled-light;
-                }
-            }
-
-            li {
-                color:#333;
-                margin-bottom:15px;
-            }
-        }
-
-        .description {
-            margin-bottom:20px;
-
-            p {
-                font-size:1.1em;
-                color:#444;
-            }
-
-            .no {
-                color:#777;
-            }
-        }
-    }
-
-    .right_panel {
-        
-    }
-
-    .cover {
-        float:right;
-        width:200px;
-        height:250px;
-        background-color:#CCC;
-    }
-
-    .statistics {
-        margin-top:25px;
+        .publication_list_styles;
     }
 }
 
 /* *************** Publisher Books *************** */
 
 .publisher_books_page {
-    .breadcrumb {
-        margin-bottom:15px;
-    }
-
-    .description {
-        margin-top:20px;
-        color:#666;
-    }
-
-    .books {
-        margin-top:15px;
-    }
 
     .publication_outstandings {
-        .publication_outstanding_styles;
-    }
-
-    h3 {
-        font-size:1.2em;
-        margin-bottom:15px;
-
-        span {
-            font-size:0.9em;
-            color:#666;
-            padding-left:10px;
-        }
-    }
-
-    .published_publications {
-        .content_link;
-
-        li {
-            padding-bottom:10px;
-            margin-bottom:15px;
-            border-bottom:1px dashed #CCC;
-            min-height:95px;
-        }
-
-        li.last {
-            border-bottom:none;
-        }
-
-        .cover {
-            width:70px;
-            height:85px;
-            background-color:#D34;
-            float:left;
-        }
- 
-        .name {
-            margin:0px 0px 7px 85px;
-            font-size:1.2em;
-            color:#000;
-        }
-
-        .status {
-            color:#444;
-            margin:0px 0px 10px 85px;
-        }
-
-        .links {
-            margin:0px 0px 0px 85px;
-
-            a {
-                color:#555;
-                margin-right:15px;
-            }
-        }
-
-        .statistics {
-            float:right;
-            width:300px;
-            height:85px;
-            background-color:#CCC;
-        }
-    }
-
-    .no_book {
-        text-align:center;
-        margin-top:20px;
-        padding:10px 0px 20px;
-        background-color:#FFD;
-
-        div.message {
-            font-size:1.2em;
-        }
-
-        div {
-            margin-top:10px;
-        }
+        .publication_list_styles;
     }
 }
-
-.book_page {
-    h2 {
-        font-size:1.6em;
-        margin:10px 0px;
-        line-height:100%;
-        span {
-            color:#999;
-        }
-    }
-
-    .page_actions {
-        margin:15px 0px 25px;
-    }
-
-    .details {
-        font-size:1.1em;
-
-        .label {
-            font-size:1em;
-            font-weight:normal;
-            padding:5px 7px;
-            color:#FFF;
-            background-color:#119a93;
-            margin-bottom:10px;
-        }
-
-        p {
-            font-size:1.1em;
-            color:#444;
-        }
-
-        .status {
-            margin-bottom:25px;
-
-            span {
-                &.unpublished {
-                    background-color:@outstanding-unpublished-light;
-                }
-                
-                &.scheduled {
-                    background-color:@outstanding-scheduled-light;
-                }
-            }
-
-            li {
-                color:#333;
-                margin-bottom:15px;
-            }
-        }
-
-        .author {
-            margin-bottom:20px;
-        }
-
-        .description {
-            margin-bottom:20px;
-
-            .no {
-                color:#777;
-            }
-        }
-    }
-
-    .right_panel {
-        
-    }
-
-    .cover {
-        float:right;
-        width:200px;
-        height:250px;
-        background-color:#CCC;
-    }
-
-    .statistics {
-        margin-top:25px;
-    }
-}
-
-
 
 /* *************** Publisher Management *************** */
 .publisher_manage .table_actions {

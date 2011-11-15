@@ -137,8 +137,12 @@ def create_magazine(request, publisher_id):
         if form.is_valid():
             title = form.cleaned_data['title']
             description = form.cleaned_data['description']
+            categories = form.cleaned_data['categories']
 
             magazine = Magazine.objects.create(publisher=publisher, title=title, description=description, created_by=request.user)
+
+            for category in categories:
+                magazine.categories.add(category)
             
             return redirect('view_magazine', magazine_id=magazine.id)
 
@@ -154,8 +158,7 @@ def view_magazine(request, magazine_id):
 
     if not can(request.user, 'view', publisher):
         raise Http404
-
-    magazine.all_issue_count = MagazineIssue.objects.filter(magazine=magazine, publication__publication_type=MODULE_CODE).count() + UploadingPublication.objects.filter(publisher=publisher, publication_type=MODULE_CODE, parent_id=magazine.id).count()
+    
     magazine.issues = MagazineIssue.objects.filter(magazine=magazine, publication__publication_type=MODULE_CODE, publication__publish_status=Publication.PUBLISH_STATUS['PUBLISHED']).order_by('-publication__uploaded')
 
     if can(request.user, 'upload,publish', publisher):
@@ -182,11 +185,19 @@ def edit_magazine(request, magazine_id):
         if form.is_valid():
             magazine.title = form.cleaned_data['title']
             magazine.description = form.cleaned_data['description']
+            categories = form.cleaned_data['categories']
+            
+            magazine.categories.remove()
+
+            for category in categories:
+                magazine.categories.add(category)
+            
             magazine.save()
 
             return redirect('view_magazine', magazine_id=magazine.id)
 
     else:
-        form = MagazineForm(initial={'title':magazine.title, 'description':magazine.description})
+        print magazine.categories.all()
+        form = MagazineForm(initial={'title':magazine.title, 'description':magazine.description, 'categories':magazine.categories.all()})
     
     return render(request, 'publication/magazine/magazine_modify.html', {'publisher':publisher, 'magazine':magazine, 'form':form})

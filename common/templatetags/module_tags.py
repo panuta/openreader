@@ -50,13 +50,14 @@ def do_has_module(parser, token):
 # HTML GENERATION ################################################################################
 
 @register.simple_tag
-def generate_publication_menu(publisher):
+def generate_top_menu(publisher, active_menu):
     publication_types = PublisherModule.objects.filter(publisher=publisher, module__module_type='publication').order_by('created')
 
     menu_html = ''
     for publication_type in publication_types:
         module = publication_type.module.get_module_object()
-        menu_html = menu_html + '<li><a href="%s">%s</a></li>' % (reverse(module.FRONT_PAGE_URL_NAME, args=[publisher.id]), module.MODULE_NAME)
+        active_html = ' class="active"' if active_menu == module.MODULE_CODE else ''
+        menu_html = menu_html + '<li%s><a href="%s">%s</a></li>' % (active_html, reverse(module.FRONT_PAGE_URL_NAME, args=[publisher.id]), module.MODULE_NAME)
     
     return menu_html
 

@@ -1,0 +1,19 @@
+<div class="clearfix">
+  <label id="id_publish_status">สถานะ</label>
+  <div class="input">
+    <ul class="inputs-list">
+      <li>
+        <label><input type="radio" value="{{PUBLISH_STATUS_UNPUBLISHED}}" name="publish_status"{% if form.publish_status.value == PUBLISH_STATUS_UNPUBLISHED|slugify %} checked="checked"{% endif %}>ยังไม่ตีพิมพ์</label>
+      </li>
+      <li>
+        <label><input type="radio" value="{{PUBLISH_STATUS_SCHEDULED}}" name="publish_status"{% if form.publish_status.value == PUBLISH_STATUS_SCHEDULED|slugify %} checked="checked"{% endif %}>ตั้งเวลาตีพิมพ์</label>
+        <div class="schedule_date">วันที่ {{form.schedule_date}}</div>{{form.schedule_date.errors}}
+        <div class="schedule_time">เวลา {{form.schedule_time}}</div>{{form.schedule_time.errors}}
+      </li>
+      <li>
+        <label><input type="radio" value="{{PUBLISH_STATUS_PUBLISHED}}" name="publish_status"{% if form.publish_status.value == PUBLISH_STATUS_PUBLISHED|slugify %} checked="checked"{% endif %}>ตีพิมพ์ทันที</label>
+      </li>
+    </ul>
+  </div>
+  {{form.publish_status.errors}}
+</div>

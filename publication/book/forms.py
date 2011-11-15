@@ -2,7 +2,7 @@ from django import forms
 
 from widgets import YUICalendar, HourMinuteTimeInput
 
-from publication.forms import GeneralUploadPublicationForm
+from publication.forms import GeneralUploadPublicationForm, PublicationCategoryMultipleChoiceField
 from publication.models import Publication
 
 class UploadPublicationForm(GeneralUploadPublicationForm):
@@ -18,7 +18,7 @@ class FinishUploadBookForm(forms.Form):
     schedule_date = forms.DateField(widget=YUICalendar(attrs={'id':'id_schedule_date'}), required=False)
     schedule_time = forms.TimeField(widget=HourMinuteTimeInput(), required=False)
 
-    # categories = forms.ModelMultipleChoiceField(required=False, queryset=PublicationCategory.objects.all(), widget=forms.CheckboxSelectMultiple())    
+    categories = PublicationCategoryMultipleChoiceField(required=False, widget=forms.CheckboxSelectMultiple())
 
     def __init__(self, *args, **kwargs):
         self.uploading_publication = kwargs.pop('uploading_publication', None)
@@ -46,7 +46,7 @@ class BookForm(forms.Form):
     schedule_date = forms.DateField(widget=YUICalendar(attrs={'id':'id_schedule_date'}), required=False)
     schedule_time = forms.TimeField(widget=HourMinuteTimeInput(), required=False)
 
-    # categories = models.ManyToManyField('PublicationCategory', related_name='magazine_categories')
+    categories = PublicationCategoryMultipleChoiceField(required=False, widget=forms.CheckboxSelectMultiple())
 
     def clean(self):
         cleaned_data = self.cleaned_data

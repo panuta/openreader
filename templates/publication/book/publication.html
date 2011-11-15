@@ -2,66 +2,56 @@
 {% load helper_tags page_tags %}
 
 {% block head_title %}{{publication.title}}{% endblock %}
-
-{% block html_head %}
-{{block.super}}
-<script>
-$(document).ready(function () {
-  
-})
-</script>
-{% endblock %}
+{% block topnav %}{% include 'snippets/topnav.html' with active_menu='book' %}{% endblock %}
 
 {% block body_authenticated %}
-<div class="book_page">
-  <ul class="breadcrumb">
-    <li><a href="{% url view_books publisher.id %}">Books</a> <span class="divider">/</span></li>
-    <li class="active">{{publication.title}}</li>
-  </ul>
-
-  <h2>{{publication.title}}</h2>
-
-  {% can user 'upload,publish' publisher %}
-  <div class="page_actions">
-    <a href="{% url edit_publication publication.id %}" class="btn">Edit book</a>
+<div class="container-fluid container-body publication_page">
+  <div class="sidebar">
+    <div class="cover"></div>
   </div>
-  {% endcan %}
 
-  <div class="row details">
-    <div class="span11">
+  <div class="content"><div class="content-inner">
+    <ul class="breadcrumb">
+      <li><a href="{% url view_books publisher.id %}">หนังสือทั้งหมด</a> <span class="divider">/</span></li>
+      <li class="active">{{publication.title}}</li>
+    </ul>
 
-      <div class="status">
-        <div class="label">Status</div>
-        <ul>
-          <li>{% print_publication_status publication %}</li>
-          <li>Uploaded on <span>{{publication.uploaded|format_abbr_datetime}}</span> by <span>{{publication.uploaded_by.get_profile.get_fullname}}</span></li>
-        </ul>
-      </div>
+    <h2>
+      {{publication.title}}
+      <div>{% print_publication_status publication %}</div>
+      <div>Uploaded on {{publication.uploaded|format_abbr_datetime}} by {{publication.uploaded_by.get_profile.get_fullname}}</div>
+    </h2>
 
-      <div class="author">
-        <div class="label">Author</div>
-        <p>{{publication.book.author}}</p>
-      </div>
-
-      <div class="description">
-        <div class="label">Description</div>
-        {% if publication.description %}
-        <p>{{publication.description}}</p>
-        {% else %}
-        <div class="no">No description</div>
-        {% endif %}
-      </div>
-      
+    {% can user 'upload,publish' publisher %}
+    <div class="page_actions">
+      <a href="{% url edit_publication publication.id %}" class="btn">แก้ไขรายละเอียด</a>
     </div>
-    <div class="span5 right_panel">
-      <div class="cover"></div>
-    </div>
-  </div>
+    {% endcan %}
 
-  <div class="statistics">
-    <h3>Statistics</h3>
-    statistics
-  </div>
-    
+    <div class="details">
+      <h3>ผู้แต่ง</h3>
+      <p>{{publication.book.author}}</p>
+    </div>
+
+    {% if publication.description %}
+    <div class="details">
+      <h3>คำอธิบาย</h3>
+      <p>{{publication.description}}</p>
+    </div>
+    {% endif %}
+
+    {% if publication.book.categories.all %}
+    <div class="details">
+      <h3>ประเภทสิ่งพิมพ์</h3>
+      <p>{{publication.book.categories.all|join:", " }}</p>
+    </div>
+    {% endif %}
+
+    <div class="statistics">
+      <h3>สถิติ</h3>
+      statistics
+    </div>
+
+  </div></div>
 </div>
 {% endblock %}

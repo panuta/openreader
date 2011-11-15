@@ -1,39 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
-  <head>
-    <title>Open Reader | {% block head_title %}{% endblock %}</title>
-    <meta charset="utf-8">
-    <meta name="keywords" content="{% block meta_keywords %}{% endblock %}" />
+<head>
+  <title>Open Reader | {% block head_title %}{% endblock %}</title>
+  <meta charset="utf-8">
+  <meta name="keywords" content="{% block meta_keywords %}{% endblock %}" />
+  <script type="text/javascript" src="{{STATIC_URL}}libs/jquery-1.7.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}libs/normalize.css">
 
-    <script type="text/javascript" src="{{STATIC_URL}}libs/jquery-1.7.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}libs/normalize.css">
+  {% block html_head %}{% endblock %}
 
-    <script src="{{STATIC_URL}}libs/bootstrap/js/bootstrap-dropdown.js"></script>
-    <script src="{{STATIC_URL}}libs/bootstrap/js/bootstrap-modal.js"></script>
-    <link rel="stylesheet/less" type="text/css" href="{{STATIC_URL}}libs/bootstrap/less/bootstrap.less">
-    
-    <link rel="stylesheet/less" type="text/css" href="{{STATIC_URL}}css/styles.less">
-    
-
-    <script type="text/javascript" src="{{STATIC_URL}}libs/less-1.1.3.min.js"></script>
-
-    {% block html_head %}{% endblock %}
-    
-  </head>
-  <body class="yui-skin-sam">
-
-    <div class="container">
-      <div class="content">
-        <div class="page-header">
-          {% if user.is_authenticated %}<div class="accounts">Login as {{user.get_profile.get_fullname}} [<a href="{% url auth_logout %}">Logout</a>]</div>{% endif %}
-          <h1>OpenReader</h1>
-        </div>
-        {% block body %}{% endblock %}
-      </div>
-      <div class="footer">
-        <p>&copy; OpenReader 2011</p>
-      </div>
-    </div>
-  </body>
+  <script type="text/javascript" src="{{STATIC_URL}}libs/less-1.1.3.min.js"></script>
+  
+</head>
+<body class="yui-skin-sam">
+{% block body %}{% endblock %}
+</body>
 </html>

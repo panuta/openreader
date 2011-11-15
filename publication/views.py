@@ -320,12 +320,7 @@ def set_publication_cancel_schedule(request, publication_id):
 
 @login_required
 def view_publisher_management(request, publisher_id):
-    publisher = get_object_or_404(Publisher, pk=publisher_id)
-    
-    if not can(request.user, 'manage', publisher):
-        raise Http404
-
-    return render(request, 'publication/publisher_manage.html', {'publisher':publisher, })
+    return redirect('view_publisher_profile', publisher_id)
 
 @login_required
 def view_publisher_profile(request, publisher_id):

@@ -18,6 +18,17 @@ def generate_magazine_option_list(publisher):
     return options
 
 @register.simple_tag
+def generate_magazine_nav_list(publisher, active_magazine):
+    magazines = Magazine.objects.filter(publisher=publisher).order_by('title')
+
+    options = []
+    for magazine in magazines:
+        active_html = ' active' if magazine.id == active_magazine.id else ''
+        options.append('<li class="publication%s"><a href="%s">%s</a></li>' % (active_html, reverse('view_magazine', args=[magazine.id]), magazine.title))
+    
+    return ''.join(options)
+
+@register.simple_tag
 def print_magazine_name(parent_id):
     try:
         magazine = Magazine.objects.get(id=parent_id)

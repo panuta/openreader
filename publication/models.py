@@ -30,7 +30,7 @@ class Publisher(models.Model):
         return UserPublisher.objects.filter(user=user, publisher=self).exists()
 
     def can_publish(self, user):
-        return False
+        return True
         #return user.groups.filter(Q(name='publisher_admin') | Q(name='publisher_staff')).exists()
     
     def can_upload(self, user):

@@ -1,4 +1,6 @@
-MODULE_NAME = 'Magazines'
+# -*- encoding: utf-8 -*-
+
+MODULE_NAME = 'นิตยสาร'
 MODULE_CODE = 'magazine'
 MODULE_NUMBER = 102
 

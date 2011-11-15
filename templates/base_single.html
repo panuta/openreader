@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block head_title %}{% endblock %}
+
+{% block html_head %}
+{{block.super}}
+
+<link rel="stylesheet/less" type="text/css" href="{{STATIC_URL}}libs/bootstrap/less/bootstrap.less">
+<link rel="stylesheet/less" type="text/css" href="{{STATIC_URL}}css/styles.less">
+
+<script type="text/javascript" src="{{STATIC_URL}}js/scripts.js"></script>
+
+<script>
+$(document).ready(function () {
+  
+})
+</script>
+{% endblock %}
+
+{% block body %}
+<div>
+  {% block body_single %}{% endblock %}
+</div>
+{% endblock %}

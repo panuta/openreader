@@ -1,4 +1,6 @@
-MODULE_NAME = 'Books'
+# -*- encoding: utf-8 -*-
+
+MODULE_NAME = 'หนังสือ'
 MODULE_CODE = 'book'
 MODULE_NUMBER = 101
 

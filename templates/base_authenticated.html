@@ -5,6 +5,10 @@
 
 {% block html_head %}
 {{block.super}}
+<script src="{{STATIC_URL}}libs/bootstrap/js/bootstrap-dropdown.js"></script>
+<script src="{{STATIC_URL}}libs/bootstrap/js/bootstrap-modal.js"></script>
+<link rel="stylesheet/less" type="text/css" href="{{STATIC_URL}}libs/bootstrap/lib/bootstrap.less">
+
 <link rel="stylesheet" media="all" type="text/css" href="{{STATIC_URL}}libs/yui/build/container/assets/skins/sam/container.css">
 <link rel="stylesheet" media="all" type="text/css" href="{{STATIC_URL}}libs/yui/build/calendar/assets/skins/sam/calendar.css">
 <link rel="stylesheet" media="all" type="text/css" href="{{STATIC_URL}}css/yui.calendar.widget.css">
@@ -17,7 +21,9 @@
 <script type="text/javascript" src="{{STATIC_URL}}libs/jquery.form.js"></script>
 <script type="text/javascript" src="{{STATIC_URL}}libs/progressbar/jquery.progressbar.js"></script>
 
-<script type="text/javascript" src="{{STATIC_URL}}js/binding.js"></script>
+
+<link rel="stylesheet/less" type="text/css" href="{{STATIC_URL}}css/styles.less">
+
 <script type="text/javascript" src="{{STATIC_URL}}js/scripts.js"></script>
 
 <script>
@@ -27,23 +33,36 @@ $(document).ready(function () {initialize();})
 {% endblock %}
 
 {% block body %}
-<div class="publisher-topbar-wrapper">
-  <div class="topbar" id="topbar-example" data-dropdown="dropdown">
-    <div class="topbar-inner">
-      <div class="container">
-        <h3><a href="{% url view_publisher_dashboard publisher.id %}">{{publisher.name}}</a></h3>
-        <ul class="nav">
-          <li><a href="{% url view_publisher_dashboard publisher.id %}">Dashboard</a></li>
-          {% generate_publication_menu publisher %}
-          {% can user 'manage' publisher %}<li><a href="{% url view_publisher_management publisher.id %}">Publisher Management</a></li>{% endcan %}
-        </ul>
+<div class="topbar">
+  <div class="fill">
+    <div class="container-fluid">
+      <h1><a href="{% url view_publisher_dashboard publisher.id %}"><span>สำนักพิมพ์</span> {{publisher.name}}</a></h1>
+      <ul class="nav">
+        {% block topnav %}{% endblock %}
+      </ul>
+
+      <ul class="nav secondary-nav" data-dropdown="dropdown">
         {% generate_publisher_menu user %}
-      </div>
+
+        <li class="accounts">
+          ชื่อผู้ใช้ระบบ <strong>{{user.get_profile.get_fullname}}</strong>
+        </li>
+
+        <li><a href="{% url auth_logout %}">ออกจากระบบ</a></li>
+      </ul>
     </div>
   </div>
 </div>
 
-<div id="body_content">
-  {% block body_authenticated %}{% endblock %}
+<div class="body_authenticated">
+{% block body_authenticated %}{% endblock %}
 </div>
+
+<!-- PAGE without SIDEBAR: <div class="content"><div class="content-inner"></div></div> -->
+<!-- PAGE with SIDEBAR: <div class="sidebar"></div><div class="content"><div class="content-inner"></div></div> -->
+
+<div class="footer">
+  <p>&copy; OpenReader 2011</p>
+</div>
+
 {% endblock %}

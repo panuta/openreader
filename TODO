@@ -1,8 +1,9 @@
 TODO
 - implement categories
 - messages
+- pagination
 - shelf
-- consolidate styles for similar page
+- single page
 
 WILL DO
 - modal as a jQuery template

@@ -7,6 +7,15 @@ from common.forms import StrippedCharField
 
 from publication.models import Publisher, PublicationCategory
 
+class PublicationCategoryMultipleChoiceField(forms.ModelMultipleChoiceField):
+    def __init__(self, *args, **kwargs):
+        
+        kwargs['queryset'] = PublicationCategory.objects.all().order_by('name')
+        forms.ModelMultipleChoiceField.__init__(self, *args, **kwargs)
+
+    def label_from_instance(self, obj):
+        return '%s' % (obj.name)
+
 # Form classes
 
 class PublisherForm(forms.Form):

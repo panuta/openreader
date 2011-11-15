@@ -1,32 +1,39 @@
 {% extends 'base_authenticated.html' %}
+{% load module_tags %}
 
-{% block head_title %}Publisher Management - Update profile{% endblock %}
+{% block head_title %}จัดการสำนักพิมพ์ - แก้ไขข้อมูลสำนักพิมพ์{% endblock %}
+{% block topnav %}{% include 'snippets/topnav.html' with active_menu='management' %}{% endblock %}
 
 {% block body_authenticated %}
-<div class="publisher_manage">
-  <ul class="breadcrumb">
-    <li><a href="{% url view_publisher_management publisher.id %}">Publisher Management</a> <span class="divider">/</span></li>
-    <li class="active">Update profile</li>
-  </ul>
+<div class="container-fluid container-body publisher_magazine_page">
 
-  <form method="POST" action="{% url view_publisher_profile publisher.id %}">
-    {% csrf_token %}
-    {{form.non_field_errors}}
-    <fieldset>
-      <legend>Publisher profile</legend>
-      <div class="clearfix">
-        <label for="id_name">Name:</label>
-        <div class="input">
-          {{form.name}}
-        </div>
-        {{form.name.errors}}
+  <div class="sidebar">
+    <div class="head">จัดการสำนักพิมพ์</div>
+    <ul>
+      <li class="manage active"><a href="{% url view_publisher_profile publisher.id %}">แก้ไขข้อมูลสำนักพิมพ์</a></li>
+      {% has_module publisher 'shelf' %}<li class="manage"><a href="{% url view_publisher_shelfs publisher.id %}">ชั้นหนังสือ</a></li>{% end_has_module %}
+      <li class="manage"><a href="{% url view_publisher_users publisher.id %}">จัดการผู้ใช้ระบบ</a></li>
+      <!--<li class="manage"><a href="{% url view_publisher_billing publisher.id %}">Billings</a></li>-->
+    </ul>  
+  </div>
+
+  <div class="content"><div class="content-inner">
+
+    <h2>แก้ไขข้อมูลสำนักพิมพ์</h2>
+
+    <form method="POST" action="{% url view_publisher_profile publisher.id %}">
+      {% csrf_token %}
+      {{form.non_field_errors}}
+    
+      <div class="clearfix"><label for="id_name">ชื่อสำนักพิมพ์:</label><div class="input">{{form.name}}{{form.name.errors}}</div></div>
+
+      <div class="form_actions">
+        <button type="submit" class="btn primary">บันทึกข้อมูล</button>
+        <button type="reset" class="btn">ล้างข้อมูล</button>
       </div>
+    
+    </form>
 
-      <div class="actions">
-        <input type="submit" value="Update" class="btn primary">
-      </div>
-    </fieldset>
-  </form>
-
+  </div></div>
 </div>
 {% endblock %}

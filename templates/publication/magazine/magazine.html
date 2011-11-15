@@ -1,7 +1,8 @@
 {% extends 'base_authenticated.html' %}
-{% load helper_tags module_tags %}
+{% load helper_tags module_tags magazine_tags %}
 
 {% block head_title %}{{magazine.title}}{% endblock %}
+{% block topnav %}{% include 'snippets/topnav.html' with active_menu='magazine' %}{% endblock %}
 
 {% block html_head %}
 {{block.super}}
@@ -25,57 +26,86 @@ $(document).ready(function () {
 {% endblock %}
 
 {% block body_authenticated %}
-<div class="publisher_magazine_page">
-  <ul class="breadcrumb">
-    <li><a href="{% url view_magazines publisher.id %}">Magazines</a> <span class="divider">/</span></li>
-    <li class="active">{{magazine.title}}</li>
-  </ul>
+<div class="container-fluid container-body publisher_magazine_page">
 
-  <div class="magazine_name">
+  <div class="sidebar">
+    <div class="head"><a href="{% url view_magazines publisher.id %}">รายชื่อนิตยสาร</a></div>
+    <ul>
+      {% generate_magazine_nav_list publisher magazine %}
+      <li class="add"><a href="{% url create_magazine publisher.id %}">สร้างนิตยสารใหม่</a></li>
+    </ul>  
+  </div>
+
+  <div class="content"><div class="content-inner">
+
     <h2>{{magazine.title}}</h2>
-  </div>
 
-  {% can user 'upload,manage' publisher %}
-  <div class="table_actions">
-    {% can user 'upload' publisher %}{% if magazine.all_issue_count %}<a href="#" class="btn upload_publication_button">Upload new issue</a>{% endif %}{% endcan %}
-    {% can user 'manage' publisher %}<a href="{% url edit_magazine magazine.id %}" class="btn">Edit magazine</a>{% endcan %}
-  </div>
-  {% endcan %}
+    {% can user 'upload,manage' publisher %}
+    <div class="page_actions">
+      {% can user 'upload' publisher %}<button class="btn primary upload_publication_button">อัพโหลดนิตยสาร {{magazine.title}}</button>{% endcan %}
+      {% can user 'manage' publisher %}<a href="{% url edit_magazine magazine.id %}" class="btn">แก้ไขรายละเอียดนิตยสาร</a>{% endcan %}
+    </div>
+    {% endcan %}
 
-  {% if magazine.description %}<div class="description">{{magazine.description}}</div>{% endif %}
-
-  {% include 'publication/snippets/publication_outstandings.html' with unfinished=outstandings.unfinished ready=outstandings.ready scheduled=outstandings.scheduled unpublished=outstandings.unpublished %}
-
-  {% if magazine.all_issue_count %}
-  <div class="magazine">
-    <h3>Published issues<span>({{magazine.issues|length}} issues)</span></h3>
-
-    {% if magazine.issues %}
-    <ul class="published_publications">
-      {% for issue in magazine.issues %}
-      <li {% if forloop.last %}class="last"{% endif %}>
-        <div class="cover"></div>
-        <div class="statistics"></div>
-        <div class="name"><a href="{% url view_publication issue.publication.id %}">{{issue.publication.title}}</a></div>
-        <div class="status">Published on {{issue.publication.published|format_abbr_datetime}}</div>
-        <div class="stats"></div>
-        {% can user 'upload,publish' publisher %}<div class="links"><a href="{% url edit_publication issue.publication.id %}">Edit publication</a></div>{% endcan %}
-      </li>
-      {% endfor %}
-    </ul>
-    {% else %}
-    <div class="no_row">No published issue</div>
+    {% if magazine.categories.all or magazine.description %}
+    <h3>รายละเอียดนิตยสาร</h3>
+    {% if magazine.categories.all %}<h4>ประเภทสิ่งพิมพ์</h4><div class="categories">{{magazine.categories.all|join:", " }}</div>{% endif %}
+    {% if magazine.description %}<h4>คำอธิบาย</h4><div class="description">{{magazine.description}}</div>{% endif %}
     {% endif %}
-
-  </div>
-  {% else %}
-  <div class="no_magazine">
-    <div class="message">This magazine currently have no issue</div>
-    {% can user 'upload' publisher %}<div><a href="#" class="btn upload_publication_button">Upload new issue here</a></div>{% endcan %}
-  </div>
-  {% endif %}
-
-  {% can user 'upload' publisher %}{% generate_publication_module_upload_modal 'magazine' %}{% endcan %}
   
+    <h3>ไฟล์นิตยสาร</h3>
+
+    {% if magazine.issues or outstandings.unfinished or outstandings.scheduled or outstandings.unpublished %}
+    <div class="publication_outstandings">
+      
+      {% if outstandings.unfinished %}
+      <div class="unfinished_list">
+        <div class="type">UNFINISHED ISSUES</div>
+        <ul>{% for uploading_publication in outstandings.unfinished %}{% include 'publication/snippets/outstanding_unfinished.html' with uploading_publication=uploading_publication %}{% endfor %}</ul>
+      </div>
+      {% endif %}
+
+      {% if outstandings.scheduled %}
+      <div class="scheduled_list">
+        <div class="type">SCHEDULED ISSUES</div>
+        <ul>{% for publication in outstandings.scheduled %}{% include 'publication/snippets/outstanding_scheduled.html' with publication=publication %}{% endfor %}</ul>
+      </div>
+      {% endif %}
+
+      {% if outstandings.unpublished %}
+      <div class="unpublished_list">
+        <div class="type">UNPUBLISHED ISSUES</div>
+        <ul>{% for publication in outstandings.unpublished %}{% include 'publication/snippets/outstanding_unpublished.html' with publication=publication %}{% endfor %}</ul>
+      </div>
+      {% endif %}
+
+      {% if magazine.issues %}
+      <div>
+        <div class="type">PUBLISHED ISSUES - {{magazine.issues|length}} issues</div>
+        <ul>
+          {% for issue in magazine.issues %}
+          <li {% if forloop.last %}class="last"{% endif %}>
+            <div class="cover"></div>
+            <div class="statistics"></div>
+            <div class="name"><a href="{% url view_publication issue.publication.id %}">{{issue.publication.title}}</a></div>
+            <div class="status">ตีพิมพ์เมื่อวันที่ {{issue.publication.published|format_abbr_datetime}}</div>
+            <div class="stats"></div>
+            {% can user 'upload,publish' publisher %}<div class="links"><a href="{% url edit_publication issue.publication.id %}" class="link">แก้ไขรายละเอียด</a></div>{% endcan %}
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    </div>
+
+    {% else %}
+    <div class="no_row">ยังไม่มีไฟล์นิตยสาร</div>
+    {% endif %}
+  
+
+    {% can user 'upload' publisher %}{% generate_publication_module_upload_modal 'magazine' %}{% endcan %}
+
+  </div></div>
+
 </div>
 {% endblock %}

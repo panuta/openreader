@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from common.forms import StrippedCharField
 from widgets import YUICalendar, HourMinuteTimeInput
 
-from publication.forms import GeneralUploadPublicationForm
+from publication.forms import GeneralUploadPublicationForm, PublicationCategoryMultipleChoiceField
 
 from publication.models import Publication
 from publication.magazine.models import Magazine
@@ -72,8 +72,7 @@ class FinishUploadMagazineIssueForm(forms.Form):
 class MagazineForm(forms.Form):
     title = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'span9'}))
     description = StrippedCharField(required=False, widget=forms.Textarea(attrs={'class':'span9', 'rows':'3'}))
-
-    # categories = models.ManyToManyField('PublicationCategory', related_name='magazine_categories')
+    categories = PublicationCategoryMultipleChoiceField(required=False, widget=forms.CheckboxSelectMultiple())
 
 class MagazineIssueForm(forms.Form):
     title = forms.CharField(widget=forms.TextInput(attrs={'class':'span10'}))

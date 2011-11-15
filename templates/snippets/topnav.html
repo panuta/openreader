@@ -1,0 +1,5 @@
+{% load helper_tags module_tags %}
+
+<li{% if active_menu == "dashboard" %} class="active"{% endif %}><a href="{% url view_publisher_dashboard publisher.id %}">หน้าแรก</a></li>
+{% generate_top_menu publisher active_menu %}
+{% can user 'manage' publisher %}<li{% if active_menu == "management" %} class="active"{% endif %}><a href="{% url view_publisher_management publisher.id %}">จัดการสำนักพิมพ์</a></li>{% endcan %}
