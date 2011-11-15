@@ -38,31 +38,20 @@ def print_publication_status(publication):
 def genetate_publication_category_multiple_checkbox(categories):
     from publication.models import PublicationCategory
 
-    print categories
+    COLUMN_COUNT = 4
+    columns = [[] for i in range(0, COLUMN_COUNT)]
 
-    html = ''
-    checkboxs = []
-    for category in PublicationCategory.objects.all().order_by('name')[0:8]:
+    categories = PublicationCategory.objects.all().order_by('name')
+    categories_count = len(categories)
+
+    for i in range(0, categories_count):
+        category = categories[i]
         check_html = ' checked="checked"' if categories and category.id in categories else ''
-        checkboxs.append('<li><label for="id_categories_%s"><input type="checkbox" id="id_categories_%s" value="%d" name="categories"%s> %s</label></li>' % (category.slug, category.slug, category.id, check_html, category.name))
-    html = '%s<div class="span4"><ul>%s</ul></div>' % (html, ''.join(checkboxs))
-
-    checkboxs = []
-    for category in PublicationCategory.objects.all().order_by('name')[9:17]:
-        check_html = ' checked="checked"' if categories and category.id in categories else ''
-        checkboxs.append('<li><label for="id_categories_%s"><input type="checkbox" id="id_categories_%s" value="%d" name="categories"%s> %s</label></li>' % (category.slug, category.slug, category.id, check_html, category.name))
-    html = '%s<div class="span4"><ul>%s</ul></div>' % (html, ''.join(checkboxs))
-
-    checkboxs = []
-    for category in PublicationCategory.objects.all().order_by('name')[18:26]:
-        check_html = ' checked="checked"' if categories and category.id in categories else ''
-        checkboxs.append('<li><label for="id_categories_%s"><input type="checkbox" id="id_categories_%s" value="%d" name="categories"%s> %s</label></li>' % (category.slug, category.slug, category.id, check_html, category.name))
-    html = '%s<div class="span4"><ul>%s</ul></div>' % (html, ''.join(checkboxs))
-
-    checkboxs = []
-    for category in PublicationCategory.objects.all().order_by('name')[27:32]:
-        check_html = ' checked="checked"' if categories and category.id in categories else ''
-        checkboxs.append('<li><label for="id_categories_%s"><input type="checkbox" id="id_categories_%s" value="%d" name="categories"%s> %s</label></li>' % (category.slug, category.slug, category.id, check_html, category.name))
-    html = '%s<div class="span4"><ul>%s</ul></div>' % (html, ''.join(checkboxs))
-
-    return html
+        columns[i % COLUMN_COUNT].append('<li><label for="id_categories_%s"><input type="checkbox" id="id_categories_%s" value="%d" name="categories"%s> %s</label></li>' % (category.slug, category.slug, category.id, check_html, category.name))
+    
+    htmls = []
+    for i in range(0, COLUMN_COUNT):
+        # NOTE: You have to change style according to column count
+        htmls.append('<div class="span4"><ul>%s</ul></div>' % ''.join(columns[i]))
+    
+    return ''.join(htmls)
