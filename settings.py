@@ -25,6 +25,9 @@ DATABASES = {
     }
 }
 
+WEBSITE_NAME = 'OpenReader'
+WEBSITE_DOMAIN = 'http://127.0.0.1:8000/'
+
 TIME_ZONE = 'Asia/Bangkok'
 LANGUAGE_CODE = 'th'
 
@@ -65,6 +68,8 @@ AUTHENTICATION_BACKENDS = (
     'openreader.backends.EmailAuthenticationBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # EMAIL_USE_TLS = True
 # EMAIL_HOST = 'smtp.gmail.com'

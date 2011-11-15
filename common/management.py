@@ -3,6 +3,7 @@
 import datetime
 
 from django.contrib.auth.models import Group
+from django.contrib.sites.models import Site
 
 from accounts.models import *
 from publication.models import *
@@ -14,6 +15,8 @@ def after_syncdb(sender, **kwargs):
     """
     PRODUCTION CODE
     """
+
+    Site.objects.all().update(domain=settings.WEBSITE_DOMAIN, name=settings.WEBSITE_NAME)
 
     publisher_admin_group, created = Group.objects.get_or_create(name='publisher_admin')
     publisher_staff_group, created = Group.objects.get_or_create(name='publisher_staff')

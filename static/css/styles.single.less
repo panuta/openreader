@@ -1,3 +1,18 @@
+@import "../libs/bootstrap/lib/variables.less";
+
+.content_link() {
+    a:link, a:active, a:visited {
+        text-decoration:underline;
+        color:@linkColor;
+    }
+
+    a:hover {
+        background-color:@linkColor !important;
+        color:#FFF !important;
+        text-shadow:none;
+    }
+}
+
 body {
     background:url(/static/images/bg.png);
 }
@@ -5,56 +20,62 @@ body {
 form label, .form-stacked 
 
 form, .form-stacked {
-	.clearfix {
-		margin-bottom:15px;
-	}
+    .clearfix {
+        margin-bottom:15px;
+    }
 
-	label {
-	    color:#11717a;
-	    font-weight:normal;
-	    font-size:1.1em;
-	    margin-bottom:5px;
-	}
+    label {
+        color:#11717a;
+        font-weight:normal;
+        font-size:1.1em;
+        margin-bottom:5px;
+    }
 
-	.input input {
-		width:350px;
-	}
+    .input input {
+        width:350px;
+    }
 
-	.form_actions {
-	    margin:20px 0px;
+    .form_actions {
+        margin:20px 0px;
 
-	    button {
-	        margin-right:15px;
-	    }
-	}
+        button {
+            margin-right:15px;
+        }
+
+        .content_link;
+    }
 }
 
 .logo {
-	font-size:2em;
-	font-weight:bold;
-	color:#777;
-	text-align:center;
-	margin:80px 0px 30px;
+    font-size:3em;
+    font-weight:bold;
+    color:#777;
+    text-align:center;
+    margin:80px 0px 30px;
 }
 
 h1 {
-	font-size:1.7em;
-	color:#555;
-	padding-bottom:10px;
-	border-bottom:1px solid #999;
+    font-size:1.7em;
+    color:#555;
+    padding-bottom:10px;
+    border-bottom:1px solid #999;
 }
 
 .single-content {
-	margin:20px 0px 0px;
-	
+    margin:20px 0px 0px;
+    
     padding:1px;
     border:1px solid #EEE;
     background-color:#DDD;
 
-	.content-inner {
-		border:1px solid #BBB;
+    .content-inner {
+        border:1px solid #BBB;
         padding:15px;
         background-color:#FFF;
-	}
+    }
+
+    p {
+        .content_link;
+    }
 }
 

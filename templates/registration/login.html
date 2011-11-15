@@ -1,12 +1,10 @@
 {% extends 'base_single.html' %}
-{% load url from future %}
 
-{% block head_title %}Login{% endblock %}
-{% block page_title %}Login{% endblock %}
+{% block head_title %}เข้าสู่ระบบ{% endblock %}
 
 {% block body_single %}
 <h1>เข้าสู่ระบบ</h1>
-<form method="POST" action="{% url 'django.contrib.auth.views.login' %}" class="form-stacked">
+<form method="POST" action="." class="form-stacked">
   {% csrf_token %}
   {{form.non_field_errors}}
 
@@ -15,7 +13,7 @@
 
   <div class="form_actions">
     <button type="submit" class="btn primary span2">เข้าสู่ระบบ</button>
-    <a href="{% url 'django.contrib.auth.views.password_reset' %}">ลืมรหัสผ่าน?</a>
+    <a href="/accounts/password_reset/">ลืมรหัสผ่าน?</a>
   </div>
 
 </form>
