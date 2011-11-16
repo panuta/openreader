@@ -35,7 +35,7 @@ def print_publication_status(publication):
     return ''
 
 @register.simple_tag
-def genetate_publication_category_multiple_checkbox(categories):
+def genetate_publication_category_multiple_checkbox(existing_categories):
     from publication.models import PublicationCategory
 
     COLUMN_COUNT = 4
@@ -46,7 +46,7 @@ def genetate_publication_category_multiple_checkbox(categories):
 
     for i in range(0, categories_count):
         category = categories[i]
-        check_html = ' checked="checked"' if categories and category.id in categories else ''
+        check_html = ' checked="checked"' if existing_categories and category.id in existing_categories else ''
         columns[i % COLUMN_COUNT].append('<li><label for="id_categories_%s"><input type="checkbox" id="id_categories_%s" value="%d" name="categories"%s> %s</label></li>' % (category.slug, category.slug, category.id, check_html, category.name))
     
     htmls = []
