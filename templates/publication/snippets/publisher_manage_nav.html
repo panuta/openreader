@@ -1,0 +1,5 @@
+{% load helper_tags module_tags %}
+<li{% if active_publisher_manage_menu == "profile" %} class="publisher active"{% else %} class="publisher"{% endif %}><a href="{% url view_publisher_profile publisher.id %}">ข้อมูลสำนักพิมพ์</a></li>
+{% has_module publisher 'shelf' %}<li{% if active_publisher_manage_menu == "shelf" %} class="shelf active"{% else %} class="shelf"{% endif %}><a href="{% url view_publisher_shelfs publisher.id %}">ชั้นหนังสือ</a></li>{% end_has_module %}
+<li{% if active_publisher_manage_menu == "user" %} class="user active"{% else %} class="user"{% endif %}><a href="{% url view_publisher_users publisher.id %}">ทีมงาน</a></li>
+<!--<li{% if active_publisher_manage_menu == "billing" %} class="manage active"{% else %} class="active"{% endif %}><a href="{% url view_publisher_billing publisher.id %}">Billings</a></li>-->

@@ -4,7 +4,7 @@ Module structure
 - 'module_name' folder in templates
 """
 
-from publication.models import Module, PublisherModule
+from publisher.models import Module, PublisherModule
 
 def get_publication_module(module_name, sub_module=''):
     try:

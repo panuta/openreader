@@ -8,7 +8,7 @@ from django.template import NodeList
 
 from common.modules import *
 
-from publication.models import PublisherModule
+from publisher.models import PublisherModule
 
 # COMMON ################################################################################
 
@@ -51,13 +51,12 @@ def do_has_module(parser, token):
 
 @register.simple_tag
 def generate_top_menu(publisher, active_menu):
-    publication_types = PublisherModule.objects.filter(publisher=publisher, module__module_type='publication').order_by('created')
+    publisher_modules = PublisherModule.objects.filter(publisher=publisher, module__module_type='publication').order_by('created')
 
     menu_html = ''
-    for publication_type in publication_types:
-        module = publication_type.module.get_module_object()
-        active_html = ' class="active"' if active_menu == module.MODULE_CODE else ''
-        menu_html = menu_html + '<li%s><a href="%s">%s</a></li>' % (active_html, reverse(module.FRONT_PAGE_URL_NAME, args=[publisher.id]), module.MODULE_NAME)
+    for publisher_module in publisher_modules:
+        active_html = ' class="active"' if active_menu == publisher_module.module.module_name else ''
+        menu_html = menu_html + '<li%s><a href="%s">%s</a></li>' % (active_html, reverse(publisher_module.module.front_page_url, args=[publisher.id]), publisher_module.module.title)
     
     return menu_html
 
@@ -67,8 +66,7 @@ def generate_publication_module_option_list(publisher):
 
     options = '<option></option>'
     for publisher_module in publisher_modules:
-        module_object = publisher_module.module.get_module_object()
-        options = options + '<option value="%s">%s</option>' % (module_object.MODULE_CODE, module_object.MODULE_NAME)
+        options = options + '<option value="%s">%s</option>' % (publisher_module.module.module_name, publisher_module.module.title)
     
     return options
 
@@ -78,8 +76,7 @@ def generate_publication_module_radio_list(publisher):
 
     radios = ''
     for publisher_module in publisher_modules:
-        module_object = publisher_module.module.get_module_object()
-        radios = radios + '<li><label><input type="radio" value="%s" name="module" /> <span>%s</span></label></li>' % (module_object.MODULE_CODE, module_object.MODULE_NAME)
+        radios = radios + '<li><label><input type="radio" value="%s" name="module" /> <span>%s</span></label></li>' % (publisher_module.module.module_name, publisher_module.module.title)
     
     return radios
 

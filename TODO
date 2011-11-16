@@ -3,14 +3,18 @@ TODO
 - messages
 - pagination
 - shelf
+	- if publisher has only one shelf (either user-defined shelf or system shelf) OpenReader will automatically assigned all publication to this shelf.
+	- publisher who would prefer having a separate app can have only default user-defined shelf, no necessary of having system shelf.
+	- publisher can have shelf record, even shelf module is not installed
 - dashboard
+- delete publication
+- publisher's reader app -- need to ask for this information before publishing
+
 
 WILL DO
 - modal as a jQuery template
 - Admin Page
     - Setup account for publisher
-
-
 
 - Download file from another server
 

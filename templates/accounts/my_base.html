@@ -1,0 +1,21 @@
+{% extends 'base_authenticated.html' %}
+{% load module_tags %}
+
+{% block head_title %}หน้าผู้ใช้ - {% block my_account_head_title %}{% endblock %}{% endblock %}
+{% block topnav %}{% include 'snippets/topnav.html' with active_menu='' %}{% endblock %}
+
+{% block body_authenticated %}
+<div class="container-fluid container-body publisher_manage_page">
+
+  <div class="sidebar">
+    <div class="head">{{user.get_profile.get_fullname}}</div>
+    <ul>
+      {% block my_account_menu %}{% endblock %}
+    </ul>
+  </div>
+
+  <div class="content"><div class="content-inner">
+    {% block my_account_content %}{% endblock %}
+  </div></div>
+</div>
+{% endblock %}

@@ -1,0 +1,3 @@
+{% load helper_tags module_tags %}
+<li{% if active_my_menu == "profile" %} class="my_profile active"{% else %} class="my_profile"{% endif %}><a href="{% url view_my_profile %}">ข้อมูลส่วนตัว</a></li>
+<li{% if active_my_menu == "account" %} class="my_account active"{% else %} class="my_account"{% endif %}><a href="{% url view_my_account %}">บัญชีผู้ใช้</a></li>

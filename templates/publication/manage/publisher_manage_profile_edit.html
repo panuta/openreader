@@ -1,0 +1,26 @@
+{% extends 'publication/manage/publisher_manage_base.html' %}
+
+{% block publisher_manage_head_title %}ข้อมูลสำนักพิมพ์{% endblock %}
+{% block publisher_manage_menu %}{% include 'publication/snippets/publisher_manage_nav.html' with active_publisher_manage_menu='profile' %}{% endblock %}
+
+{% block publisher_manage_content %}
+<ul class="breadcrumb">
+  <li><a href="{% url view_publisher_profile publisher.id %}">ข้อมูลสำนักพิมพ์</a> <span class="divider">/</span></li>
+  <li class="active">แก้ไขข้อมูลสำนักพิมพ์</li>
+</ul>
+
+<h2>แก้ไขข้อมูลสำนักพิมพ์</h2>
+
+<form method="POST" action=".">
+  {% csrf_token %}
+  {{form.non_field_errors}}
+
+  <div class="clearfix"><label for="id_name">ชื่อสำนักพิมพ์</label><div class="input">{{form.name}}{{form.name.errors}}</div></div>
+
+  <div class="form_actions">
+    <button type="submit" class="btn primary">บันทึกข้อมูล</button>
+    <button type="reset" class="btn">ล้างข้อมูล</button>
+  </div>
+
+</form>
+{% endblock %}

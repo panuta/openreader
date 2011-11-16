@@ -14,6 +14,9 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+# Contact address in welcome page (For user who has no publisher record)
+WELCOME_CONTACT_EMAIL = 'welcome@openreader.com'
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -66,7 +69,7 @@ LOGIN_REDIRECT_URL = '/dashboard/'
 
 AUTHENTICATION_BACKENDS = (
     'openreader.backends.EmailAuthenticationBackend',
-    'django.contrib.auth.backends.ModelBackend',
+    #'django.contrib.auth.backends.ModelBackend',
 )
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -129,10 +132,10 @@ INSTALLED_APPS = (
 
     'openreader.accounts',
     'openreader.common',
-    'openreader.publication',
+    'openreader.publisher',
 
-    'openreader.publication.book',
-    'openreader.publication.magazine',
+    'openreader.publisher.book',
+    'openreader.publisher.magazine',
 )
 
 # A sample logging configuration. The only tangible logging

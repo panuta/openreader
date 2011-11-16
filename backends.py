@@ -10,11 +10,12 @@ email_re = re.compile(
 class EmailAuthenticationBackend(ModelBackend):
     """Authenticate using email only"""
     def authenticate(self, email=None, password=None):
-        #If username is an email address, then try to pull it up
+        # If username is an email address, then try to pull it up
         if email_re.search(email):
             user = User.objects.filter(email__iexact=email)
             if user.count() > 0:
                 user = user[0]
-                if user.check_password(password):
+
+                if user.get_profile().is_publisher and user.check_password(password):
                     return user
         return None

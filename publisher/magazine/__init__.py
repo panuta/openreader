@@ -1,0 +1,4 @@
+# -*- encoding: utf-8 -*-
+
+def get_publication_title(publication):
+    return '%s - %s' % (publication.magazineissue.magazine.title, publication.title)

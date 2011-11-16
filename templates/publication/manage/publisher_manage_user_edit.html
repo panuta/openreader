@@ -1,0 +1,26 @@
+{% extends 'publication/manage/publisher_manage_base.html' %}
+
+{% block publisher_manage_head_title %}แก้ไขข้อมูลทีมงาน{% endblock %}
+{% block publisher_manage_menu %}{% include 'publication/snippets/publisher_manage_nav.html' with active_publisher_manage_menu='user' %}{% endblock %}
+
+{% block publisher_manage_content %}
+<ul class="breadcrumb">
+  <li><a href="{% url view_publisher_users publisher.id %}">ทีมงาน</a> <span class="divider">/</span></li>
+  <li class="active">แก้ไขข้อมูลทีมงาน</li>
+</ul>
+
+<h2>แก้ไขข้อมูลทีมงาน</h2>
+
+<form method="POST" action=".">
+  {% csrf_token %}
+  {{form.non_field_errors}}
+
+  <div class="clearfix"><label for="id_role">ตำแหน่ง</label><div class="input">{{form.role}}{{form.role.errors}}</div></div>
+
+  <div class="form_actions">
+    <button type="submit" class="btn primary">บันทึกข้อมูล</button>
+    <button type="reset" class="btn">ล้างข้อมูล</button>
+  </div>
+
+</form>
+{% endblock %}

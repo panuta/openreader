@@ -1,0 +1,24 @@
+{% extends 'publication/manage/publisher_manage_base.html' %}
+{% load helper_tags %}
+
+{% block publisher_manage_head_title %}ข้อมูลสำนักพิมพ์{% endblock %}
+{% block publisher_manage_menu %}{% include 'publication/snippets/publisher_manage_nav.html' with active_publisher_manage_menu='profile' %}{% endblock %}
+
+{% block publisher_manage_content %}
+<h2>{{publisher.name}}</h2>
+
+{% can user 'manage' publisher %}
+<div class="page_actions">
+  <a href="{% url edit_publisher_profile publisher.id %}" class="btn">แก้ไขข้อมูลสำนักพิมพ์</a>
+</div>
+{% endcan %}
+
+<div class="publisher_stats">
+  <h3>สื่อสิ่งพิมพ์</h3>
+  {% for statistic in statistics %}
+    <h4>{{statistic.title}}</h4>
+    {% include statistic.template with data=statistic %}
+  {% endfor %}
+
+</div>
+{% endblock %}

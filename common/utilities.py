@@ -6,7 +6,7 @@ from django.conf import settings
 
 from constants import THAI_MONTH_NAME, THAI_MONTH_ABBR_NAME
 
-from publication.models import Publication
+from publisher.models import Publication
 
 def format_full_datetime(datetime):
     try:

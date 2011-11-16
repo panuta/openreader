@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 from common import utilities
 
 from accounts.models import UserPublisher
-from publication.models import Publication
+from publisher.models import Publication
 
 @register.simple_tag
 def generate_publisher_menu(user):
@@ -36,7 +36,7 @@ def print_publication_status(publication):
 
 @register.simple_tag
 def genetate_publication_category_multiple_checkbox(existing_categories):
-    from publication.models import PublicationCategory
+    from publisher.models import PublicationCategory
 
     COLUMN_COUNT = 4
     columns = [[] for i in range(0, COLUMN_COUNT)]

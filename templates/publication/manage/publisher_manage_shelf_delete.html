@@ -1,0 +1,28 @@
+{% extends 'publication/manage/publisher_manage_base.html' %}
+
+{% block publisher_manage_head_title %}ลบชั้นหนังสือ{% endblock %}
+{% block publisher_manage_menu %}{% include 'publication/snippets/publisher_manage_nav.html' with active_publisher_manage_menu='profile' %}{% endblock %}
+
+{% block publisher_manage_content %}
+<ul class="breadcrumb">
+  <li><a href="{% url view_publisher_shelfs publisher.id %}">ชั้นหนังสือ</a> <span class="divider">/</span></li>
+  <li class="active">ลบชั้นหนังสือ</li>
+</ul>
+
+<h2>ลบชั้นหนังสือ {{publisher_shelf.name}}</h2>
+
+<form method="POST" action=".">
+  {% csrf_token %}
+  {{form.non_field_errors}}
+
+  <div class="note">
+    <p>สื่อสิ่งพิมพ์ที่อยู่ในชั้นหนังสือ {{publisher_shelf.name}} จะยังคงอยู่ ไม่ถูกลบไปด้วย</p>
+  </div>
+
+  <div class="form_actions left_form_actions">
+    <button type="submit" name="submit-delete" class="btn danger">ยืนยันการลบชั้นหนังสือ</button>
+    <button type="submit" name="submit-cancel" class="btn">ยกเลิก</button>
+  </div>
+
+</form>
+{% endblock %}

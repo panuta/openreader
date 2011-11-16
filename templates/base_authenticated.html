@@ -44,8 +44,10 @@ $(document).ready(function () {initialize();})
       <ul class="nav secondary-nav" data-dropdown="dropdown">
         {% generate_publisher_menu user %}
 
+        <li class="accounts_prefix">ชื่อผู้ใช้ระบบ</li>
+
         <li class="accounts">
-          ชื่อผู้ใช้ระบบ <strong>{{user.get_profile.get_fullname}}</strong>
+          <a href="{% url view_my_profile %}">{{user.get_profile.get_fullname}}</a>
         </li>
 
         <li><a href="/accounts/logout/">ออกจากระบบ</a></li>

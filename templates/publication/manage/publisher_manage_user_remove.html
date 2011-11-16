@@ -1,0 +1,29 @@
+{% extends 'publication/manage/publisher_manage_base.html' %}
+
+{% block publisher_manage_head_title %}ถอดออกจากทีม{% endblock %}
+{% block publisher_manage_menu %}{% include 'publication/snippets/publisher_manage_nav.html' with active_publisher_manage_menu='user' %}{% endblock %}
+
+{% block publisher_manage_content %}
+<ul class="breadcrumb">
+  <li><a href="{% url view_publisher_users publisher.id %}">ทีมงาน</a> <span class="divider">/</span></li>
+  <li class="active">ถอดออกจากทีม</li>
+</ul>
+
+<h2>ถอดผู้ใช้ {{user_publisher.user.get_profile.get_fullname}} ออกจากทีม</h2>
+
+<form method="POST" action=".">
+  {% csrf_token %}
+  {{form.non_field_errors}}
+
+  <div class="note">
+    <p>ผู้ใช้ที่ถูกถอดออกจากสำนักพิมพ์จะไม่สามารถเข้ามาดูข้อมูลในสำนักพิมพ์นี้ได้อีก</p>
+    <p>(* ถ้าบัญชีผู้ใช้นี้ผูกอยู่กับหลายสำนักพิมพ์ ผู้ใช้จะยังสามารถเข้าสู่ระบบเพื่อดูข้อมูลของสำนักพิมพ์อื่นๆ ได้ตามปกติ)</p>
+  </div>
+
+  <div class="form_actions left_form_actions">
+    <button type="submit" name="submit-delete" class="btn danger">ยืนยันถอดออกจากทีม</button>
+    <button type="submit" name="submit-cancel" class="btn">ยกเลิก</button>
+  </div>
+
+</form>
+{% endblock %}

@@ -293,16 +293,24 @@ body {
         background-color:#272e34 !important;
     }
 
+    .accounts_prefix {
+        padding:12px 10px 9px 0px;
+        color:#CCC;
+    }
+
     .accounts {
         line-height: 19px;
-        padding: 10px 5px 11px 10px;
-        color:#CCC;
-        margin-left:15px;
+        padding: 10px 0px 11px;
 
-        strong {
+        &:hover {
+            background-color:#272e34 !important;
+        }
+
+        a {
             font-weight:normal;
+            display:inline;
             color:#FFF;
-            margin-left:5px;
+            text-decoration:none !important;
         }
     }
 }
@@ -322,12 +330,12 @@ body {
 
         .head {
             font-weight:bold;
-            color:#333;
+            color:#777;
             font-size:1.2em;
             margin:0px 0px 10px 10px;
 
             a {
-                color:#333;
+                color:#777;
             }
         }
 
@@ -344,6 +352,10 @@ body {
             }
 
             &.publication {background:url(/static/images/menu/publication.png) 10px 50% transparent no-repeat;}
+            &.publisher {background:url(/static/images/menu/publisher.png) 10px 50% transparent no-repeat;}
+            &.shelf {background:url(/static/images/menu/shelf.png) 10px 50% transparent no-repeat;}
+            &.user {background:url(/static/images/menu/user.png) 10px 50% transparent no-repeat;}
+            &.manage {background:url(/static/images/menu/manage.png) 10px 50% transparent no-repeat;}
 
             &.add {
                 background:url(/static/images/menu/add.png) 10px 50% transparent no-repeat;
@@ -351,17 +363,13 @@ body {
                 margin-top:15px;
             }
 
-            &.manage {background:url(/static/images/menu/manage.png) 10px 50% transparent no-repeat;}
-
             &.active {
                 background-color:#FFF;
-                border-top:1px solid #EEE;
-                border-left:1px solid #EEE;
-                border-right:1px solid #CCC;
-                border-bottom:1px solid #CCC;
-
+                border:1px solid #CCC;
+                
                 a {
-                    color:#000;
+                    color:#444;
+                    font-weight:bold;
                 }
             }
         }
@@ -465,6 +473,18 @@ ul.errorlist {
     }
 }
 
+form .note {
+    color:#444;
+    margin:0px 0px 20px;
+    background-color:#FFC;
+    padding:20px 15px 10px;
+
+    p {
+        margin-bottom:10px;
+        font-size:1.1em;
+    }
+}
+
 /* Input Lists */
 
 form .inputs-list {
@@ -512,11 +532,15 @@ form .multiple_checkbox {
 }
 
 form .form_actions {
-    margin:0px 0px 30px 150px;
+    margin:30px 0px 40px 150px;
 
     button {
         margin-right:15px;
     }
+}
+
+form .left_form_actions {
+    margin:0px 0px 30px 0px;
 }
 
 /* *************** Default Styles *************** */
@@ -567,6 +591,10 @@ a.btn:visited {color:#333333;}
     .statistics {
         margin-top:25px;
     }
+}
+
+table td.row_actions {
+    .content_link;
 }
 
 /* *************** Upload Publication *************** */
@@ -790,16 +818,35 @@ a.btn:visited {color:#333333;}
 /* *************** Publisher Books *************** */
 
 .publisher_books_page {
-
     .publication_outstandings {
         .publication_list_styles;
     }
 }
 
 /* *************** Publisher Management *************** */
-.publisher_manage .table_actions {
-    margin:25px 0px 15px;
+.publisher_manage_page {
+
+    .publisher_stats {
+        h4 {
+            line-height:1;
+            margin-bottom:10px;
+        }
+
+        ul {
+            margin:0px 0px 20px 20px;
+
+            li {
+                list-style:disc;
+                color:#666;
+                font-size:1.1em;
+                margin-bottom:5px;
+            }
+        }
+    }
+    
+    
 }
+
 
 /* Footer */
 

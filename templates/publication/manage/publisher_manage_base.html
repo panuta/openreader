@@ -1,0 +1,21 @@
+{% extends 'base_authenticated.html' %}
+{% load module_tags %}
+
+{% block head_title %}จัดการสำนักพิมพ์ - {% block publisher_manage_head_title %}{% endblock %}{% endblock %}
+{% block topnav %}{% include 'snippets/topnav.html' with active_menu='management' %}{% endblock %}
+
+{% block body_authenticated %}
+<div class="container-fluid container-body publisher_manage_page">
+
+  <div class="sidebar">
+    <div class="head">สำนักพิมพ์</div>
+    <ul>
+      {% block publisher_manage_menu %}{% endblock %}
+    </ul>
+  </div>
+
+  <div class="content"><div class="content-inner">
+    {% block publisher_manage_content %}{% endblock %}
+  </div></div>
+</div>
+{% endblock %}

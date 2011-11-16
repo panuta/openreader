@@ -1,7 +1,10 @@
-from django.contrib.auth.models import User, Permission
+from django.contrib.auth.models import User, Permission, Group
 from django.db import models
 
 """
+!!!!! THIS IS ALREADY OUTDATED !!!!!
+
+
 User Type
 1. Reader [is_publisher=False]
    This user can only use an app on a device. Cannot login to website.
@@ -53,16 +56,23 @@ class UserProfile(models.Model):
 
 class UserPublisher(models.Model):
     user = models.ForeignKey(User)
-    publisher = models.ForeignKey('publication.Publisher')
+    publisher = models.ForeignKey('publisher.Publisher')
+    role = models.ForeignKey(Group)
     is_default = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
 
+    def get_rolename(self):
+      from common.permissions import get_role_name
+      return get_role_name(self.role.name)
+
+"""
 class UserPublisherShelf(models.Model):
     user = models.ForeignKey(User)
-    shelf = models.ForeignKey('publication.PublisherShelf')
+    shelf = models.ForeignKey('publisher.PublisherShelf')
     can_manage = models.BooleanField()
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='user_publisher_shelf_created_by')
+"""
 
 # Reader
 
@@ -79,13 +89,13 @@ class UserAccessToken(models.Model):
 
 class UserPurchasedPublication(models.Model):
     user = models.ForeignKey(User)
-    publication = models.ForeignKey('publication.Publication')
+    publication = models.ForeignKey('publisher.Publication')
     created = models.DateTimeField(auto_now_add=True)
 
 """
 # For fine-tuned permissions per user per publisher
 class PublisherUserPermission(models.Model):
-    publisher = models.ForeignKey('publication.Publisher')
+    publisher = models.ForeignKey('publisher.Publisher')
     user = models.ForeignKey(User)
     permissions = models.ManyToManyField(Permission, blank=True)
 """

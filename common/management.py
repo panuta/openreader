@@ -6,9 +6,9 @@ from django.contrib.auth.models import Group
 from django.contrib.sites.models import Site
 
 from accounts.models import *
-from publication.models import *
-from publication.book.models import *
-from publication.magazine.models import *
+from publisher.models import *
+from publisher.book.models import *
+from publisher.magazine.models import *
 
 def after_syncdb(sender, **kwargs):
     
@@ -18,9 +18,17 @@ def after_syncdb(sender, **kwargs):
 
     Site.objects.all().update(domain=settings.WEBSITE_DOMAIN, name=settings.WEBSITE_NAME)
 
+    # Module
+    magazine_module, created = Module.objects.get_or_create(module_name='magazine', module_type='publication', title='นิตยสาร', front_page_url='view_magazines')
+    book_module, created = Module.objects.get_or_create(module_name='book', module_type='publication', title='หนังสือ', front_page_url='view_books')
+    shelf_module, created = Module.objects.get_or_create(module_name='shelf', module_type='feature', title='ชั้นหนังสือ')
+
+    # Roles and Permissions
     publisher_admin_group, created = Group.objects.get_or_create(name='publisher_admin')
     publisher_staff_group, created = Group.objects.get_or_create(name='publisher_staff')
+    publisher_user_group, created = Group.objects.get_or_create(name='publisher_user')
 
+    # Publication Categories
     PublicationCategory.objects.get_or_create(name='ท่องเที่ยว', slug='travel')
     PublicationCategory.objects.get_or_create(name='กีฬา', slug='sports')
     PublicationCategory.objects.get_or_create(name='ไลฟ์สไตล์ผู้หญิง', slug='women')
@@ -72,10 +80,9 @@ def after_syncdb(sender, **kwargs):
         user_profile = admin_user.get_profile()
         user_profile.first_name = 'Admin'
         user_profile.last_name = 'Openreader'
+        user_profile.is_publisher = True
         user_profile.save()
 
-        admin_user.groups.add(publisher_admin_group)
-        
     try:
         staff_user = User.objects.get(username='staff@openreader.com')
         
@@ -86,10 +93,9 @@ def after_syncdb(sender, **kwargs):
         user_profile = staff_user.get_profile()
         user_profile.first_name = 'Staff'
         user_profile.last_name = 'Openreader'
+        user_profile.is_publisher = True
         user_profile.save()
 
-        staff_user.groups.add(publisher_staff_group)
-        
     try:
         normal_user = User.objects.get(username='panuta@gmail.com')
         
@@ -100,17 +106,14 @@ def after_syncdb(sender, **kwargs):
         user_profile = normal_user.get_profile()
         user_profile.first_name = 'Panu'
         user_profile.last_name = 'Tangchalermkul'
+        user_profile.is_publisher = True
         user_profile.save()
-    
-    publisher, created = Publisher.objects.get_or_create(name='Opendream', created_by=admin_user, modified_by=admin_user)
-    UserPublisher.objects.get_or_create(user=admin_user, publisher=publisher, is_default=True)
-    UserPublisher.objects.get_or_create(user=staff_user, publisher=publisher, is_default=True)
-    UserPublisher.objects.get_or_create(user=normal_user, publisher=publisher, is_default=True)
-    
-    magazine_module, created = Module.objects.get_or_create(module_name='magazine', module_type='publication')
-    book_module, created = Module.objects.get_or_create(module_name='book', module_type='publication')
-    shelf_module, created = Module.objects.get_or_create(module_name='shelf', module_type='feature')
 
+    publisher, created = Publisher.objects.get_or_create(name='Opendream', created_by=admin_user, modified_by=admin_user)
+    UserPublisher.objects.get_or_create(user=admin_user, publisher=publisher, role=publisher_admin_group, is_default=True)
+    UserPublisher.objects.get_or_create(user=staff_user, publisher=publisher, role=publisher_staff_group, is_default=True)
+    UserPublisher.objects.get_or_create(user=normal_user, publisher=publisher, role=publisher_user_group, is_default=True)
+    
     PublisherModule.objects.get_or_create(publisher=publisher, module=magazine_module)
     PublisherModule.objects.get_or_create(publisher=publisher, module=book_module)
     PublisherModule.objects.get_or_create(publisher=publisher, module=shelf_module)
