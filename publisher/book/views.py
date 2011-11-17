@@ -42,11 +42,11 @@ def finishing_upload_publication(request, publisher, uploading_publication):
     else:
         form = FinishUploadBookForm(uploading_publication=uploading_publication)
     
-    return render(request, 'publication/book/publication_finishing.html', {'publisher':publisher, 'uploading_publication':uploading_publication, 'form':form})
+    return render(request, 'publisher/book/publication_finishing.html', {'publisher':publisher, 'uploading_publication':uploading_publication, 'form':form})
 
 def view_publication(request, publisher, publication):
 
-    return render(request, 'publication/book/publication.html', {'publisher':publisher, 'publication':publication})
+    return render(request, 'publisher/book/publication.html', {'publisher':publisher, 'publication':publication})
 
 def edit_publication(request, publisher, publication):
     if request.method == 'POST':
@@ -95,7 +95,7 @@ def edit_publication(request, publisher, publication):
         schedule_time = publication.publish_schedule.time() if publication.publish_schedule else None
         form = BookForm(initial={'title':publication.title, 'description':publication.description, 'author':publication.book.author, 'categories':publication.book.categories.all(), 'publish_status':str(publication.publish_status), 'schedule_date':schedule_date, 'schedule_time':schedule_time})
 
-    return render(request, 'publication/book/publication_edit.html', {'publisher':publisher, 'publication':publication, 'form':form})
+    return render(request, 'publisher/book/publication_edit.html', {'publisher':publisher, 'publication':publication, 'form':form})
 
 def gather_publisher_statistics(request, publisher):
     return {
@@ -123,4 +123,4 @@ def view_books(request, publisher_id):
     else:
         outstandings = None
 
-    return render(request, 'publication/book/books.html', {'publisher':publisher, 'all_book_count':all_book_count, 'books':books, 'outstandings':outstandings})
+    return render(request, 'publisher/book/books.html', {'publisher':publisher, 'all_book_count':all_book_count, 'books':books, 'outstandings':outstandings})

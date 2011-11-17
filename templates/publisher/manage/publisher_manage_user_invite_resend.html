@@ -1,0 +1,24 @@
+{% extends 'publisher/manage/publisher_manage_base.html' %}
+
+{% block publisher_manage_head_title %}ส่งอีเมลคำขออีกครั้ง{% endblock %}
+{% block publisher_manage_menu %}{% include 'publisher/snippets/publisher_manage_nav.html' with active_publisher_manage_menu='user' %}{% endblock %}
+
+{% block publisher_manage_content %}
+<ul class="breadcrumb">
+  <li><a href="{% url view_publisher_users publisher.id %}">ทีมงาน</a> <span class="divider">/</span></li>
+  <li class="active">ส่งอีเมลคำขออีกครั้ง</li>
+</ul>
+
+<h2>ส่งอีเมลคำขออีกครั้ง</h2>
+
+<form method="POST" action=".">
+  {% csrf_token %}
+  {{form.non_field_errors}}
+
+  <div class="form_actions left_form_actions">
+    <button type="submit" name="submit-send" class="btn primary">ยืนยันการส่ง</button>
+    <button type="submit" name="submit-cancel" class="btn">ยกเลิก</button>
+  </div>
+
+</form>
+{% endblock %}

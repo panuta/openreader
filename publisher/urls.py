@@ -27,6 +27,9 @@ urlpatterns = patterns('publisher.views',
     
     url(r'^publisher/(?P<publisher_id>\d+)/manage/users/$', 'view_publisher_users', name='view_publisher_users'),
     url(r'^publisher/(?P<publisher_id>\d+)/manage/users/invite/$', 'invite_publisher_user', name='invite_publisher_user'),
+    url(r'^publisher/invitation/(?P<invitation_id>\d+)/resend/$', 'resend_publisher_invitation', name='resend_publisher_invitation'),
+    url(r'^publisher/invitation/(?P<invitation_id>\d+)/cancel/$', 'cancel_publisher_invitation', name='cancel_publisher_invitation'),
+    url(r'^publisher/invitation/(?P<invitation_key>\w+)/$', 'claim_publisher_invitation', name='claim_publisher_invitation'),
     url(r'^publisher/user/(?P<publisher_user_id>\d+)/edit/$', 'edit_publisher_user', name='edit_publisher_user'),
     url(r'^publisher/user/(?P<publisher_user_id>\d+)/remove/$', 'remove_publisher_user', name='remove_publisher_user'),
 

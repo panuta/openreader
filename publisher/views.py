@@ -1,10 +1,14 @@
+# -*- encoding: utf-8 -*-
+
 import os
 import datetime
 
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import Group
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
+from django.db import transaction
+from django.forms.util import ErrorList
 from django.http import HttpResponse, HttpResponseServerError, Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import simplejson
@@ -21,7 +25,8 @@ from exceptions import *
 from forms import *
 from models import *
 
-from accounts.models import UserPublisher
+from accounts.forms import EmailAuthenticationForm
+from accounts.models import UserPublisher, UserPublisherInvitation
 
 # Publisher Dashboard ######################################################################
 
@@ -46,7 +51,7 @@ def view_publisher_dashboard(request, publisher_id):
     if not can(request.user, 'view', publisher):
         raise Http404
         
-    return render(request, 'publication/dashboard.html', {'publisher':publisher})
+    return render(request, 'publisher/dashboard.html', {'publisher':publisher})
 
 @login_required
 def create_publisher(request):
@@ -71,7 +76,7 @@ def create_publisher(request):
     else:
         form = PublisherForm()
     
-    return render(request, 'publication/publisher_create.html', {'form': form})
+    return render(request, 'publisher/publisher_create.html', {'form': form})
 
 @login_required
 def update_publisher(request, publisher_id):
@@ -93,7 +98,7 @@ def update_publisher(request, publisher_id):
     else:
         form = PublisherForm(initial=publisher)
     
-    return render(request, 'publication/publisher_update.html', {'form': form})
+    return render(request, 'publisher/publisher_update.html', {'form': form})
 
 @login_required
 def deactivate_publisher(request, publisher_id):
@@ -159,7 +164,7 @@ def upload_publication(request, publisher_id, module_name=''):
             else:
                 raise Http404
         
-        return render(request, 'publication/%s/publication_upload.html' % module_name, {'publisher':publisher, 'form':form})
+        return render(request, 'publisher/%s/publication_upload.html' % module_name, {'publisher':publisher, 'form':form})
         """
 
 @login_required
@@ -212,7 +217,7 @@ def delete_uploading_publication(request, publication_id):
     else:
         next = request.GET.get('next')
     
-    return render(request, 'publication/publication_uploading_delete.html', {'publisher':publisher, 'next':next})
+    return render(request, 'publisher/publication_uploading_delete.html', {'publisher':publisher, 'next':next})
 
 @login_required
 def view_publication(request, publication_id):
@@ -329,10 +334,10 @@ def view_publisher_profile(request, publisher_id):
     for publisher_module in publisher_modules:
         stats_dict = publisher_module.get_module_object('views').gather_publisher_statistics(request, publisher)
         stats_dict['title'] = publisher_module.module.title
-        stats_dict['template'] = 'publication/%s/snippets/publisher_statistics.html' % publisher_module.module.module_name
+        stats_dict['template'] = 'publisher/%s/snippets/publisher_statistics.html' % publisher_module.module.module_name
         statistics.append(stats_dict)
 
-    return render(request, 'publication/manage/publisher_manage_profile.html', {'publisher':publisher, 'statistics':statistics})
+    return render(request, 'publisher/manage/publisher_manage_profile.html', {'publisher':publisher, 'statistics':statistics})
 
 def edit_publisher_profile(request, publisher_id):
     publisher = get_object_or_404(Publisher, pk=publisher_id)
@@ -351,7 +356,7 @@ def edit_publisher_profile(request, publisher_id):
     else:
         form = PublisherProfileForm(initial={'name':publisher.name})
     
-    return render(request, 'publication/manage/publisher_manage_profile_edit.html', {'publisher':publisher, 'form':form})
+    return render(request, 'publisher/manage/publisher_manage_profile_edit.html', {'publisher':publisher, 'form':form})
 
 # Publisher Shelf
 
@@ -361,7 +366,7 @@ def view_publisher_shelfs(request, publisher_id):
     
     publisher_shelves = PublisherShelf.objects.filter(publisher=publisher).order_by('name')
     
-    return render(request, 'publication/manage/publisher_manage_shelfs.html', {'publisher':publisher, 'publisher_shelves':publisher_shelves})
+    return render(request, 'publisher/manage/publisher_manage_shelfs.html', {'publisher':publisher, 'publisher_shelves':publisher_shelves})
 
 @login_required
 def create_publisher_shelf(request, publisher_id):
@@ -383,7 +388,7 @@ def create_publisher_shelf(request, publisher_id):
     else:
         form = PublisherShelfForm()
 
-    return render(request, 'publication/manage/publisher_manage_shelf_modify.html', {'publisher':publisher, 'form':form})
+    return render(request, 'publisher/manage/publisher_manage_shelf_modify.html', {'publisher':publisher, 'form':form})
 
 @login_required
 def edit_publisher_shelf(request, publisher_shelf_id):
@@ -405,7 +410,7 @@ def edit_publisher_shelf(request, publisher_shelf_id):
     else:
         form = PublisherShelfForm(initial={'name':publisher_shelf.name, 'description':publisher_shelf.description})
 
-    return render(request, 'publication/manage/publisher_manage_shelf_modify.html', {'publisher':publisher, 'publisher_shelf':publisher_shelf, 'form':form})
+    return render(request, 'publisher/manage/publisher_manage_shelf_modify.html', {'publisher':publisher, 'publisher_shelf':publisher_shelf, 'form':form})
 
 @login_required
 def delete_publisher_shelf(request, publisher_shelf_id):
@@ -420,7 +425,7 @@ def delete_publisher_shelf(request, publisher_shelf_id):
             publisher_shelf.delete()
         return redirect('view_publisher_shelfs', publisher_id=publisher.id)
 
-    return render(request, 'publication/manage/publisher_manage_shelf_delete.html', {'publisher':publisher, 'publisher_shelf':publisher_shelf})
+    return render(request, 'publisher/manage/publisher_manage_shelf_delete.html', {'publisher':publisher, 'publisher_shelf':publisher_shelf})
 
 # Publisher Users
 
@@ -428,7 +433,8 @@ def delete_publisher_shelf(request, publisher_shelf_id):
 def view_publisher_users(request, publisher_id):
     publisher = get_object_or_404(Publisher, pk=publisher_id)
     publisher_users = UserPublisher.objects.filter(publisher=publisher).order_by('user__userprofile__first_name', 'user__userprofile__last_name')
-    return render(request, 'publication/manage/publisher_manage_users.html', {'publisher':publisher, 'publisher_users':publisher_users})
+    invited_users = UserPublisherInvitation.objects.filter(publisher=publisher, )
+    return render(request, 'publisher/manage/publisher_manage_users.html', {'publisher':publisher, 'publisher_users':publisher_users, 'invited_users':invited_users})
 
 @login_required
 def invite_publisher_user(request, publisher_id):
@@ -443,15 +449,130 @@ def invite_publisher_user(request, publisher_id):
             email = form.cleaned_data['email']
             role = form.cleaned_data['role']
 
-            # TODO
-            # - find existing user
-            # - create token
-            # - send email invitation
+            if UserPublisherInvitation.objects.filter(user_email=email, publisher=publisher).exists():
+                form._errors['email'] = ErrorList([u'ส่งคำขอถึงผู้ใช้คนนี้แล้ว'])
+
+            else:
+                existing_users = User.objects.filter(email=email)
+
+                if existing_users:
+                    user = existing_users[0]
+
+                    if not UserPublisher.objects.filter(publisher=publisher, user=user).exists():
+                        invitation = UserPublisherInvitation.objects.create_invitation(user.email, publisher, role, request.user)
+                    else:
+                        form._errors['email'] = ErrorList([u'ผู้ใช้เป็นทีมงานในสำนักพิมพ์อยู่แล้ว'])
+                        invitation = None
+                
+                else:
+                    invitation = UserPublisherInvitation.objects.create_invitation(email, publisher, role, request.user)
+                
+                if invitation:
+                    invitation.send_invitation_email()
+                    return redirect('view_publisher_users', publisher_id=publisher.id)
 
     else:
         form = InvitePublisherUserForm()
 
-    return render(request, 'publication/manage/publisher_manage_user_invite.html', {'publisher':publisher, })
+    return render(request, 'publisher/manage/publisher_manage_user_invite.html', {'publisher':publisher, 'form':form})
+
+def resend_publisher_invitation(request, invitation_id):
+    invitation = get_object_or_404(UserPublisherInvitation, pk=invitation_id)
+    publisher = invitation.publisher
+
+    if not can(request.user, 'manage', publisher):
+        raise Http404
+    
+    if request.method == 'POST':
+        if 'submit-send' in request.POST:
+            if not invitation.send_invitation_email():
+                pass
+                # TODO: SEND ERROR MESSAGE
+            
+        return redirect('view_publisher_users', publisher_id=publisher.id)
+
+    return render(request, 'publisher/manage/publisher_manage_user_invite_resend.html', {'publisher':publisher, 'invitation':invitation})
+
+def cancel_publisher_invitation(request, invitation_id):
+    invitation = get_object_or_404(UserPublisherInvitation, pk=invitation_id)
+    publisher = invitation.publisher
+
+    if not can(request.user, 'manage', publisher):
+        raise Http404
+    
+    if request.method == 'POST':
+        if 'submit-remove' in request.POST:
+            invitation.delete()
+        return redirect('view_publisher_users', publisher_id=publisher.id)
+
+    return render(request, 'publisher/manage/publisher_manage_user_invite_cancel.html', {'publisher':publisher, 'invitation':invitation})
+
+def claim_publisher_invitation(request, invitation_key):
+    """
+    1. already have account, authenticated, owner -> redirect to publisher page
+    2. already have account, authenticated, not owner -> let user logout before continue claiming invitation
+    3. already have account, not authenticated -> redirect to login page with next url is publisher page
+    4. don't have account -> ask for password, authenticate, redirect to publisher page
+    """
+
+    invitation = UserPublisherInvitation.objects.validate_invitation(invitation_key)
+
+    if not invitation:
+        raise Http404
+    
+    if request.method == 'POST':
+        form = ClaimPublisherUserForm(request.POST)
+        if form.is_valid():
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
+            password1 = form.cleaned_data['password1']
+
+            invitation = UserPublisherInvitation.objects.validate_invitation(invitation_key)
+
+            user = User.objects.create_user(invitation.user_email, invitation.user_email, password1)
+            user_profile = user.get_profile()
+            user_profile.first_name = first_name
+            user_profile.last_name = last_name
+            user_profile.is_publisher = True
+            user_profile.save()
+
+            UserPublisherInvitation.objects.claim_invitation(invitation, user, True)
+            
+            # Automatically log user in
+            user = authenticate(email=invitation.user_email, password=password1)
+            login(request, user)
+            
+            # TODO: SEND MESSAGE
+
+            return redirect('view_publisher_dashboard', publisher_id=invitation.publisher.id)
+
+    else:
+        existing_users = User.objects.filter(email=invitation.user_email)
+
+        if existing_users:
+            user = existing_users[0]
+        else:
+            user = None
+
+        if request.user.is_authenticated():
+            if user and request.user.id == user.id:
+                UserPublisherInvitation.objects.claim_invitation(invitation, user)
+                
+                # TODO: SEND MESSAGE
+
+                return redirect('view_publisher_dashboard', publisher_id=invitation.publisher.id)
+            
+            return render(request, 'publisher/manage/publisher_manage_user_invite_claim.html', {'invitation':invitation, 'logout_first':True})
+
+        else:
+            if user:
+                form = EmailAuthenticationForm()
+
+                return render(request, 'publisher/manage/publisher_manage_user_invite_claim.html', {'invitation':invitation, 'form':form, 'login_first':reverse('claim_publisher_invitation', args=[invitation_key])})
+            
+        form = ClaimPublisherUserForm()
+    
+    return render(request, 'publisher/manage/publisher_manage_user_invite_claim.html', {'invitation':invitation, 'form':form, 'first_time':True})
 
 @login_required
 def edit_publisher_user(request, publisher_user_id):
@@ -464,15 +585,15 @@ def edit_publisher_user(request, publisher_user_id):
     if request.method == 'POST':
         form = EditPublisherUserForm(request.POST)
         if form.is_valid():
-            user_publisher.role = Group.objects.get(name=form.cleaned_data['role'])
+            user_publisher.role = name=form.cleaned_data['role']
             user_publisher.save()
 
             return redirect('view_publisher_users', publisher_id=publisher.id)
 
     else:
-        form = EditPublisherUserForm(initial={'role':user_publisher.role.name})
+        form = EditPublisherUserForm(initial={'role':user_publisher.role})
 
-    return render(request, 'publication/manage/publisher_manage_user_edit.html', {'publisher':publisher, 'user_publisher':user_publisher, 'form':form})
+    return render(request, 'publisher/manage/publisher_manage_user_edit.html', {'publisher':publisher, 'user_publisher':user_publisher, 'form':form})
 
 @login_required
 def remove_publisher_user(request, publisher_user_id):
@@ -487,7 +608,7 @@ def remove_publisher_user(request, publisher_user_id):
             user_publisher.delete()
         return redirect('view_publisher_users', publisher_id=publisher.id)
 
-    return render(request, 'publication/manage/publisher_manage_user_remove.html', {'publisher':publisher, 'user_publisher':user_publisher})
+    return render(request, 'publisher/manage/publisher_manage_user_remove.html', {'publisher':publisher, 'user_publisher':user_publisher})
 
 # Billing
 
@@ -498,4 +619,4 @@ def view_publisher_billing(request, publisher_id):
     if not can(request.user, 'manage', publisher):
         raise Http404
 
-    return render(request, 'publication/manage/publisher_manage_billing.html', {'publisher':publisher, })    
+    return render(request, 'publisher/manage/publisher_manage_billing.html', {'publisher':publisher, })    

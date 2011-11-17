@@ -33,7 +33,7 @@ class Publisher(models.Model):
         #return True
         try:
             user_publisher = UserPublisher.objects.get(publisher=self, user=user)
-            return user_publisher.role.name in ('publisher_admin', 'publisher_staff')
+            return user_publisher.role.code in ('publisher_admin', 'publisher_staff')
         except UserPublisher.DoesNotExist:
             return False
     
@@ -44,7 +44,7 @@ class Publisher(models.Model):
     def can_manage(self, user):
         try:
             user_publisher = UserPublisher.objects.get(publisher=self, user=user)
-            return user_publisher.role.name in ('publisher_admin', )
+            return user_publisher.role.code in ('publisher_admin', )
         except UserPublisher.DoesNotExist:
             return False
 

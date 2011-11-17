@@ -39,11 +39,11 @@ def finishing_upload_publication(request, publisher, uploading_publication):
     else:
         form = FinishUploadMagazineIssueForm(publisher=publisher, uploading_publication=uploading_publication)
     
-    return render(request, 'publication/magazine/publication_finishing.html', {'publisher':publisher, 'uploading_publication':uploading_publication, 'form':form})
+    return render(request, 'publisher/magazine/publication_finishing.html', {'publisher':publisher, 'uploading_publication':uploading_publication, 'form':form})
 
 def view_publication(request, publisher, publication):
 
-    return render(request, 'publication/magazine/publication.html', {'publisher':publisher, 'publication':publication})
+    return render(request, 'publisher/magazine/publication.html', {'publisher':publisher, 'publication':publication})
 
 def edit_publication(request, publisher, publication):
     if request.method == 'POST':
@@ -82,7 +82,7 @@ def edit_publication(request, publisher, publication):
         schedule_time = publication.publish_schedule.time() if publication.publish_schedule else None
         form = MagazineIssueForm(initial={'title':publication.title, 'description':publication.description, 'publish_status':str(publication.publish_status), 'schedule_date':schedule_date, 'schedule_time':schedule_time})
     
-    return render(request, 'publication/magazine/publication_edit.html', {'publisher':publisher, 'publication':publication, 'form':form})
+    return render(request, 'publisher/magazine/publication_edit.html', {'publisher':publisher, 'publication':publication, 'form':form})
 
 def gather_publisher_statistics(request, publisher):
     return {
@@ -127,7 +127,7 @@ def view_magazines(request, publisher_id):
     else:
         outstandings = None
 
-    return render(request, 'publication/magazine/magazines.html', {'publisher':publisher, 'magazines':magazines, 'outstandings':outstandings})
+    return render(request, 'publisher/magazine/magazines.html', {'publisher':publisher, 'magazines':magazines, 'outstandings':outstandings})
 
 @login_required
 def create_magazine(request, publisher_id):
@@ -153,7 +153,7 @@ def create_magazine(request, publisher_id):
     else:
         form = MagazineForm()
 
-    return render(request, 'publication/magazine/magazine_modify.html', {'publisher':publisher, 'form':form})
+    return render(request, 'publisher/magazine/magazine_modify.html', {'publisher':publisher, 'form':form})
 
 @login_required
 def view_magazine(request, magazine_id):
@@ -174,7 +174,7 @@ def view_magazine(request, magazine_id):
     else:
         outstandings = None
 
-    return render(request, 'publication/magazine/magazine.html', {'publisher':publisher, 'magazine':magazine, 'outstandings':outstandings})
+    return render(request, 'publisher/magazine/magazine.html', {'publisher':publisher, 'magazine':magazine, 'outstandings':outstandings})
 
 @login_required
 def edit_magazine(request, magazine_id):
@@ -204,4 +204,4 @@ def edit_magazine(request, magazine_id):
         print magazine.categories.all()
         form = MagazineForm(initial={'title':magazine.title, 'description':magazine.description, 'categories':magazine.categories.all()})
     
-    return render(request, 'publication/magazine/magazine_modify.html', {'publisher':publisher, 'magazine':magazine, 'form':form})
+    return render(request, 'publisher/magazine/magazine_modify.html', {'publisher':publisher, 'magazine':magazine, 'form':form})

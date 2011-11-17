@@ -30,6 +30,7 @@ DATABASES = {
 
 WEBSITE_NAME = 'OpenReader'
 WEBSITE_DOMAIN = 'http://127.0.0.1:8000/'
+WEBSITE_HOST = '127.0.0.1:8000' # Use for system email address
 
 TIME_ZONE = 'Asia/Bangkok'
 LANGUAGE_CODE = 'th'
@@ -169,8 +170,8 @@ FILE_PROTECTION_METHOD = 'basic'
 ########## Open Reader Settings ##########
 
 MAGAZINE_LOGO_ROOT = MEDIA_ROOT + 'magazine_logo/'
-
 PUBLICATION_ROOT = MEDIA_ROOT + 'publication/'
 
+EMAIL_FOR_USER_PUBLISHER_INVITATION = 'noreply@' + WEBSITE_HOST
 
 #######################################################

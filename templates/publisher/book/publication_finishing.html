@@ -41,7 +41,7 @@ $(document).ready(function () {
       <div class="clearfix"><label for="id_description">คำอธิบาย</label><div class="input">{{form.description}}<span class="help-block">ไม่จำเป็นต้องกรอก</span>{{form.description.errors}}</div></div>
       <div class="clearfix"><label for="id_title">ประเภทสิ่งพิมพ์</label><div class="input multiple_checkbox row">{% genetate_publication_category_multiple_checkbox form.categories.value %}</div></div>
 
-      {% can user 'publish' publisher %}{% include 'publication/snippets/publish_status.html' with form=form %}{% endcan %}
+      {% can user 'publish' publisher %}{% include 'publisher/snippets/publish_status.html' with form=form %}{% endcan %}
 
       <div class="form_actions">
         <button type="submit" class="btn primary">บันทึกข้อมูล</button>

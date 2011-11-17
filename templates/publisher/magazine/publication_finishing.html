@@ -46,7 +46,7 @@ $(document).ready(function () {
       <div class="clearfix"><label for="id_title">ฉบับที่</label><div class="input">{{form.title}}{{form.title.errors}}</div></div>
       <div class="clearfix"><label for="id_description">คำอธิบาย</label><div class="input">{{form.description}}<span class="help-block">ไม่จำเป็นต้องกรอก</span>{{form.description.errors}}</div></div>
 
-      {% can user 'publish' publisher %}{% include 'publication/snippets/publish_status.html' with form=form %}{% endcan %}
+      {% can user 'publish' publisher %}{% include 'publisher/snippets/publish_status.html' with form=form %}{% endcan %}
 
       <div class="form_actions">
         <button type="submit" class="btn primary">บันทึกข้อมูล</button>

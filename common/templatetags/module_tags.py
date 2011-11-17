@@ -88,9 +88,9 @@ class PublicationModuleUploadModalNode(template.Node):
         module_name = self.module_name
 
         if module_name:
-            template_name = 'publication/%s/snippets/upload_publication_modal.html' % module_name
+            template_name = 'publisher/%s/snippets/upload_publication_modal.html' % module_name
         else:
-            template_name = 'publication/snippets/upload_publication_modal.html'
+            template_name = 'publisher/snippets/upload_publication_modal.html'
 
         from django.template import loader
         try:

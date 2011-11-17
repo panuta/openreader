@@ -1,8 +1,8 @@
-{% extends 'publication/manage/publisher_manage_base.html' %}
+{% extends 'publisher/manage/publisher_manage_base.html' %}
 {% load helper_tags %}
 
 {% block publisher_manage_head_title %}ข้อมูลสำนักพิมพ์{% endblock %}
-{% block publisher_manage_menu %}{% include 'publication/snippets/publisher_manage_nav.html' with active_publisher_manage_menu='profile' %}{% endblock %}
+{% block publisher_manage_menu %}{% include 'publisher/snippets/publisher_manage_nav.html' with active_publisher_manage_menu='profile' %}{% endblock %}
 
 {% block publisher_manage_content %}
 <h2>{{publisher.name}}</h2>

@@ -2,7 +2,6 @@
 
 import datetime
 
-from django.contrib.auth.models import Group
 from django.contrib.sites.models import Site
 
 from accounts.models import *
@@ -24,9 +23,11 @@ def after_syncdb(sender, **kwargs):
     shelf_module, created = Module.objects.get_or_create(module_name='shelf', module_type='feature', title='ชั้นหนังสือ')
 
     # Roles and Permissions
-    publisher_admin_group, created = Group.objects.get_or_create(name='publisher_admin')
-    publisher_staff_group, created = Group.objects.get_or_create(name='publisher_staff')
-    publisher_user_group, created = Group.objects.get_or_create(name='publisher_user')
+    from common.permissions import ROLE_CHOICES
+
+    roles = {}
+    for choice in ROLE_CHOICES:
+        roles[choice[0]], created = Role.objects.get_or_create(name=choice[1], code=choice[0])
 
     # Publication Categories
     PublicationCategory.objects.get_or_create(name='ท่องเที่ยว', slug='travel')
@@ -110,9 +111,9 @@ def after_syncdb(sender, **kwargs):
         user_profile.save()
 
     publisher, created = Publisher.objects.get_or_create(name='Opendream', created_by=admin_user, modified_by=admin_user)
-    UserPublisher.objects.get_or_create(user=admin_user, publisher=publisher, role=publisher_admin_group, is_default=True)
-    UserPublisher.objects.get_or_create(user=staff_user, publisher=publisher, role=publisher_staff_group, is_default=True)
-    UserPublisher.objects.get_or_create(user=normal_user, publisher=publisher, role=publisher_user_group, is_default=True)
+    UserPublisher.objects.get_or_create(user=admin_user, publisher=publisher, role=roles['publisher_admin'], is_default=True)
+    UserPublisher.objects.get_or_create(user=staff_user, publisher=publisher, role=roles['publisher_staff'], is_default=True)
+    UserPublisher.objects.get_or_create(user=normal_user, publisher=publisher, role=roles['publisher_user'], is_default=True)
     
     PublisherModule.objects.get_or_create(publisher=publisher, module=magazine_module)
     PublisherModule.objects.get_or_create(publisher=publisher, module=book_module)

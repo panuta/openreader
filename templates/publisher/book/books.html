@@ -45,21 +45,21 @@ $(document).ready(function () {
       {% if outstandings.unfinished %}
       <div class="unfinished_list">
         <div class="type">UNFINISHED ISSUES</div>
-        <ul>{% for uploading_publication in outstandings.unfinished %}{% include 'publication/snippets/outstanding_unfinished.html' with uploading_publication=uploading_publication %}{% endfor %}</ul>
+        <ul>{% for uploading_publication in outstandings.unfinished %}{% include 'publisher/snippets/outstanding_unfinished.html' with uploading_publication=uploading_publication %}{% endfor %}</ul>
       </div>
       {% endif %}
 
       {% if outstandings.scheduled %}
       <div class="scheduled_list">
         <div class="type">SCHEDULED BOOKS</div>
-        <ul>{% for publication in outstandings.scheduled %}{% include 'publication/snippets/outstanding_scheduled.html' with publication=publication %}{% endfor %}</ul>
+        <ul>{% for publication in outstandings.scheduled %}{% include 'publisher/snippets/outstanding_scheduled.html' with publication=publication %}{% endfor %}</ul>
       </div>
       {% endif %}
 
       {% if outstandings.unpublished %}
       <div class="unpublished_list">
         <div class="type">UNPUBLISHED BOOKS</div>
-        <ul>{% for publication in outstandings.unpublished %}{% include 'publication/snippets/outstanding_unpublished.html' with publication=publication %}{% endfor %}</ul>
+        <ul>{% for publication in outstandings.unpublished %}{% include 'publisher/snippets/outstanding_unpublished.html' with publication=publication %}{% endfor %}</ul>
       </div>
       {% endif %}
       

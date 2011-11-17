@@ -14,7 +14,7 @@
   <div class="list" id="outstanding-unfinished" style="display:none;">
     <div class="close_list"><a href="#">ปิด</a></div>
     <ul>
-      {% for uploading_publication in unfinished %}{% include 'publication/snippets/outstanding_unfinished.html' with uploading_publication=uploading_publication %}{% endfor %}
+      {% for uploading_publication in unfinished %}{% include 'publisher/snippets/outstanding_unfinished.html' with uploading_publication=uploading_publication %}{% endfor %}
     </ul>
     <div style="clear:both;"></div>
   </div>
@@ -24,7 +24,7 @@
   <div class="list" id="outstanding-scheduled" style="display:none;">
     <div class="close_list"><a href="#">ปิด</a></div>
     <ul>
-      {% for publication in scheduled %}{% include 'publication/snippets/outstanding_scheduled.html' with publication=publication %}{% endfor %}
+      {% for publication in scheduled %}{% include 'publisher/snippets/outstanding_scheduled.html' with publication=publication %}{% endfor %}
     </ul>
     <div style="clear:both;"></div>
   </div>
@@ -34,7 +34,7 @@
   <div class="list" id="outstanding-unpublished" style="display:none;">
     <div class="close_list"><a href="#">ปิด</a></div>
     <ul>
-      {% for publication in unpublished %}{% include 'publication/snippets/outstanding_unpublished.html' with publication=publication %}{% endfor %}
+      {% for publication in unpublished %}{% include 'publisher/snippets/outstanding_unpublished.html' with publication=publication %}{% endfor %}
     </ul>
     <div style="clear:both;"></div>
   </div>

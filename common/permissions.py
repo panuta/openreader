@@ -1,20 +1,4 @@
-import operator
-
-from publisher.models import *
-
 ROLE_CHOICES = (('publisher_admin', 'Publisher Admin'), ('publisher_staff', 'Publisher Staff'), ('publisher_user', 'Publisher User'))
-
-def get_role_name(group_name):
-    if group_name == 'publisher_admin':
-        return 'Publisher Admin'
-    
-    if group_name == 'publisher_staff':
-        return 'Publisher Staff'
-    
-    if group_name == 'publisher_user':
-        return 'Publisher User'
-    
-    return ''
 
 def can(user, action, object):
     return _dispatch(user, action, object)

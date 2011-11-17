@@ -1,0 +1,15 @@
+<form method="POST" action="." class="form-stacked">
+  {% csrf_token %}
+  {{form.non_field_errors}}
+
+  <div class="clearfix"><label for="id_email">อีเมล</label><div class="input">{{form.email}}{{form.email.errors}}</div></div>
+  <div class="clearfix"><label for="id_password">รหัสผ่าน</label><div class="input">{{form.password}}{{form.password.errors}}</div></div>
+
+  <input type="hidden" name="next" value="{{next}}" />
+
+  <div class="form_actions">
+    <button type="submit" class="btn primary span2">เข้าสู่ระบบ</button>
+    <a href="/accounts/password_reset/">ลืมรหัสผ่าน?</a>
+  </div>
+
+</form>
