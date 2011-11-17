@@ -13,12 +13,14 @@
 </div>
 {% endcan %}
 
+{% if statistics %}
 <div class="publisher_stats">
   <h3>สื่อสิ่งพิมพ์</h3>
   {% for statistic in statistics %}
     <h4>{{statistic.title}}</h4>
     {% include statistic.template with data=statistic %}
   {% endfor %}
-
 </div>
+{% endif %}
+
 {% endblock %}

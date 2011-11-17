@@ -1,5 +1,4 @@
 TODO
-- testing invitation on all cases
 - think again about publish status
 - messages
 - pagination
@@ -10,12 +9,7 @@ TODO
 - dashboard
 - delete publication
 - publisher's reader app -- need to ask for this information before publishing
-
-DONE
-- Change template folder name from publication to publisher
-- user invitation
-- redirect after login
-
+- my profile page
 
 
 WILL DO

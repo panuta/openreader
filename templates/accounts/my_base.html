@@ -2,13 +2,15 @@
 {% load module_tags %}
 
 {% block head_title %}หน้าผู้ใช้ - {% block my_account_head_title %}{% endblock %}{% endblock %}
-{% block topnav %}{% include 'snippets/topnav.html' with active_menu='' %}{% endblock %}
+{% block topnav %}
+<h1><a href="{% url view_my_profile %}"><span>ข้อมูลผู้ใช้</span> {{user.get_profile.get_fullname}}</a></h1>
+{% endblock %}
 
 {% block body_authenticated %}
 <div class="container-fluid container-body publisher_manage_page">
 
   <div class="sidebar">
-    <div class="head">{{user.get_profile.get_fullname}}</div>
+    <div class="head"></div>
     <ul>
       {% block my_account_menu %}{% endblock %}
     </ul>

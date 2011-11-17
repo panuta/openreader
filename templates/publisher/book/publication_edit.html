@@ -2,7 +2,7 @@
 {% load helper_tags page_tags %}
 
 {% block head_title %}Edit Magazine - {{publication.title}}{% endblock %}
-{% block topnav %}{% include 'snippets/topnav.html' with active_menu='book' %}{% endblock %}
+{% block topnav %}{% include 'publisher/snippets/publisher_topnav.html' with active_menu='book' %}{% endblock %}
 
 {% block body_authenticated %}
 <div class="container-fluid container-body publisher_magazines_page">

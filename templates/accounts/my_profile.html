@@ -1,4 +1,4 @@
-{% extends 'publisher/manage/publisher_manage_base.html' %}
+{% extends 'accounts/my_base.html' %}
 
 {% block my_account_head_title %}ข้อมูลส่วนตัว{% endblock %}
 {% block my_account_menu %}{% include 'accounts/snippets/my_nav.html' with active_my_menu='profile' %}{% endblock %}
@@ -6,6 +6,19 @@
 {% block my_account_content %}
 <h2>ข้อมูลส่วนตัว</h2>
 
+<form method="POST" action=".">
+  {% csrf_token %}
+  {{form.non_field_errors}}
+  
+    <div class="clearfix"><label for="id_first_name">ชื่อ</label><div class="input">{{form.first_name}}{{form.first_name.errors}}</div></div>
+    <div class="clearfix"><label for="id_last_name">นามสกุล</label><div class="input">{{form.last_name}}{{form.last_name.errors}}</div></div>
+    
+    <div class="form_actions">
+      <button type="submit" class="btn primary">บันทึกข้อมูล</button>
+      <button type="reset" class="btn">ล้างข้อมูล</button>
+    </div>
+  
+</form>
 
 
 {% endblock %}

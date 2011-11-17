@@ -6,6 +6,6 @@ class StrippedCharField(forms.CharField):
         self.strip = strip
 
     def clean(self, value):
-        if self.strip:
+        if value:
             value = value.strip()
         return super(StrippedCharField, self).clean(value)

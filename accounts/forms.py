@@ -2,6 +2,8 @@ from django import forms
 from django.contrib.auth import authenticate
 from django.utils.translation import ugettext_lazy as _
 
+from common.forms import StrippedCharField
+
 class EmailAuthenticationForm(forms.Form):
     """
     Base class for authenticating users. Extend this to get a form that accepts
@@ -47,3 +49,8 @@ class EmailAuthenticationForm(forms.Form):
 
     def get_user(self):
         return self.user_cache
+
+class UserProfileForm(forms.Form):
+    first_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'span9'}))
+    last_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'span9'}))
+

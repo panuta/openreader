@@ -1,0 +1,8 @@
+{% load helper_tags module_tags %}
+
+<h1><a href="{% url view_publisher_dashboard publisher.id %}"><span>สำนักพิมพ์</span> {{publisher.name}}</a></h1>
+<ul class="nav">
+  <li{% if active_menu == "dashboard" %} class="active"{% endif %}><a href="{% url view_publisher_dashboard publisher.id %}">หน้าแรก</a></li>
+  {% generate_top_menu publisher active_menu %}
+  {% can user 'manage' publisher %}<li{% if active_menu == "management" %} class="active"{% endif %}><a href="{% url view_publisher_profile publisher.id %}">ข้อมูลสำนักพิมพ์</a></li>{% endcan %}
+</ul>

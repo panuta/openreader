@@ -36,11 +36,8 @@ $(document).ready(function () {initialize();})
 <div class="topbar">
   <div class="fill">
     <div class="container-fluid">
-      <h1><a href="{% url view_publisher_dashboard publisher.id %}"><span>สำนักพิมพ์</span> {{publisher.name}}</a></h1>
-      <ul class="nav">
-        {% block topnav %}{% endblock %}
-      </ul>
-
+      {% block topnav %}{% endblock %}
+      
       <ul class="nav secondary-nav" data-dropdown="dropdown">
         {% generate_publisher_menu user %}
 
