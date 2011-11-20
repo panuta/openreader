@@ -1,3 +1,5 @@
+# -*- encoding: utf-8 -*-
+
 import os
 import datetime
 
@@ -36,8 +38,10 @@ def finishing_upload_publication(request, publisher, uploading_publication):
 
             for category in categories:
                 book.categories.add(category)
+            
+            messages.success(request, 'บันทึกข้อมูลเรียบร้อย')
 
-            return redirect('view_publication', publication_id=publication.id)
+            return redirect('vieW_book', publisher_id=publisher.id)
             
     else:
         form = FinishUploadBookForm(uploading_publication=uploading_publication)
@@ -88,6 +92,8 @@ def edit_publication(request, publisher, publication):
 
             for category in categories:
                 publication.book.categories.add(category)
+            
+            # MESSAGE
 
             return redirect('view_publication', publication.id)
     else:

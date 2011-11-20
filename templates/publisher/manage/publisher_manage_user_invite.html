@@ -15,7 +15,7 @@
   {% csrf_token %}
   {{form.non_field_errors}}
 
-  <div class="clearfix"><label for="id_email">อีเมล</label><div class="input">{{form.email}}<span class="help-block">อีเมลของผู้ใช้ที่จะเข้าสู่ระบบ</span>{{form.email.errors}}</div></div>
+  <div class="clearfix"><label for="id_email">อีเมลของผู้ใช้ระบบ</label><div class="input">{{form.email}}{{form.email.errors}}</div></div>
   <div class="clearfix"><label for="id_role">ตำแหน่ง</label><div class="input">{{form.role}}{{form.role.errors}}</div></div>
 
   <div class="form_actions">

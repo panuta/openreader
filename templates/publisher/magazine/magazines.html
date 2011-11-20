@@ -1,5 +1,5 @@
 {% extends 'base_authenticated.html' %}
-{% load helper_tags module_tags %}
+{% load helper_tags module_tags magazine_tags %}
 
 {% block head_title %}นิตยสาร{% endblock %}
 {% block topnav %}{% include 'publisher/snippets/publisher_topnav.html' with active_menu='magazine' %}{% endblock %}
@@ -9,11 +9,11 @@
 <script>
 $(document).ready(function () {
   {% can user 'upload' publisher %}
-  bind_upload_publication_modal();
-  bind_upload_publication_form();
+  bind_all_upload_publication_modal();
+  bind_all_upload_publication_form();
 
   $('.upload_publication_button').on('click', function(e) {
-    open_upload_publication_modal();
+    open_upload_publication_modal('upload-magazine-form');
     return false;
   });
   {% endcan %}
@@ -26,51 +26,63 @@ $(document).ready(function () {
 {% endblock %}
 
 {% block body_authenticated %}
-<div class="container-fluid container-body publisher_magazines_page">
-  <div class="content-full"><div class="content-inner">
 
-    <h2>นิตยสาร</h2>
+{% if magazines %}
+  <div class="container-fluid container-body publisher_magazines_page">
 
-    {% can user 'upload,manage' publisher %}
-    <div class="page_actions">
-      {% if magazines %}{% can user 'upload' publisher %}<button class="btn primary upload_publication_button"><span>อัพโหลดนิตยสาร</span></button>{% endcan %}{% endif %}
-      {% can user 'manage' publisher %}<a href="{% url create_magazine publisher.id %}" class="btn crate_magazine_button">สร้างนิตยสารใหม่</a>{% endcan %}
+    <div class="sidebar">
+      <div class="head"><a href="{% url view_magazines publisher.id %}">รายชื่อนิตยสาร</a></div>
+      <ul>
+        {% generate_magazine_nav_list publisher %}
+        <li class="add"><a href="{% url create_magazine publisher.id %}">สร้างนิตยสารใหม่</a></li>
+      </ul>  
     </div>
-    {% endcan %}
 
-    {% if magazines %}
-      {% include 'publisher/snippets/publication_outstandings.html' with unfinished=outstandings.unfinished scheduled=outstandings.scheduled unpublished=outstandings.unpublished %}
-
-      <div class="magazines">
-        <h3>นิตยสารทั้งหมด</h3>
-        <ul>
-          {% for magazine in magazines %}
-          <li {% if forloop.last %}class="last"{% endif %} magazine-id="{{magazine.id}}" magazine-title="{{magazine.title}}">
-            <div class="inner">
-            <div class="title"><a href="{% url view_magazine magazine.id %}">{{magazine.title}}</a></div>
-            <div class="stats"><span class="published">ตีพิมพ์ไปแล้ว {{magazine.published_count}} เล่ม</span>{% if magazine.last_published %} (เล่มล่าสุดคือ <a href="{% url view_publication magazine.last_published.publication.id %}">{{magazine.last_published.publication.title}}</a>){% endif %}</div>
-            {% if magazine.outstanding.unfinished or magazine.outstanding.scheduled or magazine.outstanding.unpublished %}
-            <div class="outstanding">
-              {% if magazine.outstanding.unfinished %}<span class="unfinished">{{magazine.outstanding.unfinished}} เล่ม กรอกข้อมูลยังไม่ครบ</span>{% endif %}
-              {% if magazine.outstanding.scheduled %}<span class="scheduled">{{magazine.outstanding.scheduled}} เล่ม ตั้งเวลาตีพิมพ์</span>{% endif %}
-              {% if magazine.outstanding.unpublished %}<span class="unpublished">{{magazine.outstanding.unpublished}} เล่ม ยังไม่ได้ตีพิมพ์</span>{% endif %}
-            </div>
-            {% endif %}
-            </div>
-          </li>
-          {% endfor %}
-        </ul>
+    <div class="content"><div class="content-inner">
+      <h2>นิตยสาร</h2>
+      
+      {% if magazines %}{% can user 'upload' publisher %}
+      <div class="page_actions">
+        <button class="btn primary upload_publication_button"><span>อัพโหลดนิตยสาร</span></button>
       </div>
+      {% endcan %}{% endif %}
 
-    {% else %}
+      {% if outstandings.unfinished or outstandings.scheduled or outstandings.unpublished %}
+        {% include 'publisher/snippets/publication_outstandings.html' with module_name='magazine' unfinished=outstandings.unfinished scheduled=outstandings.scheduled unpublished=outstandings.unpublished %}
+      {% endif %}
+
+      <h3>ความเคลื่อนไหวล่าสุด</h3>
+
+      {% for magazine in magazines %}
+        <h4><a href="{% url view_magazine magazine.id %}">{{magazine.title}}</a></h4>
+        {% if magazine.activities %}
+          <ul class="recent">
+            {% for activity in magazine.activities %}
+            <li>อัพโหลด <a href="#">ฉบับที่ 6 ตุลาคม 2554</a> เมื่อวันที่ 12 ต.ค. 2554 เวลา 14:00 น. โดย Panu Tangchalermkul</li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <div class="no_activity">ไม่มีความเคลื่อนไหว</div>
+        {% endif %}
+      {% endfor %}
+
+      {% can user 'upload' publisher %}{% generate_publication_module_upload_modal 'magazine' %}{% endcan %}
+
+    </div></div>
+  </div>
+{% else %}
+  <div class="container-fluid container-body publisher_magazines_page">
+    <div class="content-full"><div class="content-inner">
+      {% can user 'manage' publisher %}
       <div class="no_magazine">
-        <div class="message">ไม่มีรายการนิตยสาร</div>
-        {% can user 'manage' publisher %}<div class="message">ผู้ใช้สามารถสร้างนิตยสารได้จากปุ่ม "สร้างนิตยสารใหม่" ด้านบน</div>{% endcan %}
+        <p>ยังไม่มีนิตยสาร ต้องการสร้างนิตยสาร?</p>
+        <div><a href="{% url create_magazine publisher.id %}" class="btn primary">สร้างนิตยสาร</a></div>
       </div>
-    {% endif %}
+      {% else %}
+      <div class="no_row">ไม่มีนิตยสาร</div>
+      {% endcan %}
+    </div></div>
+  </div>
+{% endif %}
 
-    {% can user 'upload' publisher %}{% generate_publication_module_upload_modal 'magazine' %}{% endcan %}
-
-  </div></div>
-</div>
 {% endblock %}

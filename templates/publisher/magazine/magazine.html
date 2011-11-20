@@ -9,11 +9,11 @@
 <script>
 $(document).ready(function () {
   {% can user 'upload' publisher %}
-  bind_upload_publication_modal();
-  bind_upload_publication_form();
+  bind_all_upload_publication_modal();
+  bind_all_upload_publication_form();
 
   $('.upload_publication_button').on('click', function(e) {
-    open_upload_publication_modal();
+    open_upload_publication_modal('upload-magazine-form');
     return false;
   });
   {% endcan %}
@@ -42,64 +42,61 @@ $(document).ready(function () {
 
     {% can user 'upload,manage' publisher %}
     <div class="page_actions">
-      {% can user 'upload' publisher %}<button class="btn primary upload_publication_button">อัพโหลดนิตยสาร {{magazine.title}}</button>{% endcan %}
-      {% can user 'manage' publisher %}<a href="{% url edit_magazine magazine.id %}" class="btn">แก้ไขรายละเอียดนิตยสาร</a>{% endcan %}
+      {% can user 'upload' publisher %}<button class="btn primary upload_publication_button"><span>อัพโหลดนิตยสาร {{magazine.title}}</span></button>{% endcan %}
+      {% can user 'manage' publisher %}<a href="{% url edit_magazine magazine.id %}" class="btn">แก้ไขข้อมูลนิตยสาร</a>{% endcan %}
     </div>
     {% endcan %}
 
-    {% if magazine.categories.all or magazine.description %}
-    <h3>รายละเอียดนิตยสาร</h3>
-    {% if magazine.categories.all %}<h4>ประเภทสิ่งพิมพ์</h4><div class="categories">{{magazine.categories.all|join:", " }}</div>{% endif %}
-    {% if magazine.description %}<h4>คำอธิบาย</h4><div class="description">{{magazine.description}}</div>{% endif %}
+    {% if outstandings.unfinished or outstandings.scheduled or outstandings.unpublished %}
+      {% include 'publisher/snippets/publication_outstandings.html' with module_name='magazine' unfinished=outstandings.unfinished scheduled=outstandings.scheduled unpublished=outstandings.unpublished %}
     {% endif %}
   
     <h3>ไฟล์นิตยสาร</h3>
 
     {% if magazine.issues or outstandings.unfinished or outstandings.scheduled or outstandings.unpublished %}
-    <div class="publication_outstandings">
-      
+    <div class="publications">
+      {% comment %}
       {% if outstandings.unfinished %}
       <div class="unfinished_list">
         <div class="type">UNFINISHED ISSUES</div>
-        <ul>{% for uploading_publication in outstandings.unfinished %}{% include 'publisher/snippets/outstanding_unfinished.html' with uploading_publication=uploading_publication %}{% endfor %}</ul>
+        <ul>{% for uploading_publication in outstandings.unfinished %}{% include 'publisher/magazine/snippets/outstanding_unfinished.html' with publication=uploading_publication %}{% endfor %}</ul>
       </div>
       {% endif %}
 
       {% if outstandings.scheduled %}
       <div class="scheduled_list">
         <div class="type">SCHEDULED ISSUES</div>
-        <ul>{% for publication in outstandings.scheduled %}{% include 'publisher/snippets/outstanding_scheduled.html' with publication=publication %}{% endfor %}</ul>
+        <ul>{% for publication in outstandings.scheduled %}{% include 'publisher/magazine/snippets/outstanding_scheduled.html' with publication=publication %}{% endfor %}</ul>
       </div>
       {% endif %}
 
       {% if outstandings.unpublished %}
       <div class="unpublished_list">
         <div class="type">UNPUBLISHED ISSUES</div>
-        <ul>{% for publication in outstandings.unpublished %}{% include 'publisher/snippets/outstanding_unpublished.html' with publication=publication %}{% endfor %}</ul>
+        <ul>{% for publication in outstandings.unpublished %}{% include 'publisher/magazine/snippets/outstanding_unpublished.html' with publication=publication %}{% endfor %}</ul>
       </div>
       {% endif %}
+      {% endcomment %}
 
       {% if magazine.issues %}
-      <div>
-        <div class="type">PUBLISHED ISSUES - {{magazine.issues|length}} issues</div>
-        <ul>
-          {% for issue in magazine.issues %}
-          <li {% if forloop.last %}class="last"{% endif %}>
-            <div class="cover"></div>
-            <div class="statistics"></div>
-            <div class="name"><a href="{% url view_publication issue.publication.id %}">{{issue.publication.title}}</a></div>
-            <div class="status">ตีพิมพ์เมื่อวันที่ {{issue.publication.published|format_abbr_datetime}}</div>
-            <div class="stats"></div>
-            {% can user 'upload,publish' publisher %}<div class="links"><a href="{% url edit_publication issue.publication.id %}" class="link">แก้ไขรายละเอียด</a></div>{% endcan %}
-          </li>
-          {% endfor %}
-        </ul>
-      </div>
+      
+      <ul>
+        {% for issue in magazine.issues %}
+        <li class="publication{% if forloop.last %} last{% endif %}">
+          <div class="cover"></div>
+          <div class="statistics"></div>
+          <div class="name"><a href="{% url view_publication issue.publication.id %}">{{issue.publication.title}}</a></div>
+          <div class="details">ตีพิมพ์เมื่อวันที่ {{issue.publication.published|format_abbr_datetime}}</div>
+          <div class="stats"></div>
+          {% can user 'upload,publish' publisher %}<div class="links"><a href="{% url edit_publication issue.publication.id %}" class="link">แก้ไขรายละเอียด</a></div>{% endcan %}
+        </li>
+        {% endfor %}
+      </ul>
       {% endif %}
     </div>
 
     {% else %}
-    <div class="no_row">ยังไม่มีไฟล์นิตยสาร</div>
+    <div class="no_row">ไม่มีไฟล์นิตยสาร</div>
     {% endif %}
   
 

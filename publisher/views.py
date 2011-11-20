@@ -48,10 +48,21 @@ def view_dashboard(request):
 def view_publisher_dashboard(request, publisher_id):
     publisher = get_object_or_404(Publisher, pk=publisher_id)
 
+    if request.user.get_profile().is_first_time:
+        if can(request.user, 'upload', publisher):
+            request.user.get_profile().is_first_time = False
+            request.user.get_profile().save()
+        first_time = True
+        
+    else:
+        first_time = False
+
+    #first_time = True
+
     if not can(request.user, 'view', publisher):
         raise Http404
         
-    return render(request, 'publisher/dashboard.html', {'publisher':publisher})
+    return render(request, 'publisher/dashboard.html', {'publisher':publisher, 'first_time':first_time})
 
 @login_required
 def create_publisher(request):
@@ -71,6 +82,8 @@ def create_publisher(request):
             if UserPublisher.objects.filter(user=request.user).count() == 1:
                 user_publisher.is_default = True
                 user_publisher.save()
+            
+            # MESSAGE
 
             return redirect('view_publisher_dashboard', publisher_id=publisher.id)
     else:
@@ -94,6 +107,8 @@ def update_publisher(request, publisher_id):
             publisher.modified_by = request.user
             publisher.save()
 
+            # MESSAGE
+
             return redirect('view_publisher_dashboard', publisher_id=publisher.id)
     else:
         form = PublisherForm(initial=publisher)
@@ -114,34 +129,38 @@ def upload_publication(request, publisher_id, module_name=''):
         raise Http404
 
     if request.method == 'POST':
-        if not module_name:
-            form = GeneralUploadPublicationForm(request.POST, request.FILES)
-        else:
-            try:
-                module = Module.objects.get(module_name=module_name)
-            except Module.DoesNotExist:
-                raise Http404
-            
-            if not PublisherModule.objects.filter(publisher=publisher, module=module).exists():
-                raise Http404
-            
-            form = module.get_module_object('forms').UploadPublicationForm(request.POST, request.FILES, publisher=publisher)
-            
-        if form.is_valid():
-            module_input = form.cleaned_data['module']
-            uploading_file = form.cleaned_data['publication']
+        try:
+            if not module_name:
+                form = GeneralUploadPublicationForm(request.POST, request.FILES)
+            else:
+                try:
+                    module = Module.objects.get(module_name=module_name)
+                except Module.DoesNotExist:
+                    raise Http404
+                
+                if not PublisherModule.objects.filter(publisher=publisher, module=module).exists():
+                    raise Http404
+                
+                form = module.get_module_object('forms').UploadPublicationForm(request.POST, request.FILES, publisher=publisher)
+                
+            if form.is_valid():
+                module_input = form.cleaned_data['module']
+                uploading_file = form.cleaned_data['publication']
 
-            try:
-                uploading_publication = publisher_functions.upload_publication(request, module_input, uploading_file, publisher)
-            except:
-                return response_json_error('upload')
-            
-            form.after_upload(uploading_publication)
-            
-            return response_json({'next_url':reverse('finishing_upload_publication', args=[uploading_publication.id])})
+                try:
+                    uploading_publication = publisher_functions.upload_publication(request, module_input, uploading_file, publisher)
+                except:
+                    return response_json_error('upload')
+                
+                form.after_upload(request, uploading_publication)
+                
+                return response_json({'next_url':reverse('finishing_upload_publication', args=[uploading_publication.id])})
 
-        else:
-            return response_json_error('form-input-invalid')
+            else:
+                return response_json_error('form-input-invalid')
+        except:
+            import sys
+            print sys.exc_info()
     
     
     else:
@@ -207,6 +226,8 @@ def delete_uploading_publication(request, publication_id):
 
         if 'submit-delete' in request.POST:
             publisher_functions.delete_uploading_publication(uploading_publication)
+        
+        # MESSAGE
         
         if next:
             return redirect(next)
@@ -351,6 +372,8 @@ def edit_publisher_profile(request, publisher_id):
             publisher.name = form.cleaned_data['name']
             publisher.save()
 
+            # MESSAGE
+
             return redirect('view_publisher_profile', publisher_id=publisher.id)
 
     else:
@@ -383,6 +406,8 @@ def create_publisher_shelf(request, publisher_id):
 
             PublisherShelf.objects.create(publisher=publisher, name=name, description=description, created_by=request.user)
 
+            # MESSAGE
+
             return redirect('view_publisher_shelfs', publisher_id=publisher.id)
 
     else:
@@ -405,6 +430,8 @@ def edit_publisher_shelf(request, publisher_shelf_id):
             publisher_shelf.description = form.cleaned_data['description']
             publisher_shelf.save()
 
+            # MESSAGE
+
             return redirect('view_publisher_shelfs', publisher_id=publisher.id)
 
     else:
@@ -423,6 +450,7 @@ def delete_publisher_shelf(request, publisher_shelf_id):
     if request.method == 'POST':
         if 'submit-delete' in request.POST:
             publisher_shelf.delete()
+            # MESSAGE
         return redirect('view_publisher_shelfs', publisher_id=publisher.id)
 
     return render(request, 'publisher/manage/publisher_manage_shelf_delete.html', {'publisher':publisher, 'publisher_shelf':publisher_shelf})
@@ -469,6 +497,7 @@ def invite_publisher_user(request, publisher_id):
                 
                 if invitation:
                     invitation.send_invitation_email()
+                    # MESSAGE
                     return redirect('view_publisher_users', publisher_id=publisher.id)
 
     else:
@@ -485,7 +514,10 @@ def resend_publisher_invitation(request, invitation_id):
     
     if request.method == 'POST':
         if 'submit-send' in request.POST:
-            if not invitation.send_invitation_email():
+            if invitation.send_invitation_email():
+                # MESSAGE
+                pass
+            else:
                 pass
                 # TODO: SEND ERROR MESSAGE
             
@@ -503,6 +535,7 @@ def cancel_publisher_invitation(request, invitation_id):
     if request.method == 'POST':
         if 'submit-remove' in request.POST:
             invitation.delete()
+            # MESSAGE
         return redirect('view_publisher_users', publisher_id=publisher.id)
 
     return render(request, 'publisher/manage/publisher_manage_user_invite_cancel.html', {'publisher':publisher, 'invitation':invitation})
@@ -588,6 +621,8 @@ def edit_publisher_user(request, publisher_user_id):
             user_publisher.role = name=form.cleaned_data['role']
             user_publisher.save()
 
+            # MESSAGE
+
             return redirect('view_publisher_users', publisher_id=publisher.id)
 
     else:
@@ -606,6 +641,7 @@ def remove_publisher_user(request, publisher_user_id):
     if request.method == 'POST':
         if 'submit-delete' in request.POST:
             user_publisher.delete()
+            # MESSAGE
         return redirect('view_publisher_users', publisher_id=publisher.id)
 
     return render(request, 'publisher/manage/publisher_manage_user_remove.html', {'publisher':publisher, 'user_publisher':user_publisher})

@@ -4,20 +4,8 @@
 {% block head_title %}Finishing upload{% endblock %}
 {% block topnav %}{% include 'publisher/snippets/publisher_topnav.html' with active_menu='book' %}{% endblock %}
 
-{% block html_head %}
-{{block.super}}
-
-<script>
-$(document).ready(function () {
-  
-})
-</script>
-{% endblock %}
-
 {% block body_authenticated %}
-<div class="alert-message block-message success">
-  <p><strong>Uploaded successfully!</strong> Please fill in these necessary information to complete your upload.</p>
-</div>
+<div class="alert-message block-message success"><p><strong>อัพโหลดไฟล์เรียบร้อย</strong> กรอกรายละเอียดของไฟล์หนังสือด้านล่าง</p></div>
 
 <div class="container-fluid container-body finishing_upload_publication_page">
   <div class="sidebar">
@@ -26,7 +14,7 @@ $(document).ready(function () {
 
   <div class="content"><div class="content-inner">
 
-    <h2>กรอกรายละเอียด</h2>
+    <h2>ข้อมูลหนังสือ</h2>
 
     <div class="file_name">
       <h3>ชื่อไฟล์ต้นฉบับ</h3>
@@ -38,14 +26,15 @@ $(document).ready(function () {
 
       <div class="clearfix"><label for="id_title">ชื่อหนังสือ</label><div class="input">{{form.title}}{{form.title.errors}}</div></div>
       <div class="clearfix"><label for="id_author">ผู้แต่ง</label><div class="input">{{form.author}}{{form.author.errors}}</div></div>
-      <div class="clearfix"><label for="id_description">คำอธิบาย</label><div class="input">{{form.description}}<span class="help-block">ไม่จำเป็นต้องกรอก</span>{{form.description.errors}}</div></div>
-      <div class="clearfix"><label for="id_title">ประเภทสิ่งพิมพ์</label><div class="input multiple_checkbox row">{% genetate_publication_category_multiple_checkbox form.categories.value %}</div></div>
+      <div class="clearfix"><label for="id_description">เนื้อหาโดยย่อ</label><div class="input">{{form.description}}<span class="help-block">ไม่จำเป็นต้องกรอก</span>{{form.description.errors}}</div></div>
+      <div class="clearfix"><label for="id_title">ประเภทหนังสือ</label><div class="input pub_cat_checkboxs row">{% genetate_publication_category_multiple_checkbox form.categories.value %}</div></div>
 
       {% can user 'publish' publisher %}{% include 'publisher/snippets/publish_status.html' with form=form %}{% endcan %}
 
       <div class="form_actions">
         <button type="submit" class="btn primary">บันทึกข้อมูล</button>
-        <a href="{% url delete_uploading_publication uploading_publication.id %}?next={% url view_books uploading_publication.publisher.id %}" title="Delete uploaded file permanently">ยกเลิกการอัพโหลดไฟล์</a>
+        หรือ
+        <a href="{% url delete_uploading_publication uploading_publication.id %}?next={% url view_books uploading_publication.publisher.id %}">ยกเลิกการอัพโหลดไฟล์</a>
       </div>
     </form>
     

@@ -1,0 +1,15 @@
+{% load module_tags %}
+<div class="panel">
+	<button class="btn primary upload_publication_button upload_magazine_button"><span>อัพโหลดนิตยสาร</span></button>
+</div>
+
+{% generate_publication_module_upload_modal 'magazine' %}
+
+<script>
+$(document).ready(function () {
+  $('.upload_magazine_button').on('click', function(e) {
+    open_upload_publication_modal('upload-magazine-form');
+    return false;
+  });
+})
+</script>

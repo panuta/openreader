@@ -170,10 +170,6 @@ class Publication(models.Model):
             self.uid = uuid.uuid4()
         super(Publication, self).save(*args, **kwargs)
     
-    def get_publication_title(self):
-        from common.modules import get_publication_module
-        return get_publication_module(self.publication_type).get_publication_title(self)
-    
     def can_view(self, user):
         return UserPublisher.objects.filter(user=user, publisher=self.publisher).exists()
 

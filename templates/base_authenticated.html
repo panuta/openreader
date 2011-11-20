@@ -54,11 +54,14 @@ $(document).ready(function () {initialize();})
 </div>
 
 <div class="body_authenticated">
-{% block body_authenticated %}{% endblock %}
-</div>
+  {% if messages %}
+      {% for message in messages %}
+      <div class="alert-message block-message {% if message.tags %}{{message.tags}}{% endif %}"><p>{{message}}</p></div>
+      {% endfor %}
+  {% endif %}
 
-<!-- PAGE without SIDEBAR: <div class="content"><div class="content-inner"></div></div> -->
-<!-- PAGE with SIDEBAR: <div class="sidebar"></div><div class="content"><div class="content-inner"></div></div> -->
+  {% block body_authenticated %}{% endblock %}
+</div>
 
 <div class="footer">
   <p>&copy; OpenReader 2011</p>

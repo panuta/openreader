@@ -47,6 +47,7 @@ class UserProfile(models.Model):
     first_name = models.CharField(max_length=200) # first_name and last_name in contrib.auth.User is too short
     last_name = models.CharField(max_length=200)
     is_publisher = models.BooleanField()
+    is_first_time = models.BooleanField(default=True)
 
     def __unicode__(self):
         return '%s %s' % (self.first_name, self.last_name)

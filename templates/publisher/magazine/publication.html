@@ -19,21 +19,22 @@
 
     <h2>
       {{publication.magazineissue.magazine.title}} - {{publication.title}}
-      <div>{% print_publication_status publication %} - Uploaded on {{publication.uploaded|format_abbr_datetime}} by {{publication.uploaded_by.get_profile.get_fullname}}</div>
+      <div class="uploaded">อัพโหลดเมื่อวันที่ {{publication.uploaded|format_abbr_datetime}} โดย {{publication.uploaded_by.get_profile.get_fullname}}</div>
     </h2>
 
     {% can user 'upload,publish' publisher %}
-    <div class="page_actions">
-      <a href="{% url edit_publication publication.id %}" class="btn">แก้ไขรายละเอียด</a>
-    </div>
+    <div class="page_actions"><a href="{% url edit_publication publication.id %}" class="btn">แก้ไขรายละเอียด</a></div>
     {% endcan %}
 
+    <h3>สถานะ</h3>
+    <div class="status">{% print_publication_status publication %}</div>
+    
     <div class="details">
-      <h3>คำอธิบาย</h3>
+      <h3>เนื้อหาโดยย่อ</h3>
       {% if publication.description %}
       <p>{{publication.description}}</p>
       {% else %}
-      <div class="no">ไม่มีคำอธิบาย</div>
+      <div class="no">ไม่มีเนื้อหาโดยย่อ</div>
       {% endif %}
     </div>
 

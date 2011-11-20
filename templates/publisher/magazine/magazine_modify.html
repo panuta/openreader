@@ -1,7 +1,7 @@
 {% extends 'base_authenticated.html' %}
 {% load page_tags %}
 
-{% block head_title %}Create Magazine{% endblock %}
+{% block head_title %}{% if not magazine %}สร้างนิตยสารใหม่{% else %}แก้ไขนิตยสาร{% endif %}{% endblock %}
 {% block topnav %}{% include 'publisher/snippets/publisher_topnav.html' with active_menu='magazine' %}{% endblock %}
 
 {% block body_authenticated %}
@@ -18,9 +18,9 @@
     <ul class="breadcrumb">
       <li><a href="{% url view_magazines publisher.id %}">นิตยสารทั้งหมด</a> <span class="divider">/</span></li>
       <li><a href="{% url view_magazine magazine.id %}">{{magazine.title}}</a> <span class="divider">/</span></li>
-      <li class="active">แก้ไขรายละเอียดนิตยสาร</li>
+      <li class="active">แก้ไขนิตยสาร</li>
     </ul>
-    <h2>แก้ไขรายละเอียดนิตยสาร</h2>
+    <h2>แก้ไขนิตยสาร</h2>
     {% endif %}
 
     <form method="POST" action=".">
@@ -28,8 +28,8 @@
       {{form.non_field_errors}}
       
         <div class="clearfix"><label for="id_title">ชื่อนิตยสาร</label><div class="input">{{form.title}}{{form.title.errors}}</div></div>
-        <div class="clearfix"><label for="id_description">คำอธิบาย</label><div class="input">{{form.description}}<span class="help-block">ไม่จำเป็นต้องกรอก</span>{{form.description.errors}}</div></div>
-        <div class="clearfix"><label for="id_title">ประเภทสิ่งพิมพ์</label><div class="input multiple_checkbox row">{% genetate_publication_category_multiple_checkbox form.categories.value %}</div></div>
+        <div class="clearfix"><label for="id_description">คำบรรยายนิตยสาร</label><div class="input">{{form.description}}<span class="help-block">เช่น จุดประสงค์ หรือรูปแบบเนื้อหาของนิตยสาร</span>{{form.description.errors}}</div></div>
+        <div class="clearfix"><label for="id_title">ประเภทสิ่งพิมพ์</label><div class="input pub_cat_checkboxs row">{% genetate_publication_category_multiple_checkbox form.categories.value %}</div></div>
         
         <div class="form_actions">
           <button type="submit" class="btn primary">{% if not magazine %}สร้างนิตยสาร{% else %}แก้ไขนิตยสาร{% endif %}</button>

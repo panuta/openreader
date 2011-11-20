@@ -1,12 +1,12 @@
-<div class="modal hide fade" id="upload-publication-modal" style="display: none;">
-  <form enctype="multipart/form-data" method="POST" action="{% url upload_module_publication publisher.id 'book' %}" id="upload-publication-form">
-    <div class="modal-header"><a class="close" href="#">×</a><h3>อัพโหลดหนังสือ</h3></div>
+<div class="modal hide fade upload-publication-modal" style="display: none;">
+  <form enctype="multipart/form-data" method="POST" action="{% url upload_module_publication publisher.id 'book' %}" id="upload-book-form" class="upload-publication-form">
+    <div class="modal-header"><a class="close" href="#">×</a><h3>อัพโหลดไฟล์หนังสือ</h3></div>
     <div class="modal-body">
       <div class="inputs">
         {% csrf_token %}
-        <div class="clearfix"><label for="id_publication">ไฟล์หนังสือ</label><div class="input"><input type="file" id="id_publication" name="publication"></div></div>
-        <input type="hidden" id="X-Progress-ID" name="X-Progress-ID" value=""/>
-        <input type="hidden" id="id_module" name="module" value="book"/>
+        <div class="clearfix"><label for="id_book_file">ไฟล์หนังสือ</label><div class="input"><input type="file" id="id_book_file" name="publication"></div></div>
+        <input type="hidden" name="X-Progress-ID" value=""/>
+        <input type="hidden" name="module" value="book"/>
       </div>
     </div>
     <div class="modal-footer actions"><input class="btn primary" type="submit" value="อัพโหลด" /></div>

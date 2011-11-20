@@ -1,9 +1,9 @@
 {% load helper_tags %}
 
-<li class="unpublished">
+<li class="publication">
   <div class="cover"></div>
-  <div class="name"><a href="{% url view_publication publication.id %}">{{publication.get_publication_title}}</a></div>
-  <div class="status">อัพโหลดเมื่อวันที่ <span>{{publication.uploaded|format_abbr_datetime}}</span> โดย <span>{{publication.uploaded_by.get_profile.get_fullname}}</span></div>
+  <div class="name"><a href="{% url view_publication publication.id %}">{{publication.title}}</a></div>
+  <div class="details">อัพโหลดเมื่อวันที่ <span>{{publication.uploaded|format_abbr_datetime}}</span> โดย <span>{{publication.uploaded_by.get_profile.get_fullname}}</span></div>
   <div class="links">
     {% can user 'upload,publish' publisher %}
     {% can user 'publish' publisher %}

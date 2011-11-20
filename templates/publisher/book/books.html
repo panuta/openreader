@@ -9,11 +9,11 @@
 <script>
 $(document).ready(function () {
   {% can user 'upload' publisher %}
-  bind_upload_publication_modal();
-  bind_upload_publication_form();
+  bind_all_upload_publication_modal();
+  bind_all_upload_publication_form();
 
   $('.upload_publication_button').on('click', function(e) {
-    open_upload_publication_modal();
+    open_upload_publication_modal('upload-book-form');
     return false;
   });
   {% endcan %}
@@ -34,14 +34,14 @@ $(document).ready(function () {
 
     {% can user 'upload' publisher %}
     <div class="page_actions">
-      {% can user 'upload' publisher %}<button class="btn primary upload_publication_button">อัพโหลดหนังสือ</button>{% endcan %}
+      {% can user 'upload' publisher %}<button class="btn primary upload_publication_button"><span>อัพโหลดไฟล์หนังสือ</span></button>{% endcan %}
     </div>
     {% endcan %}
 
     <h3>ไฟล์หนังสือ</h3>
 
     {% if books or outstandings.unfinished or outstandings.scheduled or outstandings.unpublished %}
-    <div class="publication_outstandings">
+    <div class="publications">
       {% if outstandings.unfinished %}
       <div class="unfinished_list">
         <div class="type">UNFINISHED ISSUES</div>
@@ -64,26 +64,24 @@ $(document).ready(function () {
       {% endif %}
       
       {% if books %}
-      <div>
-        <div class="type">PUBLISHED BOOKS - {{magazine.issues|length}} issues</div>
-        <ul>
-          {% for issue in magazine.issues %}
-          <li {% if forloop.last %}class="last"{% endif %}>
-            <div class="cover"></div>
-            <div class="statistics"></div>
-            <div class="name"><a href="{% url view_publication publication.id %}">{{publication.title}}</a></div>
-            <div class="status">ตีพิมพ์เมื่อวันที่ {{publication.published|format_abbr_datetime}}</div>
-            <div class="stats"></div>
-            {% can user 'upload' publisher %}<div class="links"><a href="{% url edit_publication publication.id %}">Edit publication</a></div>{% endcan %}
-          </li>
-          {% endfor %}
-        </ul>
-      </div>
+      <div class="type">PUBLISHED BOOKS - {{magazine.issues|length}} issues</div>
+      <ul>
+        {% for issue in magazine.issues %}
+        <li {% if forloop.last %}class="last"{% endif %}>
+          <div class="cover"></div>
+          <div class="statistics"></div>
+          <div class="name"><a href="{% url view_publication publication.id %}">{{publication.title}}</a></div>
+          <div class="status">ตีพิมพ์เมื่อวันที่ {{publication.published|format_abbr_datetime}}</div>
+          <div class="stats"></div>
+          {% can user 'upload' publisher %}<div class="links"><a href="{% url edit_publication publication.id %}">Edit publication</a></div>{% endcan %}
+        </li>
+        {% endfor %}
+      </ul>
       {% endif %}
     </div>
 
     {% else %}
-    <div class="no_row">ยังไม่มีไฟล์หนังสือ</div>
+    <div class="no_row">ไม่มีไฟล์หนังสือ</div>
     {% endif %}
 
     {% can user 'upload' publisher %}{% generate_publication_module_upload_modal 'book' %}{% endcan %}

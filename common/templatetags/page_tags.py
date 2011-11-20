@@ -26,11 +26,11 @@ def generate_publisher_menu(user):
 @register.simple_tag
 def print_publication_status(publication):
     if publication.publish_status == Publication.PUBLISH_STATUS['UNPUBLISHED']:
-        return '<span class="unpublished">Unpublished</span>'
+        return u'<span class="unpublished">ยังไม่ตีพิมพ์</span></div>'
     elif publication.publish_status == Publication.PUBLISH_STATUS['SCHEDULED']:
-        return '<span class="scheduled">Scheduled to publish on %s by %s</span>' % (utilities.format_abbr_datetime(publication.publish_schedule), publication.published_by.get_profile().get_fullname())
+        return u'<span class="scheduled">ตั้งเวลาตีพิมพ์ไว้วันที่ %s โดย %s</span>' % (utilities.format_abbr_datetime(publication.publish_schedule), publication.published_by.get_profile().get_fullname())
     elif publication.publish_status == Publication.PUBLISH_STATUS['PUBLISHED']:
-        return 'Published on <span>%s</span> by <span>%s</span>' % (utilities.format_abbr_datetime(publication.published), publication.published_by.get_profile().get_fullname())
+        return u'<span class="published">ตีพิมพ์แล้วเมื่อวันที่ %s โดย %s</span>' % (utilities.format_abbr_datetime(publication.published), publication.published_by.get_profile().get_fullname())
     
     return ''
 
@@ -52,6 +52,6 @@ def genetate_publication_category_multiple_checkbox(existing_categories):
     htmls = []
     for i in range(0, COLUMN_COUNT):
         # NOTE: You have to change style according to column count
-        htmls.append('<div class="span4"><ul>%s</ul></div>' % ''.join(columns[i]))
+        htmls.append('<div class="checkbox_column"><ul>%s</ul></div>' % ''.join(columns[i]))
     
     return ''.join(htmls)

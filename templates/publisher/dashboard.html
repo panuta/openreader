@@ -8,13 +8,15 @@
 {{block.super}}
 <script>
 $(document).ready(function () {
-  bind_upload_publication_modal();
-  bind_upload_publication_form();
+  bind_all_upload_publication_modal();
+  bind_all_upload_publication_form();
 
+  {% if not first_time %}
   $('.upload_publication_button').on('click', function(e) {
-    open_upload_publication_modal();
+    open_upload_publication_modal('upload-publication-form');
     return false;
   });
+  {% endif %}
 })
 </script>
 {% endblock %}
@@ -22,9 +24,29 @@ $(document).ready(function () {
 {% block body_authenticated %}
 <div class="container-fluid container-body publisher_dashboard_page">
   <div class="content-full"><div class="content-inner">
-    <a href="{% url upload_publication publisher.id %}" class="upload_publication_button">Upload Publication</a>
+    {% if first_time %}
+
+    <div class="first_time">
+      <h2>ยินดีต้อนรับเข้าสู่ระบบ</h2>
+      {% generate_dashboard_first_time publisher %}
+    </div>
+
+    {% else %}
+
+    <div class="page_tables">
+      <button class="btn primary upload_publication_button"><span>อัพโหลดไฟล์</span></button>
+    </div>
+    
+    <h3>ความเคลื่อนไหวล่าสุด</h3>
+
+    {% generate_publication_module_upload_modal '' %}
+    
+    {% endif %}
+
+    
+    
   </div></div>
 </div>
-{% generate_publication_module_upload_modal '' %}
+
 
 {% endblock %}

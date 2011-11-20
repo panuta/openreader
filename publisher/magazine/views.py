@@ -1,3 +1,5 @@
+# -*- encoding: utf-8 -*-
+
 import os
 import datetime
 
@@ -34,7 +36,9 @@ def finishing_upload_publication(request, publisher, uploading_publication):
                 magazine = Magazine.objects.get(id=uploading_publication.parent_id)
             MagazineIssue.objects.create(publication=publication, magazine=magazine)
 
-            return redirect('view_publication', publication_id=publication.id)
+            # MESSAGE
+
+            return redirect('view_magazine', magazine_id=magazine.id)
 
     else:
         form = FinishUploadMagazineIssueForm(publisher=publisher, uploading_publication=uploading_publication)
@@ -75,6 +79,8 @@ def edit_publication(request, publisher, publication):
                     publication.published_by = request.user
             
             publication.save()
+
+            # MESSAGE
 
             return redirect('view_publication', publication.id)
     else:
@@ -148,6 +154,8 @@ def create_magazine(request, publisher_id):
             for category in categories:
                 magazine.categories.add(category)
             
+            # MESSAGE
+            
             return redirect('view_magazine', magazine_id=magazine.id)
 
     else:
@@ -163,7 +171,7 @@ def view_magazine(request, magazine_id):
     if not can(request.user, 'view', publisher):
         raise Http404
     
-    magazine.issues = MagazineIssue.objects.filter(magazine=magazine, publication__publication_type='magazine', publication__publish_status=Publication.PUBLISH_STATUS['PUBLISHED']).order_by('-publication__uploaded')
+    magazine.issues = MagazineIssue.objects.filter(magazine=magazine, publication__publication_type='magazine').order_by('-publication__uploaded')
 
     if can(request.user, 'upload,publish', publisher):
         outstandings = {
@@ -197,6 +205,8 @@ def edit_magazine(request, magazine_id):
                 magazine.categories.add(category)
             
             magazine.save()
+
+            # MESSAGE
 
             return redirect('view_magazine', magazine_id=magazine.id)
 

@@ -21,6 +21,7 @@ class PublisherMagazineChoiceField(forms.ModelChoiceField):
 
 class UploadPublicationForm(GeneralUploadPublicationForm):
     magazine = PublisherMagazineChoiceField(required=False)
+    magazine_name = StrippedCharField(required=False)
 
     def __init__(self, *args, **kwargs):
         self.publisher = kwargs.pop('publisher', None)
@@ -28,8 +29,11 @@ class UploadPublicationForm(GeneralUploadPublicationForm):
 
         self.fields['magazine'].queryset = Magazine.objects.filter(publisher=self.publisher).order_by('title')
     
-    def after_upload(self, uploading_publication):
-        magazine = self.cleaned_data['magazine']
+    def after_upload(self, request, uploading_publication):
+        if self.cleaned_data['magazine_name']:
+            magazine = Magazine.objects.create(publisher=uploading_publication.publisher, title=self.cleaned_data['magazine_name'], created_by=request.user)
+        else:
+            magazine = self.cleaned_data['magazine']
         uploading_publication.parent_id = magazine.id
         uploading_publication.save()
 

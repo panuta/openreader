@@ -5,6 +5,7 @@ register = template.Library()
 
 from django.core.urlresolvers import reverse
 from django.template import NodeList
+from django.template import loader
 
 from common.modules import *
 
@@ -60,6 +61,36 @@ def generate_top_menu(publisher, active_menu):
     
     return menu_html
 
+class DashboardFirstTimeNode(template.Node):
+    def __init__(self, publisher):
+        self.publisher = template.Variable(publisher)
+    
+    def render(self, context):
+        publisher = self.publisher.resolve(context)
+
+        publisher_modules = PublisherModule.objects.filter(publisher=publisher, module__module_type='publication')
+
+        dashboard_html = []
+        for publisher_module in publisher_modules:
+            try:
+                t = loader.get_template('publisher/%s/snippets/dashboard_first_time.html' % publisher_module.module.module_name)
+                dashboard_html.append(t.render(context))
+            except:
+                import sys
+                print sys.exc_info()
+                pass
+        
+        return ''.join(dashboard_html)
+
+@register.tag(name="generate_dashboard_first_time")
+def do_generate_dashboard_first_time(parser, token):
+    try:
+        tag_name, publisher = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError, "generate_dashboard_first_time tag raise ValueError"
+    
+    return DashboardFirstTimeNode(publisher)
+
 @register.simple_tag
 def generate_publication_module_option_list(publisher):
     publisher_modules = PublisherModule.objects.filter(publisher=publisher, module__module_type='publication')
@@ -92,7 +123,6 @@ class PublicationModuleUploadModalNode(template.Node):
         else:
             template_name = 'publisher/snippets/upload_publication_modal.html'
 
-        from django.template import loader
         try:
             t = loader.get_template(template_name)
             return t.render(context)
@@ -107,3 +137,33 @@ def do_generate_publication_module_upload_modal(parser, token):
         raise template.TemplateSyntaxError, "publication_module_upload_modal tag raise ValueError"
     
     return PublicationModuleUploadModalNode(module_name)
+
+class PublicationOutstandingListNode(template.Node):
+    def __init__(self, publication_list, module_name, outstanding_type):
+        self.publication_list = template.Variable(publication_list)
+        self.module_name = template.Variable(module_name)
+        self.outstanding_type = outstanding_type.strip(' \"\'')
+    
+    def render(self, context):
+        publication_list = self.publication_list.resolve(context)
+        module_name = self.module_name.resolve(context)
+        outstanding_type = self.outstanding_type
+
+        template_name = 'publisher/%s/snippets/outstanding_%s.html' % (module_name, outstanding_type)
+
+        html = []
+        for publication in publication_list:
+            html.append(loader.render_to_string(template_name, {'publication':publication}, context))
+        
+        return ''.join(html)
+
+@register.tag(name="generate_publication_outstanding_list")
+def do_generate_publication_outstanding_list(parser, token):
+    try:
+        tag_name, publication_list, module_name, outstanding_type = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError, "generate_publication_outstanding_list tag raise ValueError"
+    
+    return PublicationOutstandingListNode(publication_list, module_name, outstanding_type)
+
+

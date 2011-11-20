@@ -34,7 +34,7 @@ class GeneralUploadPublicationForm(forms.Form):
         # TODO: Check eligible file type from all available modules
         return cleaned_data
     
-    def after_upload(self, uploading_publication):
+    def after_upload(self, request, uploading_publication):
         pass
 
 # Publisher Management

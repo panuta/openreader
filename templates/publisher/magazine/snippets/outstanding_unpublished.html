@@ -1,0 +1,16 @@
+{% load helper_tags %}
+
+<li class="publication">
+  <div class="cover"></div>
+  <div class="name"><a href="{% url view_publication publication.id %}">{{publication.magazineissue.magazine.title}} - {{publication.title}}</a></div>
+  <div class="details">อัพโหลดเมื่อวันที่ <span>{{publication.uploaded|format_abbr_datetime}}</span> โดย <span>{{publication.uploaded_by.get_profile.get_fullname}}</span></div>
+  <div class="links">
+    {% can user 'upload,publish' publisher %}
+    {% can user 'publish' publisher %}
+    <a href="{% url set_publication_schedule publication.id %}" class="btn action-schedule">ตั้งเวลาตีพิมพ์</a>
+    <a href="{% url set_publication_published publication.id %}" class="btn action-publish">ตีพิมพ์ทันที</a>
+    {% endcan %}
+    <a href="{% url edit_publication publication.id %}" class="link">แก้ไขรายละเอียดไฟล์</a>
+    {% endcan %}
+  </div>
+</li>

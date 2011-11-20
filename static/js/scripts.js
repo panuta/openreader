@@ -28,92 +28,94 @@ $.ajaxSetup({
 });
 
 /* ############### UPLOAD PUBLICATION ############### */
-var upload_progress_intv;
+var _upload_progress_intv;
+var _active_upload_form;
 
-function open_upload_publication_modal() {
+function open_upload_publication_modal(form_id) {
+  _active_upload_form = '#' + form_id;
   clear_upload_publication_modal();
-  $('#upload-publication-modal').modal('show');
+  $(_active_upload_form).closest('.upload-publication-modal').modal('show');
 }
 
 function clear_upload_publication_modal() {
-  $('#upload-publication-form .inputs option:first').attr('selected', 'selected');
-  $('#upload-publication-form .inputs input[type!="hidden"]').val('');
-  $('#upload-publication-form .actions input').attr('disabled', false);
+  $(_active_upload_form + ' .inputs option:first').attr('selected', 'selected');
+  $(_active_upload_form + ' .inputs input[type!="hidden"]').val('');
+  $(_active_upload_form + ' .actions input').attr('disabled', false);
 }
 
-function bind_upload_publication_modal() {
-  $('#upload-publication-modal').modal({backdrop:'static'});
+function bind_all_upload_publication_modal() {
+  $('.upload-publication-modal').modal({backdrop:'static'});
 }
 
-function bind_upload_publication_form() {
-  $('#upload-publication-form input[type="submit"]').on('click', function(e) {
+function bind_all_upload_publication_form() {
+  $('.upload-publication-form input[type="submit"]').on('click', function(e) {
 
     /* Validation */
     var is_empty = false;
 
-    $('#upload-publication-form input[type!="hidden"]').each(function() {
+    $(_active_upload_form + ' input[type!="hidden"]').each(function() {
       if(!$(this).val()) is_empty = true;
     });
 
-    $('#upload-publication-form option:selected').each(function() {
+    $(_active_upload_form + ' option:selected').each(function() {
       if(!$(this).val()) is_empty = true;
     });
 
     if(is_empty) return false;
 
     /* Generate upload id */
-    $('#X-Progress-ID').val(var_publisher_id + '-' + (new Date()).getTime());
+    $(_active_upload_form + ' input[name="X-Progress-ID"]').val(var_publisher_id + '-' + (new Date()).getTime());
 
     /* Start upload */
     var options = {
       dataType: 'json',
-      url: $('#upload-publication-form').attr('action'),
+      url: $(_active_upload_form).attr('action'),
       success: function(response) {
         if(response.error) {
           var message = '';
           if(response.error == 'upload') {message = 'Saving file error';}
           if(response.error == 'form-input-invalid') {message = 'Form inputs is missing or invalid';}
 
-          $('#upload-publication-form .uploading').remove();
+          $(_active_upload_form + ' .uploading').remove();
 
-          $('#upload-publication-form .inputs').after('<div class="error_message">' + message + ' <div><a href="#">Restart?</a></div></div>');
-          $('#upload-publication-form .error_message a').one('click', function(e) {
-            $('#upload-publication-form .error_message').remove();
-            $('#upload-publication-form .inputs').show();
+          $(_active_upload_form + ' .inputs').after('<div class="error_message">' + message + ' <div><a href="#">Restart?</a></div></div>');
+          $(_active_upload_form + ' .error_message a').one('click', function(e) {
+            $(_active_upload_form + ' .error_message').remove();
+            $(_active_upload_form + ' .inputs').show();
             clear_upload_publication_modal();
             return false;
           });
 
         } else {
-          $("#upload_progressbar").progressBar(100);
-          clearInterval(upload_progress_intv);
-          upload_progress_intv = 0;
+          $(_active_upload_form + ' .upload_progressbar').progressBar(100);
+          clearInterval(_upload_progress_intv);
+          _upload_progress_intv = 0;
           window.location = response.next_url;
         }
       }
     };
     
-    $('#upload-publication-form .inputs').hide();
-    $('#upload-publication-form .actions input').attr('disabled', true);
+    $(_active_upload_form + ' .inputs').hide();
+    $(_active_upload_form + ' .actions input').attr('disabled', true);
 
-    $('#upload-publication-form').ajaxSubmit(options);
+    $(_active_upload_form).ajaxSubmit(options);
 
-    $('#upload-publication-form .inputs').after('<div class="uploading">Uploading ...<div id="upload_progressbar"></div></div>');
-    $('#upload_progressbar').progressBar({boxImage:'/static/libs/progressbar/images/progressbar.gif', barImage:{0:'/static/libs/progressbar/images/progressbg_red.gif', 30:'/static/libs/progressbar/images/progressbg_orange.gif', 70:'/static/libs/progressbar/images/progressbg_green.gif'}});
+    $(_active_upload_form + ' .inputs').after('<div class="uploading">Uploading ...<div class="upload_progressbar"></div></div>');
+    $(_active_upload_form + ' .upload_progressbar').progressBar({boxImage:'/static/libs/progressbar/images/progressbar.gif', barImage:{0:'/static/libs/progressbar/images/progressbg_red.gif', 30:'/static/libs/progressbar/images/progressbg_orange.gif', 70:'/static/libs/progressbar/images/progressbg_green.gif'}});
 
-    var upload_id = $('#X-Progress-ID').val();
+    var upload_id = $(_active_upload_form + ' input[name="X-Progress-ID"]').val();
     
-    if(upload_progress_intv != 0) clearInterval(upload_progress_intv);
-    upload_progress_intv = setInterval(function() {
+    if(_upload_progress_intv != 0) clearInterval(_upload_progress_intv);
+    _upload_progress_intv = setInterval(function() {
       $.getJSON("/get_upload_progress?X-Progress-ID=" + upload_id, function(data) {
         if (data == null) {
-          $("#upload_progressbar").progressBar(100);
-          clearInterval(upload_progress_intv);
-          upload_progress_intv = 0;
+          $(_active_upload_form + ' .upload_progressbar').progressBar(100);
+          clearInterval(_upload_progress_intv);
+          _upload_progress_intv = 0;
           return;
         }
         var percentage = Math.floor(100 * parseInt(data.uploaded) / parseInt(data.length));
-        $("#upload_progressbar").progressBar(percentage);
+        $(_active_upload_form + ' .upload_progressbar').progressBar(percentage);
       });
     }, 4000);
 
