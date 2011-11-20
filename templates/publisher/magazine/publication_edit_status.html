@@ -1,7 +1,7 @@
 {% extends 'base_authenticated.html' %}
 {% load helper_tags %}
 
-{% block head_title %}แก้ไขรายละเอียด - {{publication.title}}{% endblock %}
+{% block head_title %}เปลี่ยนสถานะ - {{publication.title}}{% endblock %}
 {% block topnav %}{% include 'publisher/snippets/publisher_topnav.html' with active_menu='magazine' %}{% endblock %}
 
 {% block body_authenticated %}
@@ -12,10 +12,10 @@
       <li><a href="{% url view_magazines publisher.id %}">นิตยสารทั้งหมด</a> <span class="divider">/</span></li>
       <li><a href="{% url view_magazine publication.magazineissue.magazine.id %}">{{publication.magazineissue.magazine.title}}</a> <span class="divider">/</span></li>
       <li><a href="{% url view_publication publication.id %}">{{publication.title}}</a> <span class="divider">/</span></li>
-      <li class="active">แก้ไขรายละเอียด</li>
+      <li class="active">เปลี่ยนสถานะ</li>
     </ul>
 
-    <h2>แก้ไขรายละเอียด</h2>
+    <h2>เปลี่ยนสถานะ</h2>
 
     <form method="POST" action=".">
       {% csrf_token %}
@@ -23,8 +23,7 @@
       <fieldset>
         <legend>{{publication.magazineissue.magazine.title}} - {{publication.title}}</legend>
 
-        <div class="clearfix"><label for="id_title">ฉบับที่</label><div class="input">{{form.title}}{{form.title.errors}}</div></div>
-        <div class="clearfix"><label for="id_description">เนื้อหาโดยย่อ</label><div class="input">{{form.description}}{{form.description.errors}}</div></div>
+        {% include 'publisher/snippets/publish_status.html' with form=form %}
 
         <div class="form_actions">
           <button type="submit" class="btn primary">บันทึกข้อมูล</button>

@@ -78,10 +78,12 @@ class MagazineForm(forms.Form):
     description = StrippedCharField(required=False, widget=forms.Textarea(attrs={'class':'span9', 'rows':'3'}))
     categories = PublicationCategoryMultipleChoiceField(required=False, widget=forms.CheckboxSelectMultiple())
 
-class MagazineIssueForm(forms.Form):
+class EditMagazineIssueDetailsForm(forms.Form):
     title = forms.CharField(widget=forms.TextInput(attrs={'class':'span10'}))
     description = forms.CharField(required=False, widget=forms.Textarea(attrs={'class':'span10', 'rows':'5'}))
-    publish_status = forms.ChoiceField(required=False, choices=((Publication.PUBLISH_STATUS['UNPUBLISHED'], 'Unpulished'), (Publication.PUBLISH_STATUS['SCHEDULED'], 'Scheduled'), (Publication.PUBLISH_STATUS['PUBLISHED'], 'Published')))
+
+class EditMagazineIssueStatusForm(forms.Form):
+    publish_status = forms.ChoiceField(, choices=((Publication.PUBLISH_STATUS['UNPUBLISHED'], 'Unpulished'), (Publication.PUBLISH_STATUS['SCHEDULED'], 'Scheduled'), (Publication.PUBLISH_STATUS['PUBLISHED'], 'Published')))
     schedule_date = forms.DateField(widget=YUICalendar(attrs={'id':'id_schedule_date'}), required=False)
     schedule_time = forms.TimeField(widget=HourMinuteTimeInput(), required=False)
 

@@ -41,6 +41,7 @@ urlpatterns = patterns('publisher.views',
     url(r'^get/(?P<publication_uid>[a-zA-Z0-9\-]+)/$', 'get_publication', name='get_publication'),
 
     url(r'^publication/(?P<publication_id>\d+)/edit/$', 'edit_publication', name='edit_publication'),
+    url(r'^publication/(?P<publication_id>\d+)/edit/status/$', 'edit_publication_status', name='edit_publication_status'),
 
     url(r'^publication/(?P<publication_id>\d+)/delete/uploading/$', 'delete_uploading_publication', name='delete_uploading_publication'),
 

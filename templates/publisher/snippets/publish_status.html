@@ -11,7 +11,7 @@
         <div class="schedule_time">เวลา {{form.schedule_time}}</div>{{form.schedule_time.errors}}
       </li>
       <li>
-        <label><input type="radio" value="{{PUBLISH_STATUS_PUBLISHED}}" name="publish_status"{% if form.publish_status.value == PUBLISH_STATUS_PUBLISHED|slugify %} checked="checked"{% endif %}>ตีพิมพ์ทันที</label>
+        <label><input type="radio" value="{{PUBLISH_STATUS_PUBLISHED}}" name="publish_status"{% if form.publish_status.value == PUBLISH_STATUS_PUBLISHED|slugify %} checked="checked"{% endif %}>ตีพิมพ์</label>
       </li>
     </ul>
   </div>

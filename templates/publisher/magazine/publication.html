@@ -27,7 +27,10 @@
     {% endcan %}
 
     <h3>สถานะ</h3>
-    <div class="status">{% print_publication_status publication %}</div>
+    <div class="status">
+      {% print_publication_status publication %}
+      <div style="margin-top:15px;"><a href="{% url edit_publication_status publication.id %}" class="btn small">เปลี่ยนสถานะ</a></div>
+    </div>
     
     <div class="details">
       <h3>เนื้อหาโดยย่อ</h3>

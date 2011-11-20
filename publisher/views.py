@@ -274,6 +274,17 @@ def edit_publication(request, publication_id):
     return views_module.edit_publication(request, publisher, publication)
 
 @login_required
+def edit_publication_status(request, publication_id):
+    publication = get_object_or_404(Publication, id=publication_id)
+    publisher = publication.publisher
+
+    if not can(request.user, 'upload,publish', publisher):
+        raise Http404
+
+    views_module = get_publication_module(publication.publication_type, 'views')
+    return views_module.edit_publication_status(request, publisher, publication)
+
+@login_required
 def set_publication_published(request, publication_id):
     publication = get_object_or_404(Publication, id=publication_id)
     publisher = publication.publisher

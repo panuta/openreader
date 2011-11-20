@@ -51,32 +51,44 @@ def view_publication(request, publisher, publication):
 
 def edit_publication(request, publisher, publication):
     if request.method == 'POST':
-        form = MagazineIssueForm(request.POST)
+        form = EditMagazineIssueDetailsForm(request.POST)
         if form.is_valid():
             publication.title = form.cleaned_data['title']
             publication.description = form.cleaned_data['description']
-            
+            publication.save()
+
+            # MESSAGE
+
+            return redirect('view_publication', publication.id)
+    else:
+        form = EditMagazineIssueDetailsForm(initial={'title':publication.title, 'description':publication.description})
+    
+    return render(request, 'publisher/magazine/publication_edit.html', {'publisher':publisher, 'publication':publication, 'form':form})
+
+def edit_publication_status(request, publisher, publication):
+    if request.method == 'POST':
+        form = EditMagazineIssueStatusForm(request.POST)
+        if form.is_valid():
             publish_status = int(form.cleaned_data['publish_status']) if form.cleaned_data['publish_status'] else None
             schedule_date = form.cleaned_data['schedule_date']
             schedule_time = form.cleaned_data['schedule_time']
 
-            if publish_status and publication.publish_status != publish_status:
-                publication.publish_status = publish_status
+            publication.publish_status = publish_status
 
-                if publish_status == Publication.PUBLISH_STATUS['UNPUBLISHED']:
-                    publication.publish_schedule = None
-                    publication.published = None
-                    publication.published_by = None
+            if publish_status == Publication.PUBLISH_STATUS['UNPUBLISHED']:
+                publication.publish_schedule = None
+                publication.published = None
+                publication.published_by = None
 
-                elif publish_status == Publication.PUBLISH_STATUS['SCHEDULED']:
-                    publication.publish_schedule = datetime.datetime(schedule_date.year, schedule_date.month, schedule_date.day, schedule_time.hour, schedule_time.minute)
-                    publication.published = None
-                    publication.published_by = request.user
+            elif publish_status == Publication.PUBLISH_STATUS['SCHEDULED']:
+                publication.publish_schedule = datetime.datetime(schedule_date.year, schedule_date.month, schedule_date.day, schedule_time.hour, schedule_time.minute)
+                publication.published = None
+                publication.published_by = request.user
 
-                elif publish_status == Publication.PUBLISH_STATUS['PUBLISHED']:
-                    publication.publish_schedule = None
-                    publication.published = datetime.datetime.today()
-                    publication.published_by = request.user
+            elif publish_status == Publication.PUBLISH_STATUS['PUBLISHED']:
+                publication.publish_schedule = None
+                publication.published = datetime.datetime.today()
+                publication.published_by = request.user
             
             publication.save()
 
@@ -86,9 +98,10 @@ def edit_publication(request, publisher, publication):
     else:
         schedule_date = publication.publish_schedule.date() if publication.publish_schedule else None
         schedule_time = publication.publish_schedule.time() if publication.publish_schedule else None
-        form = MagazineIssueForm(initial={'title':publication.title, 'description':publication.description, 'publish_status':str(publication.publish_status), 'schedule_date':schedule_date, 'schedule_time':schedule_time})
+        form = EditMagazineIssueStatusForm(initial={'publish_status':str(publication.publish_status), 'schedule_date':schedule_date, 'schedule_time':schedule_time})
     
-    return render(request, 'publisher/magazine/publication_edit.html', {'publisher':publisher, 'publication':publication, 'form':form})
+    return render(request, 'publisher/magazine/publication_edit_status.html', {'publisher':publisher, 'publication':publication, 'form':form})
+
 
 def gather_publisher_statistics(request, publisher):
     return {
