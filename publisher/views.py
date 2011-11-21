@@ -125,49 +125,12 @@ def deactivate_publisher(request, publisher_id):
 def upload_publication(request, publisher_id, module_name=''):
     publisher = get_object_or_404(Publisher, pk=publisher_id)
 
-    if not can(request.user, 'upload', publisher):
+    if not can(request.user, 'edit', publisher):
         raise Http404
 
     if request.method == 'POST':
-        try:
-            if not module_name:
-                form = GeneralUploadPublicationForm(request.POST, request.FILES)
-            else:
-                try:
-                    module = Module.objects.get(module_name=module_name)
-                except Module.DoesNotExist:
-                    raise Http404
-                
-                if not PublisherModule.objects.filter(publisher=publisher, module=module).exists():
-                    raise Http404
-                
-                form = module.get_module_object('forms').UploadPublicationForm(request.POST, request.FILES, publisher=publisher)
-                
-            if form.is_valid():
-                module_input = form.cleaned_data['module']
-                uploading_file = form.cleaned_data['publication']
-
-                try:
-                    publication = publisher_functions.upload_publication(request, module_input, uploading_file, publisher)
-                except:
-                    return response_json_error('upload')
-                
-                form.after_upload(request, publication)
-                
-                return response_json({'next_url':reverse('finishing_upload_publication', args=[publication.id])})
-
-            else:
-                return response_json_error('form-input-invalid')
-        except:
-            import sys
-            print sys.exc_info()
-    
-    
-    else:
-        raise Http404
-        """
         if not module_name:
-            form = GeneralUploadPublicationForm()
+            form = GeneralUploadPublicationForm(request.POST, request.FILES)
         else:
             try:
                 module = Module.objects.get(module_name=module_name)
@@ -177,14 +140,26 @@ def upload_publication(request, publisher_id, module_name=''):
             if not PublisherModule.objects.filter(publisher=publisher, module=module).exists():
                 raise Http404
             
-            forms_module = module.get_module_object('forms')
-            if forms_module:
-                form = forms_module.UploadPublicationForm(initial={'module':module_name}, publisher=publisher)
-            else:
-                raise Http404
-        
-        return render(request, 'publisher/%s/publication_upload.html' % module_name, {'publisher':publisher, 'form':form})
-        """
+            form = module.get_module_object('forms').UploadPublicationForm(request.POST, request.FILES, publisher=publisher)
+            
+        if form.is_valid():
+            module_input = form.cleaned_data['module']
+            uploading_file = form.cleaned_data['publication']
+
+            try:
+                publication = publisher_functions.upload_publication(request, module_input, uploading_file, publisher)
+            except:
+                return response_json_error('upload')
+            
+            form.after_upload(request, publication)
+            
+            return response_json({'next_url':reverse('finishing_upload_publication', args=[publication.id])})
+
+        else:
+            return response_json_error('form-input-invalid')
+    
+    else:
+        raise Http404
 
 @login_required
 def get_upload_progress(request):
@@ -207,7 +182,7 @@ def finishing_upload_publication(request, publication_id):
     publication = get_object_or_404(Publication, pk=publication_id)
     publisher = publication.publisher
 
-    if not can(request.user, 'upload,publish', publisher):
+    if not can(request.user, 'edit', publisher):
         raise Http404
     
     views_module = get_publication_module(publication.publication_type, 'views')
@@ -220,9 +195,9 @@ def finishing_upload_publication(request, publication_id):
 @login_required
 def delete_uploading_publication(request, publication_id):
     publication = get_object_or_404(Publication, pk=publication_id)
-    publisher = uploading_publication.publisher
+    publisher = publication.publisher
 
-    if not can(request.user, 'upload', publisher):
+    if not can(request.user, 'edit', publisher):
         raise Http404
     
     if request.method == 'POST':
@@ -231,18 +206,20 @@ def delete_uploading_publication(request, publication_id):
         if 'submit-delete' in request.POST:
             publisher_functions.delete_uploading_publication(publication)
         
-        # MESSAGE
+            # MESSAGE
         
-        if next:
-            return redirect(next)
+            if next:
+                return redirect(next)
+            else:
+                # TODO: Redirect by guessing from uploading_publication value
+                return redirect('view_publisher_dashboard')
         else:
-            # TODO: Redirect by guessing from uploading_publication value
-            return redirect('view_publisher_dashboard')
+            return redirect('finishing_upload_publication', publication_id=publication.id)
 
     else:
         next = request.GET.get('next')
     
-    return render(request, 'publisher/publication_uploading_delete.html', {'publisher':publisher, 'next':next})
+    return render(request, 'publisher/publication_uploading_delete.html', {'publisher':publisher, 'publication':publication, 'next':next})
 
 @login_required
 def view_publication(request, publication_id):
@@ -271,7 +248,7 @@ def edit_publication(request, publication_id):
     publication = get_object_or_404(Publication, id=publication_id)
     publisher = publication.publisher
 
-    if not can(request.user, 'upload,publish', publisher):
+    if not can(request.user, 'edit', publisher):
         raise Http404
 
     views_module = get_publication_module(publication.publication_type, 'views')
@@ -282,7 +259,7 @@ def edit_publication_status(request, publication_id):
     publication = get_object_or_404(Publication, id=publication_id)
     publisher = publication.publisher
 
-    if not can(request.user, 'upload,publish', publisher):
+    if not can(request.user, 'edit', publisher):
         raise Http404
 
     views_module = get_publication_module(publication.publication_type, 'views')
@@ -293,7 +270,7 @@ def set_publication_published(request, publication_id):
     publication = get_object_or_404(Publication, id=publication_id)
     publisher = publication.publisher
 
-    if not can(request.user, 'publish', publisher):
+    if not can(request.user, 'edit', publisher):
         raise Http404
 
     if request.method == 'POST' and request.is_ajax():
@@ -315,7 +292,7 @@ def set_publication_schedule(request, publication_id):
     publication = get_object_or_404(Publication, id=publication_id)
     publisher = publication.publisher
 
-    if not can(request.user, 'publish', publisher):
+    if not can(request.user, 'edit', publisher):
         raise Http404
 
     if request.method == 'POST' and request.is_ajax():
@@ -343,7 +320,7 @@ def set_publication_cancel_schedule(request, publication_id):
     publication = get_object_or_404(Publication, id=publication_id)
     publisher = publication.publisher
 
-    if not can(request.user, 'publish', publisher):
+    if not can(request.user, 'edit', publisher):
         raise Http404
 
     if request.method == 'POST' and request.is_ajax():
@@ -401,6 +378,9 @@ def edit_publisher_profile(request, publisher_id):
 @login_required
 def view_publisher_shelfs(request, publisher_id):
     publisher = get_object_or_404(Publisher, pk=publisher_id)
+
+    if not has_module(publisher, 'shelf'):
+        raise Http404
     
     publisher_shelves = PublisherShelf.objects.filter(publisher=publisher).order_by('name')
     
@@ -476,7 +456,12 @@ def delete_publisher_shelf(request, publisher_shelf_id):
 def view_publisher_users(request, publisher_id):
     publisher = get_object_or_404(Publisher, pk=publisher_id)
     publisher_users = UserPublisher.objects.filter(publisher=publisher).order_by('user__userprofile__first_name', 'user__userprofile__last_name')
-    invited_users = UserPublisherInvitation.objects.filter(publisher=publisher, )
+
+    if can(request.user, 'manage', publisher):
+        invited_users = UserPublisherInvitation.objects.filter(publisher=publisher)
+    else:
+        invited_users = None
+    
     return render(request, 'publisher/manage/publisher_manage_users.html', {'publisher':publisher, 'publisher_users':publisher_users, 'invited_users':invited_users})
 
 @login_required

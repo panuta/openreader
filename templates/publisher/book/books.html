@@ -8,7 +8,7 @@
 {{block.super}}
 <script>
 $(document).ready(function () {
-  {% can user 'upload' publisher %}
+  {% can user 'edit' publisher %}
   bind_all_upload_publication_modal();
   bind_all_upload_publication_form();
 
@@ -16,9 +16,9 @@ $(document).ready(function () {
     open_upload_publication_modal('upload-book-form');
     return false;
   });
-  {% endcan %}
-  
+
   bind_publication_actions();
+  {% endcan %}
 })
 </script>
 {% endblock %}
@@ -30,9 +30,9 @@ $(document).ready(function () {
 
     <h2>หนังสือ</h2>
 
-    {% can user 'upload' publisher %}
+    {% can user 'edit' publisher %}
     <div class="page_actions">
-      {% can user 'upload' publisher %}<button class="btn primary upload_publication_button"><span>อัพโหลดไฟล์หนังสือ</span></button>{% endcan %}
+      <button class="btn primary upload_publication_button"><span>อัพโหลดไฟล์หนังสือ</span></button>
     </div>
     {% endcan %}
 
@@ -49,7 +49,7 @@ $(document).ready(function () {
             <div class="name">{% if publication.publish_status == PUBLISH_STATUS_UPLOADING %}{{publication.original_file_name}}.{{publication.file_ext}}{% else %}<a href="{% url view_publication publication.id %}">{{publication.title}}</a>{% endif %}</div>
             <div class="details">อัพโหลดเมื่อวันที่ {{publication.uploaded|format_abbr_datetime}}</div>
             <div class="publish_status">สถานะ - {% print_publication_status publication %}</div>
-            {% can user 'upload,publish' publisher %}<div class="links">{% generate_publication_actions publication %}</div>{% endcan %}
+            {% can user 'edit' publisher %}<div class="links">{% generate_publication_actions publication %}</div>{% endcan %}
           </div>
         </li>
         {% endfor %}
@@ -60,7 +60,7 @@ $(document).ready(function () {
     <div class="no_row">ไม่มีไฟล์หนังสือ</div>
     {% endif %}
 
-    {% can user 'upload' publisher %}{% generate_publication_module_upload_modal 'book' %}{% endcan %}
+    {% can user 'edit' publisher %}{% generate_publication_module_upload_modal 'book' %}{% endcan %}
 
   </div></div>
 </div>

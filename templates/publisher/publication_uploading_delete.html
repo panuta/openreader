@@ -1,24 +1,28 @@
 {% extends 'base_authenticated.html' %}
 {% load helper_tags %}
 
-{% block head_title %}Delete uploading file{% endblock %}
+{% block head_title %}ยกเลิกการอัพโหลดไฟล์{% endblock %}
+{% block topnav %}{% include 'publisher/snippets/publisher_topnav.html' with active_menu=publication.publication_type %}{% endblock %}
 
 {% block body_authenticated %}
-<div class="delete_uploading_page">
-
-  <form method="POST" action=".">
-    {% csrf_token %}
-    {{form.non_field_errors}}
-    <fieldset>
-      <legend>คุณแน่ใจว่าจะลบไฟล์ที่อัพโหลดนี้หรือไม่?</legend>
+<div class="container-fluid container-body">
+  <div class="content-full"><div class="content-inner">
+    <h2>ยกเลิกการอัพโหลดไฟล์</h2>
+    <form method="POST" action=".">
+      {% csrf_token %}
+      {{form.non_field_errors}}
+      
+      <div class="note">
+        <p>คุณแน่ใจว่าจะลบไฟล์ที่อัพโหลดนี้หรือไม่?</p>
+      </div>
       
       <input type="hidden" name="next" id="id_next" value="{{next}}" />
-      <div class="actions">
-        <input type="submit" name="submit-delete" value="แน่ใจ ลบได้ทันที" class="btn primary">
-        <input type="submit" name="submit-cancel" value="ยกเลิก" class="btn">
+      <div class="form_actions left_form_actions">
+        <button type="submit" class="btn danger" name="submit-delete">แน่ใจ ลบได้ทันที</button>
+        <button type="submit" class="btn" name="submit-cancel" >ยกเลิก</button>
       </div>
-    </fieldset>
-  </form>
+    </form>
+    
+  </div></div>
 </div>
-
 {% endblock %}

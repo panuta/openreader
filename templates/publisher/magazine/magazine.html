@@ -8,7 +8,7 @@
 {{block.super}}
 <script>
 $(document).ready(function () {
-  {% can user 'upload' publisher %}
+  {% can user 'edit' publisher %}
   bind_all_upload_publication_modal();
   bind_all_upload_publication_form();
 
@@ -16,9 +16,9 @@ $(document).ready(function () {
     open_upload_publication_modal('upload-magazine-form');
     return false;
   });
-  {% endcan %}
 
   bind_publication_actions();
+  {% endcan %}
 })
 </script>
 {% endblock %}
@@ -30,7 +30,7 @@ $(document).ready(function () {
     <div class="head"><a href="{% url view_magazines publisher.id %}">รายชื่อนิตยสาร</a></div>
     <ul>
       {% generate_magazine_nav_list publisher magazine %}
-      <li class="add"><a href="{% url create_magazine publisher.id %}">สร้างนิตยสารใหม่</a></li>
+      {% can user 'manage' publisher %}<li class="add"><a href="{% url create_magazine publisher.id %}">สร้างนิตยสารใหม่</a></li>{% endcan %}
     </ul>  
   </div>
 
@@ -38,9 +38,9 @@ $(document).ready(function () {
 
     <h2><span>นิตยสาร</span>{{magazine.title}}</h2>
 
-    {% can user 'upload,manage' publisher %}
+    {% can user 'edit,manage' publisher %}
     <div class="page_actions">
-      {% can user 'upload' publisher %}<button class="btn primary upload_publication_button"><span>อัพโหลดไฟล์นิตยสาร</span></button>{% endcan %}
+      <button class="btn primary upload_publication_button"><span>อัพโหลดไฟล์นิตยสาร</span></button>
       {% can user 'manage' publisher %}<a href="{% url edit_magazine magazine.id %}" class="btn">แก้ไขข้อมูลนิตยสาร</a>{% endcan %}
     </div>
     {% endcan %}
@@ -58,7 +58,7 @@ $(document).ready(function () {
             <div class="name">{% if issue.publication.publish_status == PUBLISH_STATUS_UPLOADING %}{{issue.publication.original_file_name}}.{{issue.publication.file_ext}}{% else %}<a href="{% url view_publication issue.publication.id %}">{{issue.publication.title}}</a>{% endif %}</div>
             <div class="details">อัพโหลดเมื่อวันที่ {{issue.publication.uploaded|format_abbr_datetime}}</div>
             <div class="publish_status">สถานะ - {% print_publication_status issue.publication %}</div>
-            {% can user 'upload,publish' publisher %}<div class="links">{% generate_publication_actions issue.publication %}</div>{% endcan %}
+            {% can user 'edit' publisher %}<div class="links">{% generate_publication_actions issue.publication %}</div>{% endcan %}
           </div>
         </li>
         {% endfor %}
@@ -69,7 +69,7 @@ $(document).ready(function () {
     <div class="no_row">ไม่มีไฟล์นิตยสาร</div>
     {% endif %}
 
-    {% can user 'upload' publisher %}{% generate_publication_module_upload_modal 'magazine' %}{% endcan %}
+    {% can user 'edit' publisher %}{% generate_publication_module_upload_modal 'magazine' %}{% endcan %}
 
   </div></div>
 

@@ -7,11 +7,7 @@
 {% block publisher_manage_content %}
 <h2>ชั้นหนังสือ</h2>
 
-{% can user 'manage' publisher %}
-<div class="page_actions">
-  <a href="{% url create_publisher_shelf publisher.id %}" class="btn">สร้างชั้นหนังสือ</a>
-</div>
-{% endcan %}
+{% can user 'manage' publisher %}<div class="page_actions"><a href="{% url create_publisher_shelf publisher.id %}" class="btn">สร้างชั้นหนังสือ</a></div>{% endcan %}
 
 {% if publisher_shelves %}
 <table class="zebra-striped">
@@ -22,7 +18,7 @@
     <tr>
       <th>ชื่อชั้นหนังสือ</th>
       <th>คำอธิบาย</th>
-      <th></th>
+      {% can user 'manage' publisher %}<th></th>{% endcan %}
     </tr>
   </thead>
   <tbody>
@@ -30,7 +26,7 @@
     <tr>
       <td>{{shelf.name}}</td>
       <td>{{shelf.description}}</td>
-      <td class="row_actions"><a href="{% url edit_publisher_shelf shelf.id %}">แก้ไขชั้นหนังสือ</a> | <a href="{% url delete_publisher_shelf shelf.id %}">ลบชั้นหนังสือ</a></td>
+      {% can user 'manage' publisher %}<td class="row_actions"><a href="{% url edit_publisher_shelf shelf.id %}">แก้ไขชั้นหนังสือ</a> | <a href="{% url delete_publisher_shelf shelf.id %}">ลบชั้นหนังสือ</a></td>{% endcan %}
     </tr>
     {% endfor %}
   </tbody>

@@ -1,6 +1,7 @@
 TODAY DO
 - revision
-- simplify permission to only view, edit, manage
+- what to do if user cannot create magazine in first time dashboard page
+- remember previous page when editing
 
 TODO
 - delete publication
@@ -16,6 +17,8 @@ TODO
 
 - API
 - PDF thumbnails
+
+
 
 
 

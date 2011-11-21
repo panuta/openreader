@@ -29,7 +29,7 @@
       <div class="clearfix"><label for="id_description">เนื้อหาโดยย่อ</label><div class="input">{{form.description}}<span class="help-block">ไม่จำเป็นต้องกรอก</span>{{form.description.errors}}</div></div>
       <div class="clearfix"><label for="id_title">ประเภทหนังสือ</label><div class="input pub_cat_checkboxs row">{% genetate_publication_category_multiple_checkbox form.categories.value %}</div></div>
 
-      {% can user 'publish' publisher %}{% include 'publisher/snippets/publish_status.html' with form=form %}{% endcan %}
+      {% include 'publisher/snippets/publish_status.html' with form=form %}
 
       <div class="form_actions left_form_actions">
         <button type="submit" class="btn primary">บันทึกข้อมูล</button>

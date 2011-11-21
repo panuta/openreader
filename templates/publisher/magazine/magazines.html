@@ -8,7 +8,7 @@
 {{block.super}}
 <script>
 $(document).ready(function () {
-  {% can user 'upload' publisher %}
+  {% can user 'edit' publisher %}
   bind_all_upload_publication_modal();
   bind_all_upload_publication_form();
 
@@ -17,7 +17,6 @@ $(document).ready(function () {
     return false;
   });
   {% endcan %}
-  
 })
 </script>
 {% endblock %}
@@ -31,18 +30,14 @@ $(document).ready(function () {
       <div class="head"><a href="{% url view_magazines publisher.id %}">รายชื่อนิตยสาร</a></div>
       <ul>
         {% generate_magazine_nav_list publisher %}
-        <li class="add"><a href="{% url create_magazine publisher.id %}">สร้างนิตยสารใหม่</a></li>
+        {% can user 'manage' publisher %}<li class="add"><a href="{% url create_magazine publisher.id %}">สร้างนิตยสารใหม่</a></li>{% endcan %}
       </ul>
     </div>
 
     <div class="content"><div class="content-inner">
       <h2>นิตยสาร</h2>
       
-      {% if magazines %}{% can user 'upload' publisher %}
-      <div class="page_actions">
-        <button class="btn primary upload_publication_button"><span>อัพโหลดไฟล์นิตยสาร</span></button>
-      </div>
-      {% endcan %}{% endif %}
+      {% can user 'edit' publisher %}<div class="page_actions"><button class="btn primary upload_publication_button"><span>อัพโหลดไฟล์นิตยสาร</span></button></div>{% endcan %}
 
       {% if orphan_publications %}
       <h3>ไฟล์ที่ข้อมูลยังไม่ครบ</h3>
@@ -78,7 +73,7 @@ $(document).ready(function () {
       <div class="no_row">ยังไม่มีไฟล์นิตยสาร</div>
       {% endif %}
 
-      {% can user 'upload' publisher %}{% generate_publication_module_upload_modal 'magazine' %}{% endcan %}
+      {% can user 'edit' publisher %}{% generate_publication_module_upload_modal 'magazine' %}{% endcan %}
 
     </div></div>
   </div>

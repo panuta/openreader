@@ -126,13 +126,14 @@ def view_magazines(request, publisher_id):
 
     magazines = Magazine.objects.filter(publisher=publisher).order_by('-created')
 
-    can_upload_publish = can(request.user, 'upload,publish', publisher)
-
-    uploading_publications = Publication.objects.filter(publish_status=Publication.PUBLISH_STATUS['UPLOADING'], publication_type='magazine')
-    orphan_publications = []
-    for uploading_publication in uploading_publications:
-        if not MagazineIssue.objects.filter(publication=uploading_publication).exists():
-            orphan_publications.append(uploading_publication)
+    if can(request.user, 'edit', publisher):
+        uploading_publications = Publication.objects.filter(publish_status=Publication.PUBLISH_STATUS['UPLOADING'], publication_type='magazine')
+        orphan_publications = []
+        for uploading_publication in uploading_publications:
+            if not MagazineIssue.objects.filter(publication=uploading_publication).exists():
+                orphan_publications.append(uploading_publication)
+    else:
+        orphan_publications = None
     
     recent_issues = MagazineIssue.objects.filter(publication__publisher=publisher).exclude(publication__publish_status=Publication.PUBLISH_STATUS['UPLOADING']).order_by('-publication__uploaded')[0:10]
 
@@ -205,7 +206,6 @@ def edit_magazine(request, magazine_id):
             return redirect('view_magazine', magazine_id=magazine.id)
 
     else:
-        print magazine.categories.all()
         form = MagazineForm(initial={'title':magazine.title, 'description':magazine.description, 'categories':magazine.categories.all()})
     
     return render(request, 'publisher/magazine/magazine_modify.html', {'publisher':publisher, 'magazine':magazine, 'form':form})

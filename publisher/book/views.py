@@ -128,7 +128,6 @@ def view_books(request, publisher_id):
     if not can(request.user, 'view', publisher):
         raise Http404
 
-    # all_book_count = Publication.objects.filter(publisher=publisher, publication_type='book').count() + UploadingPublication.objects.filter(publisher=publisher, publication_type='book').count()
     books = Publication.objects.filter(publisher=publisher, publication_type='book').order_by('uploaded')
 
     return render(request, 'publisher/book/books.html', {'publisher':publisher, 'books':books})

@@ -34,7 +34,7 @@
       <div class="clearfix"><label for="id_title">ฉบับที่</label><div class="input">{{form.title}}{{form.title.errors}}</div></div>
       <div class="clearfix"><label for="id_description">เนื้อหาโดยย่อ</label><div class="input">{{form.description}}{{form.description.errors}}</div></div>
 
-      {% can user 'publish' publisher %}{% include 'publisher/snippets/publish_status.html' with form=form %}{% endcan %}
+      {% include 'publisher/snippets/publish_status.html' with form=form %}
 
       <div class="form_actions left_form_actions">
         <button type="submit" class="btn primary span3">บันทึกข้อมูล</button>      

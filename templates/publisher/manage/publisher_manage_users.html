@@ -7,11 +7,7 @@
 {% block publisher_manage_content %}
 <h2>ทีมงาน</h2>
 
-{% can user 'manage' publisher %}
-<div class="page_actions">
-  <a href="{% url invite_publisher_user publisher.id %}" class="btn">เพิ่มทีมงาน</a>
-</div>
-{% endcan %}
+{% can user 'manage' publisher %}<div class="page_actions"><a href="{% url invite_publisher_user publisher.id %}" class="btn">เพิ่มทีมงาน</a></div>{% endcan %}
 
 {% if invited_users %}
 <h3>คำขอเพิ่มทีมงาน</h3>
@@ -54,7 +50,7 @@
       <th>ชื่อ</th>
       <th>อีเมล</th>
       <th>ตำแหน่ง</th>
-      <th></th>
+      {% can user 'manage' publisher %}<th></th>{% endcan %}
     </tr>
   </thead>
   <tbody>
@@ -63,7 +59,7 @@
       <td>{{publisher_user.user.get_profile.get_fullname}}</td>
       <td>{{publisher_user.user.email}}</td>
       <td>{{publisher_user.role.name}}</td>
-      <td class="row_actions"><a href="{% url edit_publisher_user publisher_user.id %}">แก้ไขข้อมูล</a> | <a href="{% url remove_publisher_user publisher_user.id %}">ถอดออกจากทีม</a></td>
+      {% can user 'manage' publisher %}<td class="row_actions"><a href="{% url edit_publisher_user publisher_user.id %}">แก้ไขข้อมูล</a> | <a href="{% url remove_publisher_user publisher_user.id %}">ถอดออกจากทีม</a></td>{% endcan %}
     </tr>
     {% endfor %}
   </tbody>

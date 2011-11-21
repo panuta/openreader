@@ -29,17 +29,12 @@ class Publisher(models.Model):
     def can_view(self, user):
         return UserPublisher.objects.filter(user=user, publisher=self).exists()
 
-    def can_publish(self, user):
-        #return True
+    def can_edit(self, user):
         try:
             user_publisher = UserPublisher.objects.get(publisher=self, user=user)
             return user_publisher.role.code in ('publisher_admin', 'publisher_staff')
         except UserPublisher.DoesNotExist:
             return False
-    
-    def can_upload(self, user):
-        #return True
-        return self.can_publish(user)
     
     def can_manage(self, user):
         try:
@@ -107,34 +102,6 @@ class PublisherShelf(models.Model):
         return '%s:%s' % (self.publisher.name, self.name)
 
 # Publication ############################################################
-
-"""
-class UploadingPublication(models.Model):
-    publisher = models.ForeignKey('Publisher')
-
-    uid = models.CharField(max_length=200, db_index=True)
-    publication_type = models.CharField(max_length=50)
-    parent_id = models.IntegerField(null=True, blank=True) # Can be used for Magazine ID, etc.
-
-    uploaded_file = models.FileField(upload_to=publication_media_dir, max_length=500)
-
-    original_file_name = models.CharField(max_length=200)
-    file_ext = models.CharField(max_length=10)
-
-    uploaded = models.DateTimeField(auto_now_add=True)
-    uploaded_by = models.ForeignKey(User, related_name='uploading_publication_uploaded_by')
-
-    def save(self, *args, **kwargs):
-        if not self.uid:
-            self.uid = uuid.uuid4()
-        super(UploadingPublication, self).save(*args, **kwargs)
-    
-    def __unicode__(self):
-        return '%s.%s (%s.%s)' % (self.original_file_name, self.file_ext, self.uid, self.file_ext)
-    
-    def can_view(self, user):
-        return UserPublisher.objects.filter(user=user, publisher=self.publisher).exists()
-"""
 
 class Publication(models.Model):
     PUBLISH_STATUS = {
