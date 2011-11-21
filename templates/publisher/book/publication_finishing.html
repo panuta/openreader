@@ -1,5 +1,5 @@
 {% extends 'base_authenticated.html' %}
-{% load page_tags helper_tags %}
+{% load helper_tags %}
 
 {% block head_title %}Finishing upload{% endblock %}
 {% block topnav %}{% include 'publisher/snippets/publisher_topnav.html' with active_menu='book' %}{% endblock %}
@@ -18,7 +18,7 @@
 
     <div class="file_name">
       <h3>ชื่อไฟล์ต้นฉบับ</h3>
-      <div>{{uploading_publication.original_file_name}}.{{uploading_publication.file_ext}}</div>
+      <div>{{publication.original_file_name}}.{{publication.file_ext}}</div>
     </div>
 
     <form class="form-stacked" action="." method="post">
@@ -31,10 +31,10 @@
 
       {% can user 'publish' publisher %}{% include 'publisher/snippets/publish_status.html' with form=form %}{% endcan %}
 
-      <div class="form_actions">
+      <div class="form_actions left_form_actions">
         <button type="submit" class="btn primary">บันทึกข้อมูล</button>
         หรือ
-        <a href="{% url delete_uploading_publication uploading_publication.id %}?next={% url view_books uploading_publication.publisher.id %}">ยกเลิกการอัพโหลดไฟล์</a>
+        <a href="{% url delete_uploading_publication publication.id %}?next={% url view_books publication.publisher.id %}">ยกเลิกการอัพโหลดไฟล์</a>
       </div>
     </form>
     

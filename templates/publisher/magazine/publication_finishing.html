@@ -1,5 +1,5 @@
 {% extends 'base_authenticated.html' %}
-{% load page_tags helper_tags magazine_tags %}
+{% load helper_tags magazine_tags %}
 
 {% block head_title %}Finishing upload{% endblock %}
 {% block topnav %}{% include 'publisher/snippets/publisher_topnav.html' with active_menu='magazine' %}{% endblock %}
@@ -19,14 +19,14 @@
 
     <div class="file_name">
       <h3>ชื่อไฟล์ต้นฉบับ</h3>
-      <div>{{uploading_publication.original_file_name}}.{{uploading_publication.file_ext}}</div>
+      <div>{{publication.original_file_name}}.{{publication.file_ext}}</div>
     </div>
 
     <form class="form-stacked" action="." method="post">
       {% csrf_token %}
 
-      {% if uploading_publication.parent_id %}
-      <div class="clearfix"><label for="id_magazine">นิตยสาร</label><div class="input magazine_name">{% print_magazine_name uploading_publication.parent_id %}</div></div>
+      {% if magazine_issue %}
+      <div class="clearfix"><label for="id_magazine">นิตยสาร</label><div class="input magazine_name">{{magazine_issue.magazine.title}}</div><input type="hidden" name="magazine" id="id_magazine" value="{{magazine_issue.magazine.id}}" /></div>
       {% else %}
       <div class="clearfix"><label for="id_magazine">นิตยสาร</label><div class="input">{{form.magazine}}</div></div>
       {% endif %}
@@ -39,10 +39,10 @@
       <div class="form_actions left_form_actions">
         <button type="submit" class="btn primary span3">บันทึกข้อมูล</button>      
         หรือ
-        {% if uploading_pubilcation.parent_id %}
-        <a href="{% url delete_uploading_publication uploading_publication.id %}?next={% url view_magazine uploading_pubilcation.parent_id %}" class="danger">ยกเลิกการอัพโหลดไฟล์</a>
+        {% if magazine_issue %}
+        <a href="{% url delete_uploading_publication publication.id %}?next={% url view_magazine magazine_issue.magazine.id %}" class="danger">ยกเลิกการอัพโหลดไฟล์</a>
         {% else %}
-        <a href="{% url delete_uploading_publication uploading_publication.id %}?next={% url view_magazines uploading_publication.publisher.id %}" class="danger">ยกเลิกการอัพโหลดไฟล์</a>
+        <a href="{% url delete_uploading_publication publication.id %}?next={% url view_magazines publication.publisher.id %}" class="danger">ยกเลิกการอัพโหลดไฟล์</a>
         {% endif %}
       </div>
     </form>

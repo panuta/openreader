@@ -1,5 +1,5 @@
 {% extends 'base_authenticated.html' %}
-{% load helper_tags page_tags module_tags magazine_tags %}
+{% load helper_tags magazine_tags %}
 
 {% block head_title %}{{magazine.title}}{% endblock %}
 {% block topnav %}{% include 'publisher/snippets/publisher_topnav.html' with active_menu='magazine' %}{% endblock %}
@@ -18,9 +18,7 @@ $(document).ready(function () {
   });
   {% endcan %}
 
-  {% if outstandings %}
-  bind_publication_outstandings();
-  {% endif %}
+  bind_publication_actions();
 })
 </script>
 {% endblock %}
@@ -46,39 +44,30 @@ $(document).ready(function () {
       {% can user 'manage' publisher %}<a href="{% url edit_magazine magazine.id %}" class="btn">แก้ไขข้อมูลนิตยสาร</a>{% endcan %}
     </div>
     {% endcan %}
-
-    <h3>สรุปสถานะ</h3>
-    {% if outstandings.unfinished or outstandings.scheduled or outstandings.unpublished %}
-      {% include 'publisher/snippets/publication_outstandings.html' with module_name='magazine' unfinished=outstandings.unfinished scheduled=outstandings.scheduled unpublished=outstandings.unpublished %}
-    {% endif %}
   
     <h3>ไฟล์นิตยสาร</h3>
 
     {% if magazine.issues %}
     <div class="publications">
-      {% if magazine.issues %}
       <ul>
         {% for issue in magazine.issues %}
         <li class="publication{% if forloop.last %} last{% endif %}">
           <div class="cover"></div>
           <div class="right">
-            <div class="statistics"></div>
-            <div class="name"><a href="{% url view_publication issue.publication.id %}">{{issue.publication.title}}</a></div>
+            {% if issue.publication.publish_status == PUBLISH_STATUS_PUBLISHED %}<div class="statistics"></div>{% endif %}
+            <div class="name">{% if issue.publication.publish_status == PUBLISH_STATUS_UPLOADING %}{{issue.publication.original_file_name}}.{{issue.publication.file_ext}}{% else %}<a href="{% url view_publication issue.publication.id %}">{{issue.publication.title}}</a>{% endif %}</div>
             <div class="details">อัพโหลดเมื่อวันที่ {{issue.publication.uploaded|format_abbr_datetime}}</div>
             <div class="publish_status">สถานะ - {% print_publication_status issue.publication %}</div>
-            <div class="stats"></div>
-            {% can user 'upload,publish' publisher %}<div class="links"><a href="{% url edit_publication issue.publication.id %}" class="link">แก้ไขรายละเอียด</a></div>{% endcan %}
+            {% can user 'upload,publish' publisher %}<div class="links">{% generate_publication_actions issue.publication %}</div>{% endcan %}
           </div>
         </li>
         {% endfor %}
       </ul>
-      {% endif %}
     </div>
 
     {% else %}
     <div class="no_row">ไม่มีไฟล์นิตยสาร</div>
     {% endif %}
-  
 
     {% can user 'upload' publisher %}{% generate_publication_module_upload_modal 'magazine' %}{% endcan %}
 

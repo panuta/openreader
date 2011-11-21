@@ -19,9 +19,6 @@ class PublisherReaderAppAdmin(admin.ModelAdmin):
 class PublisherShelfAdmin(admin.ModelAdmin):
     list_display = ('publisher', 'name', 'created')
 
-class UploadingPublicationAdmin(admin.ModelAdmin):
-    pass
-
 class PublicationAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'uid')
 
@@ -34,6 +31,5 @@ admin.site.register(PublisherModule, PublisherModuleAdmin)
 admin.site.register(ReaderApp, ReaderAppAdmin)
 admin.site.register(PublisherReaderApp, PublisherReaderAppAdmin)
 admin.site.register(PublisherShelf, PublisherShelfAdmin)
-admin.site.register(UploadingPublication, UploadingPublicationAdmin)
 admin.site.register(Publication, PublicationAdmin)
 admin.site.register(PublicationCategory, PublicationCategoryAdmin)

@@ -3,6 +3,7 @@
 import os
 import datetime
 
+from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
@@ -53,16 +54,15 @@ def view_publisher_dashboard(request, publisher_id):
             request.user.get_profile().is_first_time = False
             request.user.get_profile().save()
         first_time = True
-        
     else:
         first_time = False
-
-    #first_time = True
+    
+    recent_publications = Publication.objects.filter(publisher=publisher).exclude(publish_status=Publication.PUBLISH_STATUS['UPLOADING']).order_by('-uploaded')[0:10]
 
     if not can(request.user, 'view', publisher):
         raise Http404
         
-    return render(request, 'publisher/dashboard.html', {'publisher':publisher, 'first_time':first_time})
+    return render(request, 'publisher/dashboard.html', {'publisher':publisher, 'recent_publications':recent_publications, 'first_time':first_time})
 
 @login_required
 def create_publisher(request):
@@ -148,13 +148,13 @@ def upload_publication(request, publisher_id, module_name=''):
                 uploading_file = form.cleaned_data['publication']
 
                 try:
-                    uploading_publication = publisher_functions.upload_publication(request, module_input, uploading_file, publisher)
+                    publication = publisher_functions.upload_publication(request, module_input, uploading_file, publisher)
                 except:
                     return response_json_error('upload')
                 
-                form.after_upload(request, uploading_publication)
+                form.after_upload(request, publication)
                 
-                return response_json({'next_url':reverse('finishing_upload_publication', args=[uploading_publication.id])})
+                return response_json({'next_url':reverse('finishing_upload_publication', args=[publication.id])})
 
             else:
                 return response_json_error('form-input-invalid')
@@ -204,18 +204,22 @@ def get_upload_progress(request):
 
 @login_required
 def finishing_upload_publication(request, publication_id):
-    uploading_publication = get_object_or_404(UploadingPublication, pk=publication_id)
-    publisher = uploading_publication.publisher
+    publication = get_object_or_404(Publication, pk=publication_id)
+    publisher = publication.publisher
 
     if not can(request.user, 'upload,publish', publisher):
         raise Http404
+    
+    views_module = get_publication_module(publication.publication_type, 'views')
+    
+    if publication.publish_status != Publication.PUBLISH_STATUS['UPLOADING']:
+        return redirect('view_publication', publication_id=publication.id)
 
-    views_module = get_publication_module(uploading_publication.publication_type, 'views')
-    return views_module.finishing_upload_publication(request, publisher, uploading_publication)
+    return views_module.finishing_upload_publication(request, publisher, publication)
 
 @login_required
 def delete_uploading_publication(request, publication_id):
-    uploading_publication = get_object_or_404(UploadingPublication, pk=publication_id)
+    publication = get_object_or_404(Publication, pk=publication_id)
     publisher = uploading_publication.publisher
 
     if not can(request.user, 'upload', publisher):
@@ -225,7 +229,7 @@ def delete_uploading_publication(request, publication_id):
         next = request.POST.get('next')
 
         if 'submit-delete' in request.POST:
-            publisher_functions.delete_uploading_publication(uploading_publication)
+            publisher_functions.delete_uploading_publication(publication)
         
         # MESSAGE
         

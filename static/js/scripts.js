@@ -1,6 +1,3 @@
-function initialize() {
-  
-}
 
 /* http://stackoverflow.com/questions/5100539/django-csrf-check-failing-with-an-ajax-post-request */
 $.ajaxSetup({ 
@@ -28,6 +25,7 @@ $.ajaxSetup({
 });
 
 /* ############### UPLOAD PUBLICATION ############### */
+
 var _upload_progress_intv;
 var _active_upload_form;
 
@@ -123,22 +121,11 @@ function bind_all_upload_publication_form() {
   });
 }
 
-/* ############### PUBLICATION OUTSTANDINGS BAR ############### */
-function bind_publication_outstandings() {
-  $('.publication_outstandings .numbers li a').on('click', function(e) {
-    var target = $(this).attr("href");
-    $('.publication_outstandings ' + target).slideToggle("fast");
-    $('.publication_outstandings .list[id!="' + target.substring(1) + '"]').hide();
-    return false;
-  });
+/* ############### PUBLICATION ACTIONS ############### */
 
-  $('.publication_outstandings .close_list').on('click', function(e) {
-    $('.publication_outstandings .list').slideUp("fast");
-    return false;
-  });
-
+function bind_publication_actions() {
   /* Publish */
-  $('.publication_outstandings .action-publish').on('click', function(e) {
+  $('.publication .action-publish').on('click', function(e) {
     if(!$('#publish-publication-modal').length) {
       $('body').append('<div class="modal hide fade" id="publish-publication-modal" style="display:none;"><div class="modal-header"><a class="close" href="#">×</a><h3>Publish confirmation</h3></div><div class="modal-body">Publish this publication now?</div><div class="modal-footer"><input class="btn" type="button" value="Cancel" /><input class="btn primary" type="submit" value="Publish Now" /></div></div>');
       $("#publish-publication-modal").modal({backdrop:'static'});
@@ -172,7 +159,7 @@ function bind_publication_outstandings() {
   });
 
   /* Schedule */
-  $('.publication_outstandings .action-schedule').on('click', function(e) {
+  $('.publication .action-schedule').on('click', function(e) {
     if(!$('#schedule-publication-modal').length) {
       $('body').append('<div class="modal hide fade" id="schedule-publication-modal" style="display:none;"><div class="modal-header"><a class="close" href="#">×</a><h3>Publish schedule</h3></div><div class="modal-body"><div class="schedule_date">วันที่ <span class="yui_date_picker_panel"><button class="yui_date_picker" id="id_schedule_date">Select date</button><input type="hidden" id="id_schedule_date_value" value="" name="schedule_date"><input type="text" class="yui_date_picker_textbox" id="id_schedule_date_display" value=""></span></div><div class="schedule_time">เวลา <select id="id_schedule_time_hour" name="schedule_time_hour"><option></option><option value="0">00</option><option value="1">01</option><option value="2">02</option><option value="3">03</option><option value="4">04</option><option value="5">05</option><option value="6">06</option><option value="7">07</option><option value="8">08</option><option value="9">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option></select>:<select id="id_schedule_time_minute" name="schedule_time_minute"><option></option><option value="0">00</option><option value="15">15</option><option value="30">30</option><option value="45">45</option></select> น.</div></div><div class="modal-footer"><input class="btn" type="button" value="Cancel" /><input class="btn primary" type="submit" value="Schedule" /></div></div>');
       $("#schedule-publication-modal").modal({backdrop:'static'});
@@ -229,44 +216,4 @@ function bind_publication_outstandings() {
     
     return false;
   });
-
-  /* Cancel Schedule */
-  $('.publication_outstandings .action-cancel-schedule').on('click', function(e) {
-    if(!$('#cancel-schedule-publication-modal').length) {
-      $('body').append('<div class="modal hide fade" id="cancel-schedule-publication-modal" style="display:none;"><div class="modal-header"><a class="close" href="#">×</a><h3>Cancel confirmation</h3></div><div class="modal-body">Do you really want to cancel schedule?</div><div class="modal-footer"><input class="btn" type="button" value="No, do not cancel" /><input class="btn primary" type="submit" value="Yes, cancel schedule" /></div></div>');
-      $("#cancel-schedule-publication-modal").modal({backdrop:'static'});
-
-      $("#cancel-schedule-publication-modal input[type='submit']").on('click', function(e) {
-        $("#cancel-schedule-publication-modal .modal-footer input").attr("disabled", "disabled");
-        $.post($("#cancel-schedule-publication-modal").data('url'), function(response) {
-          if(response.error) {
-            var message = '';
-            if(response.error == 'no-schedule') {message = 'This publication has no schedule';}
-            $('#cancel-schedule-publication-modal .modal-body').append('<div class="error_message">' + message + '</div>');
-          } else {
-            window.location.reload();
-          }
-        });
-
-        return false;
-      });
-
-      $("#cancel-schedule-publication-modal input[type='button']").on('click', function(e) {
-        $("#cancel-schedule-publication-modal").modal('hide');
-        return false;
-      });
-    }
-
-    $('#cancel-schedule-publication-modal .modal-body .error_message').remove();
-    $("#cancel-schedule-publication-modal").modal('show');
-    $("#cancel-schedule-publication-modal").data('url', $(this).attr('href'));
-    
-    return false;
-  });
 }
-
-
-$(document).ready(function () {
-
-
-})

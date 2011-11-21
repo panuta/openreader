@@ -1,5 +1,5 @@
 {% extends 'base_authenticated.html' %}
-{% load module_tags %}
+{% load helper_tags %}
 
 {% block head_title %}หน้าแรก{% endblock %}
 {% block topnav %}{% include 'publisher/snippets/publisher_topnav.html' with active_menu='dashboard' %}{% endblock %}
@@ -11,11 +11,26 @@ $(document).ready(function () {
   bind_all_upload_publication_modal();
   bind_all_upload_publication_form();
 
-  {% if not first_time %}
   $('.upload_publication_button').on('click', function(e) {
     open_upload_publication_modal('upload-publication-form');
     return false;
   });
+
+  {% if first_time %}
+  $('#id_welcome_modal .create_upload_magazine_button').on('click', function(e) {
+    $('#id_welcome_modal').modal('hide');
+    open_upload_publication_modal('upload-magazine-form');
+    return false;
+  });
+
+  $('#id_welcome_modal .upload_book_button').on('click', function(e) {
+    $('#id_welcome_modal').modal('hide');
+    open_upload_publication_modal('upload-book-form');
+    return false;
+  });
+
+  $('#id_welcome_modal').modal({backdrop:'static'});
+  $('#id_welcome_modal').modal('show');
   {% endif %}
 })
 </script>
@@ -24,29 +39,52 @@ $(document).ready(function () {
 {% block body_authenticated %}
 <div class="container-fluid container-body publisher_dashboard_page">
   <div class="content-full"><div class="content-inner">
-    {% if first_time %}
-
-    <div class="first_time">
-      <h2>ยินดีต้อนรับเข้าสู่ระบบ</h2>
-      {% generate_dashboard_first_time publisher %}
-    </div>
-
-    {% else %}
+    <h2>หน้าแรก</h2>
 
     <div class="page_tables">
       <button class="btn primary upload_publication_button"><span>อัพโหลดไฟล์</span></button>
     </div>
-    
-    <h3>ความเคลื่อนไหวล่าสุด</h3>
 
-    {% generate_publication_module_upload_modal '' %}
+    <h3>ไฟล์สิ่งพิมพ์ล่าสุด</h3>
     
+    {% if recent_publications %}
+    <ul class="recent_publications">
+      {% for publication in recent_publications %}
+      <li>
+        <div><span class="type">{% print_publication_type_name publication %}</span><a href="{% url view_publication publication.id %}" class="title">{% print_publication_title publication %}</a></div>
+        <div><span class="uploaded">อัพโหลดเมื่อวันที่ {{publication.uploaded|format_abbr_datetime}}</span></div>
+      </li>
+      {% endfor %}
+    </ul>
+    
+    {% else %}
+    <div class="no_row">ยังไม่มีไฟล์สิ่งพิมพ์</div>
     {% endif %}
 
-    
-    
+    {% generate_publication_module_upload_modal '' %}
+
   </div></div>
 </div>
 
+{% if first_time %}
+  <div class="modal hide fade" id="id_welcome_modal" style="display: none;">
+    <div class="modal-header"><a class="close" href="#">×</a><h3>ยินดีต้อนรับเข้าสู่ระบบครั้งแรก!</h3></div>
+    <div class="modal-body">
+      <div class="title">คุณสามารถเริ่มต้นโดย ...</div>
+      <ul>
+        <li>
+          <p>สร้างนิตยสารหัวใหม่ และอัพโหลดไฟล์นิตยสารฉบับแรก</p>
+          <button class="primary btn create_upload_magazine_button"><span>สร้างและอัพโหลดไฟล์นิตยสาร</span></button>
+        </li>
+        <li>
+          <p>อัพโหลดหนังสือเล่มใหม่</p>
+          <button class="primary btn upload_book_button"><span>อัพโหลดไฟล์หนังสือ</span></button>
+        </li>
+      </ul>
+    </div>
+  </div>
+  {% generate_publication_module_upload_modal 'magazine' %}
+  {% generate_publication_module_upload_modal 'book' %}
+{% endif %}
 
 {% endblock %}

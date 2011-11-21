@@ -7,7 +7,7 @@ from widgets import YUICalendar, HourMinuteTimeInput
 from publisher.forms import GeneralUploadPublicationForm, PublicationCategoryMultipleChoiceField
 
 from publisher.models import Publication
-from publisher.magazine.models import Magazine
+from publisher.magazine.models import Magazine, MagazineIssue
 
 class PublisherMagazineChoiceField(forms.ModelChoiceField):
     def __init__(self, *args, **kwargs):
@@ -29,16 +29,16 @@ class UploadPublicationForm(GeneralUploadPublicationForm):
 
         self.fields['magazine'].queryset = Magazine.objects.filter(publisher=self.publisher).order_by('title')
     
-    def after_upload(self, request, uploading_publication):
+    def after_upload(self, request, publication):
         if self.cleaned_data['magazine_name']:
-            magazine = Magazine.objects.create(publisher=uploading_publication.publisher, title=self.cleaned_data['magazine_name'], created_by=request.user)
+            magazine = Magazine.objects.create(publisher=publication.publisher, title=self.cleaned_data['magazine_name'], created_by=request.user)
         else:
             magazine = self.cleaned_data['magazine']
-        uploading_publication.parent_id = magazine.id
-        uploading_publication.save()
+        
+        MagazineIssue.objects.create(publication=publication, magazine=magazine)
 
 class FinishUploadMagazineIssueForm(forms.Form):
-    magazine = PublisherMagazineChoiceField(required=False)
+    magazine = PublisherMagazineChoiceField()
     title = StrippedCharField(widget=forms.TextInput(attrs={'class':'span10'}))
     description = StrippedCharField(required=False, widget=forms.Textarea(attrs={'class':'span10', 'rows':'5'}))
     publish_status = forms.ChoiceField(required=False, choices=((Publication.PUBLISH_STATUS['UNPUBLISHED'], 'Unpulished'), (Publication.PUBLISH_STATUS['SCHEDULED'], 'Scheduled'), (Publication.PUBLISH_STATUS['PUBLISHED'], 'Published')))
@@ -47,17 +47,19 @@ class FinishUploadMagazineIssueForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.publisher = kwargs.pop('publisher', None)
-        self.uploading_publication = kwargs.pop('uploading_publication', None)
+        self.publication = kwargs.pop('publication', None)
         forms.Form.__init__(self, *args, **kwargs)
 
         self.fields['magazine'].queryset = Magazine.objects.filter(publisher=self.publisher).order_by('title')
     
+    """
     def clean_magazine(self):
-        data = self.cleaned_data.get('magazine')
+        magazine = self.cleaned_data.get('magazine')
         if not self.uploading_publication.parent_id and not data:
             raise forms.ValidationError(_(u'This field is required.'))
         
         return data
+    """
     
     def clean(self):
         cleaned_data = self.cleaned_data

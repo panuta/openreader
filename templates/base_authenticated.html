@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load page_tags module_tags helper_tags %}
+{% load helper_tags %}
 
 {% block head_title %}{% endblock %}
 
@@ -28,7 +28,7 @@
 
 <script>
 var var_publisher_id = '{{publisher.id}}';
-$(document).ready(function () {initialize();})
+
 </script>
 {% endblock %}
 

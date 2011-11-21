@@ -1,5 +1,5 @@
 {% extends 'base_authenticated.html' %}
-{% load helper_tags module_tags magazine_tags %}
+{% load helper_tags magazine_tags %}
 
 {% block head_title %}นิตยสาร{% endblock %}
 {% block topnav %}{% include 'publisher/snippets/publisher_topnav.html' with active_menu='magazine' %}{% endblock %}
@@ -18,9 +18,6 @@ $(document).ready(function () {
   });
   {% endcan %}
   
-  {% if outstandings %}
-  bind_publication_outstandings();
-  {% endif %}
 })
 </script>
 {% endblock %}
@@ -47,24 +44,39 @@ $(document).ready(function () {
       </div>
       {% endcan %}{% endif %}
 
-      {% if outstandings.unfinished or outstandings.scheduled or outstandings.unpublished %}
-        {% include 'publisher/snippets/publication_outstandings.html' with module_name='magazine' unfinished=outstandings.unfinished scheduled=outstandings.scheduled unpublished=outstandings.unpublished %}
+      {% if orphan_publications %}
+      <h3>ไฟล์ที่ข้อมูลยังไม่ครบ</h3>
+      <div class="orphan_publications">
+        <ul class="unfinished_list">
+          {% for publication in orphan_publications %}
+          <li class="publication">
+              <div class="cover"></div>
+              <div class="right">
+                <div class="name">{{publication.original_file_name}}.{{publication.file_ext}}</div>
+                <div class="details">อัพโหลดเมื่อวันที่ <span>{{publication.uploaded|format_abbr_datetime}}</span> โดย <span>{{publication.uploaded_by.get_profile.get_fullname}}</span></div>
+                <div class="links">
+                  <a href="{% url finishing_upload_publication publication.id %}" class="small btn">แก้ไขข้อมูลหนังสือ</a>
+                </div>
+              </div>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
       {% endif %}
 
-      <h3>ความเคลื่อนไหวล่าสุด</h3>
-
-      {% for magazine in magazines %}
-        <h4><a href="{% url view_magazine magazine.id %}">{{magazine.title}}</a></h4>
-        {% if magazine.activities %}
-          <ul class="recent">
-            {% for activity in magazine.activities %}
-            <li>อัพโหลด <a href="#">ฉบับที่ 6 ตุลาคม 2554</a> เมื่อวันที่ 12 ต.ค. 2554 เวลา 14:00 น. โดย Panu Tangchalermkul</li>
-            {% endfor %}
-          </ul>
-        {% else %}
-          <div class="no_activity">ไม่มีความเคลื่อนไหว</div>
-        {% endif %}
-      {% endfor %}
+      <h3>ไฟล์นิตยสารล่าสุด</h3>
+      {% if recent_issues %}
+        <ul class="recent_publications">
+        {% for issue in recent_issues %}
+          <li>
+            <div><a href="{% url view_publication issue.publication.id %}" class="title">{{issue.magazine.title}} - {{issue.publication.title}}</a></div>
+            <div><span class="uploaded">อัพโหลดเมื่อวันที่ {{issue.publication.uploaded|format_abbr_datetime}}</span></div>
+          </li>
+        {% endfor %}
+        </ul>
+      {% else %}
+      <div class="no_row">ยังไม่มีไฟล์นิตยสาร</div>
+      {% endif %}
 
       {% can user 'upload' publisher %}{% generate_publication_module_upload_modal 'magazine' %}{% endcan %}
 

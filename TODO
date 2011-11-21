@@ -1,17 +1,9 @@
 TODAY DO
-- upload with create magazine
-
-- dashboard page
-
+- revision
 - simplify permission to only view, edit, manage
 
 TODO
-- dashboard
-  - show recent activities
-  - THINK what to show in the first time
-
 - delete publication
-- think again about publish status
 
 - Admin Page
     - Setup account for publisher
@@ -19,7 +11,6 @@ TODO
 - messages
 - shelf now act more like category
   - publisher can add/edit/delete by their own will, without affecting other publishers
-
 
 - publisher's reader app -- need to ask for this information before publishing
 

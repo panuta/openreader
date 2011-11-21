@@ -1,5 +1,5 @@
 {% extends 'base_authenticated.html' %}
-{% load helper_tags module_tags %}
+{% load helper_tags %}
 
 {% block head_title %}หนังสือ{% endblock %}
 {% block topnav %}{% include 'publisher/snippets/publisher_topnav.html' with active_menu='book' %}{% endblock %}
@@ -18,9 +18,7 @@ $(document).ready(function () {
   });
   {% endcan %}
   
-  {% if outstandings %}
-  bind_publication_outstandings();
-  {% endif %}
+  bind_publication_actions();
 })
 </script>
 {% endblock %}
@@ -40,46 +38,22 @@ $(document).ready(function () {
 
     <h3>ไฟล์หนังสือ</h3>
 
-    {% if books or outstandings.unfinished or outstandings.scheduled or outstandings.unpublished %}
+    {% if books %}
     <div class="publications">
-      {% if outstandings.unfinished %}
-      <div class="unfinished_list">
-        <div class="type">UNFINISHED ISSUES</div>
-        <ul>{% for uploading_publication in outstandings.unfinished %}{% include 'publisher/book/snippets/outstanding_unfinished.html' with uploading_publication=uploading_publication %}{% endfor %}</ul>
-      </div>
-      {% endif %}
-
-      {% if outstandings.scheduled %}
-      <div class="scheduled_list">
-        <div class="type">SCHEDULED BOOKS</div>
-        <ul>{% for publication in outstandings.scheduled %}{% include 'publisher/book/snippets/outstanding_scheduled.html' with publication=publication %}{% endfor %}</ul>
-      </div>
-      {% endif %}
-
-      {% if outstandings.unpublished %}
-      <div class="unpublished_list">
-        <div class="type">UNPUBLISHED BOOKS</div>
-        <ul>{% for publication in outstandings.unpublished %}{% include 'publisher/book/snippets/outstanding_unpublished.html' with publication=publication %}{% endfor %}</ul>
-      </div>
-      {% endif %}
-      
-      {% if books %}
-      <div class="type">PUBLISHED BOOKS - {{magazine.issues|length}} issues</div>
       <ul>
-        {% for issue in magazine.issues %}
-        <li {% if forloop.last %}class="last"{% endif %}>
+        {% for publication in books %}
+        <li class="publication{% if forloop.last %} last{% endif %}">
           <div class="cover"></div>
           <div class="right">
-            <div class="statistics"></div>
-            <div class="name"><a href="{% url view_publication publication.id %}">{{publication.title}}</a></div>
-            <div class="status">ตีพิมพ์เมื่อวันที่ {{publication.published|format_abbr_datetime}}</div>
-            <div class="stats"></div>
-            {% can user 'upload' publisher %}<div class="links"><a href="{% url edit_publication publication.id %}">Edit publication</a></div>{% endcan %}
+            {% if publication.publish_status == PUBLISH_STATUS_PUBLISHED %}<div class="statistics"></div>{% endif %}
+            <div class="name">{% if publication.publish_status == PUBLISH_STATUS_UPLOADING %}{{publication.original_file_name}}.{{publication.file_ext}}{% else %}<a href="{% url view_publication publication.id %}">{{publication.title}}</a>{% endif %}</div>
+            <div class="details">อัพโหลดเมื่อวันที่ {{publication.uploaded|format_abbr_datetime}}</div>
+            <div class="publish_status">สถานะ - {% print_publication_status publication %}</div>
+            {% can user 'upload,publish' publisher %}<div class="links">{% generate_publication_actions publication %}</div>{% endcan %}
           </div>
         </li>
         {% endfor %}
       </ul>
-      {% endif %}
     </div>
 
     {% else %}

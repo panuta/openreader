@@ -108,6 +108,7 @@ class PublisherShelf(models.Model):
 
 # Publication ############################################################
 
+"""
 class UploadingPublication(models.Model):
     publisher = models.ForeignKey('Publisher')
 
@@ -133,9 +134,11 @@ class UploadingPublication(models.Model):
     
     def can_view(self, user):
         return UserPublisher.objects.filter(user=user, publisher=self.publisher).exists()
+"""
 
 class Publication(models.Model):
     PUBLISH_STATUS = {
+        'UPLOADING':0,
         'UNPUBLISHED':1,
         'SCHEDULED':2,
         'PUBLISHED':3,
@@ -152,7 +155,7 @@ class Publication(models.Model):
     original_file_name = models.CharField(max_length=300)
     file_ext = models.CharField(max_length=10)
 
-    publish_status = models.IntegerField(default=PUBLISH_STATUS['UNPUBLISHED'])
+    publish_status = models.IntegerField(default=PUBLISH_STATUS['UPLOADING'])
     publish_schedule = models.DateTimeField(null=True, blank=True)
     published = models.DateTimeField(null=True, blank=True)
     published_by = models.ForeignKey(User, null=True, blank=True, related_name='publication_published_by')

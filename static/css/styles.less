@@ -1,26 +1,15 @@
 @import "../libs/bootstrap/lib/variables.less";
 
-@publication-published: #477e40;
+@publication-published: #d8e0bd;
 
-@outstanding-unfinished-dark: #9c512f;
-@outstanding-unfinished: #e2c3b5;
-@outstanding-unfinished-light: #e9d2c7;
-@outstanding-unfinished-lighter: #f0e1da;
+@publication-unfinished: #e2c3b5;
+@publication-unfinished-bg: #f0e1da;
 
-@outstanding-scheduled-dark: #457d89;
-@outstanding-scheduled: #abced5;
-@outstanding-scheduled-light: #cde2e6;
-@outstanding-scheduled-lighter: #deecee;
+@publication-scheduled: #abced5;
+@publication-scheduled-bg: #deecee;
 
-/*@outstanding-scheduled-dark: #bbd2b8;
-@outstanding-scheduled: #bbd2b8;
-@outstanding-scheduled-light: #d9e6d7;
-@outstanding-scheduled-lighter: #e8f0e7;*/
-
-@outstanding-unpublished-dark:#666;
-@outstanding-unpublished: #CCC;
-@outstanding-unpublished-light: #EEE;
-@outstanding-unpublished-lighter: #F3F3F3;
+@publication-unpublished: #CCC;
+@publication-unpublished-bg: #F3F3F3;
 
 .content_link() {
     &:link, &:active, &:visited {
@@ -65,7 +54,7 @@
 }
 
 .publication_row_styles() {
-    padding:10px 0px;
+    padding:15px 0px;
     min-height:95px;
 
     .cover {
@@ -98,29 +87,37 @@
         color:#555;
     
         span {
-            color:#FFF;
+            color:#000;
             padding:0px 6px;
-
         }
 
         .unpublished {
-            background-color:@outstanding-unpublished-dark;
+            background-color:@publication-unpublished;
         }
 
         .scheduled {
-            background-color:@outstanding-scheduled-dark;
+            background-color:@publication-scheduled;
         }
 
         .published {
-            background-color:@outstanding-scheduled-dark;
+            background-color:@publication-published;
+        }
+
+        .unfinished {
+            background-color:@publication-unfinished;
         }
     }
 
     .links {
-        margin-top:10px;
+        margin-top:15px;
 
-        a {
+        a, button {
             margin-right:15px;
+        }
+
+        a.btn.small {
+            padding:5px 9px;
+            font-size:12px;
         }
 
         .link {
@@ -136,130 +133,33 @@
             }
         }
     }
-}
 
-.publication_outstanding_styles() {
-    margin-bottom:25px;
-    
-    //padding-left:40px;
-    //background:url(/static/images/publication_outstanding.png) no-repeat;
-
-    
-    @outstanding-number-height: 20px;
-    @outstanding-number-vertical-padding: 3px;
-
-    .numbers {
-        height:@outstanding-number-height + @outstanding-number-vertical-padding * 2;
-
-        li {
-            float:left;
-            list-style:none;
-            display:block;
-            padding:@outstanding-number-vertical-padding + 2 28px @outstanding-number-vertical-padding 10px;
-            color:#FFF;
-            margin-right:@outstanding-number-height;
-            height:20px;
-            background-image:url('/static/images/down_arrow.png');
-            background-position:right center;
-            background-repeat:no-repeat;
-            //border-radius:3px;
-
-            a {
-                color:#FFF;
-            }
-        }
-
-        .unfinished {
-            background-color:@outstanding-unfinished-dark;
-        }
-
-        .scheduled {
-            background-color:@outstanding-scheduled-dark;
-        }
-
-        .unpublished {
-            background-color:@outstanding-unpublished-dark;
-        }
-    }
-
-    #outstanding-unfinished {
-        background-color:@outstanding-unfinished-lighter;
-        border-top:8px solid @outstanding-unfinished;
-    }
-
-    #outstanding-scheduled {
-        background-color:@outstanding-scheduled-lighter;
-        border-top:8px solid @outstanding-scheduled;
-    }
-
-    #outstanding-unpublished {
-        background-color:@outstanding-unpublished-lighter;
-        border-top:8px solid @outstanding-unpublished;
-    }
-
-    .list {
-        margin-top:10px;
-
-        .close_list {
-            float:right;
-            margin:10px 15px;
-
-            a {
-                text-indent:-9999px;
-                background:url('/static/images/close_button.png') center top no-repeat;
-                display:block;
-                width:48px;
-                height:24px;
-            }
-
-            a:hover {
-                background-position:center bottom;
-            }
-        }
-
-        li {
-            .publication_row_styles;
-            padding:10px 15px;
-        }
+    .statistics {
+        float:right;
+        width:300px;
+        height:85px;
+        background-color:#CCC;
     }
 }
 
 .publication_list_styles() {
-    .unfinished_list {
-        background-color:@outstanding-unfinished-lighter;
-        border-top:8px solid @outstanding-unfinished;
-    }
-
-    .unpublished_list {
-        background-color:@outstanding-unpublished-lighter;
-        border-top:8px solid @outstanding-unpublished;
-    }
-
-    .scheduled_list {
-        background-color:@outstanding-scheduled-lighter;
-        border-top:8px solid @outstanding-scheduled;
-    }
-
-    .type {
-        font-weight:bold;
-        font-size:0.9em;
-        color:#666;
-        padding:5px 15px 0px;
-    }
-
     li.publication {
         margin-bottom:10px;
         border-bottom:1px dashed #999;
 
         .publication_row_styles;
+    }
 
-        .statistics {
-            float:right;
-            width:300px;
-            height:85px;
-            background-color:#CCC;
+    .unfinished_list {
+        background-color:@publication-unfinished-bg;
+        border-top:8px solid @publication-unfinished;
+
+        li {
+            padding:15px;
         }
     }
+
+    
 }
 
 /* *************** Base *************** */
@@ -466,17 +366,22 @@ body {
 /* *************** Buttons *************** */
 
 button.upload_publication_button span {
-    background:url(/static/images/buttons/button_upload_white.png) 0px 0px no-repeat;
+    background:url(/static/images/buttons/button_upload_white.png) 0px 50% no-repeat;
     padding-left:24px;
 }
 
 a.create_magazine span {
-    background:url(/static/images/buttons/button_magazine_white.png) no-repeat;
+    background:url(/static/images/buttons/button_magazine_white.png) 0px 50% no-repeat;
     padding-left:24px;
 }
 
 a.action-schedule span {
-    background:url(/static/images/buttons/button_scheduled_black.png) no-repeat;
+    background:url(/static/images/buttons/button_scheduled_black_small.png) 0px 50% no-repeat;
+    padding-left:18px;
+}
+
+a.edit_publication_button span {
+    background:url(/static/images/buttons/button_edit_black.png) 0px 50% no-repeat;
     padding-left:24px;
 }
 
@@ -563,6 +468,7 @@ form .inputs-list {
     label {
         margin-left:5px;
         color:#444;
+        display:inline;
     }
 
     input[type='radio'], input[type='checkbox'] {
@@ -773,15 +679,15 @@ table td.row_actions a {
         }
 
         .unpublished {
-            background-color:@outstanding-unpublished-lighter;
+            background-color:@publication-unpublished;
         }
 
         .scheduled {
-            background-color:@outstanding-scheduled-lighter;
+            background-color:@publication-scheduled;
         }
 
         .published {
-            background-color:@outstanding-scheduled-lighter;
+            background-color:@publication-published;
         }
     }
 
@@ -807,10 +713,49 @@ table td.row_actions a {
 /* *************** Dashboard *************** */
 
 .publisher_dashboard_page {
-    .first_time {
-        
-        .panel {
-            margin-bottom:20px;
+    .recent_publications {
+        li {
+            list-style:disc;
+            margin-left:20px;
+            margin-bottom:10px;
+        }
+
+        div {
+            margin-bottom:5px;
+        }
+
+        .type {
+            color:#333;
+            font-size:1.1em;
+            margin-right:7px;
+        }
+
+        .title {
+            .content_link;
+            font-size:1.1em;
+        }
+
+        .uploaded {
+            color:#888;
+        }
+    }
+}
+
+#id_welcome_modal {
+    .modal-body {
+        .title {
+            font-size:1.3em;
+            color:#11717a;
+            margin-bottom:15px;
+        }
+
+        li {
+            margin:0px 0px 25px 20px;
+        }
+
+        p {
+            color:#555;
+            margin-bottom:10px;
         }
     }
 }
@@ -821,9 +766,6 @@ table td.row_actions a {
 
 .publisher_magazines_page {
     
-    .publication_outstandings {
-        .publication_outstanding_styles;
-    }
 
     .no_magazine {
         text-align:center;
@@ -838,108 +780,36 @@ table td.row_actions a {
         }
     }
 
-    h4 {
-        color:#444;
-        line-height:1;
-        margin-bottom:10px;
-
-        a {
-            color:#444;
-        }
-    }
-
-    .no_activity {
-        color:#555;
-        margin-bottom:15px;
-    }
-
-    .recent {
-        margin:0px 0px 30px 20px;
-
+    .recent_publications {
         li {
             list-style:disc;
+            margin-left:20px;
             margin-bottom:10px;
-            color:#555;
         }
 
-        a {
-            .content_link;
-        }
-    }
-
-
-
-    .magazines {
-        margin-top:25px;
-
-        .content_link;
-
-        li {
-            background:url(/static/images/magazine.png) 0px 0px no-repeat;
-            padding:0px 0px 15px 50px;
-            margin-bottom:20px;
-            list-style:none;
-            border-bottom:1px dashed #CCC;
-        }
-
-        li.last {
-            margin-bottom:40px;
+        div {
+            margin-bottom:5px;
         }
 
         .title {
-            a {
-                font-size:1.2em;
-                font-weight:bold;
-            }
-        }
-
-        .stats {
-            margin-top:10px;
-        }
-
-        .stats .published {
-            font-weight:bold;
-            color:#444;
+            .content_link;
             font-size:1.1em;
         }
 
-        .outstanding {
-            margin-top:10px;
-
-            span {
-                margin-right:15px;
-                padding:0px 5px;
-                color:#444;
-            }
-
-            .unfinished {
-                background-color:@outstanding-unfinished-light;
-            }
-
-            .scheduled {
-                background-color:@outstanding-scheduled-light;
-            }
-
-            .unpublished {
-                background-color:@outstanding-unpublished-light;
-            }
+        .uploaded {
+            color:#888;
         }
+    }
 
-        .links a {
-            margin-right:15px;
-            color:#555;
-        }
+    .orphan_publications {
+        .publication_list_styles();
+        margin-bottom:40px;
     }
 }
 
 /* Magazine */
 
 .publisher_magazine_page {
-    .publication_outstandings {
-        .publication_outstanding_styles;
-        margin-bottom:40px;
-    }
-
     .publications {
         .publication_list_styles;
     }
