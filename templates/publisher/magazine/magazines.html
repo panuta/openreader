@@ -30,7 +30,7 @@ $(document).ready(function () {
       <div class="head"><a href="{% url view_magazines publisher.id %}">รายชื่อนิตยสาร</a></div>
       <ul>
         {% generate_magazine_nav_list publisher %}
-        {% can user 'manage' publisher %}<li class="add"><a href="{% url create_magazine publisher.id %}">สร้างนิตยสารใหม่</a></li>{% endcan %}
+        {% can user 'edit' publisher %}<li class="add"><a href="{% url create_magazine publisher.id %}">สร้างนิตยสารใหม่</a></li>{% endcan %}
       </ul>
     </div>
 
@@ -80,6 +80,7 @@ $(document).ready(function () {
 {% else %}
   <div class="container-fluid container-body publisher_magazines_page">
     <div class="content-full"><div class="content-inner">
+      <h2>นิตยสาร</h2>
       {% can user 'manage' publisher %}
       <div class="no_magazine">
         <p>ยังไม่มีนิตยสาร ต้องการสร้างนิตยสาร?</p>

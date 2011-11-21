@@ -34,7 +34,7 @@
       <div class="form_actions left_form_actions">
         <button type="submit" class="btn primary">บันทึกข้อมูล</button>
         หรือ
-        <a href="{% url delete_uploading_publication publication.id %}?next={% url view_books publication.publisher.id %}">ยกเลิกการอัพโหลดไฟล์</a>
+        <a href="{% url cancel_upload_publication publication.id %}?next={% url view_books publication.publisher.id %}">ยกเลิกการอัพโหลดไฟล์</a>
       </div>
     </form>
     

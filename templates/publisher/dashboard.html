@@ -8,6 +8,7 @@
 {{block.super}}
 <script>
 $(document).ready(function () {
+  {% can user 'edit' publisher %}
   bind_all_upload_publication_modal();
   bind_all_upload_publication_form();
 
@@ -15,8 +16,11 @@ $(document).ready(function () {
     open_upload_publication_modal('upload-publication-form');
     return false;
   });
+  {% endcan %}
 
   {% if first_time %}
+
+  {% can user 'edit' publisher %}
   $('#id_welcome_modal .create_upload_magazine_button').on('click', function(e) {
     $('#id_welcome_modal').modal('hide');
     open_upload_publication_modal('upload-magazine-form');
@@ -31,6 +35,8 @@ $(document).ready(function () {
 
   $('#id_welcome_modal').modal({backdrop:'static'});
   $('#id_welcome_modal').modal('show');
+  {% endcan %}
+
   {% endif %}
 })
 </script>
@@ -41,9 +47,7 @@ $(document).ready(function () {
   <div class="content-full"><div class="content-inner">
     <h2>หน้าแรก</h2>
 
-    <div class="page_tables">
-      <button class="btn primary upload_publication_button"><span>อัพโหลดไฟล์</span></button>
-    </div>
+    {% can user 'edit' publisher %}<div class="page_tables"><button class="btn primary upload_publication_button"><span>อัพโหลดไฟล์</span></button></div>{% endcan %}
 
     <h3>ไฟล์สิ่งพิมพ์ล่าสุด</h3>
     
@@ -61,12 +65,14 @@ $(document).ready(function () {
     <div class="no_row">ยังไม่มีไฟล์สิ่งพิมพ์</div>
     {% endif %}
 
-    {% generate_publication_module_upload_modal '' %}
+    {% can user 'edit' publisher %}{% generate_publication_module_upload_modal '' %}{% endcan %}
 
   </div></div>
 </div>
 
 {% if first_time %}
+
+  {% can user 'edit' publisher %}
   <div class="modal hide fade" id="id_welcome_modal" style="display: none;">
     <div class="modal-header"><a class="close" href="#">×</a><h3>ยินดีต้อนรับเข้าสู่ระบบครั้งแรก!</h3></div>
     <div class="modal-body">
@@ -85,6 +91,8 @@ $(document).ready(function () {
   </div>
   {% generate_publication_module_upload_modal 'magazine' %}
   {% generate_publication_module_upload_modal 'book' %}
+  {% endcan %}
+  
 {% endif %}
 
 {% endblock %}

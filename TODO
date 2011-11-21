@@ -1,23 +1,26 @@
-TODAY DO
-- revision
-- what to do if user cannot create magazine in first time dashboard page
-- remember previous page when editing
-
-TODO
 - delete publication
-
+- delete magazine
 - Admin Page
     - Setup account for publisher
+
+
+- revision
+- remember previous page when editing
+
+
+TODO
+
+
+
 - pagination
 - messages
 - shelf now act more like category
   - publisher can add/edit/delete by their own will, without affecting other publishers
 
 - publisher's reader app -- need to ask for this information before publishing
-
+- update book version
 - API
 - PDF thumbnails
-
 
 
 

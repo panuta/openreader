@@ -112,8 +112,6 @@ class UserPublisherInvitation(models.Model):
             send_mail('%s want to invite you to join their team' % self.publisher.name, render_to_string('publisher/email_templates/user_publisher_invitation.html', {'invitation':self }), settings.EMAIL_FOR_USER_PUBLISHER_INVITATION, [self.user_email], fail_silently=False)
             return True
         except:
-            import sys
-            print sys.exc_info()
             return False
 
 """

@@ -35,7 +35,11 @@ class UploadPublicationForm(GeneralUploadPublicationForm):
         else:
             magazine = self.cleaned_data['magazine']
         
-        MagazineIssue.objects.create(publication=publication, magazine=magazine)
+        magazine_issue = MagazineIssue.objects.create(publication=publication, magazine=magazine)
+
+        if self.cleaned_data['magazine_name']:
+            magazine.cancel_with_issue = magazine_issue
+            magazine.save()
 
 class FinishUploadMagazineIssueForm(forms.Form):
     magazine = PublisherMagazineChoiceField()

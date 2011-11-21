@@ -49,6 +49,10 @@ def finishing_upload_publication(request, publisher, publication):
     
     return render(request, 'publisher/book/publication_finishing.html', {'publisher':publisher, 'publication':publication, 'form':form})
 
+def cancel_upload_publication(request, publisher, publication):
+    # MESSAGE
+    return redirect('view_books', publisher_id=publisher.id)
+
 def view_publication(request, publisher, publication):
 
     return render(request, 'publisher/book/publication.html', {'publisher':publisher, 'publication':publication})
@@ -113,6 +117,14 @@ def edit_publication_status(request, publisher, publication):
         form = EditBookStatusForm(initial={'publish_status':str(publication.publish_status), 'schedule_date':schedule_date, 'schedule_time':schedule_time})
     
     return render(request, 'publisher/book/publication_edit_status.html', {'publisher':publisher, 'publication':publication, 'form':form})
+
+def delete_publication(request, publisher, publication):
+    book = Book.objects.get(publication=publication)
+    book.delete()
+
+    # MESSAGE
+
+    return redirect('view_books', publisher_id=publisher.id)
 
 def gather_publisher_statistics(request, publisher):
     return {

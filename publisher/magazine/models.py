@@ -13,6 +13,8 @@ class Magazine(models.Model):
 
     logo = models.ImageField(upload_to=settings.MAGAZINE_LOGO_ROOT, max_length=500, null=True)
 
+    cancel_with_issue = models.ForeignKey('MagazineIssue', related_name='cancel_with', null=True)
+
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='magazine_created_by')
     modified = models.DateTimeField(auto_now=True)

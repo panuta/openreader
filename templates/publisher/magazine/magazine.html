@@ -30,7 +30,7 @@ $(document).ready(function () {
     <div class="head"><a href="{% url view_magazines publisher.id %}">รายชื่อนิตยสาร</a></div>
     <ul>
       {% generate_magazine_nav_list publisher magazine %}
-      {% can user 'manage' publisher %}<li class="add"><a href="{% url create_magazine publisher.id %}">สร้างนิตยสารใหม่</a></li>{% endcan %}
+      {% can user 'edit' publisher %}<li class="add"><a href="{% url create_magazine publisher.id %}">สร้างนิตยสารใหม่</a></li>{% endcan %}
     </ul>  
   </div>
 
@@ -38,10 +38,10 @@ $(document).ready(function () {
 
     <h2><span>นิตยสาร</span>{{magazine.title}}</h2>
 
-    {% can user 'edit,manage' publisher %}
+    {% can user 'edit' publisher %}
     <div class="page_actions">
       <button class="btn primary upload_publication_button"><span>อัพโหลดไฟล์นิตยสาร</span></button>
-      {% can user 'manage' publisher %}<a href="{% url edit_magazine magazine.id %}" class="btn">แก้ไขข้อมูลนิตยสาร</a>{% endcan %}
+      <a href="{% url edit_magazine magazine.id %}" class="btn">แก้ไขข้อมูลนิตยสาร</a>
     </div>
     {% endcan %}
   

@@ -12,6 +12,7 @@ urlpatterns = patterns('publisher.views',
     url(r'^publisher/(?P<publisher_id>\d+)/upload/(?P<module_name>\w+)/$', 'upload_publication', name='upload_module_publication'),
     url(r'^publisher/(?P<publisher_id>\d+)/upload/$', 'upload_publication', name='upload_publication'),
     url(r'^publication/(?P<publication_id>\d+)/finishing_upload/$', 'finishing_upload_publication', name='finishing_upload_publication'),
+    url(r'^publication/(?P<publication_id>\d+)/upload/cancel/$', 'cancel_upload_publication', name='cancel_upload_publication'),
     
     url(r'^get_upload_progress?.*$', 'get_upload_progress', name='get_upload_progress'),
 
@@ -42,8 +43,7 @@ urlpatterns = patterns('publisher.views',
 
     url(r'^publication/(?P<publication_id>\d+)/edit/$', 'edit_publication', name='edit_publication'),
     url(r'^publication/(?P<publication_id>\d+)/edit/status/$', 'edit_publication_status', name='edit_publication_status'),
-
-    url(r'^publication/(?P<publication_id>\d+)/delete/uploading/$', 'delete_uploading_publication', name='delete_uploading_publication'),
+    url(r'^publication/(?P<publication_id>\d+)/delete/$', 'delete_publication', name='delete_publication'),
 
     url(r'^publication/(?P<publication_id>\d+)/set/published/$', 'set_publication_published', name='set_publication_published'),
     url(r'^publication/(?P<publication_id>\d+)/set/schedule/$', 'set_publication_schedule', name='set_publication_schedule'),

@@ -33,9 +33,10 @@ def finishing_upload_publication(request, publisher, publication):
 
             publication = publisher_functions.finishing_upload_publication(request, publication, title, description, publish_status, schedule_date, schedule_time)
 
-            magazine_issue, created = MagazineIssue.objects.get_or_create(publication=publication, magazine=magazine)
+            # magazine_issue = MagazineIssue.objects.get_or_create(publication=publication, magazine=magazine)
 
-            print created
+            magazine.cancel_with_issue = None
+            magazine.save()
 
             # MESSAGE
 
@@ -50,6 +51,15 @@ def finishing_upload_publication(request, publisher, publication):
         magazine_issue = None
     
     return render(request, 'publisher/magazine/publication_finishing.html', {'publisher':publisher, 'publication':publication, 'form':form, 'magazine_issue':magazine_issue})
+
+def cancel_upload_publication(request, publisher, publication):
+    magazine_issue = MagazineIssue.objects.get(publication=publication)
+    Magazine.objects.filter(cancel_with_issue=publication.magazineissue).delete()
+    publication.magazineissue.delete()
+
+    # MESSAGE
+
+    return redirect('view_magazines', publisher_id=publisher.id)
 
 def view_publication(request, publisher, publication):
 
@@ -108,6 +118,13 @@ def edit_publication_status(request, publisher, publication):
     
     return render(request, 'publisher/magazine/publication_edit_status.html', {'publisher':publisher, 'publication':publication, 'form':form})
 
+def delete_publication(request, publisher, publication):
+    magazine_issue = MagazineIssue.objects.get(publication=publication)
+    bomagazine_issueok.delete()
+
+    # MESSAGE
+
+    return redirect('view_magazine', publisher_id=magazine_issue.magazine.id)
 
 def gather_publisher_statistics(request, publisher):
     return {
@@ -143,7 +160,7 @@ def view_magazines(request, publisher_id):
 def create_magazine(request, publisher_id):
     publisher = get_object_or_404(Publisher, pk=publisher_id)
 
-    if not can(request.user, 'manage', publisher):
+    if not can(request.user, 'edit', publisher):
         raise Http404
 
     if request.method == 'POST':
@@ -184,7 +201,7 @@ def edit_magazine(request, magazine_id):
     magazine = get_object_or_404(Magazine, pk=magazine_id)
     publisher = magazine.publisher
 
-    if not can(request.user, 'manage', publisher):
+    if not can(request.user, 'edit', publisher):
         raise Http404
 
     if request.method == 'POST':
@@ -209,3 +226,27 @@ def edit_magazine(request, magazine_id):
         form = MagazineForm(initial={'title':magazine.title, 'description':magazine.description, 'categories':magazine.categories.all()})
     
     return render(request, 'publisher/magazine/magazine_modify.html', {'publisher':publisher, 'magazine':magazine, 'form':form})
+
+@login_required
+def delete_magazine(request, magazine_id):
+    magazine = get_object_or_404(Magazine, pk=magazine_id)
+    publisher = magazine.publisher
+
+    if not can(request.user, 'edit', publisher):
+        raise Http404
+    
+    if request.method == 'POST':
+        if 'submit-delete' in request.POST:
+            from publication.functions import delete_uploading_publication
+
+            for magazine_issue in MagazineIssue.objects.filter(magazine=magazine):
+                delete_uploading_publication(magazine_issue.publication)
+                magazine_issue.delete()
+            
+            magazine.delete()
+
+            # MESSAGE
+        
+        return redirect('view_magazines', publisher_id=publisher.id)
+
+    return render(request, 'publisher/magazine/magazine_delete.html', {'publisher':publisher, 'magazine':magazine})

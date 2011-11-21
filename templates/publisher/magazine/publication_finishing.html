@@ -39,11 +39,7 @@
       <div class="form_actions left_form_actions">
         <button type="submit" class="btn primary span3">บันทึกข้อมูล</button>      
         หรือ
-        {% if magazine_issue %}
-        <a href="{% url delete_uploading_publication publication.id %}?next={% url view_magazine magazine_issue.magazine.id %}" class="danger">ยกเลิกการอัพโหลดไฟล์</a>
-        {% else %}
-        <a href="{% url delete_uploading_publication publication.id %}?next={% url view_magazines publication.publisher.id %}" class="danger">ยกเลิกการอัพโหลดไฟล์</a>
-        {% endif %}
+        <a href="{% url cancel_upload_publication publication.id %}" class="danger">ยกเลิกการอัพโหลดไฟล์</a>
       </div>
     </form>
     

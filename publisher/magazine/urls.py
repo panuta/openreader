@@ -7,5 +7,6 @@ urlpatterns = patterns('publisher.magazine.views',
 
     url(r'^magazine/(?P<magazine_id>\d+)/$', 'view_magazine', name='view_magazine'),
     url(r'^magazine/(?P<magazine_id>\d+)/edit/$', 'edit_magazine', name='edit_magazine'),
+    url(r'^magazine/(?P<magazine_id>\d+)/delete/$', 'delete_magazine', name='delete_magazine'),
     
 )

@@ -50,9 +50,8 @@ def view_publisher_dashboard(request, publisher_id):
     publisher = get_object_or_404(Publisher, pk=publisher_id)
 
     if request.user.get_profile().is_first_time:
-        if can(request.user, 'upload', publisher):
-            request.user.get_profile().is_first_time = False
-            request.user.get_profile().save()
+        request.user.get_profile().is_first_time = False
+        request.user.get_profile().save()
         first_time = True
     else:
         first_time = False
@@ -193,33 +192,29 @@ def finishing_upload_publication(request, publication_id):
     return views_module.finishing_upload_publication(request, publisher, publication)
 
 @login_required
-def delete_uploading_publication(request, publication_id):
+def cancel_upload_publication(request, publication_id):
     publication = get_object_or_404(Publication, pk=publication_id)
     publisher = publication.publisher
 
     if not can(request.user, 'edit', publisher):
         raise Http404
     
+    if publication.publish_status != Publication.PUBLISH_STATUS['UPLOADING']:
+        raise Http404
+    
     if request.method == 'POST':
-        next = request.POST.get('next')
-
         if 'submit-delete' in request.POST:
+            views_module = get_publication_module(publication.publication_type, 'views')
+            response = views_module.cancel_upload_publication(request, publisher, publication)
+            
             publisher_functions.delete_uploading_publication(publication)
-        
-            # MESSAGE
-        
-            if next:
-                return redirect(next)
-            else:
-                # TODO: Redirect by guessing from uploading_publication value
-                return redirect('view_publisher_dashboard')
+
+            return response
+
         else:
             return redirect('finishing_upload_publication', publication_id=publication.id)
-
-    else:
-        next = request.GET.get('next')
     
-    return render(request, 'publisher/publication_uploading_delete.html', {'publisher':publisher, 'publication':publication, 'next':next})
+    return render(request, 'publisher/publication_upload_cancel.html', {'publisher':publisher, 'publication':publication})
 
 @login_required
 def view_publication(request, publication_id):
@@ -264,6 +259,17 @@ def edit_publication_status(request, publication_id):
 
     views_module = get_publication_module(publication.publication_type, 'views')
     return views_module.edit_publication_status(request, publisher, publication)
+
+@login_required
+def delete_publication(request, publication_id):
+    publication = get_object_or_404(Publication, id=publication_id)
+    publisher = publication.publisher
+
+    if not can(request.user, 'edit', publisher):
+        raise Http404
+
+    views_module = get_publication_module(publication.publication_type, 'views')
+    return views_module.delete_publication(request, publisher, publication)
 
 @login_required
 def set_publication_published(request, publication_id):
