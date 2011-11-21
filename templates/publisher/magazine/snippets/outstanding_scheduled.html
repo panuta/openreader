@@ -2,12 +2,14 @@
 
 <li class="publication">
   <div class="cover"></div>
-  <div class="name"><a href="{% url view_publication publication.id %}">{{publication.magazineissue.magazine.title}} - {{publication.title}}</a></div>
-  <div class="details">ตั้งเวลาตีพิมพ์ไว้วันที่ <span>{{publication.publish_schedule|format_abbr_datetime}}</span> โดย <span>{{publication.published_by.get_profile.get_fullname}}</span></div>
-  {% can user 'publish' publisher %}
-  <div class="links">
-    <a href="{% url set_publication_schedule publication.id %}" class="btn action-schedule">ตั้งเวลาใหม่</a>
-    <a href="{% url set_publication_cancel_schedule publication.id %}" class="link danger action-cancel-schedule">ยกเลิกการตั้งเวลา</a>
+  <div class="right">
+    <div class="name"><a href="{% url view_publication publication.id %}">{{publication.magazineissue.magazine.title}} - {{publication.title}}</a></div>
+    <div class="details">ตั้งเวลาตีพิมพ์ไว้วันที่ <span>{{publication.publish_schedule|format_abbr_datetime}}</span> โดย <span>{{publication.published_by.get_profile.get_fullname}}</span></div>
+    {% can user 'publish' publisher %}
+    <div class="links">
+      <a href="{% url set_publication_schedule publication.id %}" class="btn action-schedule"><span>ตั้งเวลาใหม่</span></a>
+      <a href="{% url set_publication_cancel_schedule publication.id %}" class="link danger action-cancel-schedule">ยกเลิกการตั้งเวลา</a>
+    </div>
+    {% endcan %}
   </div>
-  {% endcan %}
 </li>

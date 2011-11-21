@@ -26,11 +26,11 @@ def generate_publisher_menu(user):
 @register.simple_tag
 def print_publication_status(publication):
     if publication.publish_status == Publication.PUBLISH_STATUS['UNPUBLISHED']:
-        return u'<span class="unpublished">ยังไม่ตีพิมพ์</span></div>'
+        return u'<span class="unpublished">ยังไม่ตีพิมพ์</span>'
     elif publication.publish_status == Publication.PUBLISH_STATUS['SCHEDULED']:
-        return u'<span class="scheduled">ตั้งเวลาตีพิมพ์ไว้วันที่ %s โดย %s</span>' % (utilities.format_abbr_datetime(publication.publish_schedule), publication.published_by.get_profile().get_fullname())
+        return u'<span class="scheduled">ตั้งเวลาเผยแพร่ วันที่ %s</span>' % (utilities.format_abbr_datetime(publication.publish_schedule))
     elif publication.publish_status == Publication.PUBLISH_STATUS['PUBLISHED']:
-        return u'<span class="published">ตีพิมพ์แล้วเมื่อวันที่ %s โดย %s</span>' % (utilities.format_abbr_datetime(publication.published), publication.published_by.get_profile().get_fullname())
+        return u'<span class="published">เผยแพร่แล้ว วันที่ %s</span>' % (utilities.format_abbr_datetime(publication.published))
     
     return ''
 

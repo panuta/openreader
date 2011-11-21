@@ -3,17 +3,17 @@
   <div class="input">
     <ul class="inputs-list">
       <li>
-        <label><input type="radio" value="{{PUBLISH_STATUS_UNPUBLISHED}}" name="publish_status"{% if form.publish_status.value == PUBLISH_STATUS_UNPUBLISHED|slugify %} checked="checked"{% endif %}>ยังไม่ตีพิมพ์</label>
+        <label><input type="radio" value="{{PUBLISH_STATUS_UNPUBLISHED}}" name="publish_status"{% if form.publish_status.value == PUBLISH_STATUS_UNPUBLISHED|slugify %} checked="checked"{% endif %}>ยังไม่เผยแพร่ <span>(Unpublished)</span></label>
       </li>
       <li>
-        <label><input type="radio" value="{{PUBLISH_STATUS_SCHEDULED}}" name="publish_status"{% if form.publish_status.value == PUBLISH_STATUS_SCHEDULED|slugify %} checked="checked"{% endif %}>ตั้งเวลาตีพิมพ์</label>
+        <label><input type="radio" value="{{PUBLISH_STATUS_SCHEDULED}}" name="publish_status"{% if form.publish_status.value == PUBLISH_STATUS_SCHEDULED|slugify %} checked="checked"{% endif %}>ตั้งเวลาเผยแพร่ <span>(Scheduled)</span></label>
         <div class="schedule_date">วันที่ {{form.schedule_date}}</div>{{form.schedule_date.errors}}
         <div class="schedule_time">เวลา {{form.schedule_time}}</div>{{form.schedule_time.errors}}
       </li>
       <li>
-        <label><input type="radio" value="{{PUBLISH_STATUS_PUBLISHED}}" name="publish_status"{% if form.publish_status.value == PUBLISH_STATUS_PUBLISHED|slugify %} checked="checked"{% endif %}>ตีพิมพ์</label>
+        <label><input type="radio" value="{{PUBLISH_STATUS_PUBLISHED}}" name="publish_status"{% if form.publish_status.value == PUBLISH_STATUS_PUBLISHED|slugify %} checked="checked"{% endif %}>เผยแพร่ <span>(Published)</span></label>
       </li>
     </ul>
+    {{form.publish_status.errors}}
   </div>
-  {{form.publish_status.errors}}
 </div>

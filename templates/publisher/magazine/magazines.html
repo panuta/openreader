@@ -35,7 +35,7 @@ $(document).ready(function () {
       <ul>
         {% generate_magazine_nav_list publisher %}
         <li class="add"><a href="{% url create_magazine publisher.id %}">สร้างนิตยสารใหม่</a></li>
-      </ul>  
+      </ul>
     </div>
 
     <div class="content"><div class="content-inner">
@@ -43,7 +43,7 @@ $(document).ready(function () {
       
       {% if magazines %}{% can user 'upload' publisher %}
       <div class="page_actions">
-        <button class="btn primary upload_publication_button"><span>อัพโหลดนิตยสาร</span></button>
+        <button class="btn primary upload_publication_button"><span>อัพโหลดไฟล์นิตยสาร</span></button>
       </div>
       {% endcan %}{% endif %}
 
@@ -76,7 +76,7 @@ $(document).ready(function () {
       {% can user 'manage' publisher %}
       <div class="no_magazine">
         <p>ยังไม่มีนิตยสาร ต้องการสร้างนิตยสาร?</p>
-        <div><a href="{% url create_magazine publisher.id %}" class="btn primary">สร้างนิตยสาร</a></div>
+        <div><a href="{% url create_magazine publisher.id %}" class="btn primary create_magazine"><span>สร้างนิตยสาร</span></a></div>
       </div>
       {% else %}
       <div class="no_row">ไม่มีนิตยสาร</div>

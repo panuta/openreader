@@ -45,21 +45,21 @@ $(document).ready(function () {
       {% if outstandings.unfinished %}
       <div class="unfinished_list">
         <div class="type">UNFINISHED ISSUES</div>
-        <ul>{% for uploading_publication in outstandings.unfinished %}{% include 'publisher/snippets/outstanding_unfinished.html' with uploading_publication=uploading_publication %}{% endfor %}</ul>
+        <ul>{% for uploading_publication in outstandings.unfinished %}{% include 'publisher/book/snippets/outstanding_unfinished.html' with uploading_publication=uploading_publication %}{% endfor %}</ul>
       </div>
       {% endif %}
 
       {% if outstandings.scheduled %}
       <div class="scheduled_list">
         <div class="type">SCHEDULED BOOKS</div>
-        <ul>{% for publication in outstandings.scheduled %}{% include 'publisher/snippets/outstanding_scheduled.html' with publication=publication %}{% endfor %}</ul>
+        <ul>{% for publication in outstandings.scheduled %}{% include 'publisher/book/snippets/outstanding_scheduled.html' with publication=publication %}{% endfor %}</ul>
       </div>
       {% endif %}
 
       {% if outstandings.unpublished %}
       <div class="unpublished_list">
         <div class="type">UNPUBLISHED BOOKS</div>
-        <ul>{% for publication in outstandings.unpublished %}{% include 'publisher/snippets/outstanding_unpublished.html' with publication=publication %}{% endfor %}</ul>
+        <ul>{% for publication in outstandings.unpublished %}{% include 'publisher/book/snippets/outstanding_unpublished.html' with publication=publication %}{% endfor %}</ul>
       </div>
       {% endif %}
       
@@ -69,11 +69,13 @@ $(document).ready(function () {
         {% for issue in magazine.issues %}
         <li {% if forloop.last %}class="last"{% endif %}>
           <div class="cover"></div>
-          <div class="statistics"></div>
-          <div class="name"><a href="{% url view_publication publication.id %}">{{publication.title}}</a></div>
-          <div class="status">ตีพิมพ์เมื่อวันที่ {{publication.published|format_abbr_datetime}}</div>
-          <div class="stats"></div>
-          {% can user 'upload' publisher %}<div class="links"><a href="{% url edit_publication publication.id %}">Edit publication</a></div>{% endcan %}
+          <div class="right">
+            <div class="statistics"></div>
+            <div class="name"><a href="{% url view_publication publication.id %}">{{publication.title}}</a></div>
+            <div class="status">ตีพิมพ์เมื่อวันที่ {{publication.published|format_abbr_datetime}}</div>
+            <div class="stats"></div>
+            {% can user 'upload' publisher %}<div class="links"><a href="{% url edit_publication publication.id %}">Edit publication</a></div>{% endcan %}
+          </div>
         </li>
         {% endfor %}
       </ul>
