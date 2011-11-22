@@ -8,7 +8,6 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
-from django.db import transaction
 from django.forms.util import ErrorList
 from django.http import HttpResponse, HttpResponseServerError, Http404
 from django.shortcuts import get_object_or_404, redirect, render
@@ -38,8 +37,7 @@ def view_dashboard(request):
         return redirect('view_publisher_dashboard', publisher_id=user_publisher.publisher.id)
     except UserPublisher.DoesNotExist:
         if UserPublisher.objects.filter(user=request.user).count() == 0:
-            from django.contrib.auth.views import logout
-            return logout(request, next_page=reverse('view_user_welcome'))
+            return redirect('view_user_welcome')
         else:
             # If a user does not set any default publisher, pick the first one
             user_publisher = UserPublisher.objects.filter(user=request.user).order_by('created')[0]
@@ -55,6 +53,8 @@ def view_publisher_dashboard(request, publisher_id):
         first_time = True
     else:
         first_time = False
+    
+    first_time = True
     
     recent_publications = Publication.objects.filter(publisher=publisher).exclude(publish_status=Publication.PUBLISH_STATUS['UPLOADING']).order_by('-uploaded')[0:10]
 
@@ -267,9 +267,19 @@ def delete_publication(request, publication_id):
 
     if not can(request.user, 'edit', publisher):
         raise Http404
+    
+    if request.method == 'POST':
+        deleted = 'submit-delete' in request.POST
 
-    views_module = get_publication_module(publication.publication_type, 'views')
-    return views_module.delete_publication(request, publisher, publication)
+        views_module = get_publication_module(publication.publication_type, 'views')
+        response = views_module.delete_publication(request, deleted, publisher, publication)
+
+        if deleted:
+            publisher_functions.delete_uploading_publication(publication)
+        
+        return response
+    
+    return render(request, 'publisher/%s/publication_delete.html' % publication.publication_type, {'publisher':publisher, 'publication':publication})
 
 @login_required
 def set_publication_published(request, publication_id):
@@ -504,7 +514,11 @@ def invite_publisher_user(request, publisher_id):
                 if invitation:
                     invitation.send_invitation_email()
                     # MESSAGE
-                    return redirect('view_publisher_users', publisher_id=publisher.id)
+                else:
+                    # MESSAGE
+                    pass
+                
+                return redirect('view_publisher_users', publisher_id=publisher.id)
 
     else:
         form = InvitePublisherUserForm()

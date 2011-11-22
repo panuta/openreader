@@ -21,10 +21,19 @@ from models import *
 # FROM PUBLICATION ################################################################################
 
 def finishing_upload_publication(request, publisher, publication):
+
+    to_create_magazine = ToCreateMagazine.objects.filter(publication=publication).exists()
+
+    if not Magazine.objects.filter(publisher=publisher).exists():
+        to_create_magazine = True
+
     if request.method == 'POST':
-        form = FinishUploadMagazineIssueForm(request.POST, publisher=publisher, publication=publication)
+        form = FinishUploadMagazineIssueForm(request.POST, publisher=publisher, publication=publication, to_create_magazine=to_create_magazine)
         if form.is_valid():
             magazine = form.cleaned_data['magazine']
+            magazine_name = form.cleaned_data['magazine_name']
+            categories = form.cleaned_data['categories']
+
             title = form.cleaned_data['title']
             description = form.cleaned_data['description']
             publish_status = int(form.cleaned_data['publish_status']) if form.cleaned_data['publish_status'] else None
@@ -33,24 +42,27 @@ def finishing_upload_publication(request, publisher, publication):
 
             publication = publisher_functions.finishing_upload_publication(request, publication, title, description, publish_status, schedule_date, schedule_time)
 
-            # magazine_issue = MagazineIssue.objects.get_or_create(publication=publication, magazine=magazine)
+            if to_create_magazine:
+                magazine = Magazine.objects.create(publisher=publisher, title=magazine_name, created_by=request.user)
 
-            magazine.cancel_with_issue = None
-            magazine.save()
+                for category in categories:
+                    magazine.categories.add(category)
+
+            magazine_issue = MagazineIssue.objects.get_or_create(publication=publication, magazine=magazine)
 
             # MESSAGE
 
             return redirect('view_magazine', magazine_id=magazine.id)
 
     else:
-        form = FinishUploadMagazineIssueForm(publisher=publisher, publication=publication)
+        form = FinishUploadMagazineIssueForm(publisher=publisher, publication=publication, to_create_magazine=to_create_magazine)
     
     try:
-        magazine_issue = MagazineIssue.objects.get(publication=publication)
-    except:
-        magazine_issue = None
+        magazine = MagazineIssue.objects.get(publication=publication).magazine
+    except MagazineIssue.DoesNotExist:
+        magazine = None
     
-    return render(request, 'publisher/magazine/publication_finishing.html', {'publisher':publisher, 'publication':publication, 'form':form, 'magazine_issue':magazine_issue})
+    return render(request, 'publisher/magazine/publication_finishing.html', {'publisher':publisher, 'publication':publication, 'form':form, 'to_create_magazine':to_create_magazine, 'magazine':magazine})
 
 def cancel_upload_publication(request, publisher, publication):
     magazine_issue = MagazineIssue.objects.get(publication=publication)
@@ -111,6 +123,7 @@ def edit_publication_status(request, publisher, publication):
             # MESSAGE
 
             return redirect('view_publication', publication.id)
+
     else:
         schedule_date = publication.publish_schedule.date() if publication.publish_schedule else None
         schedule_time = publication.publish_schedule.time() if publication.publish_schedule else None
@@ -118,13 +131,17 @@ def edit_publication_status(request, publisher, publication):
     
     return render(request, 'publisher/magazine/publication_edit_status.html', {'publisher':publisher, 'publication':publication, 'form':form})
 
-def delete_publication(request, publisher, publication):
-    magazine_issue = MagazineIssue.objects.get(publication=publication)
-    bomagazine_issueok.delete()
+def delete_publication(request, deleted, publisher, publication):
+    if deleted:
+        magazine_issue = MagazineIssue.objects.get(publication=publication)
+        magazine_issue.delete()
 
-    # MESSAGE
+        # MESSAGE
 
-    return redirect('view_magazine', publisher_id=magazine_issue.magazine.id)
+        return redirect('view_magazine', magazine_id=magazine_issue.magazine.id)
+    
+    else:
+        return redirect('view_publication', publication_id=publication.id)
 
 def gather_publisher_statistics(request, publisher):
     return {
@@ -237,7 +254,7 @@ def delete_magazine(request, magazine_id):
     
     if request.method == 'POST':
         if 'submit-delete' in request.POST:
-            from publication.functions import delete_uploading_publication
+            from publisher.functions import delete_uploading_publication
 
             for magazine_issue in MagazineIssue.objects.filter(magazine=magazine):
                 delete_uploading_publication(magazine_issue.publication)
@@ -247,6 +264,11 @@ def delete_magazine(request, magazine_id):
 
             # MESSAGE
         
-        return redirect('view_magazines', publisher_id=publisher.id)
+            return redirect('view_magazines', publisher_id=publisher.id)
+
+        else:
+            return redirect('view_magazine', magazine_id=magazine.id)
+    
+    magazine.issue_count = MagazineIssue.objects.filter(magazine=magazine).count()
 
     return render(request, 'publisher/magazine/magazine_delete.html', {'publisher':publisher, 'magazine':magazine})

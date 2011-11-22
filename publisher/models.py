@@ -17,6 +17,7 @@ def publication_media_dir(instance, filename):
 
 class Publisher(models.Model):
     name = models.CharField(max_length=200)
+    status = models.IntegerField(default=0)
 
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='publisher_created_by')

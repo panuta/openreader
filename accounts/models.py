@@ -53,10 +53,14 @@ class UserProfile(models.Model):
         return '%s %s' % (self.first_name, self.last_name)
 
     def can(self, action, object):
-      return can(self.user, action, object)
+        return can(self.user, action, object)
 
     def get_fullname(self):
-      return '%s %s' % (self.first_name, self.last_name)
+        if not self.first_name or not self.last_name:
+            if not self.user.first_name or not self.user.last_name:
+                return self.user.email
+            return '%s %s' % (self.user.first_name, self.user.last_name)
+        return '%s %s' % (self.first_name, self.last_name)
 
 # Publisher
 
@@ -107,7 +111,7 @@ class UserPublisherInvitation(models.Model):
 
     objects = UserInvitationManager()
 
-    def send_invitation_email(self):
+    def send_invitation_email(self, is_created_publisher=False):
         try:
             send_mail('%s want to invite you to join their team' % self.publisher.name, render_to_string('publisher/email_templates/user_publisher_invitation.html', {'invitation':self }), settings.EMAIL_FOR_USER_PUBLISHER_INVITATION, [self.user_email], fail_silently=False)
             return True

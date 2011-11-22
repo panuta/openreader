@@ -134,6 +134,7 @@ INSTALLED_APPS = (
     'openreader.accounts',
     'openreader.common',
     'openreader.publisher',
+    'openreader.management',
 
     'openreader.publisher.book',
     'openreader.publisher.magazine',

@@ -1,0 +1,9 @@
+<script>
+$(document).ready(function () {
+  $('#id_welcome_modal .upload_magazine_button').on('click', function(e) {
+    $('#id_welcome_modal').modal('hide');
+    open_upload_publication_modal('upload-magazine-form');
+    return false;
+  });
+});
+</script>

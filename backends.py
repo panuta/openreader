@@ -16,6 +16,10 @@ class EmailAuthenticationBackend(ModelBackend):
             if user.count() > 0:
                 user = user[0]
 
-                if user.get_profile().is_publisher and user.check_password(password):
-                    return user
+                if user.check_password(password):
+                    if user.is_superuser or user.is_staff:
+                        return user
+
+                    if user.get_profile().is_publisher:
+                        return user
         return None

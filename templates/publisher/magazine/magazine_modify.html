@@ -29,7 +29,7 @@
       
         <div class="clearfix"><label for="id_title">ชื่อนิตยสาร</label><div class="input">{{form.title}}{{form.title.errors}}</div></div>
         <div class="clearfix"><label for="id_description">คำบรรยายนิตยสาร</label><div class="input">{{form.description}}<span class="help-block">เช่น จุดประสงค์ หรือรูปแบบเนื้อหาของนิตยสาร</span>{{form.description.errors}}</div></div>
-        <div class="clearfix"><label for="id_title">ประเภทสิ่งพิมพ์</label><div class="input pub_cat_checkboxs row">{% genetate_publication_category_multiple_checkbox form.categories.value %}</div></div>
+        <div class="clearfix"><label for="id_categories">ประเภทสิ่งพิมพ์</label><div class="input pub_cat_checkboxs row">{% genetate_publication_category_multiple_checkbox form.categories.value %}</div></div>
         
         <div class="form_actions">
           <button type="submit" class="btn primary">{% if not magazine %}สร้างนิตยสาร{% else %}แก้ไขนิตยสาร{% endif %}</button>
@@ -40,7 +40,7 @@
 
     {% if magazine %}
     <div class="delete_panel">
-      <a href="#" class="danger">ลบนิตยสารและไฟล์ทั้งหมด</a>
+      <a href="{% url delete_magazine magazine.id %}" class="danger">ลบนิตยสารและไฟล์ทั้งหมด</a>
     </div>
     {% endif %}
 

@@ -1,0 +1,39 @@
+{% extends 'base_authenticated.html' %}
+{% load helper_tags %}
+
+{% block head_title %}{{magazine.title}} | ลบนิตยสารและไฟล์ทั้งหมด{% endblock %}
+{% block topnav %}{% include 'publisher/snippets/publisher_topnav.html' with active_menu='magazine' %}{% endblock %}
+
+{% block body_authenticated %}
+<div class="container-fluid container-body">
+  <div class="content-full"><div class="content-inner">
+
+    <ul class="breadcrumb">
+      <li><a href="{% url view_magazines publisher.id %}">นิตยสารทั้งหมด</a> <span class="divider">/</span></li>
+      <li><a href="{% url view_magazine magazine.id %}">{{magazine.title}}</a> <span class="divider">/</span></li>
+      <li class="active">ลบนิตยสารและไฟล์ทั้งหมด</li>
+    </ul>
+
+    <h2>ลบนิตยสารและไฟล์ทั้งหมด</h2>
+
+    <form method="POST" action=".">
+      {% csrf_token %}
+      {{form.non_field_errors}}
+
+      <ul class="form_data">
+        <li>ชื่อนิตยสาร: <span>{{magazine.title}}</span></li>
+        <li>จำนวนไฟล์นิตยสาร: <span>{{magazine.issue_count}} ไฟล์</span></li>
+      </ul>
+
+      <div class="note">
+        <p>คำสั่งลบนิตยสารไม่สามารถย้อนกลับคืนได้ กรุณายืนยันว่าต้องการที่จะลบนิตยสารดังกล่าว</p>
+      </div>
+
+      <div class="form_actions left_form_actions">
+        <button type="submit" name="submit-delete" class="btn danger">ยืนยันการลบนิตยสาร</button>
+        <button type="submit" name="submit-cancel" class="btn">ยกเลิก</button>
+      </div>
+    </form>
+  </div></div>
+</div>
+{% endblock %}

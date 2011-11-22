@@ -19,24 +19,10 @@ $(document).ready(function () {
   {% endcan %}
 
   {% if first_time %}
-
   {% can user 'edit' publisher %}
-  $('#id_welcome_modal .create_upload_magazine_button').on('click', function(e) {
-    $('#id_welcome_modal').modal('hide');
-    open_upload_publication_modal('upload-magazine-form');
-    return false;
-  });
-
-  $('#id_welcome_modal .upload_book_button').on('click', function(e) {
-    $('#id_welcome_modal').modal('hide');
-    open_upload_publication_modal('upload-book-form');
-    return false;
-  });
-
   $('#id_welcome_modal').modal({backdrop:'static'});
   $('#id_welcome_modal').modal('show');
   {% endcan %}
-
   {% endif %}
 })
 </script>
@@ -78,19 +64,12 @@ $(document).ready(function () {
     <div class="modal-body">
       <div class="title">คุณสามารถเริ่มต้นโดย ...</div>
       <ul>
-        <li>
-          <p>สร้างนิตยสารหัวใหม่ และอัพโหลดไฟล์นิตยสารฉบับแรก</p>
-          <button class="primary btn create_upload_magazine_button"><span>สร้างและอัพโหลดไฟล์นิตยสาร</span></button>
-        </li>
-        <li>
-          <p>อัพโหลดหนังสือเล่มใหม่</p>
-          <button class="primary btn upload_book_button"><span>อัพโหลดไฟล์หนังสือ</span></button>
-        </li>
+        {% generate_dashboard_first_time_modal publisher %}
       </ul>
     </div>
   </div>
-  {% generate_publication_module_upload_modal 'magazine' %}
-  {% generate_publication_module_upload_modal 'book' %}
+  {% generate_dashboard_first_time_script publisher %}
+
   {% endcan %}
   
 {% endif %}

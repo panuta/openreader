@@ -9,8 +9,8 @@ class EmailAuthenticationForm(forms.Form):
     Base class for authenticating users. Extend this to get a form that accepts
     email/password logins.
     """
-    email = forms.CharField(label=_("Email"), max_length=75)
-    password = forms.CharField(label=_("Password"), widget=forms.PasswordInput)
+    email = forms.EmailField()
+    password = forms.CharField(widget=forms.PasswordInput)
 
     def __init__(self, request=None, *args, **kwargs):
         """

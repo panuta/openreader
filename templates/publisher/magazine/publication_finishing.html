@@ -25,13 +25,18 @@
     <form class="form-stacked" action="." method="post">
       {% csrf_token %}
 
-      {% if magazine_issue %}
-      <div class="clearfix"><label for="id_magazine">นิตยสาร</label><div class="input magazine_name">{{magazine_issue.magazine.title}}</div><input type="hidden" name="magazine" id="id_magazine" value="{{magazine_issue.magazine.id}}" /></div>
+      {% if to_create_magazine %}
+        <div class="clearfix"><label for="id_magazine_name">ชื่อนิตยสาร</label><div class="input">{{form.magazine_name}}{{form.magazine_name.errors}}</div></div>
+        <div class="clearfix"><label for="id_categories">ประเภทนิตยสาร</label><div class="input pub_cat_checkboxs row">{% if form.categories.errors %}<div class="top_error">{{form.categories.errors}}</div>{% endif %}{% genetate_publication_category_multiple_checkbox '' %}</div></div>
       {% else %}
-      <div class="clearfix"><label for="id_magazine">นิตยสาร</label><div class="input">{{form.magazine}}</div></div>
+        {% if magazine %}
+        <div class="clearfix"><label for="id_magazine">นิตยสาร</label><div class="input magazine_name">{{magazine.title}}</div><input type="hidden" name="magazine" id="id_magazine" value="{{magazine.id}}" /></div>
+        {% else %}
+        <div class="clearfix"><label for="id_magazine">นิตยสาร</label><div class="input">{{form.magazine}}</div></div>
+        {% endif %}
       {% endif %}
 
-      <div class="clearfix"><label for="id_title">ฉบับที่</label><div class="input">{{form.title}}{{form.title.errors}}</div></div>
+      <div class="clearfix"><label for="id_title">นิตยสารฉบับที่</label><div class="input">{{form.title}}{{form.title.errors}}</div></div>
       <div class="clearfix"><label for="id_description">เนื้อหาโดยย่อ</label><div class="input">{{form.description}}{{form.description.errors}}</div></div>
 
       {% include 'publisher/snippets/publish_status.html' with form=form %}

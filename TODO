@@ -1,17 +1,10 @@
-- delete publication
-- delete magazine
-- Admin Page
-    - Setup account for publisher
+- PDF thumbnails
+- API
+
 
 
 - revision
 - remember previous page when editing
-
-
-TODO
-
-
-
 - pagination
 - messages
 - shelf now act more like category
@@ -19,8 +12,7 @@ TODO
 
 - publisher's reader app -- need to ask for this information before publishing
 - update book version
-- API
-- PDF thumbnails
+
 
 
 

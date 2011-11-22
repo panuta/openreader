@@ -69,13 +69,29 @@ def after_syncdb(sender, **kwargs):
     """
 
     try:
+        system_admin_user = User.objects.get(username='system@openreader.com')
+        
+    except User.DoesNotExist:
+        random_password = 'panuta'
+        system_admin_user = User.objects.create_user('system@openreader.com', 'system@openreader.com', random_password)
+        system_admin_user.is_superuser = True
+        system_admin_user.is_staff = True
+        system_admin_user.save()
+
+        user_profile = system_admin_user.get_profile()
+        user_profile.first_name = 'System'
+        user_profile.last_name = 'Openreader'
+        user_profile.is_publisher = False
+        user_profile.save()
+
+    try:
         admin_user = User.objects.get(username='admin@openreader.com')
         
     except User.DoesNotExist:
         random_password = 'panuta'
         admin_user = User.objects.create_user('admin@openreader.com', 'admin@openreader.com', random_password)
-        admin_user.is_superuser = True
-        admin_user.is_staff = True
+        admin_user.is_superuser = False
+        admin_user.is_staff = False
         admin_user.save()
 
         user_profile = admin_user.get_profile()

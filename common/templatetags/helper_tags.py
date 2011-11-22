@@ -93,7 +93,7 @@ def generate_publisher_menu(user):
     if len(user_publishers) > 1:
         menus = []
         for user_publisher in user_publishers:
-            menus.append('<li><a href="%s">Switch to %s</a></li>' % (reverse('view_publisher_dashboard', args=[user_publisher.publisher.id]), user_publisher.publisher.name))
+            menus.append('<li><a href="%s">%s</a></li>' % (reverse('view_publisher_dashboard', args=[user_publisher.publisher.id]), user_publisher.publisher.name))
 
         return u'<li class="dropdown"><a class="dropdown-toggle" href="#">เปลี่ยนสำนักพิมพ์</a><ul class="dropdown-menu">%s</ul></li>' % ''.join(menus)
     else:
@@ -219,35 +219,64 @@ def generate_publication_module_radio_list(publisher):
     
     return radios
 
-class DashboardFirstTimeNode(template.Node):
+# Dashboard First-Time
+
+class DashboardFirstTimeModalNode(template.Node):
     def __init__(self, publisher):
         self.publisher = template.Variable(publisher)
     
     def render(self, context):
         publisher = self.publisher.resolve(context)
-
         publisher_modules = PublisherModule.objects.filter(publisher=publisher, module__module_type='publication')
 
         dashboard_html = []
         for publisher_module in publisher_modules:
             try:
-                t = loader.get_template('publisher/%s/snippets/dashboard_first_time.html' % publisher_module.module.module_name)
-                dashboard_html.append(t.render(context))
+                t = loader.get_template('publisher/%s/snippets/dashboard_first_time_modal.html' % publisher_module.module.module_name)
+                dashboard_html.append('<li>%s</li>' % t.render(context))
             except:
-                import sys
-                print sys.exc_info()
+                pass
+        
+        if dashboard_html:
+            return ''.join(dashboard_html)
+        else:
+            return u'<p>ยังไม่ติดตั้งโมดูล</p>'
+
+@register.tag(name="generate_dashboard_first_time_modal")
+def do_generate_dashboard_first_time_modal(parser, token):
+    try:
+        tag_name, publisher = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError, "generate_dashboard_first_time_modal tag raise ValueError"
+    return DashboardFirstTimeModalNode(publisher)
+
+class DashboardFirstTimeScriptNode(template.Node):
+    def __init__(self, publisher):
+        self.publisher = template.Variable(publisher)
+    
+    def render(self, context):
+        publisher = self.publisher.resolve(context)
+        publisher_modules = PublisherModule.objects.filter(publisher=publisher, module__module_type='publication')
+
+        dashboard_html = []
+        for publisher_module in publisher_modules:
+            try:
+                t = loader.get_template('publisher/%s/snippets/dashboard_first_time_script.html' % publisher_module.module.module_name)
+                dashboard_html.append('%s' % t.render(context))
+            except:
                 pass
         
         return ''.join(dashboard_html)
 
-@register.tag(name="generate_dashboard_first_time")
-def do_generate_dashboard_first_time(parser, token):
+@register.tag(name="generate_dashboard_first_time_script")
+def do_generate_dashboard_first_time_script(parser, token):
     try:
         tag_name, publisher = token.split_contents()
     except ValueError:
-        raise template.TemplateSyntaxError, "generate_dashboard_first_time tag raise ValueError"
-    
-    return DashboardFirstTimeNode(publisher)
+        raise template.TemplateSyntaxError, "generate_dashboard_first_time_script tag raise ValueError"
+    return DashboardFirstTimeScriptNode(publisher)
+
+# Publication Upload Modal
 
 class PublicationModuleUploadModalNode(template.Node):
     def __init__(self, module_name):
@@ -276,9 +305,14 @@ def do_generate_publication_module_upload_modal(parser, token):
     
     return PublicationModuleUploadModalNode(module_name)
 
+# MANAGEMENT ################################################################################
 
-
-
+@register.simple_tag
+def print_publisher_status(publisher):
+    if publisher.status == 0:
+        return u'ปกติ'
+    else:
+        return u'-- ข้อมูลไม่เพียงพอ --'
 
 
 

@@ -5,27 +5,23 @@ from widgets import YUICalendar, HourMinuteTimeInput
 from publisher.forms import GeneralUploadPublicationForm, PublicationCategoryMultipleChoiceField
 from publisher.models import Publication
 
+from common.forms import StrippedCharField
+
 class UploadPublicationForm(GeneralUploadPublicationForm):
     def __init__(self, *args, **kwargs):
         self.publisher = kwargs.pop('publisher', None)
         forms.Form.__init__(self, *args, **kwargs)
 
 class FinishUploadBookForm(forms.Form):
-    title = forms.CharField(widget=forms.TextInput(attrs={'class':'span10'}))
-    author = forms.CharField(widget=forms.TextInput(attrs={'class':'span10'}))
-    description = forms.CharField(required=False, widget=forms.Textarea(attrs={'class':'span10', 'rows':'5'}))
-    publish_status = forms.ChoiceField(required=False, choices=((Publication.PUBLISH_STATUS['UNPUBLISHED'], 'Unpulished'), (Publication.PUBLISH_STATUS['SCHEDULED'], 'Scheduled'), (Publication.PUBLISH_STATUS['PUBLISHED'], 'Published')))
+    title = StrippedCharField(widget=forms.TextInput(attrs={'class':'span10'}))
+    author = StrippedCharField(widget=forms.TextInput(attrs={'class':'span10'}))
+    description = StrippedCharField(required=False, widget=forms.Textarea(attrs={'class':'span10', 'rows':'5'}))
+    publish_status = forms.ChoiceField(choices=((Publication.PUBLISH_STATUS['UNPUBLISHED'], 'Unpulished'), (Publication.PUBLISH_STATUS['SCHEDULED'], 'Scheduled'), (Publication.PUBLISH_STATUS['PUBLISHED'], 'Published')))
     schedule_date = forms.DateField(widget=YUICalendar(attrs={'id':'id_schedule_date'}), required=False)
     schedule_time = forms.TimeField(widget=HourMinuteTimeInput(), required=False)
 
     categories = PublicationCategoryMultipleChoiceField(required=False, widget=forms.CheckboxSelectMultiple())
 
-    """
-    def __init__(self, *args, **kwargs):
-        self.publication = kwargs.pop('publication', None)
-        forms.Form.__init__(self, *args, **kwargs)
-    """
-    
     def clean(self):
         cleaned_data = self.cleaned_data
         publish_status = cleaned_data.get('publish_status')
@@ -41,9 +37,9 @@ class FinishUploadBookForm(forms.Form):
         return cleaned_data
 
 class EditBookDetailsForm(forms.Form):
-    title = forms.CharField(widget=forms.TextInput(attrs={'class':'span10'}))
-    author = forms.CharField(widget=forms.TextInput(attrs={'class':'span10'}))
-    description = forms.CharField(required=False, widget=forms.Textarea(attrs={'class':'span10', 'rows':'5'}))
+    title = StrippedCharField(widget=forms.TextInput(attrs={'class':'span10'}))
+    author = StrippedCharField(widget=forms.TextInput(attrs={'class':'span10'}))
+    description = StrippedCharField(required=False, widget=forms.Textarea(attrs={'class':'span10', 'rows':'5'}))
 
     categories = PublicationCategoryMultipleChoiceField(required=False, widget=forms.CheckboxSelectMultiple())
 

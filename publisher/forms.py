@@ -9,16 +9,23 @@ from common.forms import StrippedCharField
 from common.permissions import ROLE_CHOICES
 
 from accounts.models import Role
-from publisher.models import Publisher, PublicationCategory
+from publisher.models import Publisher, PublicationCategory, Module
 
 class PublicationCategoryMultipleChoiceField(forms.ModelMultipleChoiceField):
     def __init__(self, *args, **kwargs):
-        
         kwargs['queryset'] = PublicationCategory.objects.all().order_by('name')
         forms.ModelMultipleChoiceField.__init__(self, *args, **kwargs)
 
     def label_from_instance(self, obj):
         return '%s' % (obj.name)
+
+class ModuleMultipleChoiceField(forms.ModelMultipleChoiceField):
+    def __init__(self, *args, **kwargs):
+        kwargs['queryset'] = Module.objects.all().order_by('module_type', 'title')
+        forms.ModelMultipleChoiceField.__init__(self, *args, **kwargs)
+
+    def label_from_instance(self, obj):
+        return '%s - %s' % (obj.module_type, obj.title)
 
 # Form classes
 

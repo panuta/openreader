@@ -1,6 +1,7 @@
 <div class="clearfix">
   <label id="id_publish_status">สถานะ</label>
   <div class="input">
+    {% if form.publish_status.errors %}<div class="top_error">{{form.publish_status.errors}}</div>{% endif %}
     <ul class="inputs-list">
       <li>
         <label><input type="radio" value="{{PUBLISH_STATUS_UNPUBLISHED}}" name="publish_status"{% if form.publish_status.value == PUBLISH_STATUS_UNPUBLISHED|slugify %} checked="checked"{% endif %}>ยังไม่เผยแพร่ <span>(Unpublished)</span></label>
@@ -14,6 +15,5 @@
         <label><input type="radio" value="{{PUBLISH_STATUS_PUBLISHED}}" name="publish_status"{% if form.publish_status.value == PUBLISH_STATUS_PUBLISHED|slugify %} checked="checked"{% endif %}>เผยแพร่ <span>(Published)</span></label>
       </li>
     </ul>
-    {{form.publish_status.errors}}
   </div>
 </div>

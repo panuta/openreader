@@ -7,7 +7,7 @@ from widgets import YUICalendar, HourMinuteTimeInput
 from publisher.forms import GeneralUploadPublicationForm, PublicationCategoryMultipleChoiceField
 
 from publisher.models import Publication
-from publisher.magazine.models import Magazine, MagazineIssue
+from publisher.magazine.models import Magazine, MagazineIssue, ToCreateMagazine
 
 class PublisherMagazineChoiceField(forms.ModelChoiceField):
     def __init__(self, *args, **kwargs):
@@ -21,7 +21,6 @@ class PublisherMagazineChoiceField(forms.ModelChoiceField):
 
 class UploadPublicationForm(GeneralUploadPublicationForm):
     magazine = PublisherMagazineChoiceField(required=False)
-    magazine_name = StrippedCharField(required=False)
 
     def __init__(self, *args, **kwargs):
         self.publisher = kwargs.pop('publisher', None)
@@ -30,40 +29,46 @@ class UploadPublicationForm(GeneralUploadPublicationForm):
         self.fields['magazine'].queryset = Magazine.objects.filter(publisher=self.publisher).order_by('title')
     
     def after_upload(self, request, publication):
-        if self.cleaned_data['magazine_name']:
-            magazine = Magazine.objects.create(publisher=publication.publisher, title=self.cleaned_data['magazine_name'], created_by=request.user)
+        if self.cleaned_data['magazine']:
+            magazine_issue = MagazineIssue.objects.create(publication=publication, magazine=magazine)
         else:
-            magazine = self.cleaned_data['magazine']
-        
-        magazine_issue = MagazineIssue.objects.create(publication=publication, magazine=magazine)
-
-        if self.cleaned_data['magazine_name']:
-            magazine.cancel_with_issue = magazine_issue
-            magazine.save()
+            try:
+                ToCreateMagazine.objects.get(publication=publication)
+            except ToCreateMagazine.DoesNotExist:
+                ToCreateMagazine.objects.create(publication=publication)
 
 class FinishUploadMagazineIssueForm(forms.Form):
-    magazine = PublisherMagazineChoiceField()
-    title = StrippedCharField(widget=forms.TextInput(attrs={'class':'span10'}))
+    magazine = PublisherMagazineChoiceField(required=False)
+    magazine_name = StrippedCharField(required=False, widget=forms.TextInput(attrs={'class':'span8'}))
+    categories = PublicationCategoryMultipleChoiceField(required=False, widget=forms.CheckboxSelectMultiple())
+
+    title = StrippedCharField(widget=forms.TextInput(attrs={'class':'span8'}))
     description = StrippedCharField(required=False, widget=forms.Textarea(attrs={'class':'span10', 'rows':'5'}))
-    publish_status = forms.ChoiceField(required=False, choices=((Publication.PUBLISH_STATUS['UNPUBLISHED'], 'Unpulished'), (Publication.PUBLISH_STATUS['SCHEDULED'], 'Scheduled'), (Publication.PUBLISH_STATUS['PUBLISHED'], 'Published')))
+    publish_status = forms.ChoiceField(choices=((Publication.PUBLISH_STATUS['UNPUBLISHED'], 'Unpulished'), (Publication.PUBLISH_STATUS['SCHEDULED'], 'Scheduled'), (Publication.PUBLISH_STATUS['PUBLISHED'], 'Published')))
     schedule_date = forms.DateField(widget=YUICalendar(attrs={'id':'id_schedule_date'}), required=False)
     schedule_time = forms.TimeField(widget=HourMinuteTimeInput(), required=False)
 
     def __init__(self, *args, **kwargs):
         self.publisher = kwargs.pop('publisher', None)
         self.publication = kwargs.pop('publication', None)
+        self.to_create_magazine = kwargs.pop('to_create_magazine', None)
         forms.Form.__init__(self, *args, **kwargs)
 
         self.fields['magazine'].queryset = Magazine.objects.filter(publisher=self.publisher).order_by('title')
     
-    """
     def clean_magazine(self):
-        magazine = self.cleaned_data.get('magazine')
-        if not self.uploading_publication.parent_id and not data:
+        magazine = self.cleaned_data['magazine']
+        if not self.to_create_magazine and not magazine:
             raise forms.ValidationError(_(u'This field is required.'))
         
-        return data
-    """
+        return magazine
+    
+    def clean_magazine_name(self):
+        magazine_name = self.cleaned_data['magazine_name']
+        if self.to_create_magazine and not magazine_name:
+            raise forms.ValidationError(_(u'This field is required.'))
+        
+        return magazine_name
     
     def clean(self):
         cleaned_data = self.cleaned_data
@@ -80,13 +85,13 @@ class FinishUploadMagazineIssueForm(forms.Form):
         return cleaned_data
 
 class MagazineForm(forms.Form):
-    title = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'span9'}))
-    description = StrippedCharField(required=False, widget=forms.Textarea(attrs={'class':'span9', 'rows':'3'}))
+    title = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'span8'}))
+    description = StrippedCharField(required=False, widget=forms.Textarea(attrs={'class':'span10', 'rows':'3'}))
     categories = PublicationCategoryMultipleChoiceField(required=False, widget=forms.CheckboxSelectMultiple())
 
 class EditMagazineIssueDetailsForm(forms.Form):
-    title = forms.CharField(widget=forms.TextInput(attrs={'class':'span10'}))
-    description = forms.CharField(required=False, widget=forms.Textarea(attrs={'class':'span10', 'rows':'5'}))
+    title = StrippedCharField(widget=forms.TextInput(attrs={'class':'span8'}))
+    description = StrippedCharField(required=False, widget=forms.Textarea(attrs={'class':'span10', 'rows':'5'}))
 
 class EditMagazineIssueStatusForm(forms.Form):
     publish_status = forms.ChoiceField(choices=((Publication.PUBLISH_STATUS['UNPUBLISHED'], 'Unpulished'), (Publication.PUBLISH_STATUS['SCHEDULED'], 'Scheduled'), (Publication.PUBLISH_STATUS['PUBLISHED'], 'Published')))

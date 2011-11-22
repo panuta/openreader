@@ -118,13 +118,17 @@ def edit_publication_status(request, publisher, publication):
     
     return render(request, 'publisher/book/publication_edit_status.html', {'publisher':publisher, 'publication':publication, 'form':form})
 
-def delete_publication(request, publisher, publication):
-    book = Book.objects.get(publication=publication)
-    book.delete()
+def delete_publication(request, deleted, publisher, publication):
+    if deleted:
+        book = Book.objects.get(publication=publication)
+        book.delete()
 
-    # MESSAGE
+        # MESSAGE
 
-    return redirect('view_books', publisher_id=publisher.id)
+        return redirect('view_books', publisher_id=publisher.id)
+        
+    else:
+        return redirect('view_publication', publication_id=publication.id)
 
 def gather_publisher_statistics(request, publisher):
     return {

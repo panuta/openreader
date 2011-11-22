@@ -385,7 +385,7 @@ a.edit_publication_button span {
     padding-left:24px;
 }
 
-button.create_upload_magazine_button span, button.upload_book_button span {
+button.upload_magazine_button span, button.upload_book_button span {
     background:url(/static/images/buttons/button_upload_white.png) 0px 50% no-repeat;
     padding-left:24px;
 }
@@ -451,6 +451,26 @@ ul.errorlist {
     li {
         color:#c30;
     }
+}
+
+.top_error {
+    ul.errorlist {
+        margin-bottom:10px;
+    }
+}
+
+.form_data {
+    margin-bottom:20px;
+    li {
+        font-size:1.1em;
+        color:#444;
+        margin-bottom:10px;
+
+        span {
+            font-weight:bold;
+        }
+    }
+
 }
 
 form .note {
@@ -546,6 +566,12 @@ a.btn:visited {color:#333333;}
 
 table td.row_actions a {
     .content_link;
+}
+
+.topbar .dropdown-menu {
+    a {
+        text-decoration:none !important;
+    }
 }
 
 .delete_panel {

@@ -5,7 +5,7 @@
 {% block topnav %}{% include 'publisher/snippets/publisher_topnav.html' with active_menu='magazine' %}{% endblock %}
 
 {% block body_authenticated %}
-<div class="container-fluid container-body publisher_magazines_page">
+<div class="container-fluid container-body">
   <div class="content-full"><div class="content-inner">
 
     <ul class="breadcrumb">
@@ -32,6 +32,10 @@
         </div>
       </fieldset>
     </form>
+
+    <div class="delete_panel">
+      <a href="{% url delete_publication publication.id %}" class="danger">ลบไฟล์นิตยสาร</a>
+    </div>
 
   </div></div>
 </div>

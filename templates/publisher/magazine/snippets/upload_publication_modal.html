@@ -5,16 +5,10 @@
     <div class="modal-body">
       <div class="inputs">
         {% csrf_token %}
-        {% if first_time %}
-          <div class="clearfix"><label for="id_magazine_name">ชื่อนิตยสาร</label><div class="input"><input type="text" name="magazine_name" id="id_magazine_name" /></div></div>
-        {% else %}
-          {% if not magazine %}
-            <div class="clearfix"><label for="id_magazine">เลือกนิตยสาร</label><div class="input"><select name="magazine" id="id_magazine">{% generate_magazine_option_list publisher %}</select></div></div>
-          {% else %}
-            <div class="parent_name">{{magazine.title}}</div>
-            <input type="hidden" name="magazine" id="id_magazine" value="{{magazine.id}}" />
-          {% endif %}
-        {% endif %}
+        
+        {% if magazines %}<div class="clearfix"><label for="id_magazine">เลือกนิตยสาร</label><div class="input"><select name="magazine" id="id_magazine">{% generate_magazine_option_list publisher %}</select></div></div>{% endif %}
+        {% if magazine %}<div class="parent_name">{{magazine.title}}</div><input type="hidden" name="magazine" id="id_magazine" value="{{magazine.id}}" />{% endif %}
+        
         <div class="clearfix"><label for="id_magazine_file">ไฟล์นิตยสาร</label><div class="input"><input type="file" id="id_magazine_file" name="publication"></div></div>
         <input type="hidden" name="X-Progress-ID" value=""/>
         <input type="hidden" name="module" value="magazine"/>
