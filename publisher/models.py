@@ -152,4 +152,9 @@ class PublicationCategory(models.Model):
     def __unicode__(self):
         return self.name
 
+class PublicationShelf(models.Model):
+    publication = models.ForeignKey(Publication)
+    shelf = models.ForeignKey(PublisherShelf)
+    created = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, related_name='publisher_shelf_created_by')
 

@@ -48,7 +48,7 @@ def finishing_upload_publication(request, publication, title, description, publi
     
     return publication
 
-def delete_uploading_publication(publication):
+def delete_publication(publication):
     from models import publication_media_dir
 
     try:
@@ -56,5 +56,6 @@ def delete_uploading_publication(publication):
     except:
         # TODO: Log error
         pass
-    
-    publication.delete()
+    else:
+        PublicationShelf.objects.filter(publication=publication).delete()
+        publication.delete()

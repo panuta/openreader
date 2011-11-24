@@ -181,7 +181,7 @@ def cancel_upload_publication(request, publication_id):
             views_module = get_publication_module(publication.publication_type, 'views')
             response = views_module.cancel_upload_publication(request, publisher, publication)
             
-            publisher_functions.delete_uploading_publication(publication)
+            publisher_functions.delete_publication(publication)
 
             return response
 
@@ -249,7 +249,7 @@ def delete_publication(request, publication_id):
         response = views_module.delete_publication(request, deleted, publisher, publication)
 
         if deleted:
-            publisher_functions.delete_uploading_publication(publication)
+            publisher_functions.delete_publication(publication)
         
         return response
     

@@ -27,6 +27,14 @@ class ModuleMultipleChoiceField(forms.ModelMultipleChoiceField):
     def label_from_instance(self, obj):
         return '%s - %s' % (obj.module_type, obj.title)
 
+class PublisherShelfMultipleChoiceField(forms.ModelMultipleChoiceField):
+    def __init__(self, *args, **kwargs):
+        kwargs['queryset'] = PublisherShelf.objects.all().order_by('name')
+        forms.ModelMultipleChoiceField.__init__(self, *args, **kwargs)
+
+    def label_from_instance(self, obj):
+        return '%s' % (obj.name)
+
 # Form classes
 
 class PublisherForm(forms.Form):

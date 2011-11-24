@@ -129,3 +129,17 @@ def view_files(request, publisher_id):
     files = Publication.objects.filter(publisher=publisher, publication_type='file').order_by('uploaded')
 
     return render(request, 'publisher/file/files.html', {'publisher':publisher, 'files':files})
+
+@login_required
+def view_files_by_shelf(request, publisher_id, shelf_id):
+    publisher = get_object_or_404(Publisher, pk=publisher_id)
+    shelf = get_object_or_404(Shelf, pk=shelf_id)
+
+    if shelf.publisher.id == publisher.id or not has_module(publisher, 'shelf') or not can(request.user, 'view', publisher):
+        raise Http404
+    
+    files = []
+    for item in PublicationShelf.objects.filter(shelf=shelf, publication__publication_type='file').order_by('publication__uploaded'):
+        files.append(item.publication)
+    
+    return render(request, 'publisher/file/files.html', {'publisher':publisher, 'files':files, 'shelf':shelf})
