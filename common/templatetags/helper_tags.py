@@ -175,7 +175,7 @@ class HasModuleNode(template.Node):
         publisher = self.publisher.resolve(context)
         module_name = self.module_name
         
-        if has_module(publisher=publisher, module_name=module_name):
+        if has_module(publisher=publisher, module=module_name):
             output = self.nodelist_true.render(context)
             return output
         else:

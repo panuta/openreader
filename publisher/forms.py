@@ -9,7 +9,7 @@ from common.forms import StrippedCharField
 from common.permissions import ROLE_CHOICES
 
 from accounts.models import Role
-from publisher.models import Publisher, PublicationCategory, Module
+from publisher.models import Publisher, PublicationCategory, Module, PublisherShelf
 
 class PublicationCategoryMultipleChoiceField(forms.ModelMultipleChoiceField):
     def __init__(self, *args, **kwargs):

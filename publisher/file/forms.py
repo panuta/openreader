@@ -3,7 +3,7 @@ from django import forms
 from widgets import YUICalendar, HourMinuteTimeInput
 
 from publisher.forms import GeneralUploadPublicationForm, PublisherShelfMultipleChoiceField
-from publisher.models import Publication
+from publisher.models import Publication, PublisherShelf
 
 from common.forms import StrippedCharField
 from common.modules import has_module
