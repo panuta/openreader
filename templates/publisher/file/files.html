@@ -1,0 +1,65 @@
+{% extends 'base_authenticated.html' %}
+{% load helper_tags %}
+
+{% block head_title %}ไฟล์{% endblock %}
+{% block topnav %}{% include 'publisher/snippets/publisher_topnav.html' with active_menu='file' %}{% endblock %}
+
+{% block html_head %}
+{{block.super}}
+<script>
+$(document).ready(function () {
+  {% can user 'edit' publisher %}
+  bind_all_upload_publication_modal();
+  bind_all_upload_publication_form();
+
+  $('.upload_publication_button').on('click', function(e) {
+    open_upload_publication_modal('upload-file-form');
+    return false;
+  });
+
+  bind_publication_actions();
+  {% endcan %}
+})
+</script>
+{% endblock %}
+
+{% block body_authenticated %}
+<div class="container-fluid container-body publisher_files_page">
+
+  <div class="content-full"><div class="content-inner">
+
+    <h2>ไฟล์</h2>
+
+    {% can user 'edit' publisher %}
+    <div class="page_actions">
+      <button class="btn primary upload_publication_button"><span>อัพโหลดไฟล์</span></button>
+    </div>
+    {% endcan %}
+
+    {% if files %}
+    <div class="publications">
+      <ul>
+        {% for publication in files %}
+        <li class="publication{% if forloop.last %} last{% endif %}">
+          <div class="cover"></div>
+          <div class="right">
+            {% if publication.publish_status == PUBLISH_STATUS_PUBLISHED %}<div class="statistics"></div>{% endif %}
+            <div class="name">{% if publication.publish_status == PUBLISH_STATUS_UPLOADING %}{{publication.original_file_name}}.{{publication.file_ext}}{% else %}<a href="{% url view_publication publication.id %}">{{publication.title}}</a>{% endif %}</div>
+            <div class="details">อัพโหลดเมื่อวันที่ {{publication.uploaded|format_abbr_datetime}}</div>
+            <div class="publish_status">สถานะ - {% print_publication_status publication %}</div>
+            {% can user 'edit' publisher %}<div class="links">{% generate_publication_actions publication %}</div>{% endcan %}
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    {% else %}
+    <div class="no_row">ไม่มีไฟล์</div>
+    {% endif %}
+
+    {% can user 'edit' publisher %}{% generate_publication_module_upload_modal 'file' %}{% endcan %}
+
+  </div></div>
+</div>
+{% endblock %}

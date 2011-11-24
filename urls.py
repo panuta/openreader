@@ -12,6 +12,7 @@ urlpatterns = patterns('',
 
     url('', include('openreader.publisher.book.urls')),
     url('', include('openreader.publisher.magazine.urls')),
+    url('', include('openreader.publisher.file.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
 

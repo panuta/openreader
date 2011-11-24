@@ -2,14 +2,14 @@
 {% load helper_tags %}
 
 {% block head_title %}{{publication.title}} | แก้ไขรายละเอียด{% endblock %}
-{% block topnav %}{% include 'publisher/snippets/publisher_topnav.html' with active_menu='book' %}{% endblock %}
+{% block topnav %}{% include 'publisher/snippets/publisher_topnav.html' with active_menu='file' %}{% endblock %}
 
 {% block body_authenticated %}
 <div class="container-fluid container-body publisher_magazines_page">
   <div class="content-full"><div class="content-inner">
 
     <ul class="breadcrumb">
-      <li><a href="{% url view_books publisher.id %}">หนังสือทั้งหมด</a> <span class="divider">/</span></li>
+      <li><a href="{% url view_files publisher.id %}">ไฟล์ทั้งหมด</a> <span class="divider">/</span></li>
       <li><a href="{% url view_publication publication.id %}">{{publication.title}}</a> <span class="divider">/</span></li>
       <li class="active">แก้ไขรายละเอียด</li>
     </ul>
@@ -19,10 +19,8 @@
     <form method="POST" action="{% url edit_publication publication.id %}">
       {% csrf_token %}
       {{form.non_field_errors}}
-      <div class="clearfix"><label for="id_title">ชื่อหนังสือ</label><div class="input">{{form.title}}{{form.title.errors}}</div></div>
-      <div class="clearfix"><label for="id_author">ผู้แต่ง</label><div class="input">{{form.author}}{{form.author.errors}}</div></div>
+      <div class="clearfix"><label for="id_title">ชื่อไฟล์</label><div class="input">{{form.title}}{{form.title.errors}}</div></div>
       <div class="clearfix"><label for="id_description">เนื้อหาโดยย่อ</label><div class="input">{{form.description}}{{form.description.errors}}</div></div>
-      <div class="clearfix"><label for="id_categories">ประเภทสิ่งพิมพ์</label><div class="input pub_cat_checkboxs row">{% genetate_publication_category_multiple_checkbox form.categories.value %}</div></div>
 
       <div class="form_actions">
         <button type="submit" class="btn primary">บันทึกข้อมูล</button>
@@ -31,7 +29,7 @@
     </form>
 
     <div class="delete_panel">
-      <a href="{% url delete_publication publication.id %}" class="danger">ลบไฟล์หนังสือ</a>
+      <a href="{% url delete_publication publication.id %}" class="danger">ลบไฟล์</a>
     </div>
 
   </div></div>

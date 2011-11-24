@@ -1,7 +1,7 @@
 - PDF thumbnails
 - API
 
-
+- check has_module on every method in module
 
 - revision
 - remember previous page when editing

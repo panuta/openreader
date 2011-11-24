@@ -44,7 +44,7 @@ MEDIA_ROOT = os.path.join(base_path, 'media/')
 MEDIA_URL = '/media/'
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 
-DEFAULT_FILE_STORAGE = 'mystorages.backends.sftpstorage.SFTPStorage'
+# DEFAULT_FILE_STORAGE = 'mystorages.backends.sftpstorage.SFTPStorage'
 
 STATIC_ROOT = os.path.join(base_path, 'sitestatic/')
 STATIC_URL = '/static/'
@@ -141,6 +141,7 @@ INSTALLED_APPS = (
 
     'openreader.publisher.book',
     'openreader.publisher.magazine',
+    'openreader.publisher.file',
 )
 
 # A sample logging configuration. The only tangible logging

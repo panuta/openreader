@@ -1,0 +1,41 @@
+{% extends 'base_authenticated.html' %}
+{% load helper_tags %}
+
+{% block head_title %}Finishing upload{% endblock %}
+{% block topnav %}{% include 'publisher/snippets/publisher_topnav.html' with active_menu='file' %}{% endblock %}
+
+{% block body_authenticated %}
+<div class="alert-message block-message success"><p><strong>อัพโหลดไฟล์เรียบร้อย</strong> กรอกรายละเอียดของไฟล์ด้านล่าง</p></div>
+
+<div class="container-fluid container-body finishing_upload_publication_page">
+  <div class="sidebar">
+    <div class="cover"></div>
+  </div>
+
+  <div class="content"><div class="content-inner">
+
+    <h2>ข้อมูลไฟล์</h2>
+
+    <div class="file_name">
+      <h3>ชื่อไฟล์ต้นฉบับ</h3>
+      <div>{{publication.original_file_name}}.{{publication.file_ext}}</div>
+    </div>
+
+    <form class="form-stacked" action="." method="post">
+      {% csrf_token %}
+
+      <div class="clearfix"><label for="id_title">ชื่อไฟล์</label><div class="input">{{form.title}}{{form.title.errors}}</div></div>
+      <div class="clearfix"><label for="id_description">เนื้อหาโดยย่อ</label><div class="input">{{form.description}}<span class="help-block">ไม่จำเป็นต้องกรอก</span>{{form.description.errors}}</div></div>
+
+      {% include 'publisher/snippets/publish_status.html' with form=form %}
+
+      <div class="form_actions left_form_actions">
+        <button type="submit" class="btn primary">บันทึกข้อมูล</button>
+        หรือ
+        <a href="{% url cancel_upload_publication publication.id %}?next={% url view_files publication.publisher.id %}">ยกเลิกการอัพโหลดไฟล์</a>
+      </div>
+    </form>
+    
+  </div></div>
+</div>
+{% endblock %}

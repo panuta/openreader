@@ -20,6 +20,7 @@ def after_syncdb(sender, **kwargs):
     # Module
     magazine_module, created = Module.objects.get_or_create(module_name='magazine', module_type='publication', title='นิตยสาร', front_page_url='view_magazines')
     book_module, created = Module.objects.get_or_create(module_name='book', module_type='publication', title='หนังสือ', front_page_url='view_books')
+    file_module, created = Module.objects.get_or_create(module_name='file', module_type='publication', title='ไฟล์', front_page_url='view_files')
     shelf_module, created = Module.objects.get_or_create(module_name='shelf', module_type='feature', title='ชั้นหนังสือ')
 
     # Roles and Permissions
@@ -133,6 +134,7 @@ def after_syncdb(sender, **kwargs):
     
     PublisherModule.objects.get_or_create(publisher=publisher, module=magazine_module)
     PublisherModule.objects.get_or_create(publisher=publisher, module=book_module)
+    PublisherModule.objects.get_or_create(publisher=publisher, module=file_module)
     PublisherModule.objects.get_or_create(publisher=publisher, module=shelf_module)
 
     """
