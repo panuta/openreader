@@ -11,7 +11,7 @@ from common import utilities
 from common.modules import *
 
 from accounts.models import UserPublisher
-from publisher.models import Publication, PublisherModule
+from publisher.models import Publication, PublisherModule, PublisherShelf
 
 
 # DATE TIME #################################################################
@@ -153,6 +153,17 @@ def genetate_publication_category_multiple_checkbox(existing_categories):
         htmls.append('<div class="checkbox_column"><ul>%s</ul></div>' % ''.join(columns[i]))
     
     return ''.join(htmls)
+
+@register.simple_tag
+def generate_shelf_list(publisher, url, active_shelf=0):
+    shelf_html = []
+    for shelf in PublisherShelf.objects.filter(publisher=publisher).order_by('name'):
+        active_html = ' active' if active_shelf == str(shelf.id) else ''
+        # TODO
+        count = PublicationShelf.objects.filter(shelf=shelf, publication_type='')
+        shelf_html.append('<li class="shelf%s"><a href="%s">%s (%d)</a></li>' % (active_html, reverse(url, args=[publisher.id, shelf.id]), shelf.name, ))
+    
+    return ''.join(shelf_html)
 
 # MODULES ################################################################################
 
