@@ -10,6 +10,7 @@ from django.http import HttpResponse, HttpResponseServerError, Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import simplejson
 
+from common.modules import has_module
 from common.permissions import can
 
 from publisher import functions as publisher_functions
@@ -155,7 +156,7 @@ def gather_publisher_statistics(request, publisher):
 def view_magazines(request, publisher_id):
     publisher = get_object_or_404(Publisher, pk=publisher_id)
 
-    if not can(request.user, 'view', publisher):
+    if not has_module(publisher, 'magazine') or not can(request.user, 'view', publisher):
         raise Http404
 
     magazines = Magazine.objects.filter(publisher=publisher).order_by('-created')
@@ -177,7 +178,7 @@ def view_magazines(request, publisher_id):
 def create_magazine(request, publisher_id):
     publisher = get_object_or_404(Publisher, pk=publisher_id)
 
-    if not can(request.user, 'edit', publisher):
+    if not has_module(publisher, 'magazine') or not can(request.user, 'edit', publisher):
         raise Http404
 
     if request.method == 'POST':
@@ -206,7 +207,7 @@ def view_magazine(request, magazine_id):
     magazine = get_object_or_404(Magazine, pk=magazine_id)
     publisher = magazine.publisher
 
-    if not can(request.user, 'view', publisher):
+    if not has_module(publisher, 'magazine') or not can(request.user, 'view', publisher):
         raise Http404
     
     magazine.issues = MagazineIssue.objects.filter(magazine=magazine, publication__publication_type='magazine').order_by('-publication__uploaded')
@@ -218,7 +219,7 @@ def edit_magazine(request, magazine_id):
     magazine = get_object_or_404(Magazine, pk=magazine_id)
     publisher = magazine.publisher
 
-    if not can(request.user, 'edit', publisher):
+    if not has_module(publisher, 'magazine') or not can(request.user, 'edit', publisher):
         raise Http404
 
     if request.method == 'POST':
@@ -249,7 +250,7 @@ def delete_magazine(request, magazine_id):
     magazine = get_object_or_404(Magazine, pk=magazine_id)
     publisher = magazine.publisher
 
-    if not can(request.user, 'edit', publisher):
+    if not has_module(publisher, 'magazine') or not can(request.user, 'edit', publisher):
         raise Http404
     
     if request.method == 'POST':

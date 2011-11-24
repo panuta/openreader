@@ -62,33 +62,6 @@ def view_publisher_dashboard(request, publisher_id):
     return render(request, 'publisher/dashboard.html', {'publisher':publisher, 'recent_publications':recent_publications, 'first_time':first_time})
 
 @login_required
-def create_publisher(request):
-    if not request.user.is_admin:
-        raise Http404
-
-    if request.method == 'POST':
-        form = PublisherForm(request.POST)
-        if form.is_valid():
-            publisher_name = form.cleaned_data['name']
-
-            publisher = Publisher.objects.create(name=publisher_name, created_by=request.user, modified_by=request.user)
-            PublisherShelf.objects.create(publisher=publisher, created_by=request.user)
-
-            user_publisher = UserPublisher.objects.create(user=request.user, publisher=publisher)
-
-            if UserPublisher.objects.filter(user=request.user).count() == 1:
-                user_publisher.is_default = True
-                user_publisher.save()
-            
-            # MESSAGE
-
-            return redirect('view_publisher_dashboard', publisher_id=publisher.id)
-    else:
-        form = PublisherForm()
-    
-    return render(request, 'publisher/publisher_create.html', {'form': form})
-
-@login_required
 def update_publisher(request, publisher_id):
     publisher = get_object_or_404(Publisher, pk=publisher_id)
 
@@ -134,7 +107,7 @@ def upload_publication(request, publisher_id, module_name=''):
             except Module.DoesNotExist:
                 raise Http404
             
-            if not PublisherModule.objects.filter(publisher=publisher, module=module).exists():
+            if not has_module(publisher, module):
                 raise Http404
             
             form = module.get_module_object('forms').UploadPublicationForm(request.POST, request.FILES, publisher=publisher)
@@ -146,6 +119,7 @@ def upload_publication(request, publisher_id, module_name=''):
             try:
                 publication = publisher_functions.upload_publication(request, module_input, uploading_file, publisher)
             except:
+                # TODO
                 import sys
                 print sys.exc_info()
                 return response_json_error('upload')

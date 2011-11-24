@@ -10,6 +10,7 @@ from django.http import HttpResponse, HttpResponseServerError, Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import simplejson
 
+from common.modules import has_module
 from common.permissions import can
 
 from publisher import functions as publisher_functions
@@ -141,7 +142,7 @@ def gather_publisher_statistics(request, publisher):
 def view_books(request, publisher_id):
     publisher = get_object_or_404(Publisher, pk=publisher_id)
 
-    if not can(request.user, 'view', publisher):
+    if not has_module(publisher, 'book') or not can(request.user, 'view', publisher):
         raise Http404
 
     books = Publication.objects.filter(publisher=publisher, publication_type='book').order_by('uploaded')
