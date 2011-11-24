@@ -44,6 +44,8 @@ MEDIA_ROOT = os.path.join(base_path, 'media/')
 MEDIA_URL = '/media/'
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 
+DEFAULT_FILE_STORAGE = 'mystorages.backends.sftpstorage.SFTPStorage'
+
 STATIC_ROOT = os.path.join(base_path, 'sitestatic/')
 STATIC_URL = '/static/'
 ADMIN_MEDIA_PREFIX = '/static/admin/'
@@ -129,7 +131,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    #'private_files',
+    'private_files',
+    'mystorages',
 
     'openreader.accounts',
     'openreader.common',
@@ -167,6 +170,12 @@ LOGGING = {
 ########## Django Private Files ##########
 
 FILE_PROTECTION_METHOD = 'basic'
+
+########## Django Storages ##########
+
+SFTP_STORAGE_HOST = '172.16.204.129'
+SFTP_STORAGE_ROOT = '/web/sites/openreader/files/'
+SFTP_STORAGE_PARAMS = {'username':'root', 'password':'panuta'}
 
 ########## Open Reader Settings ##########
 

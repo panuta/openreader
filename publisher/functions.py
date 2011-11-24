@@ -12,6 +12,8 @@ def upload_publication(request, publication_type, uploading_file, publisher):
     publication = Publication.objects.create(publisher=publisher, publication_type=publication_type, original_file_name=file_name, file_ext=file_ext, uploaded_by=request.user)
     publication.uploaded_file.save('%s.%s' % (publication.uid, file_ext), uploading_file)
 
+    # Generate file thumbnails
+
     return publication
 
 def finishing_upload_publication(request, publication, title, description, publish_status, schedule_date, schedule_time):

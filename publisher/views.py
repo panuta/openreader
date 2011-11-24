@@ -54,8 +54,6 @@ def view_publisher_dashboard(request, publisher_id):
     else:
         first_time = False
     
-    first_time = True
-    
     recent_publications = Publication.objects.filter(publisher=publisher).exclude(publish_status=Publication.PUBLISH_STATUS['UPLOADING']).order_by('-uploaded')[0:10]
 
     if not can(request.user, 'view', publisher):
@@ -148,9 +146,11 @@ def upload_publication(request, publisher_id, module_name=''):
             try:
                 publication = publisher_functions.upload_publication(request, module_input, uploading_file, publisher)
             except:
+                import sys
+                print sys.exc_info()
                 return response_json_error('upload')
-            
-            form.after_upload(request, publication)
+            else:
+                form.after_upload(request, publication)
             
             return response_json({'next_url':reverse('finishing_upload_publication', args=[publication.id])})
 

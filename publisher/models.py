@@ -119,7 +119,8 @@ class Publication(models.Model):
     description = models.TextField(blank=True)
     publication_type = models.CharField(max_length=50) # Also module_code
 
-    uploaded_file = PrivateFileField(upload_to=publication_media_dir, condition=is_downloadable, max_length=500, null=True)
+    #uploaded_file = PrivateFileField(upload_to=publication_media_dir, condition=is_downloadable, max_length=500, null=True)
+    uploaded_file = models.FileField(upload_to='/web/sites/openreader/files/', max_length=500, null=True)
     original_file_name = models.CharField(max_length=300)
     file_ext = models.CharField(max_length=10)
 
