@@ -235,6 +235,16 @@ def edit_publication_status(request, publication_id):
     return views_module.edit_publication_status(request, publisher, publication)
 
 @login_required
+def replace_publication(request, publication_id):
+    publication = get_object_or_404(Publication, id=publication_id)
+    publisher = publication.publisher
+
+    if not can(request.user, 'edit', publisher):
+        raise Http404
+    
+    return render(request, 'publisher/publication_replace.html', {'publisher':publisher, 'publication':publication})
+
+@login_required
 def delete_publication(request, publication_id):
     publication = get_object_or_404(Publication, id=publication_id)
     publisher = publication.publisher
@@ -373,6 +383,9 @@ def view_publisher_shelfs(request, publisher_id):
         raise Http404
     
     publisher_shelves = PublisherShelf.objects.filter(publisher=publisher).order_by('name')
+
+    for publisher_shelve in publisher_shelves:
+        publisher_shelve.count = PublicationShelf.objects.filter(shelf=publisher_shelve).count()
     
     return render(request, 'publisher/manage/publisher_manage_shelfs.html', {'publisher':publisher, 'publisher_shelves':publisher_shelves})
 

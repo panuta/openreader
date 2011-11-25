@@ -1,21 +1,20 @@
 - PDF thumbnails
 - API
 
+- download file
+- replace file
 - revision
 - remember previous page when editing
 - pagination
 - messages
-- shelf now act more like category
-  - publisher can add/edit/delete by their own will, without affecting other publishers
-
 - publisher's reader app -- need to ask for this information before publishing
 - update book version
+- public publication (anyone can see)
+
+- publish to multiple reader app
+- publisher's reader will not be able to see unpublished publication
 
 
-
-
-
-- Download file from another server
 
 - Check device id (https://github.com/gekitz/UIDevice-with-UniqueIdentifier-for-iOS-5)
 

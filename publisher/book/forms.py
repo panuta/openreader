@@ -13,6 +13,7 @@ class UploadPublicationForm(GeneralUploadPublicationForm):
         forms.Form.__init__(self, *args, **kwargs)
 
 class FinishUploadBookForm(forms.Form):
+    next = forms.CharField(required=False, widget=forms.HiddenInput())
     title = StrippedCharField(widget=forms.TextInput(attrs={'class':'span10'}))
     author = StrippedCharField(widget=forms.TextInput(attrs={'class':'span10'}))
     description = StrippedCharField(required=False, widget=forms.Textarea(attrs={'class':'span10', 'rows':'5'}))

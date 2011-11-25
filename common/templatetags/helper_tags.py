@@ -11,7 +11,7 @@ from common import utilities
 from common.modules import *
 
 from accounts.models import UserPublisher
-from publisher.models import Publication, PublisherModule, PublisherShelf
+from publisher.models import Publication, PublisherModule, PublisherShelf, PublicationShelf
 
 
 # DATE TIME #################################################################
@@ -72,6 +72,41 @@ def do_can(parser, token):
         nodelist_false = NodeList()
     
     return CanNode(nodelist_true, nodelist_false, user, action, object)
+
+# SHELF #################################################################
+
+class HasPublisherShelfNode(template.Node):
+    def __init__(self, nodelist_true, nodelist_false, publisher):
+        self.nodelist_true = nodelist_true
+        self.nodelist_false = nodelist_false
+        self.publisher = template.Variable(publisher)
+    
+    def render(self, context):
+        publisher = self.publisher.resolve(context)
+        
+        if PublisherShelf.objects.filter(publisher=publisher).exists():
+            output = self.nodelist_true.render(context)
+            return output
+        else:
+            output = self.nodelist_false.render(context)
+            return output
+
+@register.tag(name="has_publisher_shelf")
+def do_has_publisher_shelf(parser, token):
+    try:
+        tag_name, publisher = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError, "has_publisher_shelf tag raise ValueError"
+    
+    nodelist_true = parser.parse(('else', 'end_has_publisher_shelf'))
+    token = parser.next_token()
+    if token.contents == 'else':
+        nodelist_false = parser.parse(('end_has_publisher_shelf',))
+        parser.delete_first_token()
+    else:
+        nodelist_false = NodeList()
+    
+    return HasPublisherShelfNode(nodelist_true, nodelist_false, publisher)
 
 # HTML GENERATOR #################################################################
 
@@ -155,13 +190,12 @@ def genetate_publication_category_multiple_checkbox(existing_categories):
     return ''.join(htmls)
 
 @register.simple_tag
-def generate_shelf_list(publisher, url, active_shelf=0):
+def generate_shelf_list(publisher, module, url, active_shelf=None):
     shelf_html = []
     for shelf in PublisherShelf.objects.filter(publisher=publisher).order_by('name'):
-        active_html = ' active' if active_shelf == str(shelf.id) else ''
-        # TODO
-        count = PublicationShelf.objects.filter(shelf=shelf, publication_type='')
-        shelf_html.append('<li class="shelf%s"><a href="%s">%s (%d)</a></li>' % (active_html, reverse(url, args=[publisher.id, shelf.id]), shelf.name, ))
+        active_html = ' active' if active_shelf and active_shelf.id == shelf.id else ''
+        count = PublicationShelf.objects.filter(shelf=shelf, publication__publication_type=module).count()
+        shelf_html.append('<li class="shelf%s"><a href="%s">%s (%d)</a></li>' % (active_html, reverse(url, args=[shelf.id]), shelf.name, count))
     
     return ''.join(shelf_html)
 

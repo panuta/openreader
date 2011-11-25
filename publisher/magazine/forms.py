@@ -30,7 +30,7 @@ class UploadPublicationForm(GeneralUploadPublicationForm):
     
     def after_upload(self, request, publication):
         if self.cleaned_data['magazine']:
-            magazine_issue = MagazineIssue.objects.create(publication=publication, magazine=magazine)
+            magazine_issue = MagazineIssue.objects.create(publication=publication, magazine=self.cleaned_data['magazine'])
         else:
             try:
                 ToCreateMagazine.objects.get(publication=publication)
@@ -38,6 +38,7 @@ class UploadPublicationForm(GeneralUploadPublicationForm):
                 ToCreateMagazine.objects.create(publication=publication)
 
 class FinishUploadMagazineIssueForm(forms.Form):
+    next = forms.CharField(required=False, widget=forms.HiddenInput())
     magazine = PublisherMagazineChoiceField(required=False)
     magazine_name = StrippedCharField(required=False, widget=forms.TextInput(attrs={'class':'span8'}))
     categories = PublicationCategoryMultipleChoiceField(required=False, widget=forms.CheckboxSelectMultiple())

@@ -29,10 +29,13 @@ $.ajaxSetup({
 var _upload_progress_intv;
 var _active_upload_form;
 
-function open_upload_publication_modal(form_id) {
+function open_upload_publication_modal(form_id, next_url) {
   _active_upload_form = '#' + form_id;
   clear_upload_publication_modal();
   $(_active_upload_form).closest('.upload-publication-modal').modal('show');
+  if(next_url) {
+    $(_active_upload_form + ' input[name="next"]').val(next_url);
+  }
 }
 
 function clear_upload_publication_modal() {
@@ -88,7 +91,12 @@ function bind_all_upload_publication_form() {
           $(_active_upload_form + ' .upload_progressbar').progressBar(100);
           clearInterval(_upload_progress_intv);
           _upload_progress_intv = 0;
-          window.location = response.next_url;
+
+          if($(_active_upload_form + ' input[name="next"]').val()) {
+            window.location = response.next_url + '?from=' + $(_active_upload_form + ' input[name="next"]').val();
+          } else {
+            window.location = response.next_url;
+          }
         }
       }
     };

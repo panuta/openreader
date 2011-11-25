@@ -17,7 +17,7 @@
   <thead>
     <tr>
       <th>ชื่อชั้นหนังสือ</th>
-      <th>คำอธิบาย</th>
+      <th>จำนวนไฟล์</th>
       {% can user 'manage' publisher %}<th></th>{% endcan %}
     </tr>
   </thead>
@@ -25,7 +25,7 @@
     {% for shelf in publisher_shelves %}
     <tr>
       <td>{{shelf.name}}</td>
-      <td>{{shelf.description}}</td>
+      <td>{{shelf.count}} ไฟล์</td>
       {% can user 'manage' publisher %}<td class="row_actions"><a href="{% url edit_publisher_shelf shelf.id %}">แก้ไขชั้นหนังสือ</a> | <a href="{% url delete_publisher_shelf shelf.id %}">ลบชั้นหนังสือ</a></td>{% endcan %}
     </tr>
     {% endfor %}

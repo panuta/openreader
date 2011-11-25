@@ -43,10 +43,13 @@ def finishing_upload_publication(request, publisher, publication):
             
             messages.success(request, 'บันทึกข้อมูลเรียบร้อย')
 
+            if form.cleaned_data['next']:
+                return redirect(form.cleaned_data['next'])
+
             return redirect('view_books', publisher_id=publisher.id)
             
     else:
-        form = FinishUploadBookForm()
+        form = FinishUploadBookForm(initial={'next':request.GET.get('from', '')})
     
     return render(request, 'publisher/book/publication_finishing.html', {'publisher':publisher, 'publication':publication, 'form':form})
 
@@ -145,6 +148,6 @@ def view_books(request, publisher_id):
     if not has_module(publisher, 'book') or not can(request.user, 'view', publisher):
         raise Http404
 
-    books = Publication.objects.filter(publisher=publisher, publication_type='book').order_by('uploaded')
+    books = Publication.objects.filter(publisher=publisher, publication_type='book').order_by('-uploaded')
 
     return render(request, 'publisher/book/books.html', {'publisher':publisher, 'books':books})

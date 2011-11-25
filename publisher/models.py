@@ -134,6 +134,8 @@ class Publication(models.Model):
     modified = models.DateTimeField(auto_now=True)
     modified_by = models.ForeignKey(User, related_name='publication_modified_by', null=True, blank=True)
 
+    shelfs = models.ManyToManyField(PublisherShelf, through='PublicationShelf')
+
     def __unicode__(self):
         return '%s' % (self.title)
 

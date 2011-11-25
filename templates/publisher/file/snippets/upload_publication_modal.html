@@ -6,7 +6,9 @@
         {% csrf_token %}
         <div class="clearfix"><label for="id_file_file">ไฟล์</label><div class="input"><input type="file" id="id_file_file" name="publication"></div></div>
         <input type="hidden" name="X-Progress-ID" value=""/>
+        <input type="hidden" name="next" value=""/>
         <input type="hidden" name="module" value="file"/>
+        {% if shelf %}<input type="hidden" name="shelf" value="{{shelf.id}}"/>{% endif %}
       </div>
     </div>
     <div class="modal-footer actions"><input class="btn primary" type="submit" value="อัพโหลด" /></div>

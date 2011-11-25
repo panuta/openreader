@@ -53,10 +53,13 @@ def finishing_upload_publication(request, publisher, publication):
 
             # MESSAGE
 
+            if form.cleaned_data['next']:
+                return redirect(form.cleaned_data['next'])
+
             return redirect('view_magazine', magazine_id=magazine.id)
 
     else:
-        form = FinishUploadMagazineIssueForm(publisher=publisher, publication=publication, to_create_magazine=to_create_magazine)
+        form = FinishUploadMagazineIssueForm(initial={'next':request.GET.get('from', '')}, publisher=publisher, publication=publication, to_create_magazine=to_create_magazine)
     
     try:
         magazine = MagazineIssue.objects.get(publication=publication).magazine

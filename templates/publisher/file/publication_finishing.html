@@ -7,12 +7,8 @@
 {% block body_authenticated %}
 <div class="alert-message block-message success"><p><strong>อัพโหลดไฟล์เรียบร้อย</strong> กรอกรายละเอียดของไฟล์ด้านล่าง</p></div>
 
-<div class="container-fluid container-body finishing_upload_publication_page">
-  <div class="sidebar">
-    <div class="cover"></div>
-  </div>
-
-  <div class="content"><div class="content-inner">
+<div class="container-fluid container-body publication_page">
+  <div class="content-full"><div class="content-inner">
 
     <h2>ข้อมูลไฟล์</h2>
 
@@ -27,8 +23,15 @@
       <div class="clearfix"><label for="id_title">ชื่อไฟล์</label><div class="input">{{form.title}}{{form.title.errors}}</div></div>
       <div class="clearfix"><label for="id_description">เนื้อหาโดยย่อ</label><div class="input">{{form.description}}<span class="help-block">ไม่จำเป็นต้องกรอก</span>{{form.description.errors}}</div></div>
 
+      {% has_module publisher 'shelf' %}
+      {% has_publisher_shelf publisher %}
+      <div class="clearfix"><label for="id_shelf">ชั้นหนังสือ</label><div class="input inputs-list">{{form.shelf}}{{form.shelf.errors}}</div></div>
+      {% end_has_publisher_shelf %}
+      {% end_has_module %}
+
       {% include 'publisher/snippets/publish_status.html' with form=form %}
 
+      {{form.next}}
       <div class="form_actions left_form_actions">
         <button type="submit" class="btn primary">บันทึกข้อมูล</button>
         หรือ

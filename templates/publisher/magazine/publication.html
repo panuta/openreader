@@ -22,7 +22,10 @@
       <div class="uploaded">อัพโหลดเมื่อวันที่ {{publication.uploaded|format_abbr_datetime}} โดย {{publication.uploaded_by.get_profile.get_fullname}}</div>
     </h2>
 
-    {% can user 'edit' publisher %}<div class="page_actions"><a href="{% url edit_publication publication.id %}" class="btn edit_publication_button"><span>แก้ไขรายละเอียด</span></a></div>{% endcan %}
+    <div class="page_actions">
+      <a href="#" class="primary btn download_publication_button"><span>ดาวน์โหลดไฟล์</span></a>
+      {% can user 'edit' publisher %}<a href="{% url edit_publication publication.id %}" class="btn edit_publication_button"><span>แก้ไขรายละเอียด</span></a>{% endcan %}
+    </div>
 
     <h3>สถานะ</h3>
     <div class="publish_status">

@@ -13,7 +13,12 @@ $(document).ready(function () {
   bind_all_upload_publication_form();
 
   $('.upload_publication_button').on('click', function(e) {
+    {% if shelf %}
+    open_upload_publication_modal('upload-file-form', '/publisher/files/shelf/{{shelf.id}}/');
+    {% else %}
     open_upload_publication_modal('upload-file-form');
+    {% endif %}
+    
     return false;
   });
 
@@ -26,35 +31,30 @@ $(document).ready(function () {
 {% block body_authenticated %}
 
 {% has_module publisher 'shelf' %}
-  <div class="container-fluid container-body publisher_magazines_page">
+  <div class="container-fluid container-body publisher_files_page">
     <div class="sidebar">
-      <div class="head">ชั้นหนังสือ</div>
+      <div class="head"><a href="{% url view_files publisher.id %}">ชั้นหนังสือ</a></div>
       <ul>
-        <li class="all_shelf"><a href="#">ทุกไฟล์</a></li>
-        {% if shelf %}{% generate_shelf_list publisher 'view_files_by_shelf' shelf.id %}{% else %}{% generate_shelf_list publisher 'view_files_by_shelf' %}{% endif %}
-        <li class="no_shelf"><a href="#">ไฟล์ที่ไม่อยู่ในชั้น</a></li>
-        {% can user 'edit' publisher %}<li class="add"><a href="{% url create_magazine publisher.id %}">สร้างชั้นหนังสือใหม่</a></li>{% endcan %}
+        {% if shelf %}{% generate_shelf_list publisher 'file' 'view_files_by_shelf' shelf %}{% else %}{% generate_shelf_list publisher 'file' 'view_files_by_shelf' %}{% endif %}
+        {% can user 'manage' publisher %}<li class="add"><a href="{% url create_file_shelf publisher.id %}">สร้างชั้นหนังสือใหม่</a></li>{% endcan %}
       </ul>
     </div>
 
     <div class="content"><div class="content-inner">
-      <h2>ไฟล์</h2>
+      <h2>{% if not shelf %}ไฟล์ทั้งหมด{% else %}ไฟล์ชั้นหนังสือ {{shelf.name}}{% endif %}</h2>
       
-      {% can user 'edit' publisher %}<div class="page_actions"><button class="btn primary upload_publication_button"><span>อัพโหลดไฟล์</span></button></div>{% endcan %}
+      {% can user 'edit' publisher %}<div class="page_actions"><button class="btn primary upload_publication_button"><span>อัพโหลดไฟล์{% if shelf %}เข้าชั้นหนังสือ{% endif %}</span></button></div>{% endcan %}
 
       {% if files %}
       <div class="publications">
         <ul>
           {% for publication in files %}
           <li class="publication{% if forloop.last %} last{% endif %}">
-            <div class="cover"></div>
-            <div class="right">
-              {% if publication.publish_status == PUBLISH_STATUS_PUBLISHED %}<div class="statistics"></div>{% endif %}
-              <div class="name">{% if publication.publish_status == PUBLISH_STATUS_UPLOADING %}{{publication.original_file_name}}.{{publication.file_ext}}{% else %}<a href="{% url view_publication publication.id %}">{{publication.title}}</a>{% endif %}</div>
-              <div class="details">อัพโหลดเมื่อวันที่ {{publication.uploaded|format_abbr_datetime}}</div>
-              <div class="publish_status">สถานะ - {% print_publication_status publication %}</div>
-              {% can user 'edit' publisher %}<div class="links">{% generate_publication_actions publication %}</div>{% endcan %}
-            </div>
+            {% if publication.publish_status == PUBLISH_STATUS_PUBLISHED %}<div class="statistics"></div>{% endif %}
+            <div class="name">{% if publication.publish_status == PUBLISH_STATUS_UPLOADING %}{{publication.original_file_name}}.{{publication.file_ext}}{% else %}<a href="{% url view_publication publication.id %}">{{publication.title}}</a>{% endif %}</div>
+            <div class="details">อัพโหลดเมื่อวันที่ {{publication.uploaded|format_abbr_datetime}}</div>
+            <div class="publish_status">สถานะ - {% print_publication_status publication %}</div>
+            {% can user 'edit' publisher %}<div class="links">{% generate_publication_actions publication %}</div>{% endcan %}
           </li>
           {% endfor %}
         </ul>
@@ -64,12 +64,14 @@ $(document).ready(function () {
       <div class="no_row">ไม่มีไฟล์</div>
       {% endif %}
 
+      {% can user 'edit' publisher %}{% generate_publication_module_upload_modal 'file' %}{% endcan %}
+
     </div></div>
   </div>
 {% else %}
   <div class="container-fluid container-body publisher_files_page">
     <div class="content-full"><div class="content-inner">
-      <h2>ไฟล์</h2>
+      <h2>ไฟล์ทั้งหมด</h2>
 
       {% can user 'edit' publisher %}<div class="page_actions"><button class="btn primary upload_publication_button"><span>อัพโหลดไฟล์</span></button></div>{% endcan %}
 
@@ -78,14 +80,11 @@ $(document).ready(function () {
         <ul>
           {% for publication in files %}
           <li class="publication{% if forloop.last %} last{% endif %}">
-            <div class="cover"></div>
-            <div class="right">
-              {% if publication.publish_status == PUBLISH_STATUS_PUBLISHED %}<div class="statistics"></div>{% endif %}
-              <div class="name">{% if publication.publish_status == PUBLISH_STATUS_UPLOADING %}{{publication.original_file_name}}.{{publication.file_ext}}{% else %}<a href="{% url view_publication publication.id %}">{{publication.title}}</a>{% endif %}</div>
-              <div class="details">อัพโหลดเมื่อวันที่ {{publication.uploaded|format_abbr_datetime}}</div>
-              <div class="publish_status">สถานะ - {% print_publication_status publication %}</div>
-              {% can user 'edit' publisher %}<div class="links">{% generate_publication_actions publication %}</div>{% endcan %}
-            </div>
+            {% if publication.publish_status == PUBLISH_STATUS_PUBLISHED %}<div class="statistics"></div>{% endif %}
+            <div class="name">{% if publication.publish_status == PUBLISH_STATUS_UPLOADING %}{{publication.original_file_name}}.{{publication.file_ext}}{% else %}<a href="{% url view_publication publication.id %}">{{publication.title}}</a>{% endif %}</div>
+            <div class="details">อัพโหลดเมื่อวันที่ {{publication.uploaded|format_abbr_datetime}}</div>
+            <div class="publish_status">สถานะ - {% print_publication_status publication %}</div>
+            {% can user 'edit' publisher %}<div class="links">{% generate_publication_actions publication %}</div>{% endcan %}
           </li>
           {% endfor %}
         </ul>
