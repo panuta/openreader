@@ -19,7 +19,7 @@ def view_user_welcome(request):
         raise Http404
     
     if request.user.is_superuser:
-        return redirect('/admin/')
+        return redirect('/management/')
     
     welcome_contact_email = settings.WELCOME_CONTACT_EMAIL
     return render(request, 'accounts/user_welcome.html', {'welcome_contact_email':welcome_contact_email})

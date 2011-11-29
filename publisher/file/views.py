@@ -28,8 +28,13 @@ def finishing_upload_publication(request, publisher, publication):
         if form.is_valid():
             title = form.cleaned_data['title']
             description = form.cleaned_data['description']
-
+            
             publication = publisher_functions.finishing_upload_publication(request, publication, title, description)
+
+            if has_module(publisher, 'shelf'):
+                publication.shelves.clear()
+                for shelf in form.cleaned_data['shelf']:
+                    publication.shelves.add(shelf)
 
             if form.cleaned_data['next']:
                 return redirect(form.cleaned_data['next'])
@@ -43,7 +48,7 @@ def finishing_upload_publication(request, publisher, publication):
     return render(request, 'publisher/file/publication_finishing.html', {'publisher':publisher, 'publication':publication, 'form':form})
 
 def cancel_upload_publication(request, publisher, publication):
-    # MESSAGE
+    messages.success(request, u'ยกเลิกการอัพโหลดไฟล์เรียบร้อย')
     return redirect('view_files', publisher_id=publisher.id)
 
 def view_publication(request, publisher, publication):
@@ -56,10 +61,26 @@ def edit_publication(request, publisher, publication):
         if form.is_valid():
             publication.title = form.cleaned_data['title']
             publication.description = form.cleaned_data['description']
-            publication.save()
-            
-            # MESSAGE
 
+            if has_module(publisher, 'shelf'):
+                new_shelves = set(form.cleaned_data['shelf']) # PublisherShelf model
+
+                old_shelves = set()
+                for shelf in publication.shelves.all():
+                    old_shelves.add(shelf.shelf)
+
+                creating_shelves = new_shelves.difference(old_shelves)
+                removing_shelves = old_shelves.difference(new_shelves)
+
+                for shelf in creating_shelves:
+                    PublicationShelf.objects.create(publication=publication, shelf=shelf, created_by=request.user)
+
+                PublicationShelf.objects.filter(publication=publication, shelf__in=removing_shelves).delete()
+            
+            publication.save()
+
+            messages.success(request, u'แก้ไขรายละเอียดเรียบร้อย')
+            
             return redirect('view_publication', publication.id)
     else:
         form = EditFileDetailsForm(initial={'title':publication.title, 'description':publication.description})

@@ -390,6 +390,10 @@ button.upload_magazine_button span, button.upload_book_button span , button.uplo
     padding-left:24px;
 }
 
+a.download_publication_button span {
+    background:url(/static/images/buttons/button_download_white.png) 0px 50% no-repeat;
+    padding-left:24px;
+}
 
 
 /* Messages */
@@ -610,7 +614,7 @@ table td.row_actions a {
     .uploading {
         font-size:1.2em;
         color:#555;
-        margin:0px 0px 10px 150px;
+        margin:0px 0px 10px 0px;
 
         .upload_progressbar {
             margin-top:10px;
@@ -769,6 +773,18 @@ table td.row_actions a {
 
         .published {
             background-color:@publication-published;
+        }
+    }
+
+    .shelves {
+        li {
+            font-size:1.1em;
+            list-style:disc;
+            margin-left:20px;
+
+            a {
+                .content_link;
+            }
         }
     }
 

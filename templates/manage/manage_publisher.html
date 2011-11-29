@@ -11,6 +11,7 @@
     <div class="head"><a href="{% url manage_publishers %}">สำนักพิมพ์</a></div>
     <ul>
       <li class="publisher_front active"><a href="{% url manage_publisher publisher.id %}">ภาพรวม</a></li>
+      <li class="publisher_module"><a href="{% url manage_publisher publisher.id %}">โมดูล</a></li>
       <li class="publisher_users"><a href="{% url manage_publisher publisher.id %}">บัญชีผู้ใช้</a></li>
     </ul>
   </div>
@@ -20,7 +21,6 @@
 
     <div class="page_actions">
       <a href="#" class="btn">แก้ไขข้อมูลสำนักพิมพ์</a>
-      <a href="#" class="btn">แก้ไขโมดูล</a>
     </div>
 
     <div>Publication statistics</div>

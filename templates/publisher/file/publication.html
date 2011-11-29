@@ -30,6 +30,15 @@
       {% can user 'edit' publisher %}<div class="change"><a href="{% url edit_publication_status publication.id %}" class="btn small">เปลี่ยนสถานะ</a></div>{% endcan %}
     </div>
 
+    {% if publication.shelves.all %}
+    <h3>ชั้นหนังสือ</h3>
+    <ul class="shelves">
+      {% for shelf in publication.shelves.all %}
+      <li><a href="{% url view_files_by_shelf shelf.id %}">{{shelf.name}}</a></li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
     <div class="details">
       <h3>เนื้อหาโดยย่อ</h3>
       {% if publication.description %}

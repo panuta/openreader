@@ -1,21 +1,15 @@
-- working on publication action modal
-- error message on publication action modal
-
-
 - PDF thumbnails
 - API
 
 - download file
-- replace file
+- replace file (update version)
 - revision
 - remember previous page when editing
 - pagination
 - messages
 - publisher's reader app -- need to ask for this information before publishing
-- update book version
 - public publication (anyone can see)
 
-- publish to multiple reader app
 - publisher's reader will not be able to see unpublished publication
 
 
@@ -25,9 +19,6 @@ TODO - PHRASE 2
 
 
 
-- Check device id (https://github.com/gekitz/UIDevice-with-UniqueIdentifier-for-iOS-5)
-
-- http://allseeing-i.com/ASIHTTPRequest/
 
 ########## 3rd Library + Resources ##########
 https://github.com/dcramer/django-sentry
