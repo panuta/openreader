@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from common.forms import StrippedCharField
 from widgets import YUICalendar, HourMinuteTimeInput
 
-from publisher.forms import GeneralUploadPublicationForm, PublicationCategoryMultipleChoiceField
+from publisher.forms import GeneralUploadPublicationForm, PublicationCategoryMultipleChoiceField, PublicationPublishStatusField
 
 from publisher.models import Publication
 from publisher.magazine.models import Magazine, MagazineIssue, ToCreateMagazine
@@ -17,6 +17,7 @@ class PublisherMagazineChoiceField(forms.ModelChoiceField):
 
     def label_from_instance(self, obj):
         return '%s' % (obj.title)
+
 
 
 class UploadPublicationForm(GeneralUploadPublicationForm):
@@ -45,9 +46,6 @@ class FinishUploadMagazineIssueForm(forms.Form):
 
     title = StrippedCharField(widget=forms.TextInput(attrs={'class':'span8'}))
     description = StrippedCharField(required=False, widget=forms.Textarea(attrs={'class':'span10', 'rows':'5'}))
-    publish_status = forms.ChoiceField(choices=((Publication.PUBLISH_STATUS['UNPUBLISHED'], 'Unpulished'), (Publication.PUBLISH_STATUS['SCHEDULED'], 'Scheduled'), (Publication.PUBLISH_STATUS['PUBLISHED'], 'Published')))
-    schedule_date = forms.DateField(widget=YUICalendar(attrs={'id':'id_schedule_date'}), required=False)
-    schedule_time = forms.TimeField(widget=HourMinuteTimeInput(), required=False)
 
     def __init__(self, *args, **kwargs):
         self.publisher = kwargs.pop('publisher', None)
@@ -77,10 +75,10 @@ class FinishUploadMagazineIssueForm(forms.Form):
         schedule_date = cleaned_data.get('schedule_date')
         schedule_time = cleaned_data.get('schedule_time')
 
-        if publish_status == str(Publication.PUBLISH_STATUS['SCHEDULED']) and not schedule_date:
+        if publish_status == str(Publication.STATUS['SCHEDULED']) and not schedule_date:
             self._errors['schedule_date'] = self.error_class([_(u'This field is required.')])
         
-        if publish_status == str(Publication.PUBLISH_STATUS['SCHEDULED']) and not schedule_time:
+        if publish_status == str(Publication.STATUS['SCHEDULED']) and not schedule_time:
             self._errors['schedule_time'] = self.error_class([_(u'This field is required.')])
         
         return cleaned_data
@@ -95,7 +93,7 @@ class EditMagazineIssueDetailsForm(forms.Form):
     description = StrippedCharField(required=False, widget=forms.Textarea(attrs={'class':'span10', 'rows':'5'}))
 
 class EditMagazineIssueStatusForm(forms.Form):
-    publish_status = forms.ChoiceField(choices=((Publication.PUBLISH_STATUS['UNPUBLISHED'], 'Unpulished'), (Publication.PUBLISH_STATUS['SCHEDULED'], 'Scheduled'), (Publication.PUBLISH_STATUS['PUBLISHED'], 'Published')))
+    publish_status = PublicationPublishStatusField(required=False)
     schedule_date = forms.DateField(widget=YUICalendar(attrs={'id':'id_schedule_date'}), required=False)
     schedule_time = forms.TimeField(widget=HourMinuteTimeInput(), required=False)
 
@@ -105,10 +103,10 @@ class EditMagazineIssueStatusForm(forms.Form):
         schedule_date = cleaned_data.get('schedule_date')
         schedule_time = cleaned_data.get('schedule_time')
 
-        if publish_status == str(Publication.PUBLISH_STATUS['SCHEDULED']) and not schedule_date:
+        if publish_status == str(Publication.STATUS['SCHEDULED']) and not schedule_date:
             self._errors['schedule_date'] = self.error_class([_(u'This field is required.')])
         
-        if publish_status == str(Publication.PUBLISH_STATUS['SCHEDULED']) and not schedule_time:
+        if publish_status == str(Publication.STATUS['SCHEDULED']) and not schedule_time:
             self._errors['schedule_time'] = self.error_class([_(u'This field is required.')])
         
         return cleaned_data

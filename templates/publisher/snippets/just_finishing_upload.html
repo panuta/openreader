@@ -1,0 +1,20 @@
+{% load helper_tags %}
+{% if_just_finishing_upload %}
+<div class="alert-message block-message success just_finishing_upload">
+  <p><strong>บันทึกการอัพโหลดและข้อมูลไฟล์เรียบร้อย</strong></p>
+  <ul>
+  	{% for publication in publications %}<li>ไฟล์ {{publication.get_publication_title}} <span>[ <a href="{% url set_publication_schedule publication.id %}" class="upload_action_schedule">ตั้งเวลาเผยแพร่</a> | <a href="{% url set_publication_published publication.id %}" class="upload_action_publish">เผยแพร่ทันที</a> ]</span></li>{% endfor %}
+  </ul>
+</div>
+<script>
+$(".just_finishing_upload .upload_action_publish").on('click', function(e) {
+  open_publish_modal($(this).attr('href'));
+  return false;
+});
+
+$(".just_finishing_upload .upload_action_schedule").on('click', function(e) {
+  open_schedule_modal($(this).attr('href'));
+  return false;
+});
+</script>
+{% endif %}

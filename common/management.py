@@ -22,6 +22,7 @@ def after_syncdb(sender, **kwargs):
     book_module, created = Module.objects.get_or_create(module_name='book', module_type='publication', title='หนังสือ', front_page_url='view_books')
     file_module, created = Module.objects.get_or_create(module_name='file', module_type='publication', title='ไฟล์', front_page_url='view_files')
     shelf_module, created = Module.objects.get_or_create(module_name='shelf', module_type='feature', title='ชั้นหนังสือ')
+    # reader_select_module, created = Module.objects.get_or_create(module_name='reader_select', module_type='feature', title='ตัวเลือกโปรแกรมอ่าน')
 
     # Roles and Permissions
     from common.permissions import ROLE_CHOICES
@@ -143,7 +144,7 @@ def after_syncdb(sender, **kwargs):
     publication, created = Publication.objects.get_or_create(
         publisher=publisher, 
         title='Issue Name 1', 
-        publish_status=Publication.PUBLISH_STATUS['UNPUBLISHED'], 
+        publish_status=Publication.STATUS['UNPUBLISHED'], 
         publication_type='magazine',
         original_file_name='a', file_ext='pdf', uploaded_by=admin_user)
     MagazineIssue.objects.get_or_create(magazine=magazine, publication=publication)
@@ -151,7 +152,7 @@ def after_syncdb(sender, **kwargs):
     publication, created = Publication.objects.get_or_create(
         publisher=publisher, 
         title='Issue Name 3', 
-        publish_status=Publication.PUBLISH_STATUS['SCHEDULED'], 
+        publish_status=Publication.STATUS['SCHEDULED'], 
         publication_type='magazine',
         original_file_name='a', file_ext='pdf', uploaded_by=admin_user)
     publication.publish_schedule = datetime.datetime.today()
@@ -162,7 +163,7 @@ def after_syncdb(sender, **kwargs):
     publication, created = Publication.objects.get_or_create(
         publisher=publisher, 
         title='Issue Name 4', 
-        publish_status=Publication.PUBLISH_STATUS['PUBLISHED'], 
+        publish_status=Publication.STATUS['PUBLISHED'], 
         publication_type='magazine',
         original_file_name='a', file_ext='pdf', uploaded_by=admin_user)
     publication.published = datetime.datetime.today()
@@ -172,7 +173,7 @@ def after_syncdb(sender, **kwargs):
     publication, created = Publication.objects.get_or_create(
         publisher=publisher, 
         title='Issue Name 5', 
-        publish_status=Publication.PUBLISH_STATUS['PUBLISHED'], 
+        publish_status=Publication.STATUS['PUBLISHED'], 
         publication_type='magazine',
         original_file_name='a', file_ext='pdf', uploaded_by=admin_user)
     publication.published = datetime.datetime.today()

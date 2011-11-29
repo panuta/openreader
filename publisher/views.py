@@ -3,6 +3,7 @@
 import os
 import datetime
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
@@ -54,11 +55,14 @@ def view_publisher_dashboard(request, publisher_id):
     else:
         first_time = False
     
-    recent_publications = Publication.objects.filter(publisher=publisher).exclude(publish_status=Publication.PUBLISH_STATUS['UPLOADING']).order_by('-uploaded')[0:10]
-
     if not can(request.user, 'view', publisher):
         raise Http404
-        
+    
+    if can(request.user, 'edit', publisher):
+        recent_publications = Publication.objects.filter(publisher=publisher, status__in=(Publication.STATUS['UNPUBLISHED'], Publication.STATUS['PUBLISHED'])).order_by('-uploaded')[0:settings.ITEM_COUNT_IN_DASHBOARD]
+    else:
+        recent_publications = Publication.objects.filter(publisher=publisher, status=Publication.STATUS['PUBLISHED']).order_by('-uploaded')[0:settings.ITEM_COUNT_IN_DASHBOARD]
+    
     return render(request, 'publisher/dashboard.html', {'publisher':publisher, 'recent_publications':recent_publications, 'first_time':first_time})
 
 @login_required
@@ -119,7 +123,7 @@ def upload_publication(request, publisher_id, module_name=''):
             try:
                 publication = publisher_functions.upload_publication(request, module_input, uploading_file, publisher)
             except:
-                # TODO
+                # TODO implement more useful error handling and logging, also do not persist publication record if upload is failed
                 import sys
                 print sys.exc_info()
                 return response_json_error('upload')
@@ -160,9 +164,9 @@ def finishing_upload_publication(request, publication_id):
     
     views_module = get_publication_module(publication.publication_type, 'views')
     
-    if publication.publish_status != Publication.PUBLISH_STATUS['UPLOADING']:
+    if publication.status != Publication.STATUS['UPLOADING']:
         return redirect('view_publication', publication_id=publication.id)
-
+    
     return views_module.finishing_upload_publication(request, publisher, publication)
 
 @login_required
@@ -173,7 +177,7 @@ def cancel_upload_publication(request, publication_id):
     if not can(request.user, 'edit', publisher):
         raise Http404
     
-    if publication.publish_status != Publication.PUBLISH_STATUS['UPLOADING']:
+    if publication.status != Publication.STATUS['UPLOADING']:
         raise Http404
     
     if request.method == 'POST':
@@ -274,16 +278,18 @@ def set_publication_published(request, publication_id):
         raise Http404
 
     if request.method == 'POST' and request.is_ajax():
-        if publication.publish_status == Publication.PUBLISH_STATUS['PUBLISHED']:
+        if publication.status == Publication.STATUS['PROCESSING']:
+            return response_json_error('processing')
+        
+        if publication.status == Publication.STATUS['PUBLISHED']:
             return response_json_error('published')
+        
+        if not publication.status in (Publication.STATUS['SCHEDULED'], Publication.STATUS['UNPUBLISHED']):
+            return response_json_error('invalid-status')
+        
+        publisher_functions.publish_publication(request, publication)
 
-        publication.publish_status = Publication.PUBLISH_STATUS['PUBLISHED']
-        publication.publish_schedule = None
-        publication.published = datetime.datetime.today()
-        publication.published_by = request.user
-        publication.save()
-
-        return HttpResponse('')
+        return response_json()
     else:
         raise Http404
 
@@ -296,22 +302,26 @@ def set_publication_schedule(request, publication_id):
         raise Http404
 
     if request.method == 'POST' and request.is_ajax():
+        if publication.status == Publication.STATUS['UPLOADING']:
+            return response_json_error('invalid-status')
+        
         try:
             (s_year, s_month, s_day) = request.POST.get('schedule_date').split('-')
             (s_year, s_month, s_day) = (int(s_year), int(s_month), int(s_day))
             (s_hour, s_minute) = request.POST.get('schedule_time').split(':')
             (s_hour, s_minute) = (int(s_hour), int(s_minute))
-        except:
-            return response_json_error('invalid')
-        
-        schedule = datetime.datetime(s_year, s_month, s_day, s_hour, s_minute, 0)
-        publication.publish_status = Publication.PUBLISH_STATUS['SCHEDULED']
-        publication.publish_schedule = schedule
-        publication.published = None
-        publication.published_by = request.user
-        publication.save()
 
-        return HttpResponse('')
+            schedule = datetime.datetime(s_year, s_month, s_day, s_hour, s_minute, 0)
+
+        except:
+            return response_json_error('invalid-schedule')
+        
+        if schedule <= datetime.datetime.today():
+            return response_json_error('past')
+        
+        publisher_functions.schedule_publication(request, publication, schedule)
+        
+        return response_json()
     else:
         raise Http404
 
@@ -324,15 +334,12 @@ def set_publication_cancel_schedule(request, publication_id):
         raise Http404
 
     if request.method == 'POST' and request.is_ajax():
-        if publication.publish_status != Publication.PUBLISH_STATUS['SCHEDULED']:
-            return response_json_error('no-schedule')
+        if not publication.status in (Publication.STATUS['UNPUBLISHED'], Publication.STATUS['PUBLISHED']):
+            return response_json_error('invalid-status')
         
-        publication.publish_status = Publication.PUBLISH_STATUS['UNPUBLISHED']
-        publication.publish_schedule = None
-        publication.published_by = None
-        publication.save()
-
-        return HttpResponse('')
+        publisher_functions.cancel_schedule_publication(request, publication)
+        
+        return response_json()
     else:
         raise Http404
 

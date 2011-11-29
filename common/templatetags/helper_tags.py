@@ -11,7 +11,7 @@ from common import utilities
 from common.modules import *
 
 from accounts.models import UserPublisher
-from publisher.models import Publication, PublisherModule, PublisherShelf, PublicationShelf
+from publisher.models import Publication, PublisherModule, PublisherShelf, PublicationShelf, Module
 
 
 # DATE TIME #################################################################
@@ -108,6 +108,40 @@ def do_has_publisher_shelf(parser, token):
     
     return HasPublisherShelfNode(nodelist_true, nodelist_false, publisher)
 
+# UPLOAD #################################################################
+
+class JustFinishingUploadNode(template.Node):
+    def __init__(self, nodelist):
+        self.nodelist = nodelist
+    
+    def render(self, context):
+        request = context.get('request')
+        success_list = request.session.get('finishing_upload_success')
+
+        existing_publications = context.get('publications')
+
+        if success_list:
+            context['publications'] = success_list
+            output = self.nodelist.render(context)
+        else:
+            output = ''
+        
+        request.session['finishing_upload_success'] = []
+        context['publications'] = existing_publications
+        return output
+
+@register.tag(name="if_just_finishing_upload")
+def do_if_just_finishing_upload(parser, token):
+    try:
+        tag_name = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError, "if_just_finishing_upload tag raise ValueError"
+    
+    nodelist = parser.parse(('endif',))
+    parser.delete_first_token()
+
+    return JustFinishingUploadNode(nodelist)
+
 # HTML GENERATOR #################################################################
 
 @register.simple_tag
@@ -136,33 +170,36 @@ def generate_publisher_menu(user):
 
 @register.simple_tag
 def print_publication_status(publication):
-    if publication.publish_status == Publication.PUBLISH_STATUS['UPLOADING']:
+    if publication.status == Publication.STATUS['UPLOADING']:
         return u'<span class="unfinished">ยังกรอกข้อมูลไม่ครบ</span>'
+    
+    elif publication.status == Publication.STATUS['PROCESSING']:
+        return u'<span class="processing">กำลังจัดเก็บไฟล์</span>'
 
-    elif publication.publish_status == Publication.PUBLISH_STATUS['UNPUBLISHED']:
+    elif publication.status == Publication.STATUS['UNPUBLISHED']:
         return u'<span class="unpublished">ยังไม่เผยแพร่</span>'
 
-    elif publication.publish_status == Publication.PUBLISH_STATUS['SCHEDULED']:
-        return u'<span class="scheduled">ตั้งเวลาเผยแพร่ วันที่ %s</span>' % (utilities.format_abbr_datetime(publication.publish_schedule))
+    elif publication.status == Publication.STATUS['SCHEDULED']:
+        return u'<span class="scheduled">ตั้งเวลาเผยแพร่ วันที่ %s</span>' % (utilities.format_abbr_datetime(publication.web_scheduled))
 
-    elif publication.publish_status == Publication.PUBLISH_STATUS['PUBLISHED']:
-        return u'<span class="published">เผยแพร่แล้ว วันที่ %s</span>' % (utilities.format_abbr_datetime(publication.published))
+    elif publication.status == Publication.STATUS['PUBLISHED']:
+        return u'<span class="published">เผยแพร่แล้ว วันที่ %s</span>' % (utilities.format_abbr_datetime(publication.web_published))
     
     return ''
 
 @register.simple_tag
 def generate_publication_actions(publication):
     # TODO Check permission
-    if publication.publish_status == Publication.PUBLISH_STATUS['UPLOADING']:
+    if publication.status == Publication.STATUS['UPLOADING']:
         return u'<a href="%s" class="small btn"><span>กรอกข้อมูลต่อ</span></a>' % reverse('finishing_upload_publication', args=[publication.id])
 
-    elif publication.publish_status == Publication.PUBLISH_STATUS['UNPUBLISHED']:
+    elif publication.status == Publication.STATUS['UNPUBLISHED']:
         return u'<a href="%s" class="small btn action-schedule"><span>ตั้งเวลาเผยแพร่</a></a><a href="%s" class="small btn action-publish"><span>เผยแพร่ทันที</span></a><a href="%s" class="link">แก้ไขรายละเอียด</a>' % (reverse('set_publication_schedule', args=[publication.id]), reverse('set_publication_published', args=[publication.id]), reverse('edit_publication', args=[publication.id]))
 
-    elif publication.publish_status == Publication.PUBLISH_STATUS['SCHEDULED']:
+    elif publication.status == Publication.STATUS['SCHEDULED']:
         return u'<a href="%s" class="small btn action-schedule"><span>ตั้งเวลาใหม่</span></a><a href="%s" class="link">แก้ไขรายละเอียด</a>' % (reverse('set_publication_schedule', args=[publication.id]), reverse('edit_publication', args=[publication.id]))
         
-    elif publication.publish_status == Publication.PUBLISH_STATUS['PUBLISHED']:
+    elif publication.status == Publication.STATUS['PROCESSING'] or publication.publish_status == Publication.STATUS['PUBLISHED']:
         return u'<a href="%s" class="link">แก้ไขรายละเอียด</a>' % reverse('edit_publication', args=[publication.id])
     
     return ''
@@ -207,7 +244,8 @@ def print_publication_type_name(publication):
 
 @register.simple_tag
 def print_publication_title(publication):
-    return get_publication_module(publication.publication_type).get_publication_title(publication)
+    return publication.get_publication_title()
+    #return get_publication_module(publication.publication_type).get_publication_title(publication)
 
 class HasModuleNode(template.Node):
     def __init__(self, nodelist_true, nodelist_false, publisher, module_name):

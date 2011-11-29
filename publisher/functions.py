@@ -4,7 +4,7 @@ import os
 from django.conf import settings
 
 from exceptions import FileUploadTypeUnknown
-from models import Publication
+from models import Publication, PublisherReader
 
 def upload_publication(request, publication_type, uploading_file, publisher):
     (file_name, separator, file_ext) = uploading_file.name.rpartition('.')
@@ -16,35 +16,80 @@ def upload_publication(request, publication_type, uploading_file, publisher):
 
     return publication
 
-def finishing_upload_publication(request, publication, title, description, publish_status, schedule_date, schedule_time):
-    
-    if publish_status == Publication.PUBLISH_STATUS['UNPUBLISHED']:
-        publish_schedule = None
-        published = None
-        published_by = None
-
-    elif publish_status == Publication.PUBLISH_STATUS['SCHEDULED']:
-        publish_schedule = datetime.datetime(schedule_date.year, schedule_date.month, schedule_date.day, schedule_time.hour, schedule_time.minute)
-        published = None
-        published_by = request.user
-    
-    elif publish_status == Publication.PUBLISH_STATUS['PUBLISHED']:
-        publish_schedule = None
-        published = datetime.datetime.today()
-        published_by = request.user
-    else:
-        publish_status = Publication.PUBLISH_STATUS['UPLOADING']
-        publish_schedule = None
-        published = None
-        published_by = None
-    
+def finishing_upload_publication(request, publication, title, description):
     publication.title = title
     publication.description = description
-    publication.publish_status = publish_status
-    publication.publish_schedule = publish_schedule
-    publication.published = published
-    publication.published_by = published_by
+    publication.status = Publication.STATUS['UNPUBLISHED']
     publication.save()
+
+    success_list = request.session.get('finishing_upload_success', [])
+    success_list.append(publication)
+    request.session['finishing_upload_success'] = success_list
+
+    return publication
+
+def publish_publication(request, publication):
+    published = datetime.datetime.today()
+
+    publication.status = Publication.STATUS['PUBLISHED']
+    publication.web_scheduled = None
+    publication.web_scheduled_by = None
+    publication.web_published = published
+    publication.web_published_by = request.user
+    publication.save()
+
+    for reader in PublisherReader.objects.filter(publisher=publication.publisher):
+        pub_reader, created = PublicationReader.objects.get_or_create(publication=publication, reader=reader)
+        pub_readers.append(pub_reader)
+
+        pub_reader.scheduled = None
+        pub_reader.scheduled_by = None
+        pub_reader.published = published
+        pub_reader.published_by = request.user
+        pub_reader.save()
+    
+    # TODO: put publication on queue if the status is PROGRESSING
+    
+    return publication
+
+def schedule_publication(request, publication, schedule):
+    publication.status = Publication.STATUS['SCHEDULED']
+    publication.web_scheduled = schedule
+    publication.web_scheduled_by = request.user
+    publication.web_published = None
+    publication.web_published_by = None
+    publication.save()
+    
+    for reader in PublisherReader.objects.filter(publisher=publication.publisher):
+        pub_reader, created = PublicationReader.objects.get_or_create(publication=publication, reader=reader)
+        pub_readers.append(pub_reader)
+
+        pub_reader.scheduled = schedule
+        pub_reader.scheduled_by = request.user
+        pub_reader.published = None
+        pub_reader.published_by = None
+        pub_reader.save()
+    
+    # TODO: put publication on queue if the status is PROGRESSING
+    
+    return publication
+
+def cancel_schedule_publication(request, publication):
+    publication.web_scheduled = None
+    publication.web_scheduled_by = None
+    publication.web_published = None
+    publication.web_published_by = None
+    publication.save()
+    
+    for reader in PublisherReader.objects.filter(publisher=publication.publisher):
+        pub_reader, created = PublicationReader.objects.get_or_create(publication=publication, reader=reader)
+        pub_readers.append(pub_reader)
+
+        pub_reader.scheduled = None
+        pub_reader.scheduled_by = None
+        pub_reader.published = None
+        pub_reader.published_by = None
+        pub_reader.save()
     
     return publication
 
@@ -58,4 +103,5 @@ def delete_publication(publication):
         pass
     else:
         PublicationShelf.objects.filter(publication=publication).delete()
+        PublicationReader.objects.filter(publication=publication).delete()
         publication.delete()

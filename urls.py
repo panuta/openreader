@@ -8,7 +8,7 @@ urlpatterns = patterns('',
     url('', include('openreader.accounts.urls')),
     url('', include('openreader.homepage.urls')),
     url('', include('openreader.publisher.urls')),
-    url('manage/', include('openreader.management.urls')),
+    url('management/', include('openreader.management.urls')),
 
     url('', include('openreader.publisher.book.urls')),
     url('', include('openreader.publisher.magazine.urls')),

@@ -11,6 +11,10 @@ from common.permissions import ROLE_CHOICES
 from accounts.models import Role
 from publisher.models import Publisher, PublicationCategory, Module, PublisherShelf
 
+class PublicationPublishStatusField(forms.ChoiceField):
+    def __init__(self, *args, **kwargs):
+        kwargs['choices'] = (('unpublish', 'ยังไม่เผยแพร่'), ('schedule', 'ตั้งเวลาเผยแพร่'), ('publish', 'เผยแพร่'))
+
 class PublicationCategoryMultipleChoiceField(forms.ModelMultipleChoiceField):
     def __init__(self, *args, **kwargs):
         kwargs['queryset'] = PublicationCategory.objects.all().order_by('name')

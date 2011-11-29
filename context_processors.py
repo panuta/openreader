@@ -8,7 +8,7 @@ def constants(request):
     """
 
     dict = {}
-    for key in Publication.PUBLISH_STATUS.keys():
-        dict['PUBLISH_STATUS_%s' % key] = Publication.PUBLISH_STATUS[key]
+    for key in Publication.STATUS.keys():
+        dict['PUBLICATION_STATUS_%s' % key] = Publication.STATUS[key]
 
     return dict

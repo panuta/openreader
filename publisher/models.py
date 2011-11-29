@@ -7,6 +7,8 @@ from django.db.models import Q
 
 from private_files import PrivateFileField
 
+from common.modules import get_publication_module
+
 from accounts.models import UserPublisher
 
 def is_downloadable(request, instance):
@@ -14,6 +16,41 @@ def is_downloadable(request, instance):
 
 def publication_media_dir(instance, filename):
     return '%s%s/%s' % (settings.PUBLICATION_ROOT, instance.publisher.id, filename)
+
+class Module(models.Model):
+    module_name = models.CharField(max_length=100) # Use for reference in code
+    module_type = models.CharField(max_length=50)
+    title = models.CharField(max_length=100) # Use for showing in HTML
+    description = models.CharField(max_length=1000, blank=True)
+    front_page_url = models.CharField(max_length=100, null=True)
+
+    def __unicode__(self):
+        return '%s:%s' % (self.module_name, self.module_type)
+    
+    def get_module_object(self, sub_module=''):
+        if sub_module:
+            sub_module = '.' + sub_module
+        
+        try:
+            return __import__('publisher.%s%s' % (self.module_name, sub_module), fromlist=['publisher'])
+        except:
+            return None
+
+class Reader(models.Model):
+    name = models.CharField(max_length=200)
+    description = models.CharField(max_length=500, blank=True)
+
+    def __unicode__(self):
+        return self.name
+
+class PublicationCategory(models.Model):
+    name = models.CharField(max_length=200)
+    slug = models.CharField(max_length=200)
+
+    def __unicode__(self):
+        return self.name
+
+# Publisher ############################################################
 
 class Publisher(models.Model):
     name = models.CharField(max_length=200)
@@ -44,26 +81,6 @@ class Publisher(models.Model):
         except UserPublisher.DoesNotExist:
             return False
 
-# Module ############################################################
-
-class Module(models.Model):
-    module_name = models.CharField(max_length=100) # Use for reference in code
-    module_type = models.CharField(max_length=50)
-    title = models.CharField(max_length=100) # Use for showing in HTML
-    front_page_url = models.CharField(max_length=100, null=True)
-
-    def __unicode__(self):
-        return '%s:%s' % (self.module_name, self.module_type)
-    
-    def get_module_object(self, sub_module=''):
-        if sub_module:
-            sub_module = '.' + sub_module
-        
-        try:
-            return __import__('publisher.%s%s' % (self.module_name, sub_module), fromlist=['publisher'])
-        except:
-            return None
-
 class PublisherModule(models.Model):
     publisher = models.ForeignKey('Publisher')
     module = models.ForeignKey('Module')
@@ -75,22 +92,13 @@ class PublisherModule(models.Model):
     def get_module_object(self, sub_module=''):
         return self.module.get_module_object(sub_module)
 
-# Shelf ############################################################
-
-class ReaderApp(models.Model):
-    name = models.CharField(max_length=200)
-    description = models.CharField(max_length=500, blank=True)
-
-    def __unicode__(self):
-        return self.name
-
-class PublisherReaderApp(models.Model):
+class PublisherReader(models.Model):
     publisher = models.ForeignKey('Publisher')
-    app = models.ForeignKey('ReaderApp')
+    reader = models.ForeignKey('Reader')
     created = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
-        return '%s:%s' % (self.publisher.name, self.app.name)
+        return '%s:%s' % (self.publisher.name, self.reader.name)
 
 class PublisherShelf(models.Model):
     publisher = models.ForeignKey('Publisher')
@@ -105,11 +113,12 @@ class PublisherShelf(models.Model):
 # Publication ############################################################
 
 class Publication(models.Model):
-    PUBLISH_STATUS = {
+    STATUS = {
         'UPLOADING':0,
-        'UNPUBLISHED':1,
-        'SCHEDULED':2,
-        'PUBLISHED':3,
+        'PROCESSING':1,
+        'UNPUBLISHED':2,
+        'SCHEDULED':3,
+        'PUBLISHED':4,
     }
 
     publisher = models.ForeignKey('Publisher')
@@ -117,27 +126,31 @@ class Publication(models.Model):
     uid = models.CharField(max_length=200, db_index=True)
     title = models.CharField(max_length=500)
     description = models.TextField(blank=True)
-    publication_type = models.CharField(max_length=50) # Also module_code
+    publication_type = models.CharField(max_length=50) # Also module_name
 
     uploaded_file = PrivateFileField(upload_to=publication_media_dir, condition=is_downloadable, max_length=500, null=True)
     #uploaded_file = models.FileField(upload_to='/web/sites/openreader/files/', max_length=500, null=True)
     original_file_name = models.CharField(max_length=300)
     file_ext = models.CharField(max_length=10)
 
-    publish_status = models.IntegerField(default=PUBLISH_STATUS['UPLOADING'])
-    publish_schedule = models.DateTimeField(null=True, blank=True)
-    published = models.DateTimeField(null=True, blank=True)
-    published_by = models.ForeignKey(User, null=True, blank=True, related_name='publication_published_by')
+    status = models.IntegerField(default=STATUS['UPLOADING'])
+    is_public = models.BooleanField(default=False)
+
+    web_scheduled =  models.DateTimeField(null=True, blank=True)
+    web_scheduled_by =  models.ForeignKey(User, null=True, blank=True, related_name='publication_web_scheduled_by')
+    web_published =  models.DateTimeField(null=True, blank=True)
+    web_published_by = models.ForeignKey(User, null=True, blank=True, related_name='publication_web_published_by')
 
     uploaded = models.DateTimeField(auto_now_add=True)
     uploaded_by = models.ForeignKey(User, related_name='publication_uploaded_by')
     modified = models.DateTimeField(auto_now=True)
     modified_by = models.ForeignKey(User, related_name='publication_modified_by', null=True, blank=True)
 
-    shelfs = models.ManyToManyField(PublisherShelf, through='PublicationShelf')
-
     def __unicode__(self):
         return '%s' % (self.title)
+    
+    def get_publication_title(self):
+        return get_publication_module(self.publication_type).get_publication_title(self)
 
     def save(self, *args, **kwargs):
         if not self.uid:
@@ -147,16 +160,19 @@ class Publication(models.Model):
     def can_view(self, user):
         return UserPublisher.objects.filter(user=user, publisher=self.publisher).exists()
 
-class PublicationCategory(models.Model):
-    name = models.CharField(max_length=200)
-    slug = models.CharField(max_length=200)
-
-    def __unicode__(self):
-        return self.name
-
 class PublicationShelf(models.Model):
     publication = models.ForeignKey(Publication)
     shelf = models.ForeignKey(PublisherShelf)
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='publication_shelf_created_by')
+
+class PublicationReader(models.Model):
+    publication = models.ForeignKey(Publication)
+    reader = models.ForeignKey(Reader)
+    
+    scheduled = models.DateTimeField(null=True, blank=True)
+    scheduled_by = models.ForeignKey(User, null=True, blank=True, related_name='publication_reader_scheduled_by')
+
+    published = models.DateTimeField(null=True, blank=True)
+    published_by = models.ForeignKey(User, null=True, blank=True, related_name='publication_reader_published_by')
 

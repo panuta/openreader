@@ -1,3 +1,7 @@
+- working on publication action modal
+- error message on publication action modal
+
+
 - PDF thumbnails
 - API
 
@@ -13,6 +17,13 @@
 
 - publish to multiple reader app
 - publisher's reader will not be able to see unpublished publication
+
+- use double line border on publication page
+
+
+TODO - PHRASE 2
+- reader_select interface implementation
+
 
 
 

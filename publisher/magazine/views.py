@@ -35,13 +35,7 @@ def finishing_upload_publication(request, publisher, publication):
             magazine_name = form.cleaned_data['magazine_name']
             categories = form.cleaned_data['categories']
 
-            title = form.cleaned_data['title']
-            description = form.cleaned_data['description']
-            publish_status = int(form.cleaned_data['publish_status']) if form.cleaned_data['publish_status'] else None
-            schedule_date = form.cleaned_data['schedule_date']
-            schedule_time = form.cleaned_data['schedule_time']
-
-            publication = publisher_functions.finishing_upload_publication(request, publication, title, description, publish_status, schedule_date, schedule_time)
+            publisher_functions.finishing_upload_publication(request, publication, form.cleaned_data['title'], form.cleaned_data['description'])
 
             if to_create_magazine:
                 magazine = Magazine.objects.create(publisher=publisher, title=magazine_name, created_by=request.user)
@@ -50,8 +44,6 @@ def finishing_upload_publication(request, publisher, publication):
                     magazine.categories.add(category)
 
             magazine_issue = MagazineIssue.objects.get_or_create(publication=publication, magazine=magazine)
-
-            # MESSAGE
 
             if form.cleaned_data['next']:
                 return redirect(form.cleaned_data['next'])
@@ -107,17 +99,17 @@ def edit_publication_status(request, publisher, publication):
 
             publication.publish_status = publish_status
 
-            if publish_status == Publication.PUBLISH_STATUS['UNPUBLISHED']:
+            if publish_status == Publication.STATUS['UNPUBLISHED']:
                 publication.publish_schedule = None
                 publication.published = None
                 publication.published_by = None
 
-            elif publish_status == Publication.PUBLISH_STATUS['SCHEDULED']:
+            elif publish_status == Publication.STATUS['SCHEDULED']:
                 publication.publish_schedule = datetime.datetime(schedule_date.year, schedule_date.month, schedule_date.day, schedule_time.hour, schedule_time.minute)
                 publication.published = None
                 publication.published_by = request.user
 
-            elif publish_status == Publication.PUBLISH_STATUS['PUBLISHED']:
+            elif publish_status == Publication.STATUS['PUBLISHED']:
                 publication.publish_schedule = None
                 publication.published = datetime.datetime.today()
                 publication.published_by = request.user
@@ -150,7 +142,7 @@ def delete_publication(request, deleted, publisher, publication):
 def gather_publisher_statistics(request, publisher):
     return {
         'magazine_count': Magazine.objects.filter(publisher=publisher).count(),
-        'published_issue_count': Publication.objects.filter(publisher=publisher, publication_type='magazine', publish_status=Publication.PUBLISH_STATUS['PUBLISHED']).count()
+        'published_issue_count': Publication.objects.filter(publisher=publisher, publication_type='magazine', status=Publication.STATUS['PUBLISHED']).count()
     }
 
 # MAGAZINE VIEWS ################################################################################
@@ -165,7 +157,7 @@ def view_magazines(request, publisher_id):
     magazines = Magazine.objects.filter(publisher=publisher).order_by('-created')
 
     if can(request.user, 'edit', publisher):
-        uploading_publications = Publication.objects.filter(publish_status=Publication.PUBLISH_STATUS['UPLOADING'], publication_type='magazine')
+        uploading_publications = Publication.objects.filter(status=Publication.STATUS['UPLOADING'], publication_type='magazine')
         orphan_publications = []
         for uploading_publication in uploading_publications:
             if not MagazineIssue.objects.filter(publication=uploading_publication).exists():
@@ -173,7 +165,7 @@ def view_magazines(request, publisher_id):
     else:
         orphan_publications = None
     
-    recent_issues = MagazineIssue.objects.filter(publication__publisher=publisher).exclude(publication__publish_status=Publication.PUBLISH_STATUS['UPLOADING']).order_by('-publication__uploaded')[0:10]
+    recent_issues = MagazineIssue.objects.filter(publication__publisher=publisher).exclude(publication__status=Publication.STATUS['UPLOADING']).order_by('-publication__uploaded')[0:10]
 
     return render(request, 'publisher/magazine/magazines.html', {'publisher':publisher, 'magazines':magazines, 'recent_issues':recent_issues, 'orphan_publications':orphan_publications})
 

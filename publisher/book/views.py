@@ -95,17 +95,17 @@ def edit_publication_status(request, publisher, publication):
 
             publication.publish_status = publish_status
 
-            if publish_status == Publication.PUBLISH_STATUS['UNPUBLISHED']:
+            if publish_status == Publication.STATUS['UNPUBLISHED']:
                 publication.publish_schedule = None
                 publication.published = None
                 publication.published_by = None
 
-            elif publish_status == Publication.PUBLISH_STATUS['SCHEDULED']:
+            elif publish_status == Publication.STATUS['SCHEDULED']:
                 publication.publish_schedule = datetime.datetime(schedule_date.year, schedule_date.month, schedule_date.day, schedule_time.hour, schedule_time.minute)
                 publication.published = None
                 publication.published_by = request.user
 
-            elif publish_status == Publication.PUBLISH_STATUS['PUBLISHED']:
+            elif publish_status == Publication.STATUS['PUBLISHED']:
                 publication.publish_schedule = None
                 publication.published = datetime.datetime.today()
                 publication.published_by = request.user
@@ -136,7 +136,7 @@ def delete_publication(request, deleted, publisher, publication):
 
 def gather_publisher_statistics(request, publisher):
     return {
-        'published_books_count': Publication.objects.filter(publisher=publisher, publication_type='book', publish_status=Publication.PUBLISH_STATUS['PUBLISHED']).count()
+        'published_books_count': Publication.objects.filter(publisher=publisher, publication_type='book', publish_status=Publication.STATUS['PUBLISHED']).count()
     }
 
 # BOOK PUBLICATION ################################################################################

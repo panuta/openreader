@@ -24,6 +24,9 @@ $(document).ready(function () {
 {% endblock %}
 
 {% block body_authenticated %}
+
+{% include 'publisher/snippets/just_finishing_upload.html' %}
+
 <div class="container-fluid container-body publisher_magazine_page">
 
   <div class="sidebar">
@@ -54,8 +57,8 @@ $(document).ready(function () {
         <li class="publication{% if forloop.last %} last{% endif %}">
           <div class="cover"></div>
           <div class="right">
-            {% if issue.publication.publish_status == PUBLISH_STATUS_PUBLISHED %}<div class="statistics"></div>{% endif %}
-            <div class="name">{% if issue.publication.publish_status == PUBLISH_STATUS_UPLOADING %}{{issue.publication.original_file_name}}.{{issue.publication.file_ext}}{% else %}<a href="{% url view_publication issue.publication.id %}">{{issue.publication.title}}</a>{% endif %}</div>
+            {% if issue.publication.publish_status == PUBLICATION_STATUS_PUBLISHED %}<div class="statistics"></div>{% endif %}
+            <div class="name">{% if issue.publication.publish_status == PUBLICATION_STATUS_UPLOADING %}{{issue.publication.original_file_name}}.{{issue.publication.file_ext}}{% else %}<a href="{% url view_publication issue.publication.id %}">{{issue.publication.title}}</a>{% endif %}</div>
             <div class="details">อัพโหลดเมื่อวันที่ {{issue.publication.uploaded|format_abbr_datetime}}</div>
             <div class="publish_status">สถานะ - {% print_publication_status issue.publication %}</div>
             {% can user 'edit' publisher %}<div class="links">{% generate_publication_actions issue.publication %}</div>{% endcan %}
