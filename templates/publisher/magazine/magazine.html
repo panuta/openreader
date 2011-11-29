@@ -24,11 +24,9 @@ $(document).ready(function () {
 {% endblock %}
 
 {% block body_authenticated %}
-
 {% include 'publisher/snippets/just_finishing_upload.html' %}
 
 <div class="container-fluid container-body publisher_magazine_page">
-
   <div class="sidebar">
     <div class="head"><a href="{% url view_magazines publisher.id %}">รายชื่อนิตยสาร</a></div>
     <ul>
@@ -38,7 +36,6 @@ $(document).ready(function () {
   </div>
 
   <div class="content"><div class="content-inner">
-
     <h2><span>นิตยสาร</span>{{magazine.title}}</h2>
 
     {% can user 'edit' publisher %}
@@ -57,10 +54,10 @@ $(document).ready(function () {
         <li class="publication{% if forloop.last %} last{% endif %}">
           <div class="cover"></div>
           <div class="right">
-            {% if issue.publication.publish_status == PUBLICATION_STATUS_PUBLISHED %}<div class="statistics"></div>{% endif %}
-            <div class="name">{% if issue.publication.publish_status == PUBLICATION_STATUS_UPLOADING %}{{issue.publication.original_file_name}}.{{issue.publication.file_ext}}{% else %}<a href="{% url view_publication issue.publication.id %}">{{issue.publication.title}}</a>{% endif %}</div>
+            {% if issue.publication.status == PUBLICATION_STATUS_PUBLISHED %}<div class="statistics"></div>{% endif %}
+            <div class="name">{% if issue.publication.status == PUBLICATION_STATUS_UPLOADED %}{{issue.publication.original_file_name}}.{{issue.publication.file_ext}}{% else %}<a href="{% url view_publication issue.publication.id %}">{{issue.publication.title}}</a>{% endif %}</div>
             <div class="details">อัพโหลดเมื่อวันที่ {{issue.publication.uploaded|format_abbr_datetime}}</div>
-            <div class="publish_status">สถานะ - {% print_publication_status issue.publication %}</div>
+            <div class="status">สถานะ - {% print_publication_status issue.publication %}</div>
             {% can user 'edit' publisher %}<div class="links">{% generate_publication_actions issue.publication %}</div>{% endcan %}
           </div>
         </li>
@@ -75,6 +72,5 @@ $(document).ready(function () {
     {% can user 'edit' publisher %}{% generate_publication_module_upload_modal 'magazine' %}{% endcan %}
 
   </div></div>
-
 </div>
 {% endblock %}

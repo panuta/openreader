@@ -24,10 +24,10 @@ $(document).ready(function () {
 {% endblock %}
 
 {% block body_authenticated %}
+{% include 'publisher/snippets/just_finishing_upload.html' %}
+
 <div class="container-fluid container-body publisher_books_page">
-
   <div class="content-full"><div class="content-inner">
-
     <h2>หนังสือ</h2>
 
     {% can user 'edit' publisher %}
@@ -45,10 +45,10 @@ $(document).ready(function () {
         <li class="publication{% if forloop.last %} last{% endif %}">
           <div class="cover"></div>
           <div class="right">
-            {% if publication.publish_status == PUBLISH_STATUS_PUBLISHED %}<div class="statistics"></div>{% endif %}
-            <div class="name">{% if publication.publish_status == PUBLISH_STATUS_UPLOADING %}{{publication.original_file_name}}.{{publication.file_ext}}{% else %}<a href="{% url view_publication publication.id %}">{{publication.title}}</a>{% endif %}</div>
+            {% if publication.status == PUBLICATION_STATUS_PUBLISHED %}<div class="statistics"></div>{% endif %}
+            <div class="name">{% if publication.status == PUBLICATION_STATUS_UPLOADED %}{{publication.original_file_name}}.{{publication.file_ext}}{% else %}<a href="{% url view_publication publication.id %}">{{publication.title}}</a>{% endif %}</div>
             <div class="details">อัพโหลดเมื่อวันที่ {{publication.uploaded|format_abbr_datetime}}</div>
-            <div class="publish_status">สถานะ - {% print_publication_status publication %}</div>
+            <div class="status">สถานะ - {% print_publication_status publication %}</div>
             {% can user 'edit' publisher %}<div class="links">{% generate_publication_actions publication %}</div>{% endcan %}
           </div>
         </li>

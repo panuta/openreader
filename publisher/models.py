@@ -114,11 +114,10 @@ class PublisherShelf(models.Model):
 
 class Publication(models.Model):
     STATUS = {
-        'UPLOADING':0,
-        'PROCESSING':1,
-        'UNPUBLISHED':2,
-        'SCHEDULED':3,
-        'PUBLISHED':4,
+        'UPLOADED':0,
+        'UNPUBLISHED':1,
+        'SCHEDULED':2,
+        'PUBLISHED':3,
     }
 
     publisher = models.ForeignKey('Publisher')
@@ -132,8 +131,9 @@ class Publication(models.Model):
     #uploaded_file = models.FileField(upload_to='/web/sites/openreader/files/', max_length=500, null=True)
     original_file_name = models.CharField(max_length=300)
     file_ext = models.CharField(max_length=10)
+    is_processing = models.BooleanField(default=True)
 
-    status = models.IntegerField(default=STATUS['UPLOADING'])
+    status = models.IntegerField(default=STATUS['UPLOADED'])
     is_public = models.BooleanField(default=False)
 
     web_scheduled =  models.DateTimeField(null=True, blank=True)
@@ -159,6 +159,15 @@ class Publication(models.Model):
     
     def can_view(self, user):
         return UserPublisher.objects.filter(user=user, publisher=self.publisher).exists()
+
+class PublicationNotice(models.Model):
+    NOTICE = {
+        'PUBLISH_WHEN_READY':1,
+    }
+
+    publication = models.ForeignKey('Publication')
+    notice = models.IntegerField()
+    created = models.DateTimeField(auto_now_add=True)
 
 class PublicationShelf(models.Model):
     publication = models.ForeignKey(Publication)

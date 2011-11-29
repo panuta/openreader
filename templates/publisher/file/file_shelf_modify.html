@@ -7,22 +7,26 @@
 {% block body_authenticated %}
 <div class="container-fluid container-body publisher_magazines_page">
   <div class="sidebar">
-    <div class="head">ชั้นหนังสือ</div>
+    <div class="head"><a href="{% url view_files publisher.id %}">ชั้นหนังสือ</a></div>
     <ul>
-      <li class="all_shelf"><a href="{% url view_files publisher.id %}">ทุกไฟล์</a></li>
       {% if shelf %}{% generate_shelf_list publisher 'file' 'view_files_by_shelf' shelf %}{% else %}{% generate_shelf_list publisher 'file' 'view_files_by_shelf' %}{% endif %}
       <li class="add{% if not shelf %} active{% endif %}"><a href="{% url create_file_shelf publisher.id %}">สร้างชั้นหนังสือใหม่</a></li>
     </ul>
   </div>
   <div class="content"><div class="content-inner">
-    {% if shelf %}
+    {% if not shelf %}
     <ul class="breadcrumb">
-      <li><a href="{% url view_publisher_profile publisher.id %}">ไฟล์ชั้นหนังสือ {{shelf.name}}</a> <span class="divider">/</span></li>
+      <li><a href="{% url view_files publisher.id %}">ไฟล์ทั้งหมด</a> <span class="divider">/</span></li>
+      <li class="active">สร้างชั้นหนังสือ</li>
+    </ul>
+    <h2>สร้างชั้นหนังสือ</h2>
+    {% else %}
+    <ul class="breadcrumb">
+      <li><a href="{% url view_files_by_shelf shelf.id %}">ไฟล์ชั้นหนังสือ {{shelf.name}}</a> <span class="divider">/</span></li>
       <li class="active">แก้ไขชั้นหนังสือ</li>
     </ul>
+    <h2>แก้ไขชั้นหนังสือ</h2>
     {% endif %}
-
-    <h2>{% if not shelf %}สร้างชั้นหนังสือ{% else %}แก้ไขชั้นหนังสือ{% endif %}</h2>
 
     <form method="POST" action=".">
       {% csrf_token %}

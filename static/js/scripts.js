@@ -74,18 +74,26 @@ function bind_all_upload_publication_form() {
       success: function(response) {
         if(response.error) {
           var message = '';
-          if(response.error == 'upload') {message = 'Saving file error';}
-          if(response.error == 'form-input-invalid') {message = 'Form inputs is missing or invalid';}
+          if(response.error == 'upload') {message = 'ไม่สามารถจัดเก็บไฟล์ได้ในขณะนี้';}
+          if(response.error == 'form-input-invalid') {message = 'ข้อมูลไม่ครบถ้วน กรุณาตรวจสอบการกรอกข้อมูลอีกครั้ง';}
+
+
+
+          $('#publish-publication-modal .modal-message').html(message).show();
+
+
+
+
 
           $(_active_upload_form + ' .uploading').remove();
 
-          $(_active_upload_form + ' .inputs').after('<div class="error_message">' + message + ' <div><a href="#">Restart?</a></div></div>');
-          $(_active_upload_form + ' .error_message a').one('click', function(e) {
-            $(_active_upload_form + ' .error_message').remove();
-            $(_active_upload_form + ' .inputs').show();
-            clear_upload_publication_modal();
-            return false;
-          });
+          //$(_active_upload_form + ' .inputs').after('<div class="error_message">' + message + ' <div><a href="#">Restart?</a></div></div>');
+          //$(_active_upload_form + ' .error_message a').one('click', function(e) {
+          //  $(_active_upload_form + ' .error_message').remove();
+          //  $(_active_upload_form + ' .inputs').show();
+          //  clear_upload_publication_modal();
+          //  return false;
+          //});
 
         } else {
           $(_active_upload_form + ' .upload_progressbar').progressBar(100);
@@ -101,13 +109,13 @@ function bind_all_upload_publication_form() {
       }
     };
     
-    $(_active_upload_form + ' .inputs').hide();
+    // $(_active_upload_form + ' .inputs').hide();
     $(_active_upload_form + ' .actions input').attr('disabled', true);
 
     $(_active_upload_form).ajaxSubmit(options);
 
-    $(_active_upload_form + ' .inputs').after('<div class="uploading">Uploading ...<div class="upload_progressbar"></div></div>');
-    $(_active_upload_form + ' .upload_progressbar').progressBar({boxImage:'/static/libs/progressbar/images/progressbar.gif', barImage:{0:'/static/libs/progressbar/images/progressbg_red.gif', 30:'/static/libs/progressbar/images/progressbg_orange.gif', 70:'/static/libs/progressbar/images/progressbg_green.gif'}});
+    $(_active_upload_form + ' .inputs').after('<div class="uploading">กำลังอัพโหลด ...<div class="upload_progressbar"></div></div>');
+    $(_active_upload_form + ' .upload_progressbar').progressBar({width:262, height:20, boxImage:'/static/libs/progressbar/images/progressbar.png', barImage:{0:'/static/libs/progressbar/images/progressbg.png', 30:'/static/libs/progressbar/images/progressbg.png', 70:'/static/libs/progressbar/images/progressbg.png'}});
 
     var upload_id = $(_active_upload_form + ' input[name="X-Progress-ID"]').val();
     

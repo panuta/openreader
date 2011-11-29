@@ -22,7 +22,6 @@ from models import *
 # FROM PUBLICATION ################################################################################
 
 def finishing_upload_publication(request, publisher, publication):
-
     to_create_magazine = ToCreateMagazine.objects.filter(publication=publication).exists()
 
     if not Magazine.objects.filter(publisher=publisher).exists():
@@ -70,7 +69,6 @@ def cancel_upload_publication(request, publisher, publication):
     return redirect('view_magazines', publisher_id=publisher.id)
 
 def view_publication(request, publisher, publication):
-
     return render(request, 'publisher/magazine/publication.html', {'publisher':publisher, 'publication':publication})
 
 def edit_publication(request, publisher, publication):
@@ -89,42 +87,7 @@ def edit_publication(request, publisher, publication):
     
     return render(request, 'publisher/magazine/publication_edit.html', {'publisher':publisher, 'publication':publication, 'form':form})
 
-def edit_publication_status(request, publisher, publication):
-    if request.method == 'POST':
-        form = EditMagazineIssueStatusForm(request.POST)
-        if form.is_valid():
-            publish_status = int(form.cleaned_data['publish_status']) if form.cleaned_data['publish_status'] else None
-            schedule_date = form.cleaned_data['schedule_date']
-            schedule_time = form.cleaned_data['schedule_time']
-
-            publication.publish_status = publish_status
-
-            if publish_status == Publication.STATUS['UNPUBLISHED']:
-                publication.publish_schedule = None
-                publication.published = None
-                publication.published_by = None
-
-            elif publish_status == Publication.STATUS['SCHEDULED']:
-                publication.publish_schedule = datetime.datetime(schedule_date.year, schedule_date.month, schedule_date.day, schedule_time.hour, schedule_time.minute)
-                publication.published = None
-                publication.published_by = request.user
-
-            elif publish_status == Publication.STATUS['PUBLISHED']:
-                publication.publish_schedule = None
-                publication.published = datetime.datetime.today()
-                publication.published_by = request.user
-            
-            publication.save()
-
-            # MESSAGE
-
-            return redirect('view_publication', publication.id)
-
-    else:
-        schedule_date = publication.publish_schedule.date() if publication.publish_schedule else None
-        schedule_time = publication.publish_schedule.time() if publication.publish_schedule else None
-        form = EditMagazineIssueStatusForm(initial={'publish_status':str(publication.publish_status), 'schedule_date':schedule_date, 'schedule_time':schedule_time})
-    
+def edit_publication_status(request, publisher, publication, form):
     return render(request, 'publisher/magazine/publication_edit_status.html', {'publisher':publisher, 'publication':publication, 'form':form})
 
 def delete_publication(request, deleted, publisher, publication):
@@ -157,7 +120,7 @@ def view_magazines(request, publisher_id):
     magazines = Magazine.objects.filter(publisher=publisher).order_by('-created')
 
     if can(request.user, 'edit', publisher):
-        uploading_publications = Publication.objects.filter(status=Publication.STATUS['UPLOADING'], publication_type='magazine')
+        uploading_publications = Publication.objects.filter(status=Publication.STATUS['UPLOADED'], publication_type='magazine')
         orphan_publications = []
         for uploading_publication in uploading_publications:
             if not MagazineIssue.objects.filter(publication=uploading_publication).exists():
@@ -165,7 +128,7 @@ def view_magazines(request, publisher_id):
     else:
         orphan_publications = None
     
-    recent_issues = MagazineIssue.objects.filter(publication__publisher=publisher).exclude(publication__status=Publication.STATUS['UPLOADING']).order_by('-publication__uploaded')[0:10]
+    recent_issues = MagazineIssue.objects.filter(publication__publisher=publisher).exclude(publication__status=Publication.STATUS['UPLOADED']).order_by('-publication__uploaded')[0:10]
 
     return render(request, 'publisher/magazine/magazines.html', {'publisher':publisher, 'magazines':magazines, 'recent_issues':recent_issues, 'orphan_publications':orphan_publications})
 

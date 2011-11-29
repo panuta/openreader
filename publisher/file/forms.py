@@ -2,9 +2,7 @@
 
 from django import forms
 
-from widgets import YUICalendar, HourMinuteTimeInput
-
-from publisher.forms import GeneralUploadPublicationForm, PublisherShelfMultipleChoiceField, PublicationPublishStatusField
+from publisher.forms import GeneralUploadPublicationForm, PublisherShelfMultipleChoiceField
 from publisher.models import Publication, PublisherShelf, PublicationShelf
 
 from common.forms import StrippedCharField
@@ -50,22 +48,3 @@ class EditFileDetailsForm(forms.Form):
 
         if has_module(self.publisher, 'shelf'):
             self.fields['shelf'].queryset = PublisherShelf.objects.filter(publisher=self.publisher).order_by('name')
-
-class EditFileStatusForm(forms.Form):
-    publish_status = PublicationPublishStatusField(required=False)
-    schedule_date = forms.DateField(widget=YUICalendar(attrs={'id':'id_schedule_date'}), required=False)
-    schedule_time = forms.TimeField(widget=HourMinuteTimeInput(), required=False)
-
-    def clean(self):
-        cleaned_data = self.cleaned_data
-        publish_status = cleaned_data.get('publish_status')
-        schedule_date = cleaned_data.get('schedule_date')
-        schedule_time = cleaned_data.get('schedule_time')
-
-        if publish_status == str(Publication.STATUS['SCHEDULED']) and not schedule_date:
-            self._errors['schedule_date'] = self.error_class([_(u'This field is required.')])
-        
-        if publish_status == str(Publication.STATUS['SCHEDULED']) and not schedule_time:
-            self._errors['schedule_time'] = self.error_class([_(u'This field is required.')])
-        
-        return cleaned_data

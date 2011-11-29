@@ -19,14 +19,13 @@
     <form method="POST" action=".">
       {% csrf_token %}
       {{form.non_field_errors}}
-      <fieldset>
-        {% include 'publisher/snippets/publish_status.html' with form=form %}
+      
+      {% include 'publisher/snippets/publication_status.html' with publication=publication form=form %}
 
-        <div class="form_actions">
-          <button type="submit" class="btn primary">บันทึกข้อมูล</button>
-          <button type="reset" class="btn">ล้างข้อมูล</button>
-        </div>
-      </fieldset>
+      <div class="form_actions">
+        <button type="submit" class="btn primary">บันทึกข้อมูล</button>
+        <button type="reset" class="btn">ล้างข้อมูล</button>
+      </div>
     </form>
 
   </div></div>

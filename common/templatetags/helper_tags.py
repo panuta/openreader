@@ -11,7 +11,7 @@ from common import utilities
 from common.modules import *
 
 from accounts.models import UserPublisher
-from publisher.models import Publication, PublisherModule, PublisherShelf, PublicationShelf, Module
+from publisher.models import Publication, PublisherModule, PublisherShelf, PublicationShelf, Module, PublicationNotice
 
 
 # DATE TIME #################################################################
@@ -170,17 +170,30 @@ def generate_publisher_menu(user):
 
 @register.simple_tag
 def print_publication_status(publication):
-    if publication.status == Publication.STATUS['UPLOADING']:
+    status = []
+
+    if publication.status == Publication.STATUS['UPLOADED']:
         return u'<span class="unfinished">ยังกรอกข้อมูลไม่ครบ</span>'
     
-    elif publication.status == Publication.STATUS['PROCESSING']:
-        return u'<span class="processing">กำลังจัดเก็บไฟล์</span>'
-
-    elif publication.status == Publication.STATUS['UNPUBLISHED']:
-        return u'<span class="unpublished">ยังไม่เผยแพร่</span>'
-
     elif publication.status == Publication.STATUS['SCHEDULED']:
-        return u'<span class="scheduled">ตั้งเวลาเผยแพร่ วันที่ %s</span>' % (utilities.format_abbr_datetime(publication.web_scheduled))
+        
+        if publication.is_processing:
+            return u'<span class="scheduled">ไฟล์กำลังประมวลผล และตั้งเวลาเผยแพร่ วันที่ %s</span>' % (utilities.format_abbr_datetime(publication.web_scheduled))
+        
+        else:
+            return u'<span class="scheduled">ตั้งเวลาเผยแพร่ วันที่ %s</span>' % (utilities.format_abbr_datetime(publication.web_scheduled))
+    
+    elif publication.status == Publication.STATUS['UNPUBLISHED']:
+        if publication.is_processing:
+
+            if PublicationNotice.objects.filter(publication=publication, notice=PublicationNotice.NOTICE['PUBLISH_WHEN_READY']):
+                return u'<span class="unpublished">ไฟล์กำลังประมวลผล และจะเผยแพร่ทันทีที่ประมวลผลเสร็จ</span>'
+
+            else:
+                return u'<span class="unpublished">ไฟล์กำลังประมวลผล และยังไม่เผยแพร่</span>'
+            
+        else:
+            return u'<span class="unpublished">ยังไม่เผยแพร่</span>'
 
     elif publication.status == Publication.STATUS['PUBLISHED']:
         return u'<span class="published">เผยแพร่แล้ว วันที่ %s</span>' % (utilities.format_abbr_datetime(publication.web_published))
@@ -190,16 +203,20 @@ def print_publication_status(publication):
 @register.simple_tag
 def generate_publication_actions(publication):
     # TODO Check permission
-    if publication.status == Publication.STATUS['UPLOADING']:
+    
+    if publication.status == Publication.STATUS['UPLOADED']:
         return u'<a href="%s" class="small btn"><span>กรอกข้อมูลต่อ</span></a>' % reverse('finishing_upload_publication', args=[publication.id])
-
-    elif publication.status == Publication.STATUS['UNPUBLISHED']:
-        return u'<a href="%s" class="small btn action-schedule"><span>ตั้งเวลาเผยแพร่</a></a><a href="%s" class="small btn action-publish"><span>เผยแพร่ทันที</span></a><a href="%s" class="link">แก้ไขรายละเอียด</a>' % (reverse('set_publication_schedule', args=[publication.id]), reverse('set_publication_published', args=[publication.id]), reverse('edit_publication', args=[publication.id]))
-
+    
     elif publication.status == Publication.STATUS['SCHEDULED']:
         return u'<a href="%s" class="small btn action-schedule"><span>ตั้งเวลาใหม่</span></a><a href="%s" class="link">แก้ไขรายละเอียด</a>' % (reverse('set_publication_schedule', args=[publication.id]), reverse('edit_publication', args=[publication.id]))
-        
-    elif publication.status == Publication.STATUS['PROCESSING'] or publication.publish_status == Publication.STATUS['PUBLISHED']:
+
+    elif publication.status == Publication.STATUS['UNPUBLISHED']:
+        if publication.is_processing:
+            return u'<a href="%s" class="small btn action-schedule"><span>ตั้งเวลาเผยแพร่</a></a><a href="%s" class="small btn action-publish"><span>เผยแพร่ทันทีที่ประมวลผลเสร็จ</span></a><a href="%s" class="link">แก้ไขรายละเอียด</a>' % (reverse('set_publication_schedule', args=[publication.id]), reverse('set_publication_published', args=[publication.id]), reverse('edit_publication', args=[publication.id]))
+        else:
+            return u'<a href="%s" class="small btn action-schedule"><span>ตั้งเวลาเผยแพร่</a></a><a href="%s" class="small btn action-publish"><span>เผยแพร่ทันที</span></a><a href="%s" class="link">แก้ไขรายละเอียด</a>' % (reverse('set_publication_schedule', args=[publication.id]), reverse('set_publication_published', args=[publication.id]), reverse('edit_publication', args=[publication.id]))
+    
+    elif publication.status == Publication.STATUS['PUBLISHED']:
         return u'<a href="%s" class="link">แก้ไขรายละเอียด</a>' % reverse('edit_publication', args=[publication.id])
     
     return ''

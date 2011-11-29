@@ -30,19 +30,13 @@ def finishing_upload_publication(request, publisher, publication):
             author = form.cleaned_data['author']
             categories = form.cleaned_data['categories']
 
-            publish_status = int(form.cleaned_data['publish_status']) if form.cleaned_data['publish_status'] else None
-            schedule_date = form.cleaned_data['schedule_date']
-            schedule_time = form.cleaned_data['schedule_time']
-
-            publication = publisher_functions.finishing_upload_publication(request, publication, title, description, publish_status, schedule_date, schedule_time)
+            publication = publisher_functions.finishing_upload_publication(request, publication, title, description)
 
             book = Book.objects.create(publication=publication, author=author)
 
             for category in categories:
                 book.categories.add(category)
             
-            messages.success(request, 'บันทึกข้อมูลเรียบร้อย')
-
             if form.cleaned_data['next']:
                 return redirect(form.cleaned_data['next'])
 
@@ -85,41 +79,7 @@ def edit_publication(request, publisher, publication):
 
     return render(request, 'publisher/book/publication_edit.html', {'publisher':publisher, 'publication':publication, 'form':form})
 
-def edit_publication_status(request, publisher, publication):
-    if request.method == 'POST':
-        form = EditBookStatusForm(request.POST)
-        if form.is_valid():
-            publish_status = int(form.cleaned_data['publish_status']) if form.cleaned_data['publish_status'] else None
-            schedule_date = form.cleaned_data['schedule_date']
-            schedule_time = form.cleaned_data['schedule_time']
-
-            publication.publish_status = publish_status
-
-            if publish_status == Publication.STATUS['UNPUBLISHED']:
-                publication.publish_schedule = None
-                publication.published = None
-                publication.published_by = None
-
-            elif publish_status == Publication.STATUS['SCHEDULED']:
-                publication.publish_schedule = datetime.datetime(schedule_date.year, schedule_date.month, schedule_date.day, schedule_time.hour, schedule_time.minute)
-                publication.published = None
-                publication.published_by = request.user
-
-            elif publish_status == Publication.STATUS['PUBLISHED']:
-                publication.publish_schedule = None
-                publication.published = datetime.datetime.today()
-                publication.published_by = request.user
-            
-            publication.save()
-
-            # MESSAGE
-
-            return redirect('view_publication', publication.id)
-    else:
-        schedule_date = publication.publish_schedule.date() if publication.publish_schedule else None
-        schedule_time = publication.publish_schedule.time() if publication.publish_schedule else None
-        form = EditBookStatusForm(initial={'publish_status':str(publication.publish_status), 'schedule_date':schedule_date, 'schedule_time':schedule_time})
-    
+def edit_publication_status(request, publisher, publication, form):
     return render(request, 'publisher/book/publication_edit_status.html', {'publisher':publisher, 'publication':publication, 'form':form})
 
 def delete_publication(request, deleted, publisher, publication):
@@ -136,7 +96,7 @@ def delete_publication(request, deleted, publisher, publication):
 
 def gather_publisher_statistics(request, publisher):
     return {
-        'published_books_count': Publication.objects.filter(publisher=publisher, publication_type='book', publish_status=Publication.STATUS['PUBLISHED']).count()
+        'published_books_count': Publication.objects.filter(publisher=publisher, publication_type='book', status=Publication.STATUS['PUBLISHED']).count()
     }
 
 # BOOK PUBLICATION ################################################################################

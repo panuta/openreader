@@ -27,7 +27,7 @@
     </div>
   
     <h3>สถานะ</h3>
-    <div class="publish_status">
+    <div class="status">
       {% print_publication_status publication %}
       {% can user 'edit' publisher %}<div class="change"><a href="{% url edit_publication_status publication.id %}" class="btn small">เปลี่ยนสถานะ</a></div>{% endcan %}
     </div>

@@ -164,7 +164,7 @@ def finishing_upload_publication(request, publication_id):
     
     views_module = get_publication_module(publication.publication_type, 'views')
     
-    if publication.status != Publication.STATUS['UPLOADING']:
+    if publication.status != Publication.STATUS['UPLOADED']:
         return redirect('view_publication', publication_id=publication.id)
     
     return views_module.finishing_upload_publication(request, publisher, publication)
@@ -177,7 +177,7 @@ def cancel_upload_publication(request, publication_id):
     if not can(request.user, 'edit', publisher):
         raise Http404
     
-    if publication.status != Publication.STATUS['UPLOADING']:
+    if publication.status != Publication.STATUS['UPLOADED']:
         raise Http404
     
     if request.method == 'POST':
@@ -234,9 +234,60 @@ def edit_publication_status(request, publication_id):
 
     if not can(request.user, 'edit', publisher):
         raise Http404
+    
+    if publication.status == Publication.STATUS['UPLOADED']:
+        raise Http404
+    
+    if request.method == 'POST':
+        form = EditPublicationStatusForm(request.POST)
+        if form.is_valid():
+            status = form.cleaned_data['status']
+            schedule_date = form.cleaned_data['schedule_date']
+            schedule_time = form.cleaned_data['schedule_time']
+
+            if status == 'unpublish':
+                publisher_functions.set_publication_unpublished(request, publication)
+            
+            elif status == 'schedule':
+                publisher_functions.set_publication_scheduled(request, publication, schedule)
+            
+            elif status == 'publish':
+                publisher_functions.set_publication_scheduled(request, publication)
+            
+            # MESSAGE
+
+            return redirect('view_publication', publication.id)
+
+    else:
+        # PROCESSING -> 'unpublish', show processing note
+        # UNPUBLISHED -> 'unpublish'
+        # SCHEDULED -> 'schedule'
+        # PROCESSING with SCHEDULED -> 'schedule', show processing note
+        # PUBLISHED -> 'publish'
+        # PUBLISH WHEN READY -> 'unpublish', show processing note, show publish when ready note
+
+        schedule_date = publication.web_scheduled.date() if publication.web_scheduled else None
+        schedule_time = publication.web_scheduled.time() if publication.web_scheduled else None
+
+        is_publish_when_ready = False
+        
+        if publication.status == Publication.STATUS['UNPUBLISHED']:
+            status = 'unpublish'
+            is_publish_when_ready = PublicationNotice.objects.filter(publication=publication, notice=PublicationNotice.NOTICE['PUBLISH_WHEN_READY']).exists()
+        
+        elif publication.status == Publication.STATUS['SCHEDULED']:
+            status = 'schedule'
+
+        elif publication.status == Publication.STATUS['PUBLISHED']:
+            status = 'publish'
+
+        else:
+            status = ''
+        
+        form = EditPublicationStatusForm(initial={'status':status, 'schedule_date':schedule_date, 'schedule_time':schedule_time})
 
     views_module = get_publication_module(publication.publication_type, 'views')
-    return views_module.edit_publication_status(request, publisher, publication)
+    return views_module.edit_publication_status(request, publisher, publication, form)
 
 @login_required
 def replace_publication(request, publication_id):
@@ -278,16 +329,13 @@ def set_publication_published(request, publication_id):
         raise Http404
 
     if request.method == 'POST' and request.is_ajax():
-        if publication.status == Publication.STATUS['PROCESSING']:
-            return response_json_error('processing')
+        if publication.status == Publication.STATUS['UPLOADED']:
+            return response_json_error('invalid-status')
         
         if publication.status == Publication.STATUS['PUBLISHED']:
             return response_json_error('published')
         
-        if not publication.status in (Publication.STATUS['SCHEDULED'], Publication.STATUS['UNPUBLISHED']):
-            return response_json_error('invalid-status')
-        
-        publisher_functions.publish_publication(request, publication)
+        publisher_functions.set_publication_published(request, publication)
 
         return response_json()
     else:
@@ -302,7 +350,7 @@ def set_publication_schedule(request, publication_id):
         raise Http404
 
     if request.method == 'POST' and request.is_ajax():
-        if publication.status == Publication.STATUS['UPLOADING']:
+        if publication.status == Publication.STATUS['UPLOADED']:
             return response_json_error('invalid-status')
         
         try:
@@ -319,7 +367,7 @@ def set_publication_schedule(request, publication_id):
         if schedule <= datetime.datetime.today():
             return response_json_error('past')
         
-        publisher_functions.schedule_publication(request, publication, schedule)
+        publisher_functions.set_publication_scheduled(request, publication, schedule)
         
         return response_json()
     else:
@@ -337,7 +385,7 @@ def set_publication_cancel_schedule(request, publication_id):
         if not publication.status in (Publication.STATUS['UNPUBLISHED'], Publication.STATUS['PUBLISHED']):
             return response_json_error('invalid-status')
         
-        publisher_functions.cancel_schedule_publication(request, publication)
+        publisher_functions.set_publication_scheduled_cancel(request, publication)
         
         return response_json()
     else:
