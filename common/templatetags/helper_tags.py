@@ -8,6 +8,7 @@ from django.template import NodeList
 from django.template import loader
 
 from common import utilities
+from common.permissions import can
 from common.modules import *
 
 from accounts.models import UserPublisher
@@ -47,8 +48,6 @@ class CanNode(template.Node):
         object = self.object.resolve(context)
         action = self.action
 
-        from common.permissions import can
-        
         if can(user, action, object):
             output = self.nodelist_true.render(context)
             return output
@@ -244,11 +243,18 @@ def genetate_publication_category_multiple_checkbox(existing_categories):
     return ''.join(htmls)
 
 @register.simple_tag
-def generate_shelf_list(publisher, module, url, active_shelf=None):
+def generate_shelf_list(user, publisher, module, url, active_shelf=None):
     shelf_html = []
     for shelf in PublisherShelf.objects.filter(publisher=publisher).order_by('name'):
         active_html = ' active' if active_shelf and active_shelf.id == shelf.id else ''
-        count = PublicationShelf.objects.filter(shelf=shelf, publication__publication_type=module).count()
+
+        if can(user, 'edit', publisher):
+            count = PublicationShelf.objects.filter(shelf=shelf, publication__publication_type=module).count()
+        elif can(user, 'edit', publisher):
+            count = PublicationShelf.objects.filter(shelf=shelf, publication__publication_type=module, publication__status=Publication.STATUS['PUBLISHED']).count()
+        else:
+            count = 0
+
         shelf_html.append('<li class="shelf%s"><a href="%s">%s (%d)</a></li>' % (active_html, reverse(url, args=[shelf.id]), shelf.name, count))
     
     return ''.join(shelf_html)

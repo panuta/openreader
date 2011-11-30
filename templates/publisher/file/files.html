@@ -1,5 +1,5 @@
 {% extends 'base_authenticated.html' %}
-{% load helper_tags %}
+{% load helper_tags pagination_tags %}
 
 {% block head_title %}ไฟล์{% endblock %}
 {% block topnav %}{% include 'publisher/snippets/publisher_topnav.html' with active_menu='file' %}{% endblock %}
@@ -37,10 +37,12 @@ $(document).ready(function () {
     <div class="sidebar">
       <div class="head"><a href="{% url view_files publisher.id %}">ชั้นหนังสือ</a></div>
       <ul>
-        {% if shelf %}{% generate_shelf_list publisher 'file' 'view_files_by_shelf' shelf %}{% else %}{% generate_shelf_list publisher 'file' 'view_files_by_shelf' %}{% endif %}
+        {% if shelf %}{% generate_shelf_list user publisher 'file' 'view_files_by_shelf' shelf %}{% else %}{% generate_shelf_list user publisher 'file' 'view_files_by_shelf' %}{% endif %}
         {% can user 'manage' publisher %}<li class="add"><a href="{% url create_file_shelf publisher.id %}">สร้างชั้นหนังสือใหม่</a></li>{% endcan %}
       </ul>
     </div>
+
+    {% autopaginate files 20 %}
 
     <div class="content"><div class="content-inner">
       <h2>{% if not shelf %}ไฟล์ทั้งหมด{% else %}ไฟล์ชั้นหนังสือ {{shelf.name}}{% endif %}</h2>
@@ -60,6 +62,9 @@ $(document).ready(function () {
           </li>
           {% endfor %}
         </ul>
+
+        {% paginate %}
+
       </div>
 
       {% else %}

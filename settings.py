@@ -101,6 +101,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'pagination.middleware.PaginationMiddleware',
 )
 
 ROOT_URLCONF = 'openreader.urls'
@@ -133,6 +134,7 @@ INSTALLED_APPS = (
 
     'private_files',
     'mystorages',
+    'pagination',
 
     'openreader.accounts',
     'openreader.common',
@@ -177,6 +179,10 @@ FILE_PROTECTION_METHOD = 'basic'
 SFTP_STORAGE_HOST = '172.16.204.129'
 SFTP_STORAGE_ROOT = '/web/sites/openreader/files/'
 SFTP_STORAGE_PARAMS = {'username':'root', 'password':'panuta'}
+
+########## Django Pagination ##########
+
+PAGINATION_DEFAULT_PAGINATION = 50
 
 ########## Open Reader Settings ##########
 

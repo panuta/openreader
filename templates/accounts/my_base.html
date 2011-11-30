@@ -4,6 +4,7 @@
 {% block head_title %}หน้าผู้ใช้ - {% block my_account_head_title %}{% endblock %}{% endblock %}
 {% block topnav %}
 <h1><a href="{% url view_my_profile %}"><span>ข้อมูลผู้ใช้</span> {{user.get_profile.get_fullname}}</a></h1>
+<a href="#">กลับไปหน้าสำนักพิมพ์</a>
 {% endblock %}
 
 {% block body_authenticated %}

@@ -5,6 +5,7 @@ import datetime
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseServerError, Http404
 from django.shortcuts import get_object_or_404, redirect, render
@@ -34,7 +35,7 @@ def finishing_upload_publication(request, publisher, publication):
             if has_module(publisher, 'shelf'):
                 publication.shelves.clear()
                 for shelf in form.cleaned_data['shelf']:
-                    publication.shelves.add(shelf)
+                    PublicationShelf.objects.create(publication=publication, shelf=shelf, created_by=request.user)
 
             if form.cleaned_data['next']:
                 return redirect(form.cleaned_data['next'])
@@ -42,8 +43,8 @@ def finishing_upload_publication(request, publisher, publication):
             return redirect('view_files', publisher_id=publisher.id)
             
     else:
-        shelfs = PublicationShelf.objects.filter(publication=publication).values_list('shelf', flat=True)
-        form = FinishUploadFileForm(initial={'next':request.GET.get('from', ''), 'shelf':shelfs})
+        shelves = PublicationShelf.objects.filter(publication=publication).values_list('shelf', flat=True)
+        form = FinishUploadFileForm(initial={'next':request.GET.get('from', ''), 'shelf':shelves})
     
     return render(request, 'publisher/file/publication_finishing.html', {'publisher':publisher, 'publication':publication, 'form':form})
 
@@ -109,10 +110,17 @@ def gather_publisher_statistics(request, publisher):
 def view_files(request, publisher_id):
     publisher = get_object_or_404(Publisher, pk=publisher_id)
 
-    if not has_module(publisher, 'file') or not can(request.user, 'view', publisher):
+    if not has_module(publisher, 'file'):
         raise Http404
+    
+    if can(request.user, 'edit', publisher):
+        files = Publication.objects.filter(publisher=publisher, publication_type='file').order_by('-uploaded')
 
-    files = Publication.objects.filter(publisher=publisher, publication_type='file').order_by('-uploaded')
+    elif can(request.user, 'view', publisher):
+        files = Publication.objects.filter(publisher=publisher, publication_type='file', status=Publication.STATUS['PUBLISHED']).order_by('-uploaded')
+
+    else:
+        raise Http404
 
     return render(request, 'publisher/file/files.html', {'publisher':publisher, 'files':files})
 
@@ -121,12 +129,17 @@ def view_files_by_shelf(request, shelf_id):
     shelf = get_object_or_404(PublisherShelf, pk=shelf_id)
     publisher = shelf.publisher
 
-    if shelf.publisher.id != publisher.id or not has_module(publisher, 'shelf') or not can(request.user, 'view', publisher):
+    if shelf.publisher.id != publisher.id or not has_module(publisher, 'file') or not has_module(publisher, 'shelf'):
         raise Http404
     
-    files = []
-    for item in PublicationShelf.objects.filter(shelf=shelf, publication__publication_type='file').order_by('-publication__uploaded'):
-        files.append(item.publication)
+    if can(request.user, 'edit', publisher):
+        files = Publication.objects.filter(publication_type='file', shelves__in=[shelf]).order_by('-uploaded')
+
+    elif can(request.user, 'view', publisher):
+        files = Publication.objects.filter(publication_type='file', shelves__in=[shelf], status=Publication.STATUS['PUBLISHED']).order_by('-uploaded')
+
+    else:
+        raise Http404
     
     return render(request, 'publisher/file/files.html', {'publisher':publisher, 'files':files, 'shelf':shelf})
 

@@ -55,7 +55,6 @@
 
 .publication_row_styles() {
     padding:15px 0px;
-    min-height:95px;
 
     .cover {
         width:70px;
@@ -599,6 +598,68 @@ table td.row_actions a {
         background-color:#C30;
         color:#FFF;
         text-shadow:none;
+    }
+}
+
+.pagination_bar {
+    margin:30px 0px;
+    text-align:right;
+
+    .goto {
+        width:76px;
+        height:26px;
+        background:url(/static/images/pagination/nav.png) no-repeat;
+        text-align:center;
+        display:inline-block;
+        line-height:26px;
+        font-size:0.9em;
+        cursor:default;
+    }
+
+    .prev {
+        margin-right:10px;
+    }
+
+    .next {
+        margin-left:10px;
+    }
+    
+    .page {
+        width:36px;
+        height:26px;
+        background:url(/static/images/pagination/page.png) center top no-repeat;
+        text-align:center;
+        display:inline-block;
+        line-height:26px;
+        margin:0px 3px;
+        cursor:default;
+    }
+
+    .current {
+        background-position:center bottom;
+        font-weight:bold;
+        color:#FFF;
+    }
+
+    a {
+        &:link, &:visited, &:active {
+            text-decoration:none;
+            color:@linkColor;
+        }
+
+        &.page:hover {
+            background-position:center bottom;
+            color:#FFF;
+            font-weight:bold;
+            cursor:pointer;
+        }
+
+        &.goto:hover {
+            background-position:center bottom;
+            color:#FFF;
+            font-weight:bold;
+            cursor:pointer;
+        }
     }
 }
 
