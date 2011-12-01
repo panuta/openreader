@@ -3,16 +3,30 @@ import os
 
 from django.conf import settings
 
+from common.thumbnails import get_generator
+from common.utilities import splitext
+
 from exceptions import FileUploadTypeUnknown
 from models import Publication, PublisherReader, PublicationNotice, PublicationShelf, PublicationReader
 
 def upload_publication(request, publication_type, uploading_file, publisher):
-    (file_name, separator, file_ext) = uploading_file.name.rpartition('.')
-
+    (file_name, file_ext) = splitext(uploading_file.name)
     publication = Publication.objects.create(publisher=publisher, publication_type=publication_type, original_file_name=file_name, file_ext=file_ext, uploaded_by=request.user)
-    publication.uploaded_file.save('%s.%s' % (publication.uid, file_ext), uploading_file)
 
-    # Generate file thumbnails
+    try:
+        publication.uploaded_file.save('%s.%s' % (publication.uid, file_ext), uploading_file)
+    except:
+        publication.delete()
+        return None
+    
+    try:
+        generator = get_generator(file_ext)
+        if generator:
+            thumbnail = generator.get_thumbnails(publication.uploaded_file.file)
+            # TODO Save file
+    except:
+        import sys
+        print sys.exc_info()
 
     return publication
 

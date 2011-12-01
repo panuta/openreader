@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+import os
 
 from datetime import date
 
@@ -31,3 +32,10 @@ def format_abbr_date(datetime):
         return unicode('%d %s %d', 'utf-8') % (datetime.day, unicode(THAI_MONTH_ABBR_NAME[datetime.month], 'utf-8'), datetime.year + 543)
     except:
         return ''
+
+def splitext(path):
+    (file_name, file_ext) = os.path.splitext(path)
+    if file_ext and file_ext[0] == '.':
+        file_ext = file_ext[1:]
+    
+    return (file_name, file_ext)

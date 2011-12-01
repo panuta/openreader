@@ -191,7 +191,17 @@ PUBLICATION_ROOT = MEDIA_ROOT + 'publication/'
 
 EMAIL_FOR_USER_PUBLISHER_INVITATION = 'noreply@' + WEBSITE_HOST
 
-ITEM_COUNT_IN_DASHBOARD = 20
-ITEM_COUNT_IN_MAGAZINE_PAGE = 20
+# Thumbnail
+
+THUMBNAIL_GENERATORS = (
+    'openreader.thumbnail_generators.ImageThumbnailGenerator',
+    'openreader.thumbnail_generators.PDFThumbnailGenerator',
+    'openreader.thumbnail_generators.VideoThumbnailGenerator',
+)
+
+THUMBNAIL_SIZES = (
+    ('small', (70, 85)),
+    ('large', (200, 250)),
+)
 
 #######################################################

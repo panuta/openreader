@@ -57,7 +57,7 @@ def view_publisher_dashboard(request, publisher_id):
     
     if not can(request.user, 'view', publisher):
         raise Http404
-    
+        
     if can(request.user, 'edit', publisher):
         recent_publications = Publication.objects.filter(publisher=publisher).order_by('-uploaded')[0:settings.ITEM_COUNT_IN_DASHBOARD]
     else:
@@ -90,17 +90,17 @@ def upload_publication(request, publisher_id, module_name=''):
             
         if form.is_valid():
             module_input = form.cleaned_data['module']
-            uploading_file = form.cleaned_data['publication']
+            publication = form.cleaned_data['publication']
 
-            try:
-                publication = publisher_functions.upload_publication(request, module_input, uploading_file, publisher)
-            except:
-                # TODO implement more useful error handling and logging, also do not persist publication record if upload is failed
-                import sys
-                print sys.exc_info()
+            if not form.valid_file_type():
+                return response_json_error('file-type-invalid')
+
+            publication = publisher_functions.upload_publication(request, module_input, publication, publisher)
+
+            if not publication:
                 return response_json_error('upload')
-            else:
-                form.after_upload(request, publication)
+            
+            form.after_upload(request, publication)
             
             return response_json({'next_url':reverse('finishing_upload_publication', args=[publication.id])})
 

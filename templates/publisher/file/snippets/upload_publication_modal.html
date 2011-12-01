@@ -1,6 +1,7 @@
 <div class="modal hide fade upload-publication-modal" style="display: none;">
   <form enctype="multipart/form-data" method="POST" action="{% url upload_module_publication publisher.id 'file' %}" id="upload-file-form" class="upload-publication-form">
     <div class="modal-header"><a class="close" href="#">×</a><h3>อัพโหลดไฟล์</h3></div>
+    <div class="modal-message"></div>
     <div class="modal-body">
       <div class="inputs">
         {% csrf_token %}

@@ -7,6 +7,7 @@ from publisher.models import Publication, PublisherShelf, PublicationShelf
 
 from common.forms import StrippedCharField
 from common.modules import has_module
+from common.utilities import splitext
 
 class UploadPublicationForm(GeneralUploadPublicationForm):
     shelf = forms.CharField(required=False)
@@ -14,6 +15,10 @@ class UploadPublicationForm(GeneralUploadPublicationForm):
     def __init__(self, *args, **kwargs):
         self.publisher = kwargs.pop('publisher', None)
         forms.Form.__init__(self, *args, **kwargs)
+    
+    def valid_file_type(self):
+        publication = self.cleaned_data['publication']
+        return splitext(publication.name)[1].lower() in ['pdf', 'txt', 'jpg', 'png', 'gif', 'mp4', 'doc']
     
     def after_upload(self, request, publication):
         if self.cleaned_data['shelf']:

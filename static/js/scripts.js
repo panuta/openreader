@@ -39,6 +39,7 @@ function open_upload_publication_modal(form_id, next_url) {
 }
 
 function clear_upload_publication_modal() {
+  $(_active_upload_form + ' .modal-message').hide();
   $(_active_upload_form + ' .inputs').show();
   $(_active_upload_form + ' .uploading').remove();
   $(_active_upload_form + ' .inputs option:first').attr('selected', 'selected');
@@ -77,10 +78,11 @@ function bind_all_upload_publication_form() {
         if(response.error) {
           var message = '';
           if(response.error == 'upload') {message = 'ไม่สามารถจัดเก็บไฟล์ได้ในขณะนี้';}
+          if(response.error == 'file-type-invalid') {message = 'ระบบยังไม่สนับสนุนไฟล์ประเภทนี้';}
           if(response.error == 'form-input-invalid') {message = 'ข้อมูลไม่ครบถ้วน กรุณาตรวจสอบการกรอกข้อมูลอีกครั้ง';}
-          $('#publish-publication-modal .modal-message').html(message).show();
-
+          
           clear_upload_publication_modal();
+          $(_active_upload_form + ' .modal-message').html(message).show();
 
         } else {
           $(_active_upload_form + ' .upload_progressbar').progressBar(100);

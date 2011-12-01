@@ -2,6 +2,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from common.forms import StrippedCharField
+from common.utilities import splitext
 
 from publisher.forms import GeneralUploadPublicationForm, PublicationCategoryMultipleChoiceField, EditPublicationForm
 
@@ -27,6 +28,10 @@ class UploadPublicationForm(GeneralUploadPublicationForm):
         forms.Form.__init__(self, *args, **kwargs)
 
         self.fields['magazine'].queryset = Magazine.objects.filter(publisher=self.publisher).order_by('title')
+    
+    def valid_file_type(self):
+        publication = self.cleaned_data['publication']
+        return splitext(publication.name)[1].lower() in ['pdf']
     
     def after_upload(self, request, publication):
         if self.cleaned_data['magazine']:
