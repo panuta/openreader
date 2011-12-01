@@ -61,37 +61,9 @@ def view_publisher_dashboard(request, publisher_id):
     if can(request.user, 'edit', publisher):
         recent_publications = Publication.objects.filter(publisher=publisher).order_by('-uploaded')[0:settings.ITEM_COUNT_IN_DASHBOARD]
     else:
-        recent_publications = Publication.objects.filter(publisher=publisher, status=Publication.STATUS['PUBLISHED']).order_by('-uploaded')[0:settings.ITEM_COUNT_IN_DASHBOARD]
+        recent_publications = Publication.objects.filter(publisher=publisher, status=Publication.STATUS['PUBLISHED']).order_by('-uploaded')
     
     return render(request, 'publisher/dashboard.html', {'publisher':publisher, 'recent_publications':recent_publications, 'first_time':first_time})
-
-@login_required
-def update_publisher(request, publisher_id):
-    publisher = get_object_or_404(Publisher, pk=publisher_id)
-
-    if not can(request.user, 'manage', publisher):
-        raise Http404
-
-    if request.method == 'POST':
-        form = PublisherForm(request.POST)
-        if form.is_valid():
-            publisher_name = form.cleaned_data['name']
-
-            publisher.name = publisher_name
-            publisher.modified_by = request.user
-            publisher.save()
-
-            # MESSAGE
-
-            return redirect('view_publisher_dashboard', publisher_id=publisher.id)
-    else:
-        form = PublisherForm(initial=publisher)
-    
-    return render(request, 'publisher/publisher_update.html', {'form': form})
-
-@login_required
-def deactivate_publisher(request, publisher_id):
-    pass
 
 # Publication ######################################################################
 
@@ -186,7 +158,7 @@ def cancel_upload_publication(request, publication_id):
             response = views_module.cancel_upload_publication(request, publisher, publication)
             
             publisher_functions.delete_publication(publication)
-
+            messages.success(request, u'ยกเลิกการอัพโหลดไฟล์เรียบร้อย')
             return response
 
         else:
@@ -202,11 +174,13 @@ def view_publication(request, publication_id):
     if not can(request.user, 'view', publisher):
         raise Http404
     
+    if not can(request.user, 'edit', publisher) and publication.status != Publication.STATUS['PUBLISHED']:
+        raise Http404
+    
     if publication.status == Publication.STATUS['UPLOADED']:
         return redirect('finishing_upload_publication', publication_id=publication.id)
-
-    views_module = get_publication_module(publication.publication_type, 'views')
-    return views_module.view_publication(request, publisher, publication)
+    
+    return render(request, 'publisher/%s/publication.html' % publication.publication_type, {'publisher':publisher, 'publication':publication})
 
 @login_required
 def download_publication(request, publication_id):
@@ -216,6 +190,9 @@ def download_publication(request, publication_id):
 @login_required
 def get_publication(request, publication_uid):
     publication = get_object_or_404(Publication, uid=publication_uid)
+
+    if not can(request.user, 'edit', publisher) and publication.status != Publication.STATUS['PUBLISHED']:
+        raise Http404
     
     return private_files_get_file(request, 'publication', 'Publication', 'uploaded_file', str(publication.id), 'sample.pdf')
 
@@ -229,7 +206,7 @@ def edit_publication(request, publication_id):
     
     if publication.status == Publication.STATUS['UPLOADED']:
         raise Http404
-
+    
     views_module = get_publication_module(publication.publication_type, 'views')
     return views_module.edit_publication(request, publisher, publication)
 
@@ -255,13 +232,13 @@ def edit_publication_status(request, publication_id):
                 publisher_functions.set_publication_unpublished(request, publication)
             
             elif status == 'schedule':
+                schedule = datetime.datetime.combine(schedule_date, schedule_time)
                 publisher_functions.set_publication_scheduled(request, publication, schedule)
             
             elif status == 'publish':
-                publisher_functions.set_publication_scheduled(request, publication)
+                publisher_functions.set_publication_published(request, publication)
             
-            # MESSAGE
-
+            messages.success(request, u'เปลี่ยนสถานะไฟล์เรียบร้อย')
             return redirect('view_publication', publication.id)
 
     else:
@@ -292,8 +269,7 @@ def edit_publication_status(request, publication_id):
         
         form = EditPublicationStatusForm(initial={'status':status, 'schedule_date':schedule_date, 'schedule_time':schedule_time})
 
-    views_module = get_publication_module(publication.publication_type, 'views')
-    return views_module.edit_publication_status(request, publisher, publication, form)
+    return render(request, 'publisher/%s/publication_edit_status.html' % publication.publication_type, {'publisher':publisher, 'publication':publication, 'form':form})
 
 @login_required
 def replace_publication(request, publication_id):
@@ -319,13 +295,17 @@ def delete_publication(request, publication_id):
     if request.method == 'POST':
         deleted = 'submit-delete' in request.POST
 
-        views_module = get_publication_module(publication.publication_type, 'views')
-        response = views_module.delete_publication(request, deleted, publisher, publication)
-
         if deleted:
+            views_module = get_publication_module(publication.publication_type, 'views')
+            response = views_module.delete_publication(request, deleted, publisher, publication)
+
             publisher_functions.delete_publication(publication)
         
-        return response
+            messages.success(request, u'ลบไฟล์เรียบร้อย')
+            return response
+
+        else:
+            return redirect('view_publication', publication_id=publication.id)
     
     return render(request, 'publisher/%s/publication_delete.html' % publication.publication_type, {'publisher':publisher, 'publication':publication})
 
@@ -428,7 +408,7 @@ def edit_publisher_profile(request, publisher_id):
             publisher.name = form.cleaned_data['name']
             publisher.save()
 
-            # MESSAGE
+            messages.success(request, u'แก้ไขข้อมูลสำนักพิมพ์เรียบร้อย')
 
             return redirect('view_publisher_profile', publisher_id=publisher.id)
 
@@ -468,7 +448,7 @@ def create_publisher_shelf(request, publisher_id):
 
             PublisherShelf.objects.create(publisher=publisher, name=name, description=description, created_by=request.user)
 
-            # MESSAGE
+            messages.success(request, u'สร้างชั้นหนังสือเรียบร้อย')
 
             return redirect('view_publisher_shelfs', publisher_id=publisher.id)
 
@@ -492,7 +472,7 @@ def edit_publisher_shelf(request, publisher_shelf_id):
             publisher_shelf.description = form.cleaned_data['description']
             publisher_shelf.save()
 
-            # MESSAGE
+            messages.success(request, u'แก้ไขชั้นหนังสือเรียบร้อย')
 
             return redirect('view_publisher_shelfs', publisher_id=publisher.id)
 
@@ -512,7 +492,8 @@ def delete_publisher_shelf(request, publisher_shelf_id):
     if request.method == 'POST':
         if 'submit-delete' in request.POST:
             publisher_shelf.delete()
-            # MESSAGE
+            messages.success(request, u'ลบชั้นหนังสือเรียบร้อย')
+            
         return redirect('view_publisher_shelfs', publisher_id=publisher.id)
 
     return render(request, 'publisher/manage/publisher_manage_shelf_delete.html', {'publisher':publisher, 'publisher_shelf':publisher_shelf})
@@ -564,10 +545,9 @@ def invite_publisher_user(request, publisher_id):
                 
                 if invitation:
                     invitation.send_invitation_email()
-                    # MESSAGE
+                    messages.success(request, u'ส่งคำขอถึงผู้ใช้เรียบร้อย')
                 else:
-                    # MESSAGE
-                    pass
+                    messages.error(request, u'ไม่สามารถส่งคำขอถึงผู้ใช้ได้')
                 
                 return redirect('view_publisher_users', publisher_id=publisher.id)
 
@@ -586,11 +566,9 @@ def resend_publisher_invitation(request, invitation_id):
     if request.method == 'POST':
         if 'submit-send' in request.POST:
             if invitation.send_invitation_email():
-                # MESSAGE
-                pass
+                messages.success(request, u'ส่งคำขอถึงผู้ใช้เรียบร้อย')
             else:
-                pass
-                # TODO: SEND ERROR MESSAGE
+                messages.error(request, u'ไม่สามารถส่งคำขอถึงผู้ใช้ได้')
             
         return redirect('view_publisher_users', publisher_id=publisher.id)
 
@@ -606,7 +584,7 @@ def cancel_publisher_invitation(request, invitation_id):
     if request.method == 'POST':
         if 'submit-remove' in request.POST:
             invitation.delete()
-            # MESSAGE
+            messages.success(request, u'ยกเลิกคำขอเรียบร้อย')
         return redirect('view_publisher_users', publisher_id=publisher.id)
 
     return render(request, 'publisher/manage/publisher_manage_user_invite_cancel.html', {'publisher':publisher, 'invitation':invitation})
@@ -692,7 +670,7 @@ def edit_publisher_user(request, publisher_user_id):
             user_publisher.role = name=form.cleaned_data['role']
             user_publisher.save()
 
-            # MESSAGE
+            messages.success(request, u'แก้ไขข้อมูลผู้ใช้เรียบร้อย')
 
             return redirect('view_publisher_users', publisher_id=publisher.id)
 
@@ -712,7 +690,7 @@ def remove_publisher_user(request, publisher_user_id):
     if request.method == 'POST':
         if 'submit-delete' in request.POST:
             user_publisher.delete()
-            # MESSAGE
+            messages.success(request, u'ถอดผู้ใช้ออกจากทีมเรียบร้อย')
         return redirect('view_publisher_users', publisher_id=publisher.id)
 
     return render(request, 'publisher/manage/publisher_manage_user_remove.html', {'publisher':publisher, 'user_publisher':user_publisher})

@@ -141,6 +141,40 @@ def do_if_just_finishing_upload(parser, token):
 
     return JustFinishingUploadNode(nodelist)
 
+# PUBLICATION #################################################################
+
+class PublishWhenReadyNode(template.Node):
+    def __init__(self, nodelist_true, nodelist_false, publication):
+        self.nodelist_true = nodelist_true
+        self.nodelist_false = nodelist_false
+        self.publication = template.Variable(publication)
+    
+    def render(self, context):
+        request = context.get('request')
+        publication = self.publication.resolve(context)
+
+        if PublicationNotice.objects.filter(publication=publication, notice=PublicationNotice.NOTICE['PUBLISH_WHEN_READY']).exists():
+            return self.nodelist_true.render(context)
+        else:
+            return self.nodelist_false.render(context)
+
+@register.tag(name="if_publish_when_ready")
+def do_if_publish_when_ready(parser, token):
+    try:
+        tag_name, publication = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError, "if_publish_when_ready tag raise ValueError"
+    
+    nodelist_true = parser.parse(('else', 'endif'))
+    token = parser.next_token()
+    if token.contents == 'else':
+        nodelist_false = parser.parse(('endif',))
+        parser.delete_first_token()
+    else:
+        nodelist_false = NodeList()
+
+    return PublishWhenReadyNode(nodelist_true, nodelist_false, publication)
+
 # HTML GENERATOR #################################################################
 
 @register.simple_tag
@@ -185,7 +219,7 @@ def print_publication_status(publication):
     elif publication.status == Publication.STATUS['UNPUBLISHED']:
         if publication.is_processing:
 
-            if PublicationNotice.objects.filter(publication=publication, notice=PublicationNotice.NOTICE['PUBLISH_WHEN_READY']):
+            if PublicationNotice.objects.filter(publication=publication, notice=PublicationNotice.NOTICE['PUBLISH_WHEN_READY']).exists():
                 return u'<span class="unpublished">ไฟล์กำลังประมวลผล และจะเผยแพร่ทันทีที่ประมวลผลเสร็จ</span>'
 
             else:
@@ -200,23 +234,29 @@ def print_publication_status(publication):
     return ''
 
 @register.simple_tag
-def generate_publication_actions(publication):
-    # TODO Check permission
+def generate_publication_actions(publication, from_page=''):
+    if from_page:
+        from_page = '?from=%s' % from_page
     
     if publication.status == Publication.STATUS['UPLOADED']:
         return u'<a href="%s" class="small btn"><span>กรอกข้อมูลต่อ</span></a>' % reverse('finishing_upload_publication', args=[publication.id])
     
     elif publication.status == Publication.STATUS['SCHEDULED']:
-        return u'<a href="%s" class="small btn action-schedule"><span>ตั้งเวลาใหม่</span></a><a href="%s" class="link">แก้ไขรายละเอียด</a>' % (reverse('set_publication_schedule', args=[publication.id]), reverse('edit_publication', args=[publication.id]))
+        return u'<a href="%s" class="small btn action-schedule"><span>ตั้งเวลาใหม่</span></a><a href="%s%s" class="link">แก้ไขรายละเอียด</a>' % (reverse('set_publication_schedule', args=[publication.id]), reverse('edit_publication', args=[publication.id]), from_page)
 
     elif publication.status == Publication.STATUS['UNPUBLISHED']:
         if publication.is_processing:
-            return u'<a href="%s" class="small btn action-schedule"><span>ตั้งเวลาเผยแพร่</a></a><a href="%s" class="small btn action-publish"><span>เผยแพร่ทันทีที่ประมวลผลเสร็จ</span></a><a href="%s" class="link">แก้ไขรายละเอียด</a>' % (reverse('set_publication_schedule', args=[publication.id]), reverse('set_publication_published', args=[publication.id]), reverse('edit_publication', args=[publication.id]))
+            if PublicationNotice.objects.filter(publication=publication, notice=PublicationNotice.NOTICE['PUBLISH_WHEN_READY']).exists():
+                return u'<a href="%s" class="small btn action-schedule"><span>ตั้งเวลาเผยแพร่</a></a><a href="%s%s" class="link">แก้ไขรายละเอียด</a>' % (reverse('set_publication_schedule', args=[publication.id]), reverse('edit_publication', args=[publication.id]), from_page)
+
+            else:
+                return u'<a href="%s" class="small btn action-schedule"><span>ตั้งเวลาเผยแพร่</a></a><a href="%s" class="small btn action-publish"><span>เผยแพร่ทันทีที่ประมวลผลเสร็จ</span></a><a href="%s%s" class="link">แก้ไขรายละเอียด</a>' % (reverse('set_publication_schedule', args=[publication.id]), reverse('set_publication_published', args=[publication.id]), reverse('edit_publication', args=[publication.id]), from_page)
+
         else:
-            return u'<a href="%s" class="small btn action-schedule"><span>ตั้งเวลาเผยแพร่</a></a><a href="%s" class="small btn action-publish"><span>เผยแพร่ทันที</span></a><a href="%s" class="link">แก้ไขรายละเอียด</a>' % (reverse('set_publication_schedule', args=[publication.id]), reverse('set_publication_published', args=[publication.id]), reverse('edit_publication', args=[publication.id]))
+            return u'<a href="%s" class="small btn action-schedule"><span>ตั้งเวลาเผยแพร่</a></a><a href="%s" class="small btn action-publish"><span>เผยแพร่ทันที</span></a><a href="%s%s" class="link">แก้ไขรายละเอียด</a>' % (reverse('set_publication_schedule', args=[publication.id]), reverse('set_publication_published', args=[publication.id]), reverse('edit_publication', args=[publication.id]), from_page)
     
     elif publication.status == Publication.STATUS['PUBLISHED']:
-        return u'<a href="%s" class="link">แก้ไขรายละเอียด</a>' % reverse('edit_publication', args=[publication.id])
+        return u'<a href="%s%s" class="link">แก้ไขรายละเอียด</a>' % (reverse('edit_publication', args=[publication.id]), from_page)
     
     return ''
 
@@ -258,6 +298,17 @@ def generate_shelf_list(user, publisher, module, url, active_shelf=None):
         shelf_html.append('<li class="shelf%s"><a href="%s">%s (%d)</a></li>' % (active_html, reverse(url, args=[shelf.id]), shelf.name, count))
     
     return ''.join(shelf_html)
+
+@register.simple_tag
+def print_no_shelf_count(user, publisher, module):
+    if can(user, 'edit', publisher):
+        count = Publication.objects.filter(publisher=publisher, publication_type=module, shelves=None).count()
+    elif can(user, 'edit', publisher):
+        count = Publication.objects.filter(publisher=publisher, publication_type=module, publication__status=Publication.STATUS['PUBLISHED'], shelves=None).count()
+    else:
+        count = 0
+    
+    return count
 
 # MODULES ################################################################################
 

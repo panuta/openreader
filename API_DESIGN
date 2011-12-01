@@ -12,25 +12,11 @@
 
 ----- BOOK STORE -----
 
-- Get magazine details
-- Get book details
-- Request for Download
-- Search book store
-- Get magazine preview - cover+index
-- Get magazine preview - thumbnails
-
-New Release
-- Get New Release for Magazine
-- Get New Release for Book
-
-Top Charts
-- Get Top Charts
-
-All
-- Get categories
-- Get magazines/book in category
-- Get details for book
-- Get details for magazine and back issues
+- Get publication data
+- Get publication list
+- Search publication
+- Get shelves
+- Download
 
 ########## DESIGN ##########
 

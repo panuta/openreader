@@ -59,6 +59,11 @@ class GeneralUploadPublicationForm(forms.Form):
 
 # Publication
 
+class EditPublicationForm(forms.Form):
+    title = StrippedCharField(widget=forms.TextInput(attrs={'class':'span8'}))
+    description = StrippedCharField(required=False, widget=forms.Textarea(attrs={'class':'span10', 'rows':'5'}))
+    from_page = forms.CharField(required=False, widget=forms.HiddenInput())
+
 class EditPublicationStatusForm(forms.Form):
     status = PublicationStatusField()
     schedule_date = forms.DateField(widget=YUICalendar(attrs={'id':'id_schedule_date'}), required=False)

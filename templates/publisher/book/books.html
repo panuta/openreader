@@ -1,5 +1,5 @@
 {% extends 'base_authenticated.html' %}
-{% load helper_tags %}
+{% load helper_tags pagination_tags %}
 
 {% block head_title %}หนังสือ{% endblock %}
 {% block topnav %}{% include 'publisher/snippets/publisher_topnav.html' with active_menu='book' %}{% endblock %}
@@ -38,6 +38,8 @@ $(document).ready(function () {
 
     <h3>ไฟล์หนังสือ</h3>
 
+    {% autopaginate books 20 %}
+
     {% if books %}
     <div class="publications">
       <ul>
@@ -49,11 +51,13 @@ $(document).ready(function () {
             <div class="name">{% if publication.status == PUBLICATION_STATUS_UPLOADED %}{{publication.original_file_name}}.{{publication.file_ext}}{% else %}<a href="{% url view_publication publication.id %}">{{publication.title}}</a>{% endif %}</div>
             <div class="details">อัพโหลดเมื่อวันที่ {{publication.uploaded|format_abbr_datetime}}</div>
             <div class="status">สถานะ - {% print_publication_status publication %}</div>
-            {% can user 'edit' publisher %}<div class="links">{% generate_publication_actions publication %}</div>{% endcan %}
+            {% can user 'edit' publisher %}<div class="links">{% generate_publication_actions publication request.path %}</div>{% endcan %}
           </div>
         </li>
         {% endfor %}
       </ul>
+
+      {% paginate %}
     </div>
 
     {% else %}

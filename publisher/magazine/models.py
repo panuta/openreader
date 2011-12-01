@@ -24,12 +24,3 @@ class Magazine(models.Model):
 class MagazineIssue(models.Model):
     publication = models.OneToOneField(Publication)
     magazine = models.ForeignKey(Magazine)
-
-class ToCreateMagazine(models.Model):
-    publication = models.OneToOneField(Publication)
-
-class MagazineIssueContent(models.Model):
-    issue = models.ForeignKey(MagazineIssue)
-    title = models.CharField(max_length=500)
-    author = models.CharField(max_length=300, null=True, blank=True)
-    start_page = models.IntegerField()

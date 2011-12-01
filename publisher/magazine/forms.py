@@ -3,10 +3,10 @@ from django.utils.translation import ugettext_lazy as _
 
 from common.forms import StrippedCharField
 
-from publisher.forms import GeneralUploadPublicationForm, PublicationCategoryMultipleChoiceField
+from publisher.forms import GeneralUploadPublicationForm, PublicationCategoryMultipleChoiceField, EditPublicationForm
 
 from publisher.models import Publication
-from publisher.magazine.models import Magazine, MagazineIssue, ToCreateMagazine
+from publisher.magazine.models import Magazine, MagazineIssue
 
 class PublisherMagazineChoiceField(forms.ModelChoiceField):
     def __init__(self, *args, **kwargs):
@@ -31,11 +31,6 @@ class UploadPublicationForm(GeneralUploadPublicationForm):
     def after_upload(self, request, publication):
         if self.cleaned_data['magazine']:
             magazine_issue = MagazineIssue.objects.create(publication=publication, magazine=self.cleaned_data['magazine'])
-        else:
-            try:
-                ToCreateMagazine.objects.get(publication=publication)
-            except ToCreateMagazine.DoesNotExist:
-                ToCreateMagazine.objects.create(publication=publication)
 
 class FinishUploadMagazineIssueForm(forms.Form):
     next = forms.CharField(required=False, widget=forms.HiddenInput())
@@ -73,6 +68,5 @@ class MagazineForm(forms.Form):
     description = StrippedCharField(required=False, widget=forms.Textarea(attrs={'class':'span10', 'rows':'3'}))
     categories = PublicationCategoryMultipleChoiceField(required=False, widget=forms.CheckboxSelectMultiple())
 
-class EditMagazineIssueDetailsForm(forms.Form):
-    title = StrippedCharField(widget=forms.TextInput(attrs={'class':'span8'}))
-    description = StrippedCharField(required=False, widget=forms.Textarea(attrs={'class':'span10', 'rows':'5'}))
+class EditMagazinePublicationForm(EditPublicationForm):
+    pass

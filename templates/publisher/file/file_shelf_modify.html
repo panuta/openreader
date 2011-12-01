@@ -10,6 +10,7 @@
     <div class="head"><a href="{% url view_files publisher.id %}">ชั้นหนังสือ</a></div>
     <ul>
       {% if shelf %}{% generate_shelf_list user publisher 'file' 'view_files_by_shelf' shelf %}{% else %}{% generate_shelf_list user publisher 'file' 'view_files_by_shelf' %}{% endif %}
+      <li><a href="{% url view_files_no_shelf publisher.id %}">ไฟล์ที่ไม่อยู่ในชั้น ({% print_no_shelf_count user publisher 'file' %})</a></li>
       <li class="add{% if not shelf %} active{% endif %}"><a href="{% url create_file_shelf publisher.id %}">สร้างชั้นหนังสือใหม่</a></li>
     </ul>
   </div>

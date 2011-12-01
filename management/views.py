@@ -60,11 +60,10 @@ def create_publisher(request):
             if invitation:
                 invitation.send_invitation_email(is_created_publisher=True)
 
-                # MESSAGE
+                messages.success(request, u'เพิ่มสำนักพิมพ์ และส่งอีเมลถึงผู้ใช้เรียบร้อย')
 
             else:
-                # MESSAGE
-                pass
+                messages.error(request, u'ไม่สามารถส่งอีเมลถึงผู้ใช้ได้')
 
             return redirect('manage_publishers')
     

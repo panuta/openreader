@@ -134,7 +134,7 @@ class Publication(models.Model):
     is_processing = models.BooleanField(default=True)
 
     status = models.IntegerField(default=STATUS['UPLOADED'])
-    is_public = models.BooleanField(default=False)
+    is_public_listing = models.BooleanField(default=False)
 
     web_scheduled =  models.DateTimeField(null=True, blank=True)
     web_scheduled_by =  models.ForeignKey(User, null=True, blank=True, related_name='publication_web_scheduled_by')
@@ -154,6 +154,9 @@ class Publication(models.Model):
     
     def get_publication_title(self):
         return get_publication_module(self.publication_type).get_publication_title(self)
+    
+    def get_publication_type(self):
+        return Module.objects.get(module_name=self.publication_type).title
 
     def save(self, *args, **kwargs):
         if not self.uid:

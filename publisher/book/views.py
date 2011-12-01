@@ -48,16 +48,11 @@ def finishing_upload_publication(request, publisher, publication):
     return render(request, 'publisher/book/publication_finishing.html', {'publisher':publisher, 'publication':publication, 'form':form})
 
 def cancel_upload_publication(request, publisher, publication):
-    # MESSAGE
     return redirect('view_books', publisher_id=publisher.id)
-
-def view_publication(request, publisher, publication):
-
-    return render(request, 'publisher/book/publication.html', {'publisher':publisher, 'publication':publication})
 
 def edit_publication(request, publisher, publication):
     if request.method == 'POST':
-        form = EditBookDetailsForm(request.POST)
+        form = EditBookPublicationForm(request.POST)
         if form.is_valid():
             publication.title = form.cleaned_data['title']
             publication.description = form.cleaned_data['description']
@@ -71,28 +66,20 @@ def edit_publication(request, publisher, publication):
             for category in form.cleaned_data['categories']:
                 publication.book.categories.add(category)
             
-            # MESSAGE
+            messages.success(request, u'แก้ไขรายละเอียดเรียบร้อย')
+            if request.POST.get('from_page'):
+                return redirect(request.POST.get('from_page'))
 
             return redirect('view_publication', publication.id)
     else:
-        form = EditBookDetailsForm(initial={'title':publication.title, 'description':publication.description, 'author':publication.book.author, 'categories':publication.book.categories.all()})
+        form = EditBookPublicationForm(initial={'title':publication.title, 'description':publication.description, 'author':publication.book.author, 'categories':publication.book.categories.all(), 'from_page':request.GET.get('from')})
 
     return render(request, 'publisher/book/publication_edit.html', {'publisher':publisher, 'publication':publication, 'form':form})
 
-def edit_publication_status(request, publisher, publication, form):
-    return render(request, 'publisher/book/publication_edit_status.html', {'publisher':publisher, 'publication':publication, 'form':form})
-
 def delete_publication(request, deleted, publisher, publication):
-    if deleted:
-        book = Book.objects.get(publication=publication)
-        book.delete()
-
-        # MESSAGE
-
-        return redirect('view_books', publisher_id=publisher.id)
-        
-    else:
-        return redirect('view_publication', publication_id=publication.id)
+    book = Book.objects.get(publication=publication)
+    book.delete()
+    return redirect('view_books', publisher_id=publisher.id)
 
 def gather_publisher_statistics(request, publisher):
     return {
@@ -107,7 +94,10 @@ def view_books(request, publisher_id):
 
     if not has_module(publisher, 'book') or not can(request.user, 'view', publisher):
         raise Http404
-
-    books = Publication.objects.filter(publisher=publisher, publication_type='book').order_by('-uploaded')
-
+    
+    if can(request.user, 'edit', publisher):
+        books = Publication.objects.filter(publisher=publisher, publication_type='book').order_by('-uploaded')
+    else:
+        books = Publication.objects.filter(publisher=publisher, publication_type='book', status=Publication.STATUS['PUBLISHED']).order_by('-uploaded')
+    
     return render(request, 'publisher/book/books.html', {'publisher':publisher, 'books':books})

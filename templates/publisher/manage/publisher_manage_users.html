@@ -1,5 +1,5 @@
 {% extends 'publisher/manage/publisher_manage_base.html' %}
-{% load helper_tags %}
+{% load helper_tags pagination_tags %}
 
 {% block publisher_manage_head_title %}ทีมงาน{% endblock %}
 {% block publisher_manage_menu %}{% include 'publisher/snippets/publisher_manage_nav.html' with active_publisher_manage_menu='user' %}{% endblock %}
@@ -40,6 +40,8 @@
 <h3>ทีมงานทั้งหมด</h3>
 {% endif %}
 
+{% autopaginate publisher_users 20 %}
+
 <table class="zebra-striped">
   <col />
   <col width="240"/>
@@ -64,5 +66,7 @@
     {% endfor %}
   </tbody>
 </table>
+
+{% paginate %}
 
 {% endblock %}

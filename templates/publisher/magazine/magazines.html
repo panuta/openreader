@@ -1,5 +1,5 @@
 {% extends 'base_authenticated.html' %}
-{% load helper_tags magazine_tags %}
+{% load helper_tags magazine_tags pagination_tags %}
 
 {% block head_title %}นิตยสาร{% endblock %}
 {% block topnav %}{% include 'publisher/snippets/publisher_topnav.html' with active_menu='magazine' %}{% endblock %}
@@ -59,6 +59,8 @@ $(document).ready(function () {
       </div>
       {% endif %}
 
+      {% autopaginate recent_issues 20 %}
+
       <h3>ไฟล์นิตยสารล่าสุด</h3>
       {% if recent_issues %}
         <ul class="recent_publications">
@@ -70,6 +72,9 @@ $(document).ready(function () {
           </li>
         {% endfor %}
         </ul>
+        
+        {% paginate %}
+
       {% else %}
       <div class="no_row">ยังไม่มีไฟล์นิตยสาร</div>
       {% endif %}

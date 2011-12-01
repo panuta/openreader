@@ -1,5 +1,5 @@
 {% extends 'base_authenticated.html' %}
-{% load helper_tags %}
+{% load helper_tags pagination_tags %}
 
 {% block head_title %}หน้าแรก{% endblock %}
 {% block topnav %}{% include 'publisher/snippets/publisher_topnav.html' with active_menu='dashboard' %}{% endblock %}
@@ -36,17 +36,21 @@ $(document).ready(function () {
     {% can user 'edit' publisher %}<div class="page_tables"><button class="btn primary upload_publication_button"><span>อัพโหลดไฟล์</span></button></div>{% endcan %}
 
     <h3>ไฟล์สิ่งพิมพ์ล่าสุด</h3>
+
+    {% autopaginate recent_publications 20 %}
     
     {% if recent_publications %}
     <ul class="recent_publications">
       {% for publication in recent_publications %}
       <li>
-        <div><span class="type">{% print_publication_type_name publication %}</span><a href="{% url view_publication publication.id %}" class="title">{% print_publication_title publication '(ยังไม่มีชื่อ)' %}</a></div>
+        <div><span class="type">{{publication.get_publication_type}}</span><a href="{% url view_publication publication.id %}" class="title">{% print_publication_title publication '(ยังไม่มีชื่อ)' %}</a></div>
         <div class="uploaded">อัพโหลดเมื่อวันที่ {{publication.uploaded|format_abbr_datetime}}</div>
         <div class="status">สถานะ - {% print_publication_status publication %}</div>
       </li>
       {% endfor %}
     </ul>
+
+    {% paginate %}
     
     {% else %}
     <div class="no_row">ยังไม่มีไฟล์สิ่งพิมพ์</div>

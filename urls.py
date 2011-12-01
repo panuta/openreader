@@ -5,6 +5,8 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
+    url('api/', include('openreader.api.urls')),
+
     url('', include('openreader.accounts.urls')),
     url('', include('openreader.homepage.urls')),
     url('', include('openreader.publisher.urls')),

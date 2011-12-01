@@ -8,13 +8,5 @@ class MagazineAdmin(admin.ModelAdmin):
 class MagazineIssueAdmin(admin.ModelAdmin):
     pass
 
-class ToCreateMagazineAdmin(admin.ModelAdmin):
-    pass
-
-class MagazineIssueContentAdmin(admin.ModelAdmin):
-    pass
-
 admin.site.register(Magazine, MagazineAdmin)
 admin.site.register(MagazineIssue, MagazineIssueAdmin)
-admin.site.register(ToCreateMagazine, ToCreateMagazineAdmin)
-admin.site.register(MagazineIssueContent, MagazineIssueContentAdmin)

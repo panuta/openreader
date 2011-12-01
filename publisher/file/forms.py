@@ -2,7 +2,7 @@
 
 from django import forms
 
-from publisher.forms import GeneralUploadPublicationForm, PublisherShelfMultipleChoiceField
+from publisher.forms import GeneralUploadPublicationForm, PublisherShelfMultipleChoiceField, EditPublicationForm
 from publisher.models import Publication, PublisherShelf, PublicationShelf
 
 from common.forms import StrippedCharField
@@ -37,9 +37,7 @@ class FinishUploadFileForm(forms.Form):
         if has_module(self.publisher, 'shelf'):
             self.fields['shelf'].queryset = PublisherShelf.objects.filter(publisher=self.publisher).order_by('name')
 
-class EditFileDetailsForm(forms.Form):
-    title = StrippedCharField(widget=forms.TextInput(attrs={'class':'span10'}))
-    description = StrippedCharField(required=False, widget=forms.Textarea(attrs={'class':'span10', 'rows':'5'}))
+class EditFilePublicationForm(EditPublicationForm):
     shelf = PublisherShelfMultipleChoiceField(required=False, widget=forms.CheckboxSelectMultiple())
 
     def __init__(self, *args, **kwargs):

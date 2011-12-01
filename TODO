@@ -1,23 +1,15 @@
 - PDF thumbnails
 - API
-
 - download file
-- replace file (update version)
-- revision
-- remember previous page when editing
-- pagination
-- messages
-- publisher's reader app -- need to ask for this information before publishing
-- public publication (anyone can see)
-
-- publisher's reader will not be able to see unpublished publication
-
 
 TODO - PHRASE 2
 - reader_select interface implementation
 - advanced pagination -> [prev] [1] [2] ... [5] [6] [[7]] [8] [9] ... [14] [15] [next]
-
-
+- replace file (update version)
+- revision
+- public publication (anyone can see)
+- per-shelf permission
+- multiple upload (http://www.uploadify.com/, http://www.swfupload.org/)
 
 
 ########## 3rd Library + Resources ##########

@@ -49,16 +49,11 @@ def finishing_upload_publication(request, publisher, publication):
     return render(request, 'publisher/file/publication_finishing.html', {'publisher':publisher, 'publication':publication, 'form':form})
 
 def cancel_upload_publication(request, publisher, publication):
-    messages.success(request, u'ยกเลิกการอัพโหลดไฟล์เรียบร้อย')
     return redirect('view_files', publisher_id=publisher.id)
-
-def view_publication(request, publisher, publication):
-
-    return render(request, 'publisher/file/publication.html', {'publisher':publisher, 'publication':publication})
 
 def edit_publication(request, publisher, publication):
     if request.method == 'POST':
-        form = EditFileDetailsForm(request.POST)
+        form = EditFilePublicationForm(request.POST)
         if form.is_valid():
             publication.title = form.cleaned_data['title']
             publication.description = form.cleaned_data['description']
@@ -79,25 +74,19 @@ def edit_publication(request, publisher, publication):
                 PublicationShelf.objects.filter(publication=publication, shelf__in=removing_shelves).delete()
             
             publication.save()
-
-            messages.success(request, u'แก้ไขรายละเอียดเรียบร้อย')
             
+            messages.success(request, u'แก้ไขรายละเอียดเรียบร้อย')
+            if request.POST.get('from_page'):
+                return redirect(request.POST.get('from_page'))
+
             return redirect('view_publication', publication.id)
     else:
-        form = EditFileDetailsForm(initial={'title':publication.title, 'description':publication.description})
+        form = EditFilePublicationForm(initial={'title':publication.title, 'description':publication.description, 'from_page':request.GET.get('from')})
 
     return render(request, 'publisher/file/publication_edit.html', {'publisher':publisher, 'publication':publication, 'form':form})
 
-def edit_publication_status(request, publisher, publication, form):
-    return render(request, 'publisher/file/publication_edit_status.html', {'publisher':publisher, 'publication':publication, 'form':form})
-
 def delete_publication(request, deleted, publisher, publication):
-    if deleted:
-        # MESSAGE
-        return redirect('view_files', publisher_id=publisher.id)
-        
-    else:
-        return redirect('view_publication', publication_id=publication.id)
+    return redirect('view_files', publisher_id=publisher.id)
 
 def gather_publisher_statistics(request, publisher):
     return {
@@ -113,16 +102,32 @@ def view_files(request, publisher_id):
     if not has_module(publisher, 'file'):
         raise Http404
     
+    if not can(request.user, 'view', publisher):
+        raise Http404
+    
     if can(request.user, 'edit', publisher):
         files = Publication.objects.filter(publisher=publisher, publication_type='file').order_by('-uploaded')
-
-    elif can(request.user, 'view', publisher):
+    else:
         files = Publication.objects.filter(publisher=publisher, publication_type='file', status=Publication.STATUS['PUBLISHED']).order_by('-uploaded')
 
-    else:
+    return render(request, 'publisher/file/files.html', {'publisher':publisher, 'files':files})
+
+@login_required
+def view_files_no_shelf(request, publisher_id):
+    publisher = get_object_or_404(Publisher, pk=publisher_id)
+
+    if not has_module(publisher, 'file'):
         raise Http404
 
-    return render(request, 'publisher/file/files.html', {'publisher':publisher, 'files':files})
+    if not can(request.user, 'view', publisher):
+        raise Http404
+    
+    if can(request.user, 'edit', publisher):
+        files = Publication.objects.filter(publisher=publisher, publication_type='file', shelves=None).order_by('-uploaded')
+    else:
+        files = Publication.objects.filter(publisher=publisher, publication_type='file', shelves=None, status=Publication.STATUS['PUBLISHED']).order_by('-uploaded')
+
+    return render(request, 'publisher/file/files.html', {'publisher':publisher, 'files':files, 'shelf':'noshelf'})
 
 @login_required
 def view_files_by_shelf(request, shelf_id):
@@ -132,14 +137,13 @@ def view_files_by_shelf(request, shelf_id):
     if shelf.publisher.id != publisher.id or not has_module(publisher, 'file') or not has_module(publisher, 'shelf'):
         raise Http404
     
-    if can(request.user, 'edit', publisher):
-        files = Publication.objects.filter(publication_type='file', shelves__in=[shelf]).order_by('-uploaded')
-
-    elif can(request.user, 'view', publisher):
-        files = Publication.objects.filter(publication_type='file', shelves__in=[shelf], status=Publication.STATUS['PUBLISHED']).order_by('-uploaded')
-
-    else:
+    if not can(request.user, 'view', publisher):
         raise Http404
+    
+    if can(request.user, 'edit', publisher):
+        files = Publication.objects.filter(publisher=publisher, publication_type='file', shelves__in=[shelf]).order_by('-uploaded')
+    else:
+        files = Publication.objects.filter(publisher=publisher, publication_type='file', shelves__in=[shelf], status=Publication.STATUS['PUBLISHED']).order_by('-uploaded')
     
     return render(request, 'publisher/file/files.html', {'publisher':publisher, 'files':files, 'shelf':shelf})
 
@@ -158,7 +162,7 @@ def create_file_shelf(request, publisher_id):
 
             shelf = PublisherShelf.objects.create(publisher=publisher, name=name, description=description, created_by=request.user)
 
-            # MESSAGE
+            messages.success(request, u'เพิ่มชั้นหนังสือเรียบร้อย')
 
             return redirect('view_files_by_shelf', shelf_id=shelf.id)
     else:
@@ -181,10 +185,10 @@ def edit_file_shelf(request, shelf_id):
             shelf.description = form.cleaned_data['description']
             shelf.save()
 
-            # MESSAGE
+            messages.success(request, u'แก้ไขชั้นหนังสือเรียบร้อย')
 
             return redirect('view_files_by_shelf', shelf_id=shelf.id)
     else:
-        form = PublisherShelfForm()
+        form = PublisherShelfForm(initial={'name':shelf.name, 'description':shelf.description})
     
     return render(request, 'publisher/file/file_shelf_modify.html', {'publisher':publisher, 'form':form, 'shelf':shelf})

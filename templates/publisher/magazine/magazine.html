@@ -1,5 +1,5 @@
 {% extends 'base_authenticated.html' %}
-{% load helper_tags magazine_tags %}
+{% load helper_tags magazine_tags pagination_tags %}
 
 {% block head_title %}{{magazine.title}}{% endblock %}
 {% block topnav %}{% include 'publisher/snippets/publisher_topnav.html' with active_menu='magazine' %}{% endblock %}
@@ -47,10 +47,12 @@ $(document).ready(function () {
   
     <h3>ไฟล์นิตยสาร</h3>
 
-    {% if magazine.issues %}
+    {% autopaginate magazine_issues 20 %}
+
+    {% if magazine_issues %}
     <div class="publications">
       <ul>
-        {% for issue in magazine.issues %}
+        {% for issue in magazine_issues %}
         <li class="publication{% if forloop.last %} last{% endif %}">
           <div class="cover"></div>
           <div class="right">
@@ -58,11 +60,13 @@ $(document).ready(function () {
             <div class="name">{% if issue.publication.status == PUBLICATION_STATUS_UPLOADED %}{{issue.publication.original_file_name}}.{{issue.publication.file_ext}}{% else %}<a href="{% url view_publication issue.publication.id %}">{{issue.publication.title}}</a>{% endif %}</div>
             <div class="details">อัพโหลดเมื่อวันที่ {{issue.publication.uploaded|format_abbr_datetime}}</div>
             <div class="status">สถานะ - {% print_publication_status issue.publication %}</div>
-            {% can user 'edit' publisher %}<div class="links">{% generate_publication_actions issue.publication %}</div>{% endcan %}
+            {% can user 'edit' publisher %}<div class="links">{% generate_publication_actions issue.publication request.path %}</div>{% endcan %}
           </div>
         </li>
         {% endfor %}
       </ul>
+
+      {% paginate %}
     </div>
 
     {% else %}
