@@ -21,7 +21,7 @@ class Module(models.Model):
     module_name = models.CharField(max_length=100) # Use for reference in code
     module_type = models.CharField(max_length=50)
     title = models.CharField(max_length=100) # Use for showing in HTML
-    description = models.CharField(max_length=1000, blank=True)
+    description = models.CharField(max_length=1000, blank=True, null=True)
     front_page_url = models.CharField(max_length=100, null=True)
 
     def __unicode__(self):
