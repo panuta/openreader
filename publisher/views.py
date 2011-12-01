@@ -59,7 +59,7 @@ def view_publisher_dashboard(request, publisher_id):
         raise Http404
     
     if can(request.user, 'edit', publisher):
-        recent_publications = Publication.objects.filter(publisher=publisher, status__in=(Publication.STATUS['UNPUBLISHED'], Publication.STATUS['PUBLISHED'])).order_by('-uploaded')[0:settings.ITEM_COUNT_IN_DASHBOARD]
+        recent_publications = Publication.objects.filter(publisher=publisher).order_by('-uploaded')[0:settings.ITEM_COUNT_IN_DASHBOARD]
     else:
         recent_publications = Publication.objects.filter(publisher=publisher, status=Publication.STATUS['PUBLISHED']).order_by('-uploaded')[0:settings.ITEM_COUNT_IN_DASHBOARD]
     
@@ -201,6 +201,9 @@ def view_publication(request, publication_id):
 
     if not can(request.user, 'view', publisher):
         raise Http404
+    
+    if publication.status == Publication.STATUS['UPLOADED']:
+        return redirect('finishing_upload_publication', publication_id=publication.id)
 
     views_module = get_publication_module(publication.publication_type, 'views')
     return views_module.view_publication(request, publisher, publication)
@@ -222,6 +225,9 @@ def edit_publication(request, publication_id):
     publisher = publication.publisher
 
     if not can(request.user, 'edit', publisher):
+        raise Http404
+    
+    if publication.status == Publication.STATUS['UPLOADED']:
         raise Http404
 
     views_module = get_publication_module(publication.publication_type, 'views')
@@ -295,6 +301,9 @@ def replace_publication(request, publication_id):
     publisher = publication.publisher
 
     if not can(request.user, 'edit', publisher):
+        raise Http404
+    
+    if publication.status == Publication.STATUS['UPLOADED']:
         raise Http404
     
     return render(request, 'publisher/publication_replace.html', {'publisher':publisher, 'publication':publication})

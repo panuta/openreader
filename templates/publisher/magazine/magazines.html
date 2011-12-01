@@ -65,7 +65,8 @@ $(document).ready(function () {
         {% for issue in recent_issues %}
           <li>
             <div><a href="{% url view_publication issue.publication.id %}" class="title">{{issue.magazine.title}} - {{issue.publication.title}}</a></div>
-            <div><span class="uploaded">อัพโหลดเมื่อวันที่ {{issue.publication.uploaded|format_abbr_datetime}}</span></div>
+            <div class="uploaded">อัพโหลดเมื่อวันที่ {{issue.publication.uploaded|format_abbr_datetime}}</div>
+            <div class="status">สถานะ - {% print_publication_status issue.publication %}</div>
           </li>
         {% endfor %}
         </ul>

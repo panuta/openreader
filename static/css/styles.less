@@ -53,91 +53,21 @@
     }
 }
 
-.publication_row_styles() {
-    padding:15px 0px;
-
-    .cover {
-        width:70px;
-        height:85px;
-        background-color:#D34;
-        float:left;
+.publication_status {
+    .unpublished {
+        background-color:@publication-unpublished;
     }
 
-    .right {
-        margin-left:85px;
+    .scheduled {
+        background-color:@publication-scheduled;
     }
 
-    .name {
-        a {
-            .content_link;
-        }
-
-        font-size:1.2em;
-        color:#000;
+    .published {
+        background-color:@publication-published;
     }
 
-    .details {
-        color:#555;
-        margin-top:7px;
-    }
-
-    .status {
-        margin-top:7px;
-        color:#555;
-    
-        span {
-            color:#000;
-            padding:0px 6px;
-        }
-
-        .unpublished {
-            background-color:@publication-unpublished;
-        }
-
-        .scheduled {
-            background-color:@publication-scheduled;
-        }
-
-        .published {
-            background-color:@publication-published;
-        }
-
-        .unfinished {
-            background-color:@publication-unfinished;
-        }
-    }
-
-    .links {
-        margin-top:15px;
-
-        a, button {
-            margin-right:15px;
-        }
-
-        a.btn.small {
-            padding:5px 9px;
-            font-size:12px;
-        }
-
-        .link {
-            &:link, &:active, &:visited {
-                text-decoration:underline;
-                color:#666;
-            }
-
-            &:hover {
-                background-color:@linkColor !important;
-                color:#FFF !important;
-                text-shadow:none;
-            }
-        }
-    }
-
-    .statistics {
-        float:right;
-        width:300px;
-        height:85px;
-        background-color:#CCC;
+    .unfinished {
+        background-color:@publication-unfinished;
     }
 }
 
@@ -146,7 +76,77 @@
         margin-bottom:10px;
         border-bottom:1px dashed #999;
 
-        .publication_row_styles;
+        padding:15px 0px;
+
+        .cover {
+            width:70px;
+            height:85px;
+            background-color:#D34;
+            float:left;
+        }
+
+        .right {
+            margin-left:85px;
+        }
+
+        .name {
+            a {
+                .content_link;
+            }
+
+            font-size:1.2em;
+            color:#000;
+        }
+
+        .details {
+            color:#555;
+            margin-top:7px;
+        }
+
+        .status {
+            margin-top:7px;
+            color:#555;
+        
+            span {
+                color:#000;
+                padding:0px 6px;
+            }
+
+            .publication_status;
+        }
+
+        .links {
+            margin-top:15px;
+
+            a, button {
+                margin-right:15px;
+            }
+
+            a.btn.small {
+                padding:5px 9px;
+                font-size:12px;
+            }
+
+            .link {
+                &:link, &:active, &:visited {
+                    text-decoration:underline;
+                    color:#666;
+                }
+
+                &:hover {
+                    background-color:@linkColor !important;
+                    color:#FFF !important;
+                    text-shadow:none;
+                }
+            }
+        }
+
+        .statistics {
+            float:right;
+            width:300px;
+            height:85px;
+            background-color:#CCC;
+        }
     }
 
     .unfinished_list {
@@ -157,11 +157,44 @@
             padding:15px;
         }
     }
-
-    
 }
 
-/* *************** Base *************** */
+.publication_bullet_list_styles() {
+    li {
+        list-style:disc;
+        margin:0px 0px 20px 20px;
+    }
+
+    .type {
+        color:#333;
+        font-size:1.1em;
+        margin-right:7px;
+    }
+
+    .title {
+        .content_link;
+        font-size:1.1em;
+    }
+
+    .uploaded {
+        margin-top:5px;
+        color:#888;
+    }
+
+    .status {
+        margin-top:5px;
+        color:#555;
+    
+        span {
+            color:#000;
+            padding:0px 6px;
+        }
+
+        .publication_status;
+    }
+}
+
+/* *************** Base Template *************** */
 
 body {
     background:url(/static/images/bg.png);
@@ -205,6 +238,16 @@ body {
 
     li.active a {
         background-color:#272e34 !important;
+    }
+
+    .dropdown-menu {
+        background-color:#555 !important;
+
+        a {
+            color:#FFF !important;
+            text-decoration:none !important;
+            outline:0;
+        }
     }
 
     .accounts_prefix {
@@ -395,7 +438,7 @@ a.download_publication_button span {
 }
 
 
-/* Messages */
+/* *************** Messages *************** */
 
 .alert-message.block-message {
     padding:5px 20px;
@@ -423,6 +466,9 @@ select {
 }
 
 form, .form-stacked {
+    margin:0;
+    padding:0;
+
     .clearfix {
         margin-bottom:20px;
     }
@@ -556,7 +602,7 @@ form .left_form_actions {
 
 /* *************** Default Styles *************** */
 
-form, ul {margin:0px;padding:0px;}
+ul {margin:0px;padding:0px;}
 li {list-style:none;}
 a.btn:visited {color:#333333;}
 
@@ -872,30 +918,7 @@ table td.row_actions a {
 
 .publisher_dashboard_page {
     .recent_publications {
-        li {
-            list-style:disc;
-            margin-left:20px;
-            margin-bottom:10px;
-        }
-
-        div {
-            margin-bottom:5px;
-        }
-
-        .type {
-            color:#333;
-            font-size:1.1em;
-            margin-right:7px;
-        }
-
-        .title {
-            .content_link;
-            font-size:1.1em;
-        }
-
-        .uploaded {
-            color:#888;
-        }
+        .publication_bullet_list_styles;
     }
 }
 
@@ -940,24 +963,7 @@ table td.row_actions a {
     }
 
     .recent_publications {
-        li {
-            list-style:disc;
-            margin-left:20px;
-            margin-bottom:10px;
-        }
-
-        div {
-            margin-bottom:5px;
-        }
-
-        .title {
-            .content_link;
-            font-size:1.1em;
-        }
-
-        .uploaded {
-            color:#888;
-        }
+        .publication_bullet_list_styles;
     }
 
     .orphan_publications {

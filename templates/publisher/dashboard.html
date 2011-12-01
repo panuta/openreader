@@ -41,8 +41,9 @@ $(document).ready(function () {
     <ul class="recent_publications">
       {% for publication in recent_publications %}
       <li>
-        <div><span class="type">{% print_publication_type_name publication %}</span><a href="{% url view_publication publication.id %}" class="title">{% print_publication_title publication %}</a></div>
-        <div><span class="uploaded">อัพโหลดเมื่อวันที่ {{publication.uploaded|format_abbr_datetime}}</span></div>
+        <div><span class="type">{% print_publication_type_name publication %}</span><a href="{% url view_publication publication.id %}" class="title">{% print_publication_title publication '(ยังไม่มีชื่อ)' %}</a></div>
+        <div class="uploaded">อัพโหลดเมื่อวันที่ {{publication.uploaded|format_abbr_datetime}}</div>
+        <div class="status">สถานะ - {% print_publication_status publication %}</div>
       </li>
       {% endfor %}
     </ul>

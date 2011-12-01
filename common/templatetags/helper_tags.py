@@ -266,9 +266,12 @@ def print_publication_type_name(publication):
     return Module.objects.get(module_name=publication.publication_type).title
 
 @register.simple_tag
-def print_publication_title(publication):
-    return publication.get_publication_title()
-    #return get_publication_module(publication.publication_type).get_publication_title(publication)
+def print_publication_title(publication, empty_string=''):
+    title = publication.get_publication_title()
+    if title:
+        return publication.get_publication_title()
+    else:
+        return empty_string
 
 class HasModuleNode(template.Node):
     def __init__(self, nodelist_true, nodelist_false, publisher, module_name):
