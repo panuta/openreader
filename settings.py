@@ -161,7 +161,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': 'django.log',
+            'filename': 'openreader.log',
             'formatter': 'verbose'
         }
     },
