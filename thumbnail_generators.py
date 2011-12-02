@@ -13,14 +13,20 @@ class ImageThumbnailGenerator(BaseThumbnailGenerator):
     supported_file_type = ['jpg', 'jpeg', 'png', 'gif']
 
     def get_thumbnails(self, file):
-        (path, filename) = os.path.split(file.name)
-        filename = os.path.splitext(filename)[0]
         im = Image.open(file)
 
+        (path, filename) = os.path.split(file.name)
+        filename = os.path.splitext(filename)[0]
+
+        thumbnail_path = '%s/thumbnails/' % path
+
+        if not os.path.exists(thumbnail_path):
+            os.makedirs(thumbnail_path)
+        
         for thumbnail_size in settings.THUMBNAIL_SIZES:
             thumb_im = im.copy()
             thumb_im.thumbnail(thumbnail_size[1], Image.ANTIALIAS)
-            fullpath = '%s/thumbnails/%s.thumbnail.%s.jpg' % (path, filename, thumbnail_size[0])
+            fullpath = '%s%s.thumbnail.%s.jpg' % (thumbnail_path, filename, thumbnail_size[0])
             thumb_im.save(fullpath, 'JPEG')
         
         return True

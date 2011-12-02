@@ -146,26 +146,29 @@ INSTALLED_APPS = (
     'openreader.publisher.file',
 )
 
-# A sample logging configuration. The only tangible logging
-# performed by this configuration is to send an email to
-# the site admins on every HTTP 500 error.
-# See http://docs.djangoproject.com/en/dev/topics/logging for
-# more details on how to customize your logging configuration.
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
     'handlers': {
         'file': {
-            'level': 'INFO',
+            'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(base_path, 'logs/') + 'django.log',
+            'filename': 'django.log',
+            'formatter': 'verbose'
         }
     },
     'loggers': {
-        'django': {
+        'openreader': {
             'handlers': ['file'],
-            'level': 'INFO',
-            'propagate': True,
+            'level': 'DEBUG'
         },
     }
 }
@@ -185,6 +188,8 @@ SFTP_STORAGE_PARAMS = {'username':'root', 'password':'panuta'}
 PAGINATION_DEFAULT_PAGINATION = 50
 
 ########## Open Reader Settings ##########
+
+OPENREADER_LOGGER = 'openreader'
 
 MAGAZINE_LOGO_ROOT = MEDIA_ROOT + 'magazine_logo/'
 PUBLICATION_ROOT = MEDIA_ROOT + 'publication/'

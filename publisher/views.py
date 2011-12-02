@@ -59,7 +59,7 @@ def view_publisher_dashboard(request, publisher_id):
         raise Http404
         
     if can(request.user, 'edit', publisher):
-        recent_publications = Publication.objects.filter(publisher=publisher).order_by('-uploaded')[0:settings.ITEM_COUNT_IN_DASHBOARD]
+        recent_publications = Publication.objects.filter(publisher=publisher).order_by('-uploaded')
     else:
         recent_publications = Publication.objects.filter(publisher=publisher, status=Publication.STATUS['PUBLISHED']).order_by('-uploaded')
     
@@ -76,18 +76,15 @@ def upload_publication(request, publisher_id, module_name=''):
 
     if request.method == 'POST':
         if not module_name:
-            form = GeneralUploadPublicationForm(request.POST, request.FILES)
-        else:
-            try:
-                module = Module.objects.get(module_name=module_name)
-            except Module.DoesNotExist:
-                raise Http404
-            
-            if not has_module(publisher, module):
-                raise Http404
-            
-            form = module.get_module_object('forms').UploadPublicationForm(request.POST, request.FILES, publisher=publisher)
-            
+            module_name = request.POST.get('module')
+        
+        module = get_object_or_404(Module, module_name=module_name)
+
+        if not has_module(publisher, module):
+            raise Http404
+        
+        form = module.get_module_object('forms').UploadPublicationForm(request.POST, request.FILES, publisher=publisher)
+
         if form.is_valid():
             module_input = form.cleaned_data['module']
             publication = form.cleaned_data['publication']

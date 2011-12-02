@@ -54,7 +54,10 @@ class GeneralUploadPublicationForm(forms.Form):
         # TODO: Check eligible file type from all available modules
         return cleaned_data
     
-    def after_upload(self, request, uploading_publication):
+    def valid_file_type(self):
+        return False
+    
+    def after_upload(self, request, publication):
         pass
 
 # Publication

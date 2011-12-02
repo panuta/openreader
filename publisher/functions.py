@@ -1,4 +1,5 @@
 import datetime
+import logging
 import os
 
 from django.conf import settings
@@ -9,6 +10,8 @@ from common.utilities import splitext
 from exceptions import FileUploadTypeUnknown
 from models import Publication, PublisherReader, PublicationNotice, PublicationShelf, PublicationReader
 
+logger = logging.getLogger(settings.OPENREADER_LOGGER)
+
 def upload_publication(request, publication_type, uploading_file, publisher):
     (file_name, file_ext) = splitext(uploading_file.name)
     publication = Publication.objects.create(publisher=publisher, publication_type=publication_type, original_file_name=file_name, file_ext=file_ext, uploaded_by=request.user)
@@ -18,16 +21,14 @@ def upload_publication(request, publication_type, uploading_file, publisher):
     except:
         publication.delete()
         return None
-    
-    try:
-        generator = get_generator(file_ext)
-        if generator:
-            thumbnail = generator.get_thumbnails(publication.uploaded_file.file)
-            # TODO Save file
-    except:
-        import sys
-        print sys.exc_info()
 
+    generator = get_generator(file_ext)
+    if generator:
+        processed = generator.get_thumbnails(publication.uploaded_file.file)
+
+        publication.is_processing = not processed
+        publication.save()
+    
     return publication
 
 def finishing_upload_publication(request, publication, title, description):

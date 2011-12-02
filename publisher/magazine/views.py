@@ -116,7 +116,7 @@ def view_magazines(request, publisher_id):
     if can(request.user, 'edit', publisher):
         recent_issues = MagazineIssue.objects.filter(publication__publisher=publisher).order_by('-publication__uploaded')
     else:
-        recent_issues = MagazineIssue.objects.filter(publication__publisher=publisher, publication__status=Publication.STATUS['PUBLISHED']).order_by('-publication__uploaded')[0:settings.ITEM_COUNT_IN_MAGAZINE_PAGE]
+        recent_issues = MagazineIssue.objects.filter(publication__publisher=publisher, publication__status=Publication.STATUS['PUBLISHED']).order_by('-publication__uploaded')
 
     return render(request, 'publisher/magazine/magazines.html', {'publisher':publisher, 'magazines':magazines, 'recent_issues':recent_issues, 'orphan_publications':orphan_publications})
 
