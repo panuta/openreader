@@ -202,8 +202,9 @@ def generate_publisher_menu(user):
         return ''
 
 @register.simple_tag
-def print_publication_status(publication):
+def print_publication_status(publication, line_break=False):
     status = []
+    line_break = '<br/>' if line_break else ''
 
     if publication.status == Publication.STATUS['UPLOADED']:
         return u'<span class="unfinished">ยังกรอกข้อมูลไม่ครบ</span>'
@@ -211,10 +212,10 @@ def print_publication_status(publication):
     elif publication.status == Publication.STATUS['SCHEDULED']:
         
         if publication.is_processing:
-            return u'<span class="scheduled">ไฟล์กำลังประมวลผล และตั้งเวลาเผยแพร่ วันที่ %s</span>' % (utilities.format_abbr_datetime(publication.web_scheduled))
+            return u'<span class="scheduled">ไฟล์กำลังประมวลผล และตั้งเวลาเผยแพร่ %sวันที่ %s</span>' % (line_break, utilities.format_abbr_datetime(publication.web_scheduled))
         
         else:
-            return u'<span class="scheduled">ตั้งเวลาเผยแพร่ วันที่ %s</span>' % (utilities.format_abbr_datetime(publication.web_scheduled))
+            return u'<span class="scheduled">ตั้งเวลาเผยแพร่ %sวันที่ %s</span>' % (line_break, utilities.format_abbr_datetime(publication.web_scheduled))
     
     elif publication.status == Publication.STATUS['UNPUBLISHED']:
         if publication.is_processing:
@@ -229,7 +230,7 @@ def print_publication_status(publication):
             return u'<span class="unpublished">ยังไม่เผยแพร่</span>'
 
     elif publication.status == Publication.STATUS['PUBLISHED']:
-        return u'<span class="published">เผยแพร่แล้ว วันที่ %s</span>' % (utilities.format_abbr_datetime(publication.web_published))
+        return u'<span class="published">เผยแพร่แล้ว %sวันที่ %s</span>' % (line_break, utilities.format_abbr_datetime(publication.web_published))
     
     return ''
 

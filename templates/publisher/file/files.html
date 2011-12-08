@@ -54,21 +54,28 @@ $(document).ready(function () {
       {% endcan %}
 
       {% if files %}
-      <div class="publications">
-        <ul>
-          {% for publication in files %}
-          <li class="publication{% if forloop.last %} last{% endif %}">
-            {% if publication.status == PUBLICATION_STATUS_PUBLISHED %}<div class="statistics"></div>{% endif %}
-            <div class="name">{% if publication.status == PUBLICATION_STATUS_UPLOADED %}{{publication.original_file_name}}.{{publication.file_ext}}{% else %}<a href="{% url view_publication publication.id %}">{{publication.title}}</a>{% endif %}</div>
-            <div class="details">อัพโหลดเมื่อวันที่ {{publication.uploaded|format_abbr_datetime}}</div>
-            <div class="status">สถานะ - {% print_publication_status publication %}</div>
-            {% can user 'edit' publisher %}<div class="links">{% generate_publication_actions publication request.path %}</div>{% endcan %}
-          </li>
-          {% endfor %}
-        </ul>
+      <table class="publications_table">
+        <col width=""/>
+        <col width="200"/>
+        <col width="250"/>
+        <col width="70"/>
+        <tr>
+          <th>ชื่อไฟล์</th>
+          <th>วันที่อัพโหลด</th>
+          <th>สถานะ</th>
+          <th></th>
+        </tr>
+        {% for publication in files %}
+        <tr>
+          <td class="name">{% if publication.status == PUBLICATION_STATUS_UPLOADED %}{{publication.original_file_name}}.{{publication.file_ext}}{% else %}<a href="{% url view_publication publication.id %}">{{publication.title}}</a>{% endif %}</td>
+          <td>{{publication.uploaded|format_abbr_datetime}}</td>
+          <td class="status">{% print_publication_status publication 'True' %}</td>
+          <td><button class="small btn" >แก้ไข</button></td>
+        </tr>
+        {% endfor %}
+      </table>
 
-        {% paginate %}
-      </div>
+      {% paginate %}
 
       {% else %}
       <div class="no_row">ไม่มีไฟล์</div>
@@ -86,21 +93,28 @@ $(document).ready(function () {
       {% can user 'edit' publisher %}<div class="page_actions"><button class="btn primary upload_publication_button"><span>อัพโหลดไฟล์</span></button></div>{% endcan %}
 
       {% if files %}
-      <div class="publications">
-        <ul>
-          {% for publication in files %}
-          <li class="publication{% if forloop.last %} last{% endif %}">
-            {% if publication.status == PUBLICATION_STATUS_PUBLISHED %}<div class="statistics"></div>{% endif %}
-            <div class="name">{% if publication.status == PUBLICATION_STATUS_UPLOADED %}{{publication.original_file_name}}.{{publication.file_ext}}{% else %}<a href="{% url view_publication publication.id %}">{{publication.title}}</a>{% endif %}</div>
-            <div class="details">อัพโหลดเมื่อวันที่ {{publication.uploaded|format_abbr_datetime}}</div>
-            <div class="status">สถานะ - {% print_publication_status publication %}</div>
-            {% can user 'edit' publisher %}<div class="links">{% generate_publication_actions publication %}</div>{% endcan %}
-          </li>
-          {% endfor %}
-        </ul>
+      <table class="publications_table">
+        <col width=""/>
+        <col width="200"/>
+        <col width="250"/>
+        <col width="70"/>
+        <tr>
+          <th>ชื่อไฟล์</th>
+          <th>วันที่อัพโหลด</th>
+          <th>สถานะ</th>
+          <th></th>
+        </tr>
+        {% for publication in files %}
+        <tr>
+          <td class="name">{% if publication.status == PUBLICATION_STATUS_UPLOADED %}{{publication.original_file_name}}.{{publication.file_ext}}{% else %}<a href="{% url view_publication publication.id %}">{{publication.title}}</a>{% endif %}</td>
+          <td>{{publication.uploaded|format_abbr_datetime}}</td>
+          <td class="status">{% print_publication_status publication 'True' %}</td>
+          <td><button class="small btn" >แก้ไข</button></td>
+        </tr>
+        {% endfor %}
+      </table>
 
-        {% paginate %}
-      </div>
+      {% paginate %}
 
       {% else %}
       <div class="no_row">ไม่มีไฟล์</div>

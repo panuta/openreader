@@ -6,6 +6,12 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from publisher.models import *
 
+def _has_required_parameters(request, names):
+    for name in names:
+        if name not in request.GET:
+            return False
+    return True
+
 def request_access(request):
     if request.method == 'GET':
         email = request.GET.get('email', '')
@@ -61,16 +67,18 @@ def request_download(request):
         raise Http404
 
 """
-Parameters
-'shelf'
-'type'
-'sort'
-'publisher'
-'limit'
+Required Parameters
+'publisher' - 
+'type'      - 
+
+Optional Parameters
+'shelf'     - 
+'sort'      - 
+'limit'     - 
 """
 def list_publication(request):
     if request.method == 'GET':
-        if 'publisher' not in request.GET or 'type' not in request.GET:
+        if not _has_required_parameters(request, ['publisher', 'type']):
             raise Http404
         
         publisher = request.GET.get('publisher')

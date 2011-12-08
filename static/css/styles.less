@@ -159,6 +159,22 @@
     }
 }
 
+.publication_table_styles() {
+    td {
+        vertical-align:middle;
+
+        &.name {
+            a {
+                .content_link;
+            }
+        }
+
+        &.status {
+            .publication_status;
+        }
+    }
+}
+
 .publication_bullet_list_styles() {
     li {
         list-style:disc;
@@ -985,8 +1001,8 @@ table td.row_actions a {
 }
 
 .publisher_files_page {
-    .publications {
-        .publication_list_styles;
+    .publications_table {
+        .publication_table_styles;
     }
 }
 
