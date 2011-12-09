@@ -36,6 +36,7 @@ TIME_ZONE = 'Asia/Bangkok'
 LANGUAGE_CODE = 'th'
 
 SITE_ID = 1
+SITE_TYPE = 'document' # 'document' or 'publisher'
 
 USE_I18N = True
 USE_L10N = True
@@ -68,7 +69,7 @@ CACHES = {
 }
 
 AUTH_PROFILE_MODULE = 'accounts.UserProfile'
-LOGIN_REDIRECT_URL = '/dashboard/'
+LOGIN_REDIRECT_URL = '/'
 
 AUTHENTICATION_BACKENDS = (
     'openreader.backends.EmailAuthenticationBackend',
@@ -138,12 +139,10 @@ INSTALLED_APPS = (
 
     'openreader.accounts',
     'openreader.common',
+    'openreader.document',
+    'openreader.publication',
     'openreader.publisher',
     'openreader.management',
-
-    'openreader.publisher.book',
-    'openreader.publisher.magazine',
-    'openreader.publisher.file',
 )
 
 LOGGING = {

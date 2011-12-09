@@ -7,10 +7,13 @@ class RoleAdmin(admin.ModelAdmin):
 class UserProfileAdmin(admin.ModelAdmin):
     pass
 
-class UserPublisherAdmin(admin.ModelAdmin):
+class OrganizationAdmin(admin.ModelAdmin):
     pass
 
-class UserPublisherInvitationAdmin(admin.ModelAdmin):
+class UserOrganizationAdmin(admin.ModelAdmin):
+    pass
+
+class UserOrganizationInvitationAdmin(admin.ModelAdmin):
     pass
 
 class UserDeviceAdmin(admin.ModelAdmin):
@@ -19,13 +22,10 @@ class UserDeviceAdmin(admin.ModelAdmin):
 class UserAccessTokenAdmin(admin.ModelAdmin):
     pass
 
-class UserPurchasedPublicationAdmin(admin.ModelAdmin):
-    pass
-
 admin.site.register(Role, RoleAdmin)
 admin.site.register(UserProfile, UserProfileAdmin)
-admin.site.register(UserPublisher, UserPublisherAdmin)
-admin.site.register(UserPublisherInvitation, UserPublisherInvitationAdmin)
+admin.site.register(Organization, OrganizationAdmin)
+admin.site.register(UserOrganization, UserOrganizationAdmin)
+admin.site.register(UserOrganizationInvitation, UserOrganizationInvitationAdmin)
 admin.site.register(UserDevice, UserDeviceAdmin)
 admin.site.register(UserAccessToken, UserAccessTokenAdmin)
-admin.site.register(UserPurchasedPublication, UserPurchasedPublicationAdmin)

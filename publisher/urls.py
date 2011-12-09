@@ -2,6 +2,8 @@ from django.conf.urls.defaults import patterns, include, url
 
 urlpatterns = patterns('publisher.views',
 
+    # view_publisher_front
+
     # Dashboard
     url(r'^dashboard/$', 'view_dashboard', name='view_dashboard'),
     url(r'^publisher/(?P<publisher_id>\d+)/dashboard/$', 'view_publisher_dashboard', name='view_publisher_dashboard'),

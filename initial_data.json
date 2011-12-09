@@ -1,70 +1,26 @@
 [
 	{
-		"model": "publisher.module",
-		"pk": 1,
-		"fields": {
-			"module_name": "magazine",
-			"module_type": "publication",
-			"title": "นิตยสาร",
-			"front_page_url": "view_magazines"
-		}
-	},
-	{
-		"model": "publisher.module",
-		"pk": 2,
-		"fields": {
-			"module_name": "book",
-			"module_type": "publication",
-			"title": "หนังสือ",
-			"front_page_url": "view_books"
-		}
-	},
-	{
-		"model": "publisher.module",
-		"pk": 3,
-		"fields": {
-			"module_name": "file",
-			"module_type": "publication",
-			"title": "ไฟล์",
-			"front_page_url": "view_files"
-		}
-	},
-	{
-		"model": "publisher.module",
-		"pk": 4,
-		"fields": {
-			"module_name": "shelf",
-			"module_type": "feature",
-			"title": "ชั้นหนังสือ",
-			"front_page_url": ""
-		}
-	},
-
-
-
-
-	{
 		"model": "accounts.role",
 		"pk": 1,
 		"fields": {
-			"name": "Publisher Admin",
-			"code": "publisher_admin"
+			"name": "Organization Admin",
+			"code": "organization_admin"
 		}
 	},
 	{
 		"model": "accounts.role",
 		"pk": 2,
 		"fields": {
-			"name": "Publisher Staff",
-			"code": "publisher_staff"
+			"name": "Organization Staff",
+			"code": "organization_staff"
 		}
 	},
 	{
 		"model": "accounts.role",
 		"pk": 3,
 		"fields": {
-			"name": "Publisher User",
-			"code": "publisher_user"
+			"name": "Organization User",
+			"code": "organization_user"
 		}
 	},
 
@@ -72,7 +28,7 @@
 
 
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 1,
 		"fields": {
 			"name": "ท่องเที่ยว",
@@ -80,7 +36,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 2,
 		"fields": {
 			"name": "กีฬา",
@@ -88,7 +44,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 3,
 		"fields": {
 			"name": "ไลฟ์สไตล์ผู้หญิง",
@@ -96,7 +52,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 4,
 		"fields": {
 			"name": "สุขภาพ",
@@ -104,7 +60,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 5,
 		"fields": {
 			"name": "เทคโนโลยี",
@@ -112,7 +68,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 6,
 		"fields": {
 			"name": "ไลฟ์สไตล์ผู้ชาย",
@@ -120,7 +76,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 7,
 		"fields": {
 			"name": "ข่าว",
@@ -128,7 +84,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 8,
 		"fields": {
 			"name": "แฟชั่น",
@@ -136,7 +92,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 9,
 		"fields": {
 			"name": "ไลฟ์สไตล์ทั่วไป",
@@ -144,7 +100,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 10,
 		"fields": {
 			"name": "วัยรุ่น",
@@ -152,7 +108,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 11,
 		"fields": {
 			"name": "นางแบบ",
@@ -160,7 +116,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 12,
 		"fields": {
 			"name": "วงการบันเทิง",
@@ -168,7 +124,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 13,
 		"fields": {
 			"name": "ธรรมมะ",
@@ -176,7 +132,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 14,
 		"fields": {
 			"name": "แต่งบ้าน",
@@ -184,7 +140,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 15,
 		"fields": {
 			"name": "บ้านและที่ดิน",
@@ -192,7 +148,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 16,
 		"fields": {
 			"name": "ยานพาหนะ",
@@ -200,7 +156,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 17,
 		"fields": {
 			"name": "การออกแบบ",
@@ -208,7 +164,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 18,
 		"fields": {
 			"name": "แม่และเด็ก",
@@ -216,7 +172,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 19,
 		"fields": {
 			"name": "อาหาร",
@@ -224,7 +180,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 20,
 		"fields": {
 			"name": "สัตว์เลี้ยง",
@@ -232,7 +188,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 21,
 		"fields": {
 			"name": "ช็อปปิ้ง",
@@ -240,7 +196,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 22,
 		"fields": {
 			"name": "ภาพยนต์",
@@ -248,7 +204,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 23,
 		"fields": {
 			"name": "เพลงและดนตรี",
@@ -256,7 +212,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 24,
 		"fields": {
 			"name": "ความรู้ทั่วไป",
@@ -264,7 +220,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 25,
 		"fields": {
 			"name": "การตลาด",
@@ -272,7 +228,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 26,
 		"fields": {
 			"name": "การเงิน",
@@ -280,7 +236,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 27,
 		"fields": {
 			"name": "ธุรกิจทั่วไป",
@@ -288,7 +244,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 28,
 		"fields": {
 			"name": "การศึกษา",
@@ -296,7 +252,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 29,
 		"fields": {
 			"name": "ธรรมชาติและสิ่งแวดล้อม",
@@ -304,7 +260,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 30,
 		"fields": {
 			"name": "เครื่องประดับ",
@@ -312,7 +268,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 31,
 		"fields": {
 			"name": "เด็กและเยาวชน",
@@ -320,7 +276,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 32,
 		"fields": {
 			"name": "ละครทีวี",
@@ -328,7 +284,7 @@
 		}
 	},
 	{
-		"model": "publisher.publicationcategory",
+		"model": "publisher.category",
 		"pk": 33,
 		"fields": {
 			"name": "เกม",
@@ -340,16 +296,15 @@
 {"pk": 1, "model": "auth.user", "fields": {"username": "system@openreader.com", "first_name": "", "last_name": "", "is_active": true, "is_superuser": true, "is_staff": true, "last_login": "2011-12-01 16:43:51", "groups": [], "user_permissions": [], "password": "sha1$01585$302a20e1e2d0a73652b63b57df52bd793472244b", "email": "system@openreader.com", "date_joined": "2011-12-01 16:43:51"}}, {"pk": 2, "model": "auth.user", "fields": {"username": "admin@openreader.com", "first_name": "", "last_name": "", "is_active": true, "is_superuser": false, "is_staff": false, "last_login": "2011-12-01 16:43:51", "groups": [], "user_permissions": [], "password": "sha1$b0f03$15fb4bd73eaca528c1e5e698a999cc3e0a20f7f1", "email": "admin@openreader.com", "date_joined": "2011-12-01 16:43:51"}}, {"pk": 3, "model": "auth.user", "fields": {"username": "staff@openreader.com", "first_name": "", "last_name": "", "is_active": true, "is_superuser": false, "is_staff": false, "last_login": "2011-12-01 16:43:51", "groups": [], "user_permissions": [], "password": "sha1$0286b$eb6f8978b020def24a1ebe92b8695f2c03616199", "email": "staff@openreader.com", "date_joined": "2011-12-01 16:43:51"}}, {"pk": 4, "model": "auth.user", "fields": {"username": "panuta@gmail.com", "first_name": "", "last_name": "", "is_active": true, "is_superuser": false, "is_staff": false, "last_login": "2011-12-01 16:43:51", "groups": [], "user_permissions": [], "password": "sha1$8d3a7$f6812e5ceed9592a08c0600ddccc0398e949e151", "email": "panuta@gmail.com", "date_joined": "2011-12-01 16:43:51"}},
 
 
-{"pk": 1, "model": "accounts.userprofile", "fields": {"is_publisher": false, "first_name": "System", "last_name": "Openreader", "is_first_time": true, "user": 1}}, {"pk": 2, "model": "accounts.userprofile", "fields": {"is_publisher": true, "first_name": "Admin", "last_name": "Openreader", "is_first_time": true, "user": 2}}, {"pk": 3, "model": "accounts.userprofile", "fields": {"is_publisher": true, "first_name": "Staff", "last_name": "Openreader", "is_first_time": true, "user": 3}}, {"pk": 4, "model": "accounts.userprofile", "fields": {"is_publisher": true, "first_name": "Panu", "last_name": "Tangchalermkul", "is_first_time": true, "user": 4}},
+{"pk": 1, "model": "accounts.userprofile", "fields": {"web_access": false, "first_name": "System", "last_name": "Openreader", "is_first_time": true, "user": 1}}, {"pk": 2, "model": "accounts.userprofile", "fields": {"web_access": true, "first_name": "Admin", "last_name": "Openreader", "is_first_time": true, "user": 2}}, {"pk": 3, "model": "accounts.userprofile", "fields": {"web_access": true, "first_name": "Staff", "last_name": "Openreader", "is_first_time": true, "user": 3}}, {"pk": 4, "model": "accounts.userprofile", "fields": {"web_access": true, "first_name": "Panu", "last_name": "Tangchalermkul", "is_first_time": true, "user": 4}},
 
 
-{"pk": 1, "model": "publisher.publisher", "fields": {"status": 0, "modified_by": 2, "name": "Opendream", "created_by": 2}},
+{"pk": 1, "model": "accounts.organization", "fields": {"status": 0, "modified_by": 2, "name": "Opendream", "prefix":"บริษัท", "created_by": 2}},
 
 
-{"pk": 1, "model": "accounts.userpublisher", "fields": {"is_default": true, "publisher": 1, "role": 1, "user": 2}}, {"pk": 2, "model": "accounts.userpublisher", "fields": {"is_default": true, "publisher": 1, "role": 2, "user": 3}}, {"pk": 3, "model": "accounts.userpublisher", "fields": {"is_default": true, "publisher": 1, "role": 3, "user": 4}},
+{"pk": 1, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "role": 1, "user": 2}}, {"pk": 2, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "role": 2, "user": 3}}, {"pk": 3, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "role": 3, "user": 4}}
 
 
-{"pk": 1, "model": "publisher.publishermodule", "fields": {"publisher": 1, "module": 1}}, {"pk": 2, "model": "publisher.publishermodule", "fields": {"publisher": 1, "module": 2}}, {"pk": 3, "model": "publisher.publishermodule", "fields": {"publisher": 1, "module": 3}}, {"pk": 4, "model": "publisher.publishermodule", "fields": {"publisher": 1, "module": 4}}
 
 
 

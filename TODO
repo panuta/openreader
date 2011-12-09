@@ -2,6 +2,11 @@
 - API
 - download file
 
+- move file module to another app
+- move publication models to general app (move from publisher app)
+- publisher app is for book/magazine publisher only
+
+
 
 TODO
 - publisher's prefix

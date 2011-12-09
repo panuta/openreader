@@ -6,19 +6,17 @@ from django.utils.translation import ugettext_lazy as _
 
 from common.forms import StrippedCharField
 
-from publisher.forms import ModuleMultipleChoiceField
-from publisher.models import Publisher
+from accounts.models import Organization
 
-class CreatePublisherForm(forms.Form):
-    publisher_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'span6'}))
-    modules = ModuleMultipleChoiceField(required=False, widget=forms.CheckboxSelectMultiple())
+class CreateOrganizationForm(forms.Form):
+    organization_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'span6'}))
     admin_email = forms.EmailField(widget=forms.TextInput(attrs={'class':'span6'}))
 
     def clean_publisher_name(self):
-        publisher_name = self.cleaned_data['publisher_name']
+        organization_name = self.cleaned_data['organization_name']
 
-        if Publisher.objects.filter(name=publisher_name).exists():
+        if Organization.objects.filter(name=organization_name).exists():
             raise forms.ValidationError(u'ชื่อสำนักพิมพ์นี้ซ้ำกับชื่ออื่นๆ ในระบบ')
         
-        return publisher_name
+        return organization_name
     

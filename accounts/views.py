@@ -5,28 +5,42 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import ugettext_lazy as _
 
-from accounts.forms import *
-from accounts.models import *
-
-from publisher.models import UserPublisher
+from forms import *
+from models import *
 
 def auth_login(request):
     from django.contrib.auth.views import login
     return login(request, authentication_form=EmailAuthenticationForm)
 
-def view_user_welcome(request):
-    if UserPublisher.objects.filter(user=request.user).count() != 0:
-        raise Http404
-    
+@login_required
+def view_user_home(request):
     if request.user.is_superuser:
         return redirect('/management/')
+    
+    try:
+        user_organization = UserOrganization.objects.get(user=request.user, is_default=True)
+    except UserOrganization.DoesNotExist:
+        if UserOrganization.objects.filter(user=request.user).count() == 0:
+            return redirect('view_user_welcome')
+        else:
+            # If a user does not set any default publisher, pick the first one
+            user_organization = UserOrganization.objects.filter(user=request.user).order_by('created')[0]
+    
+    if settings.SITE_TYPE == 'document':
+        return redirect('view_document_front', organization_id=user_organization.organization.id)
+    
+    if settings.SITE_TYPE == 'publisher':
+        return redirect('view_publisher_front', organization_id=user_organization.organization.id)
+
+def view_user_welcome(request):
+    if UserOrganization.objects.filter(user=request.user).count() != 0:
+        raise Http404
     
     welcome_contact_email = settings.WELCOME_CONTACT_EMAIL
     return render(request, 'accounts/user_welcome.html', {'welcome_contact_email':welcome_contact_email})
 
 @login_required
 def view_my_profile(request):
-
     if request.method == 'POST':
         form = UserProfileForm(request.POST)
         if form.is_valid():
@@ -47,7 +61,6 @@ def view_my_account(request):
 
 @login_required
 def change_my_account_password(request):
-
     if request.method == 'POST':
         form = PasswordChangeForm(user=request.user, data=request.POST)
         if form.is_valid():

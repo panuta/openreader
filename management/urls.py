@@ -7,10 +7,4 @@ urlpatterns = patterns('management.views',
 
     url(r'^publisher/(?P<publisher_id>\d+)/$', 'manage_publisher', name='manage_publisher'),
 
-
-    
-
-    
-    
-    
 )

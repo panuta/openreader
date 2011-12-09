@@ -20,6 +20,6 @@ class EmailAuthenticationBackend(ModelBackend):
                     if user.is_superuser or user.is_staff:
                         return user
 
-                    if user.get_profile().is_publisher:
+                    if user.get_profile().web_access:
                         return user
         return None

@@ -7,8 +7,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, redirect, render
 
-from accounts.models import Role, UserPublisher, UserPublisherInvitation
-from publisher.models import Publisher, PublisherModule
+from accounts.models import Role, Organization, UserOrganization, UserOrganizationInvitation
 
 from forms import *
 

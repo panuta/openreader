@@ -1,5 +1,5 @@
 
-from publisher.models import Publication
+from publication.models import Publication
 
 def constants(request):
     """
