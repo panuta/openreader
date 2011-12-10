@@ -1,0 +1,16 @@
+{% load helper_tags %}
+<h1><a href="/"><span>{{organization.prefix}}</span> {{organization.name}}</a></h1>
+{% if SITE_TYPE == 'document' %}
+<ul class="nav">
+  <li{% if active_menu == "document" %} class="active"{% endif %}><a href="{% url view_documents organization.slug %}">ไฟล์เอกสาร</a></li>
+  {% can user 'manage' organization %}<li{% if active_menu == "management" %} class="active"{% endif %}><a href="{% url view_organization_profile organization.slug %}">ข้อมูล{{organization.prefix}}</a></li>{% endcan %}
+</ul>
+{% endif %}
+{% if SITE_TYPE == 'publisher' %}
+<ul class="nav">
+  <li{% if active_menu == "front" %} class="active"{% endif %}><a href="{% url view_publisher_front organization.slug %}">หน้าแรก</a></li>
+  <li{% if active_menu == "magazine" %} class="active"{% endif %}><a href="{% url view_publisher_magazines organization.slug %}">นิตยสาร</a></li>
+  <li{% if active_menu == "book" %} class="active"{% endif %}><a href="{% url view_publisher_books organization.slug %}">หนังสือ</a></li>
+  {% can user 'manage' organization %}<li{% if active_menu == "management" %} class="active"{% endif %}><a href="{% url view_organization_profile organization.slug %}">ข้อมูล{{organization.prefix}}</a></li>{% endcan %}
+</ul>
+{% endif %}

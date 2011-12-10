@@ -299,7 +299,7 @@
 {"pk": 1, "model": "accounts.userprofile", "fields": {"web_access": false, "first_name": "System", "last_name": "Openreader", "is_first_time": true, "user": 1}}, {"pk": 2, "model": "accounts.userprofile", "fields": {"web_access": true, "first_name": "Admin", "last_name": "Openreader", "is_first_time": true, "user": 2}}, {"pk": 3, "model": "accounts.userprofile", "fields": {"web_access": true, "first_name": "Staff", "last_name": "Openreader", "is_first_time": true, "user": 3}}, {"pk": 4, "model": "accounts.userprofile", "fields": {"web_access": true, "first_name": "Panu", "last_name": "Tangchalermkul", "is_first_time": true, "user": 4}},
 
 
-{"pk": 1, "model": "accounts.organization", "fields": {"status": 0, "modified_by": 2, "name": "Opendream", "prefix":"บริษัท", "created_by": 2}},
+{"pk": 1, "model": "accounts.organization", "fields": {"status": 0, "modified_by": 2, "name": "Opendream", "slug":"opendream", "prefix":"บริษัท", "created_by": 2}},
 
 
 {"pk": 1, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "role": 1, "user": 2}}, {"pk": 2, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "role": 2, "user": 3}}, {"pk": 3, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "role": 3, "user": 4}}

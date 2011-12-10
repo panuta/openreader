@@ -26,11 +26,13 @@ urlpatterns = patterns('',
 
 if settings.SITE_TYPE == 'document':
     urlpatterns += patterns('',
+        url(r'^org/(?P<organization_slug>\w+)/$', 'document.views.view_organization_front', name='view_organization_front'),
         url('', include('openreader.document.urls')),
    )
 
 if settings.SITE_TYPE == 'publisher':
     urlpatterns += patterns('',
+        url(r'^org/(?P<organization_slug>\w+)/$', 'publisher.views.view_organization_front', name='view_organization_front'),
         url('', include('openreader.publisher.urls')),
    )
 

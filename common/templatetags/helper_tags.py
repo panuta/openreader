@@ -11,8 +11,10 @@ from common import utilities
 from common.permissions import can
 from common.modules import *
 
-from accounts.models import UserPublisher
-from publisher.models import Publication, PublisherModule, PublisherShelf, PublicationShelf, Module, PublicationNotice
+from accounts.models import UserOrganization
+
+#from accounts.models import UserPublisher
+#from publisher.models import Publication, PublisherModule, PublisherShelf, PublicationShelf, Module, PublicationNotice
 
 
 # DATE TIME #################################################################
@@ -178,26 +180,15 @@ def do_if_publish_when_ready(parser, token):
 # HTML GENERATOR #################################################################
 
 @register.simple_tag
-def generate_top_menu(publisher, active_menu):
-    publisher_modules = PublisherModule.objects.filter(publisher=publisher, module__module_type='publication').order_by('created')
-
-    menu_html = ''
-    for publisher_module in publisher_modules:
-        active_html = ' class="active"' if active_menu == publisher_module.module.module_name else ''
-        menu_html = menu_html + '<li%s><a href="%s">%s</a></li>' % (active_html, reverse(publisher_module.module.front_page_url, args=[publisher.id]), publisher_module.module.title)
-    
-    return menu_html
-
-@register.simple_tag
 def generate_publisher_menu(user):
-    user_publishers = UserPublisher.objects.filter(user=user).order_by('publisher__name')
+    user_organizations = UserOrganization.objects.filter(user=user).order_by('organization__name')
 
-    if len(user_publishers) > 1:
+    if len(user_organizations) > 1:
         menus = []
-        for user_publisher in user_publishers:
-            menus.append('<li><a href="%s">%s</a></li>' % (reverse('view_publisher_dashboard', args=[user_publisher.publisher.id]), user_publisher.publisher.name))
+        for user_organization in user_organizations:
+            menus.append('<li><a href="%s">%s</a></li>' % (reverse('view_organization_front', args=[user_organization.organization.id]), user_organization.organization.name))
 
-        return u'<li class="dropdown"><a class="dropdown-toggle" href="#">เปลี่ยนสำนักพิมพ์</a><ul class="dropdown-menu">%s</ul></li>' % ''.join(menus)
+        return u'<li class="dropdown"><a class="dropdown-toggle" href="#">เปลี่ยนบัญชี</a><ul class="dropdown-menu">%s</ul></li>' % ''.join(menus)
     else:
         return ''
 
@@ -282,34 +273,6 @@ def genetate_publication_category_multiple_checkbox(existing_categories):
         htmls.append('<div class="checkbox_column"><ul>%s</ul></div>' % ''.join(columns[i]))
     
     return ''.join(htmls)
-
-@register.simple_tag
-def generate_shelf_list(user, publisher, module, url, active_shelf=None):
-    shelf_html = []
-    for shelf in PublisherShelf.objects.filter(publisher=publisher).order_by('name'):
-        active_html = ' active' if active_shelf and active_shelf.id == shelf.id else ''
-
-        if can(user, 'edit', publisher):
-            count = PublicationShelf.objects.filter(shelf=shelf, publication__publication_type=module).count()
-        elif can(user, 'edit', publisher):
-            count = PublicationShelf.objects.filter(shelf=shelf, publication__publication_type=module, publication__status=Publication.STATUS['PUBLISHED']).count()
-        else:
-            count = 0
-
-        shelf_html.append('<li class="shelf%s"><a href="%s">%s (%d)</a></li>' % (active_html, reverse(url, args=[shelf.id]), shelf.name, count))
-    
-    return ''.join(shelf_html)
-
-@register.simple_tag
-def print_no_shelf_count(user, publisher, module):
-    if can(user, 'edit', publisher):
-        count = Publication.objects.filter(publisher=publisher, publication_type=module, shelves=None).count()
-    elif can(user, 'edit', publisher):
-        count = Publication.objects.filter(publisher=publisher, publication_type=module, publication__status=Publication.STATUS['PUBLISHED'], shelves=None).count()
-    else:
-        count = 0
-    
-    return count
 
 # MODULES ################################################################################
 

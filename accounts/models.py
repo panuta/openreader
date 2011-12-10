@@ -68,6 +68,7 @@ class UserProfile(models.Model):
 class Organization(models.Model):
     name = models.CharField(max_length=200)
     prefix = models.CharField(max_length=200, default='บริษัท')
+    slug = models.CharField(max_length=200, unique=True)
     status = models.IntegerField(default=0)
 
     created = models.DateTimeField(auto_now_add=True)

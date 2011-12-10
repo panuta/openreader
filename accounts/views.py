@@ -26,11 +26,7 @@ def view_user_home(request):
             # If a user does not set any default publisher, pick the first one
             user_organization = UserOrganization.objects.filter(user=request.user).order_by('created')[0]
     
-    if settings.SITE_TYPE == 'document':
-        return redirect('view_document_front', organization_id=user_organization.organization.id)
-    
-    if settings.SITE_TYPE == 'publisher':
-        return redirect('view_publisher_front', organization_id=user_organization.organization.id)
+    return redirect('view_organization_front', organization_slug=user_organization.organization.slug)
 
 def view_user_welcome(request):
     if UserOrganization.objects.filter(user=request.user).count() != 0:
@@ -71,3 +67,35 @@ def change_my_account_password(request):
         form = PasswordChangeForm(user=request.user)
     
     return render(request, 'accounts/my_account_change_password.html', {'form':form})
+
+# ORGANIZATION
+
+def view_organization_profile(request, organization_slug):
+    pass
+
+def edit_organization_profile(request, organization_slug):
+    pass
+
+def view_organization_users(request, organization_slug):
+    pass
+
+def invite_organization_user(request, organization_slug):
+    pass
+
+def resend_user_invitation(request, invitation_id):
+    pass
+
+def cancel_user_invitation(request, invitation_id):
+    pass
+
+def claim_user_invitation(request, invitation_key):
+    pass
+
+def edit_organization_user(request, user_id):
+    pass
+
+def remove_organization_user(request, user_id):
+    pass
+
+def view_organization_billing(request, organization_slug):
+    pass

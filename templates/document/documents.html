@@ -1,1 +1,88 @@
-documents
+{% extends 'base_authenticated.html' %}
+{% load helper_tags pagination_tags document_tags %}
+
+{% block head_title %}ไฟล์เอกสาร{% endblock %}
+{% block topnav %}{% include 'snippets/organization_topnav.html' with active_menu='document' %}{% endblock %}
+
+{% block html_head %}
+{{block.super}}
+<script>
+$(document).ready(function () {
+  {% can user 'edit' organization %}
+  bind_all_upload_publication_modal();
+  bind_all_upload_publication_form();
+
+  $('.upload_publication_button').on('click', function(e) {
+    {% if shelf != 'all' and shelf != 'none' %}
+    open_upload_publication_modal('upload-file-form', '/publisher/files/shelf/{{shelf.id}}/');
+    {% else %}
+    open_upload_publication_modal('upload-file-form');
+    {% endif %}
+    
+    return false;
+  });
+
+  bind_publication_actions();
+  {% endcan %}
+})
+</script>
+{% endblock %}
+
+{% block body_authenticated %}
+{% include 'publisher/snippets/just_finishing_upload.html' %}
+{% autopaginate documents 20 %}
+
+<div class="container-fluid container-body publisher_files_page">
+<div class="sidebar">
+  <div class="head"><a href="{% url view_documents organization.slug %}">ชั้นหนังสือ</a></div>
+  <ul>
+    {% generate_shelf_list user organization shelf %}
+    <li{% if shelf == 'none' %} class="active"{% endif %}><a href="{% url view_documents_with_no_shelf organization.slug %}">ไฟล์ที่ไม่อยู่ในชั้น ({% print_publication_with_no_shelf_count user organization %})</a></li>
+    {% can user 'manage' organization %}<li class="add"><a href="{% url create_document_shelf organization.slug %}">สร้างชั้นหนังสือใหม่</a></li>{% endcan %}
+  </ul>
+</div>
+
+<div class="content"><div class="content-inner">
+  <h2>{% if shelf == 'all' %}ไฟล์ทั้งหมด{% else %}{% if shelf == 'none' %}ไฟล์ที่ไม่อยู่ในชั้นหนังสือ{% else %}ไฟล์ในชั้นหนังสือ {{shelf.name}}{% endif %}{% endif %}</h2>
+  
+  {% can user 'edit,manage' organization %}
+    <div class="page_actions">
+      {% can user 'edit' organization %}<button class="btn primary upload_publication_button"><span>อัพโหลดไฟล์{% if shelf != 'all' and shelf != 'none' %}เข้าชั้นหนังสือ{% endif %}</span></button>{% endcan %}
+      {% can user 'manage' organization %}{% if shelf != 'all' and shelf != 'none' %}<a href="{% url edit_document_shelf shelf.id %}" class="btn edit_shelf_button"><span>แก้ไขชั้นหนังสือ</span></a>{% endif %}{% endcan %}
+    </div>
+  {% endcan %}
+
+  {% if documents %}
+  <table class="publications_table">
+    <col width=""/>
+    <col width="200"/>
+    <col width="250"/>
+    <col width="70"/>
+    <tr>
+      <th>ชื่อไฟล์</th>
+      <th>วันที่อัพโหลด</th>
+      <th>สถานะ</th>
+      <th></th>
+    </tr>
+    {% for publication in documents %}
+    <tr>
+      <td class="name">{% if publication.status == PUBLICATION_STATUS_UPLOADED %}{{publication.original_file_name}}.{{publication.file_ext}}{% else %}<a href="{% url view_publication publication.id %}">{{publication.title}}</a>{% endif %}</td>
+      <td>{{publication.uploaded|format_abbr_datetime}}</td>
+      <td class="status">{% print_publication_status publication 'True' %}</td>
+      <td><button class="small btn" >แก้ไข</button></td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  {% paginate %}
+
+  {% else %}
+  <div class="no_row">ไม่มีไฟล์</div>
+  {% endif %}
+
+  {% can user 'edit' organization %}{% generate_publication_module_upload_modal 'file' %}{% endcan %}
+
+</div></div>
+</div>
+
+{% endblock %}

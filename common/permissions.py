@@ -1,4 +1,4 @@
-ROLE_CHOICES = (('publisher_admin', 'Publisher Admin'), ('publisher_staff', 'Publisher Staff'), ('publisher_user', 'Publisher User'))
+ROLE_CHOICES = (('organization_admin', 'Organization Admin'), ('organization_staff', 'Organization Staff'), ('organization_user', 'Organization User'))
 
 def can(user, action, object):
     return _dispatch(user, action, object)
