@@ -1,0 +1,141 @@
+{% extends 'base_authenticated.html' %}
+{% load helper_tags document_tags %}
+
+{% block head_title %}อัพโหลดไฟล์{% endblock %}
+{% block topnav %}{% include 'snippets/organization_topnav.html' with active_menu='document' %}{% endblock %}
+
+{% block html_head %}
+{{block.super}}
+
+<script src="{{STATIC_URL}}libs/jquery-upload/jquery-ui-widget.min.js"></script>
+<script src="{{STATIC_URL}}libs/jquery-upload/jquery.iframe-transport.js"></script>
+<script src="{{STATIC_URL}}libs/jquery-upload/jquery.fileupload.js"></script>
+
+<script>
+$(document).ready(function () {
+
+  $('#fileupload').fileupload({
+    dataType: 'json',
+    url: '{% url upload_documents organization.slug %}',
+    dropZone:$('#upload_dropzone'),
+    add: function(e, data) {
+      console.log('ADD');
+      var file_data = data.files[0]; // This is valid as long as singleFileUploads option is true
+      
+      var new_job = $('<li class="uploading"><div class="filename">' + file_data.name + '</div><div class="upload_progressbar"></div><div class="upload_actions"><button class="cancel link">ยกเลิกการอัพโหลด</button></div></li>');
+      new_job.find('.upload_progressbar').progressBar({width:262, height:20, boxImage:'/static/libs/progressbar/images/progressbar.png', barImage:{0:'/static/libs/progressbar/images/progressbg.png', 30:'/static/libs/progressbar/images/progressbg.png', 70:'/static/libs/progressbar/images/progressbg.png'}});
+
+      new_job.find('button.cancel').on('click', function(e) {
+        return false;
+      });
+
+      new_job.prependTo('.upload_jobs');
+
+      /*
+      var jqXHR = data.submit().done(function (result) {
+        new_job.removeClass('uploading').addClass('uploaded');
+        new_job.closest('li').attr('id', 'uploaded-' + result.uid);
+        new_job.html('<div class="filename">' + file_data.name + '</div><div class="finished"><strong>อัพโหลดเรียบร้อย</strong> กรอกรายละเอียดไฟล์ด้านล่าง</div><div class="input"><form><label>ชื่อไฟล์</label><input type="text" name="title" value="' + result.name + '" /> <span class="shelf_input"><label>ชั้นหนังสือ</label><select name="shelf"><option></option>{% generate_shelf_options organization %}</select></span> <input type="hidden" name="uid" value="' + result.uid + '" /><button class="save btn">บันทึก</button></form></div>');
+
+        if(!new_job.find('select').text()) {
+          new_job.find('.shelf_input').remove();
+        }
+
+        new_job.find('input[name="title"]').on('click', function() {
+          $(this).select();
+        });
+
+        new_job.find('button.save').on('click', function(e) {
+          var uid = new_job.find('input[name="uid"]').val();
+          var title = new_job.find('input[name="title"]').val();
+          var shelf_id = new_job.find('select[name="shelf"] option:selected').val();
+
+          if(!uid || !title) {
+            return false;
+          }
+
+          $.post('{% url finishing_upload_documents organization.slug %}', {uid:uid, title:title, shelf_id:shelf_id}, function(result) {
+            new_job.removeClass('uploaded').addClass('completed');
+            new_job.html('<div class="filename"><a href="' + result.view_url + '">' + result.title + '</a></div><div class="finished">บันทึกข้อมูลเรียบร้อย</div><div class="upload_actions"><button class="btn publish_button"><span>เผยแพร่</span></button><a href="' + result.edit_url + '" class="link">แก้ไขรายละเอียดไฟล์</a></div>');
+
+            new_job.find('button.publish_button').on('click', function(e) {
+              open_publish_modal(result.uid, function(result, uid) {
+                if(result.error == 'processing') {
+                  $('#uploaded-' + uid + ' .finished').text('ไฟล์นี้กำลังประมวลผลอยู่ ระบบจะเผยแพร่ทันทีที่ประมวลผลเสร็จ');
+                } else {
+                  $('#uploaded-' + uid + ' .finished').text('เผยแพร่เรียบร้อย');
+                }
+                
+                $('#uploaded-' + uid + ' button.publish_button').remove();
+                return true;
+              });
+              return false;
+            });
+          }, 'json');
+
+          return false;
+        });
+      });
+
+      jqXHR.progress(function(data) {
+        console.log('progress');
+        console.log(data);
+      });
+
+      console.log(jqXHR);
+      */
+    }
+  });
+
+  /*
+  ,
+    progress: function(e, data) {
+      var progress = parseInt(data.loaded / data.total * 100, 10);
+
+      //new_job.find('.upload_progressbar').progressBar();
+
+      console.log(data);
+      console.log('progress -> ' + progress)
+    }
+  */
+
+  $('.select_files_button').on('click', function(e) {
+    $("#fileupload").click();
+  });
+});
+</script>
+
+{% endblock %}
+
+{% block body_authenticated %}
+<div class="container-fluid container-body documents_upload_page">
+  <div class="sidebar">
+    {% can user 'edit' organization %}<div class="buttons"><a href="{% url upload_documents organization.slug %}" class="btn primary upload_publication_button"><span>อัพโหลดไฟล์</span></a></div>{% endcan %}
+    
+    <div class="head"><a href="{% url view_documents organization.slug %}">ชั้นหนังสือ</a></div>
+    <ul>
+      <li class="shelf-all"><a href="{% url view_documents organization.slug %}">ไฟล์ทั้งหมด <span>({% print_all_publication_count user organization %} ไฟล์)</span></a></li>
+      {% generate_shelf_list user organization '' %}
+      {% if no_shelf_count %}<li class="shelf-none"><a href="{% url view_documents_with_no_shelf organization.slug %}">ไฟล์ที่ไม่อยู่ในชั้น <span>({{no_shelf_count}})</span></a></li>{% endif %}
+      {% can user 'manage' organization %}<li class="add"><a href="{% url create_document_shelf organization.slug %}">สร้างชั้นหนังสือใหม่</a></li>{% endcan %}
+    </ul>
+  </div>
+
+  <div class="content"><div class="content-inner">
+    <h2>อัพโหลดไฟล์</h2>
+
+    <div class="upload_dropzone" id="upload_dropzone">
+      <div class="btn select_files_button"><span>เลือกไฟล์</span></div>
+      <div class="dragdrop">หรือลากไฟล์มาวางที่กรอบนี้</div>
+    </div>
+
+    <form action="." method="post">
+      <input id="fileupload" type="file" name="upload_document" multiple style="display:none;">
+    </form>
+
+    <ul class="upload_jobs"></ul>
+
+  </div></div>
+</div>
+
+{% endblock %}

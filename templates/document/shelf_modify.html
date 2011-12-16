@@ -1,0 +1,54 @@
+{% extends 'base_authenticated.html' %}
+{% load helper_tags document_tags %}
+
+{% block head_title %}{% if not shelf %}สร้างชั้นหนังสือใหม่{% else %}แก้ไขชั้นหนังสือ{% endif %}{% endblock %}
+{% block topnav %}{% include 'snippets/organization_topnav.html' with active_menu='document' %}{% endblock %}
+
+{% block body_authenticated %}
+<div class="container-fluid container-body shelf_modify_page">
+  <div class="sidebar">
+    {% can user 'edit' organization %}<div class="buttons"><a href="{% url upload_documents organization.slug %}" class="btn primary span2"><span>อัพโหลดไฟล์</span></a></div>{% endcan %}
+    
+    <div class="head"><a href="{% url view_documents organization.slug %}">ชั้นหนังสือ</a></div>
+    <ul>
+      <li class="shelf-all{% if shelf_type == 'all' %} active{% endif %}"><a href="{% url view_documents organization.slug %}">ไฟล์ทั้งหมด <span>({% print_all_publication_count user organization %})</span></a></li>
+      {% generate_shelf_list user organization shelf %}
+      {% if no_shelf_count %}<li class="shelf-none{% if shelf_type == 'none' %} active{% endif %}"><a href="{% url view_documents_with_no_shelf organization.slug %}">ไฟล์ที่ไม่อยู่ในชั้น <span>({{no_shelf_count}})</span></a></li>{% endif %}
+      {% can user 'manage' organization %}<li class="add{% if shelf_type == 'create' %} active{% endif %}"><a href="{% url create_document_shelf organization.slug %}">สร้างชั้นหนังสือใหม่</a></li>{% endcan %}
+    </ul>
+  </div>
+
+  <div class="content"><div class="content-inner">
+    {% if not shelf %}
+    <h2>สร้างชั้นหนังสือใหม่</h2>
+    {% else %}
+    <ul class="breadcrumb">
+      <li><a href="{% url view_documents_by_shelf organization.slug shelf.id %}">ไฟล์ในชั้นหนังสือ {{shelf.name}}</a> <span class="divider">/</span></li>
+      <li class="active">แก้ไขชั้นหนังสือ</li>
+    </ul>
+    <h2>แก้ไขชั้นหนังสือ</h2>
+    {% endif %}
+
+    <form method="POST" action=".">
+      {% csrf_token %}
+      {{form.non_field_errors}}
+
+      <div class="clearfix"><label for="id_name">ชื่อชั้นหนังสือ</label><div class="input">{{form.name}}{{form.name.errors}}</div></div>
+      <div class="clearfix"><label for="id_description">คำอธิบาย</label><div class="input">{{form.description}}<span class="help-block">ไม่จำเป็นต้องกรอก</span>{{form.description.errors}}</div></div>
+      
+      <div class="form_actions">
+        <button type="submit" class="btn primary">{% if not shelf %}สร้างชั้นหนังสือ{% else %}แก้ไขชั้นหนังสือ{% endif %}</button>
+        <button type="reset" class="btn">ล้างข้อมูล</button>
+      </div>
+    </form>
+
+    {% if shelf %}
+    <div class="delete_panel">
+      <a href="{% url delete_document_shelf organization.slug shelf.id %}" class="danger">ลบชั้นหนังสือ</a>
+    </div>
+    {% endif %}
+
+  </div></div>
+</div>
+
+{% endblock %}

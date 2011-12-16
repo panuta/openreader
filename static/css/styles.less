@@ -216,6 +216,10 @@ body {
     background:url(/static/images/bg.png);
 }
 
+.clear {
+    clear:both;
+}
+
 .topbar {
     height:50px;
     position:absolute;
@@ -300,7 +304,16 @@ body {
 .container-fluid {
     .sidebar {
         left:0px;
-        width:230px;
+        width:280px;
+
+        .buttons {
+            margin-bottom:25px;
+
+            a {
+                text-align:center;
+                color:white;
+            }
+        }
 
         .head {
             font-weight:bold;
@@ -328,6 +341,8 @@ body {
             &.publication {background:url(/static/images/menu/publication.png) 10px 50% transparent no-repeat;}
             &.publisher {background:url(/static/images/menu/publisher.png) 10px 50% transparent no-repeat;}
             &.shelf {background:url(/static/images/menu/shelf.png) 10px 50% transparent no-repeat;}
+            &.shelf-all {background:url(/static/images/menu/shelf-all.png) 10px 50% transparent no-repeat;}
+            &.shelf-none {background:url(/static/images/menu/shelf-none.png) 10px 50% transparent no-repeat;}
             &.user {background:url(/static/images/menu/user.png) 10px 50% transparent no-repeat;}
             &.manage {background:url(/static/images/menu/manage.png) 10px 50% transparent no-repeat;}
 
@@ -346,6 +361,12 @@ body {
                     font-weight:bold;
                 }
             }
+
+            span {
+                font-size:0.9em;
+                
+                color:#666;
+            }
         }
     }
 
@@ -358,6 +379,7 @@ body {
         padding:1px;
         border:1px solid #EEE;
         background-color:#DDD;
+        margin-left:290px;
 
         .content-inner {
             border:1px solid #BBB;
@@ -423,9 +445,24 @@ body {
 
 /* *************** Buttons *************** */
 
-button.upload_publication_button span {
+.upload_publication_button span {
     background:url(/static/images/buttons/button_upload_white.png) 0px 50% no-repeat;
     padding-left:24px;
+}
+
+.publish_button span {
+    background:url(/static/images/buttons/button_publish.png) 0px 50% no-repeat;
+    padding-left:24px;
+}
+
+.select_files_button {
+    width:160px;
+    text-align:center;
+
+    span {
+        background:url(/static/images/buttons/button_select_files.png) 0px 50% no-repeat;
+        padding-left:24px;
+    }
 }
 
 a.create_magazine span {
@@ -1003,6 +1040,141 @@ table td.row_actions a {
 .publisher_files_page {
     .publications_table {
         .publication_table_styles;
+    }
+}
+
+/* Document */
+
+.documents_upload_page {
+    .upload_dropzone {
+        border:1px dashed #CCC;
+        padding:10px 0px;
+        text-align:center;
+
+        .dragdrop {
+            margin-top:10px;
+            color:#555;
+            font-size:1.1em;
+        }
+    }
+
+    .upload_jobs {
+        margin-top:25px;
+
+        li {
+            padding:10px 10px;
+            height:90px;
+            
+            padding-left:40px;
+            margin-bottom:10px;
+
+            &.uploading {
+                border:1px solid #CCC;
+                background:url('/static/images/file_uploading.png') #FFF 10px 10px no-repeat;
+            }
+
+            &.uploaded {
+                border:1px solid #CCC;
+                background:url('/static/images/file_uploaded.png') #FFF 10px 10px no-repeat;
+
+                .finished {
+                    color:#339966;
+                    margin-bottom:10px;
+                }
+
+                .filename {
+                    font-weight:bold;
+                }
+
+                .input {
+                    label {
+                        width:auto;
+                        margin-right:7px;
+                        color:#333;
+                        float:none;
+                    }
+
+                    input, select {
+                        margin-right:20px;
+                    }
+                }
+            }
+
+            &.completed {
+                border:1px solid #999;
+                background:url('/static/images/file_completed.png') #339966 10px 10px no-repeat;
+
+                .finished {
+                    color:#FFF;
+                    margin-bottom:10px;
+                }
+
+                .upload_actions {
+                    a {
+                        color:#EEE;
+                        background:none;
+                    }
+                }
+            }
+        }
+
+        .filename {
+            font-size:1.1em;
+            margin-bottom:10px;
+            color:#444;
+
+            a {
+                color:#c9e7fb;
+                text-decoration:underline;
+
+                &:hover {
+                    background-color:@linkColor;
+                    color:#FFF;
+                }
+            }
+        }
+
+        .upload_progressbar {
+            img {
+                vertical-align:middle;
+            }
+        }
+
+        .upload_actions {
+            margin:10px 0px 5px;
+
+            button.btn {
+                margin-right:15px;
+            }
+
+            a.link, button.link {
+                color:#666;
+                text-decoration:underline;
+                background-color:#FFF;
+
+                &:hover {
+                    background-color:#666;
+                    color:#FFF;
+                }
+            }
+
+        }
+    }
+}
+
+
+/* Shelf */
+
+.shelf_modify_page {
+    .delete_documents {
+        margin:30px 0px;
+        font-size:1.1em;
+
+        label {
+            float:none;
+            color:#555;
+            margin-left:10px;
+        }
     }
 }
 

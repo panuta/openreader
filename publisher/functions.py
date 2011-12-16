@@ -8,13 +8,13 @@ from common.thumbnails import get_generator
 from common.utilities import splitext
 
 from exceptions import FileUploadTypeUnknown
-from models import Publication, PublisherReader, PublicationNotice, PublicationShelf, PublicationReader
+# from models import Publication, PublisherReader, PublicationNotice, PublicationShelf, PublicationReader
 
 logger = logging.getLogger(settings.OPENREADER_LOGGER)
 
-def upload_publication(request, publication_type, uploading_file, publisher):
+def upload_publication(request, publication_type, uploading_file, organization):
     (file_name, file_ext) = splitext(uploading_file.name)
-    publication = Publication.objects.create(publisher=publisher, publication_type=publication_type, original_file_name=file_name, file_ext=file_ext, uploaded_by=request.user)
+    publication = Publication.objects.create(organization=organization, publication_type=publication_type, original_file_name=file_name, file_ext=file_ext, uploaded_by=request.user)
 
     try:
         publication.uploaded_file.save('%s.%s' % (publication.uid, file_ext), uploading_file)

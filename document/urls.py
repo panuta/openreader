@@ -5,10 +5,19 @@ urlpatterns = patterns('document.views',
     url(r'^org/(?P<organization_slug>\w+)/documents/shelf/(?P<shelf_id>\d+)/$', 'view_documents_by_shelf', name='view_documents_by_shelf'),
     url(r'^org/(?P<organization_slug>\w+)/documents/no-shelf/$', 'view_documents_with_no_shelf', name='view_documents_with_no_shelf'),
 
+    url(r'^org/(?P<organization_slug>\w+)/documents/upload/$', 'upload_documents', name='upload_documents'),
+    url(r'^org/(?P<organization_slug>\w+)/documents/upload/finishing/$', 'finishing_upload_documents', name='finishing_upload_documents'),
+
     url(r'^org/(?P<organization_slug>\w+)/shelf/create/$', 'create_document_shelf', name='create_document_shelf'),
     url(r'^org/(?P<organization_slug>\w+)/shelf/(?P<shelf_id>\d+)/edit/$', 'edit_document_shelf', name='edit_document_shelf'),
     url(r'^org/(?P<organization_slug>\w+)/shelf/(?P<shelf_id>\d+)/delete/$', 'delete_document_shelf', name='delete_document_shelf'),
 
+    # Document
+
+    url(r'^document/(?P<publication_uid>[a-zA-Z0-9\-]+)/$', 'view_document', name='view_document'),
+    url(r'^document/(?P<publication_uid>[a-zA-Z0-9\-]+)/edit/$', 'edit_document', name='edit_document'),
+    url(r'^document/(?P<publication_uid>[a-zA-Z0-9\-]+)/delete/$', 'delete_document', name='delete_document'),
+    
 )
 
 

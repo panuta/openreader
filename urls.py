@@ -10,7 +10,7 @@ urlpatterns = patterns('',
 
     url('', include('openreader.accounts.urls')),
     #url('', include('openreader.homepage.urls')),
-    #url('', include('openreader.publication.urls')),
+    url('', include('openreader.publication.urls')),
     url('management/', include('openreader.management.urls')),
 
     url(r'^admin/', include(admin.site.urls)),

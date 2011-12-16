@@ -21,7 +21,7 @@ class UserShelfPermission(models.Model):
     created_by = models.ForeignKey(User, related_name='user_shelf_permission_created_by')
 
 class Document(models.Model):
-    publication = models.ForeignKey('publication.Publication')
+    publication = models.OneToOneField('publication.Publication')
     shelves = models.ManyToManyField(OrganizationShelf, through='DocumentShelf')
 
 class DocumentShelf(models.Model):

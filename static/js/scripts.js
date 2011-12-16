@@ -128,23 +128,32 @@ function bind_all_upload_publication_form() {
 
 /* ############### PUBLICATION ACTIONS ############### */
 
-function open_publish_modal(url) {
+function open_publish_modal(uid, callback) {
   if(!$('#publish-publication-modal').length) {
     $('body').append('<div class="modal hide fade" id="publish-publication-modal" style="display:none;"><div class="modal-header"><a class="close" href="#">×</a><h3>ยืนยันการเผยแพร่</h3></div><div class="modal-message"></div><div class="modal-body">ต้องการเผยแพร่ไฟล์นี้ทันที?</div><div class="modal-footer"><input class="btn" type="button" value="ยกเลิก" /><input class="btn primary" type="submit" value="เผยแพร่ทันที" /></div></div>');
     $("#publish-publication-modal").modal({backdrop:'static'});
 
     $("#publish-publication-modal input[type='submit']").on('click', function(e) {
       $("#publish-publication-modal .modal-footer input").attr("disabled", true);
-      $.post($("#publish-publication-modal").data('url'), function(response) {
-        if(response.error) {
+      $.post('/publication/publish/', {uid:$("#publish-publication-modal").data('uid')}, function(response) {
+        $("#publish-publication-modal .modal-footer input").attr("disabled", false);
+
+        if(response.status == 'error') {
           var message = '';
-          if(response.error == 'processing') {message = 'ไฟล์นี้กำลังประมวลผลอยู่ ระบบจะเผยแพร่ทันทีที่ประมวลผลเสร็จ';}
-          if(response.error == 'published') {message = 'ไฟล์นี้ถูกเผยแพร่ก่อนหน้านี้แล้ว';}
-          if(response.error == 'invalid-status') {message = 'ไฟล์ไม่อยู่ในสถานะที่สามารถเผยแพร่ในทันทีได้';}
+          if(response.error == 'missing-parameters') {message = 'ขาดข้อมูลที่จำเป็นบางตัว ไม่สามารถประมวลผลได้';}
+          if(response.error == 'access-denied') {message = 'คุณไม่สามารถเข้าถึงการทำงานนี้ได้';}
+          if(response.error == 'invalid-status') {message = 'ไฟล์ไม่อยู่ในสถานะที่สามารถเผยแพร่ในทันทีได้ หรือไฟล์ถูกเผยแพร่ไปแล้ว';}
           $('#publish-publication-modal .modal-message').html(message).show();
-          $("#publish-publication-modal .modal-footer input").attr("disabled", false);
+
         } else {
-          window.location.reload();
+          if(callback) {
+            if(callback(response, $("#publish-publication-modal").data('uid'))) {
+              $("#publish-publication-modal").modal('hide');
+            }
+            
+          } else {
+            window.location.reload();
+          }
         }
       }, 'json');
 
@@ -157,9 +166,10 @@ function open_publish_modal(url) {
     });
   }
 
+  $('#publish-publication-modal .modal-footer').show();
   $('#publish-publication-modal .modal-message').hide();
   $("#publish-publication-modal").modal('show');
-  $("#publish-publication-modal").data('url', url);
+  $("#publish-publication-modal").data('uid', uid);
 }
 
 function open_schedule_modal(url) {

@@ -34,21 +34,23 @@ $(document).ready(function () {
 
 <div class="container-fluid container-body publisher_files_page">
 <div class="sidebar">
+  {% can user 'edit' organization %}<div class="buttons"><a href="{% url upload_documents organization.slug %}" class="btn primary span2"><span>อัพโหลดไฟล์</span></a></div>{% endcan %}
+  
   <div class="head"><a href="{% url view_documents organization.slug %}">ชั้นหนังสือ</a></div>
   <ul>
+    <li class="shelf-all{% if shelf_type == 'all' %} active{% endif %}"><a href="{% url view_documents organization.slug %}">ไฟล์ทั้งหมด <span>({% print_all_publication_count user organization %})</span></a></li>
     {% generate_shelf_list user organization shelf %}
-    <li{% if shelf == 'none' %} class="active"{% endif %}><a href="{% url view_documents_with_no_shelf organization.slug %}">ไฟล์ที่ไม่อยู่ในชั้น ({% print_publication_with_no_shelf_count user organization %})</a></li>
+    {% if no_shelf_count %}<li class="shelf-none{% if shelf_type == 'none' %} active{% endif %}"><a href="{% url view_documents_with_no_shelf organization.slug %}">ไฟล์ที่ไม่อยู่ในชั้น <span>({{no_shelf_count}})</span></a></li>{% endif %}
     {% can user 'manage' organization %}<li class="add"><a href="{% url create_document_shelf organization.slug %}">สร้างชั้นหนังสือใหม่</a></li>{% endcan %}
   </ul>
 </div>
 
 <div class="content"><div class="content-inner">
-  <h2>{% if shelf == 'all' %}ไฟล์ทั้งหมด{% else %}{% if shelf == 'none' %}ไฟล์ที่ไม่อยู่ในชั้นหนังสือ{% else %}ไฟล์ในชั้นหนังสือ {{shelf.name}}{% endif %}{% endif %}</h2>
+  <h2>{% if shelf_type == 'all' %}ไฟล์ทั้งหมด{% endif %}{% if shelf_type == 'none' %}ไฟล์ที่ไม่อยู่ในชั้นหนังสือ{% endif %}{% if shelf %}ไฟล์ในชั้นหนังสือ {{shelf.name}}{% endif %}</h2>
   
-  {% can user 'edit,manage' organization %}
+  {% can user 'manage' organization %}
     <div class="page_actions">
-      {% can user 'edit' organization %}<button class="btn primary upload_publication_button"><span>อัพโหลดไฟล์{% if shelf != 'all' and shelf != 'none' %}เข้าชั้นหนังสือ{% endif %}</span></button>{% endcan %}
-      {% can user 'manage' organization %}{% if shelf != 'all' and shelf != 'none' %}<a href="{% url edit_document_shelf shelf.id %}" class="btn edit_shelf_button"><span>แก้ไขชั้นหนังสือ</span></a>{% endif %}{% endcan %}
+      {% if shelf %}<a href="{% url edit_document_shelf organization.slug shelf.id %}" class="btn edit_shelf_button"><span>แก้ไขชั้นหนังสือ</span></a>{% endif %}
     </div>
   {% endcan %}
 
@@ -64,12 +66,12 @@ $(document).ready(function () {
       <th>สถานะ</th>
       <th></th>
     </tr>
-    {% for publication in documents %}
+    {% for document in documents %}
     <tr>
-      <td class="name">{% if publication.status == PUBLICATION_STATUS_UPLOADED %}{{publication.original_file_name}}.{{publication.file_ext}}{% else %}<a href="{% url view_publication publication.id %}">{{publication.title}}</a>{% endif %}</td>
+      <td class="name">{% if document.publication.status == PUBLICATION_STATUS_UPLOADED %}{{document.publication.original_file_name}}.{{document.publication.file_ext}}{% else %}<a href="{% url view_document document.publication.uid %}">{{document.publication.title}}</a>{% endif %}</td>
       <td>{{publication.uploaded|format_abbr_datetime}}</td>
-      <td class="status">{% print_publication_status publication 'True' %}</td>
-      <td><button class="small btn" >แก้ไข</button></td>
+      <td class="status">{% print_publication_status document.publication 'True' %}</td>
+      <td><a href="{% url edit_document document.publication.uid %}" class="small btn" >แก้ไข</a></td>
     </tr>
     {% endfor %}
   </table>

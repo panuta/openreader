@@ -13,6 +13,8 @@ from common.modules import *
 
 from accounts.models import UserOrganization
 
+from publication.models import Publication
+
 #from accounts.models import UserPublisher
 #from publisher.models import Publication, PublisherModule, PublisherShelf, PublicationShelf, Module, PublicationNotice
 
