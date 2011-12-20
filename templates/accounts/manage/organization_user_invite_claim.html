@@ -7,7 +7,7 @@
 
   {% if logout_first %}
     <p>ชื่อบัญชีไม่ตรงกัน กรุณาออกจากระบบก่อน</p>
-    <div class="center"><a href="{% url auth_logout %}?next={% url claim_organization_invitation invitation.invitation_key %}" class="btn danger">ออกจากระบบ</a></div>
+    <div class="center"><a href="{% url auth_logout %}?next={% url claim_user_invitation invitation.invitation_key %}" class="btn danger">ออกจากระบบ</a></div>
   {% endif %}
 
   {% if login_first %}

@@ -71,94 +71,6 @@
     }
 }
 
-.publication_list_styles() {
-    li.publication {
-        margin-bottom:10px;
-        border-bottom:1px dashed #999;
-
-        padding:15px 0px;
-
-        .cover {
-            width:70px;
-            height:85px;
-            background-color:#D34;
-            float:left;
-        }
-
-        .right {
-            margin-left:85px;
-        }
-
-        .name {
-            a {
-                .content_link;
-            }
-
-            font-size:1.2em;
-            color:#000;
-        }
-
-        .details {
-            color:#555;
-            margin-top:7px;
-        }
-
-        .status {
-            margin-top:7px;
-            color:#555;
-        
-            span {
-                color:#000;
-                padding:0px 6px;
-            }
-
-            .publication_status;
-        }
-
-        .links {
-            margin-top:15px;
-
-            a, button {
-                margin-right:15px;
-            }
-
-            a.btn.small {
-                padding:5px 9px;
-                font-size:12px;
-            }
-
-            .link {
-                &:link, &:active, &:visited {
-                    text-decoration:underline;
-                    color:#666;
-                }
-
-                &:hover {
-                    background-color:@linkColor !important;
-                    color:#FFF !important;
-                    text-shadow:none;
-                }
-            }
-        }
-
-        .statistics {
-            float:right;
-            width:300px;
-            height:85px;
-            background-color:#CCC;
-        }
-    }
-
-    .unfinished_list {
-        background-color:@publication-unfinished-bg;
-        border-top:8px solid @publication-unfinished;
-
-        li {
-            padding:15px;
-        }
-    }
-}
-
 .publication_table_styles() {
     td {
         vertical-align:middle;
@@ -190,41 +102,6 @@
                 }
             }
         }
-    }
-}
-
-.publication_bullet_list_styles() {
-    li {
-        list-style:disc;
-        margin:0px 0px 20px 20px;
-    }
-
-    .type {
-        color:#333;
-        font-size:1.1em;
-        margin-right:7px;
-    }
-
-    .title {
-        .content_link;
-        font-size:1.1em;
-    }
-
-    .uploaded {
-        margin-top:5px;
-        color:#888;
-    }
-
-    .status {
-        margin-top:5px;
-        color:#555;
-    
-        span {
-            color:#000;
-            padding:0px 6px;
-        }
-
-        .publication_status;
     }
 }
 
@@ -458,6 +335,87 @@ body {
     }
 }
 
+/* *************** UI *************** */
+
+.delete_panel {
+    border:1px dashed #CCC;
+    padding:15px 15px 15px 45px;
+    background:url(/static/images/icons/danger_icon.png) 15px 50% no-repeat;
+
+    a:link, a:active, a:visited {
+        text-decoration:underline;
+        color:#666;
+    }
+
+    a:hover {
+        background-color:#C30;
+        color:#FFF;
+        text-shadow:none;
+    }
+}
+
+.pagination_bar {
+    margin:30px 0px;
+    text-align:center;
+
+    .goto {
+        width:76px;
+        height:26px;
+        background:url(/static/images/pagination/nav.png) no-repeat;
+        text-align:center;
+        display:inline-block;
+        line-height:26px;
+        font-size:0.9em;
+        cursor:default;
+    }
+
+    .prev {
+        margin-right:10px;
+    }
+
+    .next {
+        margin-left:10px;
+    }
+    
+    .page {
+        width:36px;
+        height:26px;
+        background:url(/static/images/pagination/page.png) center top no-repeat;
+        text-align:center;
+        display:inline-block;
+        line-height:26px;
+        margin:0px 3px;
+        cursor:default;
+    }
+
+    .current {
+        background-position:center bottom;
+        font-weight:bold;
+        color:#FFF;
+    }
+
+    a {
+        &:link, &:visited, &:active {
+            text-decoration:none;
+            color:@linkColor;
+        }
+
+        &.page:hover {
+            background-position:center bottom;
+            color:#FFF;
+            font-weight:bold;
+            cursor:pointer;
+        }
+
+        &.goto:hover {
+            background-position:center bottom;
+            color:#FFF;
+            font-weight:bold;
+            cursor:pointer;
+        }
+    }
+}
+
 /* *************** Buttons *************** */
 
 .upload_publication_button span {
@@ -510,7 +468,6 @@ a.download_publication_button span {
     padding-left:24px;
 }
 
-
 /* *************** Messages *************** */
 
 .alert-message.block-message {
@@ -526,7 +483,6 @@ a.download_publication_button span {
     padding:10px 35px;
     vertical-align:middle;
 }
-
 
 /* *************** Form *************** */
 
@@ -701,213 +657,6 @@ table td.row_actions a {
     border-bottom:1px solid #EEE;
 }
 
-.delete_panel {
-    border:1px dashed #CCC;
-    padding:15px 15px 15px 45px;
-    background:url(/static/images/icons/danger_icon.png) 15px 50% no-repeat;
-
-    a:link, a:active, a:visited {
-        text-decoration:underline;
-        color:#666;
-    }
-
-    a:hover {
-        background-color:#C30;
-        color:#FFF;
-        text-shadow:none;
-    }
-}
-
-.pagination_bar {
-    margin:30px 0px;
-    text-align:center;
-
-    .goto {
-        width:76px;
-        height:26px;
-        background:url(/static/images/pagination/nav.png) no-repeat;
-        text-align:center;
-        display:inline-block;
-        line-height:26px;
-        font-size:0.9em;
-        cursor:default;
-    }
-
-    .prev {
-        margin-right:10px;
-    }
-
-    .next {
-        margin-left:10px;
-    }
-    
-    .page {
-        width:36px;
-        height:26px;
-        background:url(/static/images/pagination/page.png) center top no-repeat;
-        text-align:center;
-        display:inline-block;
-        line-height:26px;
-        margin:0px 3px;
-        cursor:default;
-    }
-
-    .current {
-        background-position:center bottom;
-        font-weight:bold;
-        color:#FFF;
-    }
-
-    a {
-        &:link, &:visited, &:active {
-            text-decoration:none;
-            color:@linkColor;
-        }
-
-        &.page:hover {
-            background-position:center bottom;
-            color:#FFF;
-            font-weight:bold;
-            cursor:pointer;
-        }
-
-        &.goto:hover {
-            background-position:center bottom;
-            color:#FFF;
-            font-weight:bold;
-            cursor:pointer;
-        }
-    }
-}
-
-/* *************** Upload Publication *************** */
-
-.upload-publication-modal {
-    .parent_name {
-        font-size:1.1em;
-        font-weight:bold;
-        margin:0px 0px 15px 150px;
-    }
-    
-    .uploading {
-        font-size:1.2em;
-        color:#555;
-        margin:0px 0px 10px 0px;
-
-        .upload_progressbar {
-            margin-top:10px;
-        }
-    }
-
-    .error_message {
-        color:#C30;
-        font-size:1.1em;
-        margin-bottom:10px;
-
-        div {
-            margin-top:10px;
-        }
-
-        a {
-            .content_link;
-        }
-    }
-}
-
-.upload_publication_page {
-    .uploading {
-        margin-left:150px;
-    }
-
-    .error_message {
-        margin-left:150px;
-    }
-}
-
-.finishing_upload_publication_page {
-    .cover {
-        width:200px;
-        height:250px;
-        background-color:#ABC;
-        border:1px solid #999;
-        margin-left:10px;
-    }
-
-    label {
-        margin-bottom:5px;
-    }
-
-    .file_name {
-        h3 {
-            line-height:1;
-            color:#666;
-            font-size:1.1em;
-        }
-
-        div {
-            font-size:1.2em;
-            color:#333;
-            background:url('/static/images/icons/file.png') left top no-repeat;
-            padding-left:23px;
-        }
-        
-        margin-bottom:15px;
-        border-bottom:1px solid #CCC;
-        padding-bottom:15px;
-    }
-
-    .magazine_name {
-        font-size:1.2em;
-    }
-
-    .form_actions {
-        margin-top:20px;
-        color:#666;
-    }
-
-    .form_actions a {
-        padding:2px 7px;
-
-        .danger_link;
-    }
-}
-
-.just_finishing_upload {
-    ul {
-        margin-top:10px;
-    }
-    li {
-        list-style:disc;
-        margin-left:15px;
-        margin-bottom:10px;
-
-        a {
-            font-weight:normal;
-            .content_link;
-        }
-
-        span {
-            margin-left:10px;
-        }
-    }
-}
-
-/* Modal */
-
-#schedule-publication-modal {
-    .modal-body {
-        .schedule_date {
-            padding:0px 0px 15px;
-            .schedule_date_styles;
-        }
-
-        .schedule_time {
-            padding:0px 0px 15px;
-            .schedule_time_styles;
-        }
-    }
-}
-
 /* *************** Publication Page *************** */
 
 .publication_page {
@@ -977,78 +726,6 @@ table td.row_actions a {
     }
 }
 
-/* *************** Dashboard *************** */
-
-.publisher_dashboard_page {
-    .recent_publications {
-        .publication_bullet_list_styles;
-    }
-}
-
-#id_welcome_modal {
-    .modal-body {
-        .title {
-            font-size:1.3em;
-            color:#11717a;
-            margin-bottom:15px;
-        }
-
-        li {
-            margin:0px 0px 25px 20px;
-        }
-
-        p {
-            color:#555;
-            font-size:1.1em;
-            margin-bottom:10px;
-        }
-    }
-}
-
-/* *************** Publisher Magazines *************** */
-
-/* Magazines */
-
-.publisher_magazines_page {
-    .no_magazine {
-        text-align:center;
-        margin:30px 0px;
-        p {
-            font-size:1.2em;
-            margin-bottom:20px;
-        }
-
-        a {
-            color:#FFF;
-        }
-    }
-
-    .recent_publications {
-        .publication_bullet_list_styles;
-    }
-
-    .orphan_publications {
-        .publication_list_styles();
-        margin-bottom:40px;
-    }
-}
-
-/* Magazine */
-
-.publisher_magazine_page {
-    .publications {
-        .publication_list_styles;
-    }
-}
-
-/* *************** Publisher Books *************** */
-
-.publisher_books_page {
-    .publications {
-        .publication_list_styles;
-    }
-}
-
 /*
  *
  * ********** DOCUMENTS **************************************************
@@ -1082,7 +759,6 @@ table td.row_actions a {
                     background-position:right center;
                 }
             }
-            
         }
 
         .dragdrop {
@@ -1202,7 +878,6 @@ table td.row_actions a {
             .error {
                 color:#C30;
             }
-
         }
     }
 
@@ -1211,154 +886,6 @@ table td.row_actions a {
 
         tr.finished {
             background-color:#ccf2d1;
-        }
-    }
-}
-
-.documents_upload_page {
-    .upload_dropzone {
-        border:1px dashed #CCC;
-        padding:10px 0px;
-        text-align:center;
-
-        .dragdrop {
-            margin-top:10px;
-            color:#555;
-            font-size:1.1em;
-        }
-    }
-
-    #upload_errors {
-        li {
-            margin:15px 0px;
-            color:#C30;
-            background-color:#FFC;
-            padding:6px 10px;
-            border:1px solid #DDD;
-
-            span {
-                float:right;
-                color:#999;
-
-                a {
-                    .content_link;
-                }
-            }
-        }
-    }
-
-    #upload_jobs {
-        margin-top:25px;
-
-        li {
-            padding:10px 10px;
-            height:90px;
-            
-            padding-left:40px;
-            margin-bottom:10px;
-
-            &.uploading {
-                border:1px solid #CCC;
-                background:url('/static/images/file_uploading.png') #FFF 10px 10px no-repeat;
-            }
-
-            &.uploaded {
-                border:1px solid #CCC;
-                background:url('/static/images/file_uploaded.png') #FFF 10px 10px no-repeat;
-
-                .finished {
-                    color:#339966;
-                    margin-bottom:10px;
-                }
-
-                .filename {
-                    font-weight:bold;
-                }
-
-                .input {
-                    label {
-                        width:auto;
-                        margin-right:7px;
-                        color:#333;
-                        float:none;
-                    }
-
-                    input, select {
-                        margin-right:20px;
-                    }
-
-                    .error {
-                        color:#C30;
-                    }
-                }
-            }
-
-            &.completed {
-                border:1px solid #999;
-                background:url('/static/images/file_completed.png') #339966 10px 10px no-repeat;
-
-                .finished {
-                    color:#FFF;
-                    margin-bottom:10px;
-                }
-
-                .upload_actions {
-                    a {
-                        color:#EEE;
-                        background:none;
-                    }
-                }
-            }
-        }
-
-        .filename {
-            font-size:1.1em;
-            margin-bottom:10px;
-            color:#444;
-
-            a {
-                color:#c9e7fb;
-                text-decoration:underline;
-
-                &:hover {
-                    background-color:@linkColor;
-                    color:#FFF;
-                }
-            }
-        }
-
-        .upload_progressbar {
-            img {
-                vertical-align:middle;
-            }
-        }
-
-        .upload_actions {
-            margin:10px 0px 5px;
-
-            button.btn {
-                margin-right:15px;
-            }
-
-            .publish_button span {
-                background-image:url(/static/images/buttons/button_publish.png);
-            }
-
-            a.link, button.link {
-                color:#666;
-                text-decoration:underline;
-                background-color:#FFF;
-
-                &:hover {
-                    background-color:#666;
-                    color:#FFF;
-                }
-            }
-
-            .error {
-                color:#C30;
-            }
-
         }
     }
 }
@@ -1408,40 +935,4 @@ table td.row_actions a {
             margin-left:10px;
         }
     }
-}
-
-/* *************** Publisher Management *************** */
-.publisher_manage_page {
-    .publisher_stats {
-        h4 {
-            line-height:1;
-            margin-bottom:15px;
-        }
-
-        ul {
-            margin:0px 0px 20px 20px;
-
-            li {
-                list-style:disc;
-                color:#666;
-                font-size:1.1em;
-                margin-bottom:10px;
-
-                strong {
-                    color:#555;
-                    margin-left:6px;
-                }
-            }
-        }
-    }
-}
-
-
-/* Footer */
-
-.footer {
-    border-top:1px solid #DDD;
-    text-align:center;
-    padding-top:10px;
-    margin-top:20px;
 }

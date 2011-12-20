@@ -1,8 +1,12 @@
 # -*- encoding: utf-8 -*-
 
 from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
+from django.core.urlresolvers import reverse
+from django.forms.util import ErrorList
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import ugettext_lazy as _
@@ -47,6 +51,7 @@ def view_my_profile(request):
             user_profile.last_name = form.cleaned_data['last_name']
             user_profile.save()
 
+            messages.success(request, u'แก้ไขข้อมูลส่วนตัวเรียบร้อย')
             return redirect('view_my_profile')
     else:
         form = UserProfileForm(initial=request.user.get_profile().__dict__)
@@ -63,6 +68,7 @@ def change_my_account_password(request):
         form = PasswordChangeForm(user=request.user, data=request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request, u'เปลี่ยนรหัสผ่านเรียบร้อย')
             return redirect('view_my_account')
 
     else:
@@ -70,7 +76,7 @@ def change_my_account_password(request):
     
     return render(request, 'accounts/my_account_change_password.html', {'form':form})
 
-# ORGANIZATION
+# ORGANIZATION ##############################################################################################################
 
 def view_organization_profile(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
@@ -97,7 +103,6 @@ def edit_organization_profile(request, organization_slug):
             organization.save()
 
             messages.success(request, u'แก้ไขข้อมูล%sเรียบร้อย' % organization.prefix)
-
             return redirect('view_organization_profile', organization_slug=organization.slug)
 
     else:
@@ -222,7 +227,7 @@ def claim_user_invitation(request, invitation_key):
             user_profile = user.get_profile()
             user_profile.first_name = first_name
             user_profile.last_name = last_name
-            user_profile.is_publisher = True
+            user_profile.web_access = True
             user_profile.save()
 
             UserOrganizationInvitation.objects.claim_invitation(invitation, user, True)
@@ -257,7 +262,7 @@ def claim_user_invitation(request, invitation_key):
             if user:
                 form = EmailAuthenticationForm()
 
-                return render(request, 'accounts/manage/organization_user_invite_claim.html', {'invitation':invitation, 'form':form, 'login_first':reverse('claim_publisher_invitation', args=[invitation_key])})
+                return render(request, 'accounts/manage/organization_user_invite_claim.html', {'invitation':invitation, 'form':form, 'login_first':reverse('claim_user_invitation', args=[invitation_key])})
             
         form = ClaimOrganizationUserForm()
     

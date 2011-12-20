@@ -8,6 +8,12 @@
 {{block.super}}
 <script type="text/javascript" src="{{STATIC_URL}}libs/plupload/plupload.full.js"></script>
 <script>
+function increaseAllCount(shelf_id) {
+  var count_num = $('.sidebar .shelf-all span').text().split(' ')[0].substring(1) * 1;
+  count_num = count_num + 1;
+  $('.sidebar .shelf-all span').text('(' + count_num + ' ไฟล์)');
+}
+
 function increaseShelfCount(shelf_id) {
   var count_num = $('#shelf-' + shelf_id + ' span').text().split(' ')[0].substring(1) * 1;
   count_num = count_num + 1;
@@ -71,6 +77,8 @@ $(document).ready(function () {
 
     if(responseObject.status == 'success') {
       $('#' + file_id).removeClass('uploading').addClass('uploaded');
+
+      increaseAllCount();
 
       if(responseObject.shelf) {
         $('#' + file_id).html('<div class="filename">' + file.name + '</div><div class="finished"><strong>อัพโหลดเรียบร้อย</strong> กรอกรายละเอียดไฟล์ด้านล่าง</div><div class="input"><form><label>ชื่อไฟล์</label><input type="text" name="title" value="' + responseObject.title + '" /> <input type="hidden" name="uid" value="' + responseObject.uid + '" /><button class="save btn">บันทึก</button></form></div>');
@@ -159,13 +167,7 @@ $(document).ready(function () {
 
 <div class="container-fluid container-body documents_page">
 <div class="sidebar">
-  <div class="head"><a href="{% url view_documents organization.slug %}">ชั้นหนังสือ</a></div>
-  <ul>
-    <li class="shelf-all{% if shelf_type == 'all' %} active{% endif %}"><a href="{% url view_documents organization.slug %}">ไฟล์ทั้งหมด <span>({% print_all_publication_count user organization %} ไฟล์)</span></a></li>
-    {% generate_shelf_list user organization shelf %}
-    {% if no_shelf_count %}<li class="shelf-none{% if shelf_type == 'none' %} active{% endif %}"><a href="{% url view_documents_with_no_shelf organization.slug %}">ไฟล์ที่ไม่อยู่ในชั้น <span>({{no_shelf_count}} ไฟล์)</span></a></li>{% endif %}
-    {% can user 'manage' organization %}<li class="add"><a href="{% url create_document_shelf organization.slug %}">สร้างชั้นหนังสือใหม่</a></li>{% endcan %}
-  </ul>
+  {% include 'document/snippets/documents_sidebar.html' with organization=organization shelf_type=shelf_type shelf=shelf no_shelf_count=no_shelf_count %}
 </div>
 
 <div class="content"><div class="content-inner">
@@ -190,7 +192,7 @@ $(document).ready(function () {
   <table class="publications_table" {% if not documents %}style="display:none;"{% endif %}>
     <colgroup>
       <col width=""/>
-      <col width="250"/>
+      <col width="220"/>
       <col width="155"/>
     </colgroup>
     

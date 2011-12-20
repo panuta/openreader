@@ -1,0 +1,36 @@
+{% extends 'manage/manage_base.html' %}
+{% load helper_tags %}
+
+{% block manage_head_title %}บริษัท{% endblock %}
+{% block topnav %}{% include 'manage/snippets/manage_topnav.html' with active_menu='organization' %}{% endblock %}
+
+{% block body_authenticated %}
+<div class="container-fluid container-body">
+  <div class="content-full"><div class="content-inner">
+    <ul class="breadcrumb">
+      <li><a href="{% url manage_organizations %}">รายชื่อบริษัท</a> <span class="divider">/</span></li>
+      <li class="active">เพิ่มบริษัท</li>
+    </ul>
+
+    <h2>เพิ่มบริษัท</h2>
+
+    <form method="POST" action=".">
+      {% csrf_token %}
+      {{form.non_field_errors}}
+      
+        <div class="clearfix"><label for="id_organization_name">ชื่อบริษัท</label><div class="input">{{form.organization_name}}{{form.organization_name.errors}}</div></div>
+        <div class="clearfix"><label for="id_organization_slug">ชื่อย่อบริษัท</label><div class="input">{{form.organization_slug}}<span class="help-block">ชื่อบริษัทภาษาอังกฤษที่ไม่ซ้ำกับบริษัทอื่น</span>{{form.organization_slug.errors}}</div></div>
+        <div class="clearfix"><label for="id_organization_prefix">คำนำหน้าบริษัท</label><div class="input">{{form.organization_prefix}}<span class="help-block">เช่น "บริษัท" "สำนักพิมพ์" หรือ "แผนก" เป็นต้น</span>{{form.organization_prefix.errors}}</div></div>
+
+        <div class="clearfix"><label for="id_admin_email">อีเมลผู้ดูแล</label><div class="input">{{form.admin_email}}{{form.admin_email.errors}}</div></div>
+
+        <div class="form_actions">
+          <button type="submit" class="btn primary">เพิ่มบริษัท</button>
+          <button type="reset" class="btn">ล้างข้อมูล</button>
+        </div>
+      
+    </form>
+
+  </div></div>
+</div>
+{% endblock %}

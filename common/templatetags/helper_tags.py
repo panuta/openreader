@@ -15,10 +15,6 @@ from accounts.models import UserOrganization
 
 from publication.models import Publication, PublicationNotice
 
-#from accounts.models import UserPublisher
-#from publisher.models import Publication, PublisherModule, PublisherShelf, PublicationShelf, Module, PublicationNotice
-
-
 # DATE TIME #################################################################
 
 @register.filter(name='format_datetime')
@@ -85,7 +81,7 @@ def generate_organization_menu(user):
     if len(user_organizations) > 1:
         menus = []
         for user_organization in user_organizations:
-            menus.append('<li><a href="%s">%s</a></li>' % (reverse('view_organization_front', args=[user_organization.organization.id]), user_organization.organization.name))
+            menus.append('<li><a href="%s">%s</a></li>' % (reverse('view_organization_front', args=[user_organization.organization.slug]), user_organization.organization.name))
 
         return u'<li class="dropdown"><a class="dropdown-toggle" href="#">เปลี่ยนบัญชี</a><ul class="dropdown-menu">%s</ul></li>' % ''.join(menus)
     else:
@@ -133,7 +129,7 @@ def genetate_publication_category_multiple_checkbox(existing_categories):
 # MANAGEMENT ################################################################################
 
 @register.simple_tag
-def print_publisher_status(publisher):
+def print_organization_status(publisher):
     if publisher.status == 0:
         return u'ปกติ'
     else:

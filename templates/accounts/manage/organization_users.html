@@ -31,7 +31,7 @@
       <td>{{invitation.user_email}}</td>
       <td>{{invitation.role.name}}</td>
       <td>{{invitation.created|format_abbr_datetime}}</td>
-      <td class="row_actions"><a href="{% url resend_publisher_invitation invitation.id %}">ส่งอีเมลอีกครั้ง</a> | <a href="{% url cancel_publisher_invitation invitation.id %}">ยกเลิก</a></td>
+      <td class="row_actions"><a href="{% url resend_user_invitation invitation.id %}">ส่งอีเมลอีกครั้ง</a> | <a href="{% url cancel_user_invitation invitation.id %}">ยกเลิก</a></td>
     </tr>
     {% endfor %}
   </tbody>

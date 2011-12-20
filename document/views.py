@@ -26,8 +26,6 @@ def _organization_statistics(organization):
 
     return {'template_name':'document/organization_statistics.html', 'document_count':document_count, 'shelf_count':shelf_count}
 
-    #return [{'title':u'จำนวนไฟล์ที่เผยแพร่', 'count':document_count}, {'title':u'จำนวนชั้นหนังสือ', 'count':shelf_count}]
-
 @login_required
 def view_organization_front(request, organization_slug):
     return redirect('view_documents', organization_slug=organization_slug)
@@ -50,7 +48,7 @@ def view_documents(request, organization_slug):
     if can(request.user, 'edit', organization):
         documents = Document.objects.filter(publication__organization=organization, publication__publication_type='document').order_by('-publication__uploaded')
     else:
-        documents = Document.objects.filter(publication__organization=organization, publication__publication_type='document', status=Publication.STATUS['PUBLISHED']).order_by('-publication__uploaded')
+        documents = Document.objects.filter(publication__organization=organization, publication__publication_type='document', publication__status=Publication.STATUS['PUBLISHED']).order_by('-publication__uploaded')
     
     return render(request, 'document/documents.html', {'organization':organization, 'documents':documents, 'no_shelf_count':_no_shelf_count(request.user, organization), 'shelf':None, 'shelf_type':'all'})
 
@@ -65,7 +63,7 @@ def view_documents_by_shelf(request, organization_slug, shelf_id):
     if can(request.user, 'edit', organization):
         documents = Document.objects.filter(publication__organization=organization, publication__publication_type='document', shelves__in=[shelf]).order_by('-publication__uploaded')
     else:
-        documents = Document.objects.filter(publication__organization=organization, publication__publication_type='document', shelves__in=[shelf], status=Publication.STATUS['PUBLISHED']).order_by('-publication__uploaded')
+        documents = Document.objects.filter(publication__organization=organization, publication__publication_type='document', shelves__in=[shelf], publication__status=Publication.STATUS['PUBLISHED']).order_by('-publication__uploaded')
     
     return render(request, 'document/documents.html', {'organization':organization, 'documents':documents, 'no_shelf_count':_no_shelf_count(request.user, organization), 'shelf':shelf, 'shelf_type':'shelf'})
 
@@ -79,7 +77,7 @@ def view_documents_with_no_shelf(request, organization_slug):
     if can(request.user, 'edit', organization):
         documents = Document.objects.filter(publication__organization=organization, publication__publication_type='document', shelves=None).order_by('-publication__uploaded')
     else:
-        documents = Document.objects.filter(publication__organization=organization, publication__publication_type='document', shelves=None, status=Publication.STATUS['PUBLISHED']).order_by('-publication__uploaded')
+        documents = Document.objects.filter(publication__organization=organization, publication__publication_type='document', shelves=None, publication__status=Publication.STATUS['PUBLISHED']).order_by('-publication__uploaded')
 
     return render(request, 'document/documents.html', {'organization':organization, 'documents':documents, 'no_shelf_count':_no_shelf_count(request.user, organization), 'shelf':None, 'shelf_type':'none'})
 

@@ -7,15 +7,7 @@
 {% block body_authenticated %}
 <div class="container-fluid container-body shelf_modify_page">
   <div class="sidebar">
-    {% can user 'edit' organization %}<div class="buttons"><a href="{% url upload_documents organization.slug %}" class="btn primary span2"><span>อัพโหลดไฟล์</span></a></div>{% endcan %}
-    
-    <div class="head"><a href="{% url view_documents organization.slug %}">ชั้นหนังสือ</a></div>
-    <ul>
-      <li class="shelf-all{% if shelf_type == 'all' %} active{% endif %}"><a href="{% url view_documents organization.slug %}">ไฟล์ทั้งหมด <span>({% print_all_publication_count user organization %} ไฟล์)</span></a></li>
-      {% generate_shelf_list user organization shelf %}
-      {% if no_shelf_count %}<li class="shelf-none{% if shelf_type == 'none' %} active{% endif %}"><a href="{% url view_documents_with_no_shelf organization.slug %}">ไฟล์ที่ไม่อยู่ในชั้น <span>({{no_shelf_count}} ไฟล์)</span></a></li>{% endif %}
-      {% can user 'manage' organization %}<li class="add{% if shelf_type == 'create' %} active{% endif %}"><a href="{% url create_document_shelf organization.slug %}">สร้างชั้นหนังสือใหม่</a></li>{% endcan %}
-    </ul>
+    {% include 'document/snippets/documents_sidebar.html' with organization=organization shelf_type=shelf_type shelf=shelf no_shelf_count=no_shelf_count %}
   </div>
 
   <div class="content"><div class="content-inner">

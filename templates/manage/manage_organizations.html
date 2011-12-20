@@ -1,0 +1,36 @@
+{% extends 'manage/manage_base.html' %}
+{% load helper_tags %}
+
+{% block manage_head_title %}สำนักพิมพ์{% endblock %}
+{% block topnav %}{% include 'manage/snippets/manage_topnav.html' with active_menu='organization' %}{% endblock %}
+
+{% block body_authenticated %}
+<div class="container-fluid container-body">
+  <div class="content-full"><div class="content-inner">
+    <h2>บริษัท</h2>
+    <div class="page_actions"><a href="{% url manage.create_organization %}" class="btn">เพิ่มบริษัท</a></div>
+
+    <table class="zebra-striped">
+      <col />
+      <col width="400"/>
+      <col width="180"/>
+      <thead>
+        <tr>
+          <th>ชื่อบริษัท</th>
+          <th>สถานะ</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for organization in organizations %}
+        <tr>
+          <td>{{organization.name}}</td>
+          <td>{% print_organization_status organization %}</td>
+          <td class="row_actions"><a href="{% url manage_organization organization.id %}">การจัดการบริษัท</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div></div>
+</div>
+{% endblock %}
