@@ -147,6 +147,7 @@ class UserOrganizationInvitation(models.Model):
 
     def send_invitation_email(self, is_created_organization=False):
         try:
+            send_mail('%s want to invite you to join their team' % self.organization.name, render_to_string('accounts/manage/emails/user_organization_invitation.html', {'invitation':self }), settings.EMAIL_FOR_USER_PUBLISHER_INVITATION, [self.user_email], fail_silently=False)
             return True
         except:
             return False
