@@ -1,0 +1,11 @@
+{% extends 'accounts/manage/organization_base.html' %}
+{% load helper_tags %}
+
+{% block organization_manage_head_title %} | ค่าบริการ{% endblock %}
+{% block organization_manage_menu %}{% include 'accounts/manage/snippets/organization_nav.html' with active_manage_menu='billing' %}{% endblock %}
+
+{% block organization_manage_content %}
+  <h2>ค่าบริการ</h2>
+
+
+{% endblock %}

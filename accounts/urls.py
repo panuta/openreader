@@ -19,8 +19,8 @@ urlpatterns = patterns('accounts.views',
     url(r'^invitation/(?P<invitation_id>\d+)/resend/$', 'resend_user_invitation', name='resend_user_invitation'),
     url(r'^invitation/(?P<invitation_id>\d+)/cancel/$', 'cancel_user_invitation', name='cancel_user_invitation'),
     url(r'^invitation/(?P<invitation_key>\w+)/$', 'claim_user_invitation', name='claim_user_invitation'),
-    url(r'^user/(?P<user_id>\d+)/edit/$', 'edit_organization_user', name='edit_organization_user'),
-    url(r'^user/(?P<user_id>\d+)/remove/$', 'remove_organization_user', name='remove_organization_user'),
+    url(r'^user/(?P<organization_user_id>\d+)/edit/$', 'edit_organization_user', name='edit_organization_user'),
+    url(r'^user/(?P<organization_user_id>\d+)/remove/$', 'remove_organization_user', name='remove_organization_user'),
 
-    url(r'^org/(?P<organization_slug>\d+)/manage/billing/$', 'view_organization_billing', name='view_organization_billing'),
+    url(r'^org/(?P<organization_slug>\w+)/manage/billing/$', 'view_organization_billing', name='view_organization_billing'),
 )

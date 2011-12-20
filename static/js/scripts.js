@@ -128,50 +128,6 @@ function bind_all_upload_publication_form() {
 
 /* ############### PUBLICATION ACTIONS ############### */
 
-function open_publish_modal(uid, callback) {
-  if(!$('#publish-publication-modal').length) {
-    $('body').append('<div class="modal hide fade" id="publish-publication-modal" style="display:none;"><div class="modal-header"><a class="close" href="#">×</a><h3>ยืนยันการเผยแพร่</h3></div><div class="modal-message"></div><div class="modal-body">ต้องการเผยแพร่ไฟล์นี้ทันที?</div><div class="modal-footer"><input class="btn" type="button" value="ยกเลิก" /><input class="btn primary" type="submit" value="เผยแพร่ทันที" /></div></div>');
-    $("#publish-publication-modal").modal({backdrop:'static'});
-
-    $("#publish-publication-modal input[type='submit']").on('click', function(e) {
-      $("#publish-publication-modal .modal-footer input").attr("disabled", true);
-      $.post('/publication/publish/', {uid:$("#publish-publication-modal").data('uid')}, function(response) {
-        $("#publish-publication-modal .modal-footer input").attr("disabled", false);
-
-        if(response.status == 'error') {
-          var message = '';
-          if(response.error == 'missing-parameters') {message = 'ขาดข้อมูลที่จำเป็นบางตัว ไม่สามารถประมวลผลได้';}
-          if(response.error == 'access-denied') {message = 'คุณไม่สามารถเข้าถึงการทำงานนี้ได้';}
-          if(response.error == 'invalid-status') {message = 'ไฟล์ไม่อยู่ในสถานะที่สามารถเผยแพร่ในทันทีได้ หรือไฟล์ถูกเผยแพร่ไปแล้ว';}
-          $('#publish-publication-modal .modal-message').html(message).show();
-
-        } else {
-          if(callback) {
-            if(callback(response, $("#publish-publication-modal").data('uid'))) {
-              $("#publish-publication-modal").modal('hide');
-            }
-            
-          } else {
-            window.location.reload();
-          }
-        }
-      }, 'json');
-
-      return false;
-    });
-
-    $("#publish-publication-modal input[type='button']").on('click', function(e) {
-      $("#publish-publication-modal").modal('hide');
-      return false;
-    });
-  }
-
-  $('#publish-publication-modal .modal-footer').show();
-  $('#publish-publication-modal .modal-message').hide();
-  $("#publish-publication-modal").modal('show');
-  $("#publish-publication-modal").data('uid', uid);
-}
-
 function open_schedule_modal(url) {
   if(!$('#schedule-publication-modal').length) {
     $('body').append('<div class="modal hide fade" id="schedule-publication-modal" style="display:none;"><div class="modal-header"><a class="close" href="#">×</a><h3>ตั้งเวลาเผยแพร่</h3></div><div class="modal-message"></div><div class="modal-body"><div class="schedule_date">วันที่ <span class="yui_date_picker_panel"><button class="yui_date_picker" id="id_schedule_date">Select date</button><input type="hidden" id="id_schedule_date_value" value="" name="schedule_date"><input type="text" class="yui_date_picker_textbox" id="id_schedule_date_display" value=""></span></div><div class="schedule_time">เวลา <select id="id_schedule_time_hour" name="schedule_time_hour"><option></option><option value="0">00</option><option value="1">01</option><option value="2">02</option><option value="3">03</option><option value="4">04</option><option value="5">05</option><option value="6">06</option><option value="7">07</option><option value="8">08</option><option value="9">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option></select>:<select id="id_schedule_time_minute" name="schedule_time_minute"><option></option><option value="0">00</option><option value="15">15</option><option value="30">30</option><option value="45">45</option></select> น.</div></div><div class="modal-footer"><input class="btn" type="button" value="ยกเลิก" /><input class="btn primary" type="submit" value="ตั้งเวลา" /></div></div>');

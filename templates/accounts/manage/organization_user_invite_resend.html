@@ -1,11 +1,11 @@
-{% extends 'publisher/manage/publisher_manage_base.html' %}
+{% extends 'accounts/manage/organization_base.html' %}
 
-{% block publisher_manage_head_title %}ส่งอีเมลคำขออีกครั้ง{% endblock %}
-{% block publisher_manage_menu %}{% include 'publisher/snippets/publisher_manage_nav.html' with active_publisher_manage_menu='user' %}{% endblock %}
+{% block organization_manage_head_title %} - ส่งอีเมลคำขออีกครั้ง{% endblock %}
+{% block organization_manage_menu %}{% include 'accounts/manage/snippets/organization_nav.html' with active_manage_menu='user' %}{% endblock %}
 
-{% block publisher_manage_content %}
+{% block organization_manage_content %}
 <ul class="breadcrumb">
-  <li><a href="{% url view_publisher_users publisher.id %}">ทีมงาน</a> <span class="divider">/</span></li>
+  <li><a href="{% url view_organization_users organization.slug %}">ทีมงาน</a> <span class="divider">/</span></li>
   <li class="active">ส่งอีเมลคำขออีกครั้ง</li>
 </ul>
 

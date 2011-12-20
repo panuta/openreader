@@ -1,5 +1,9 @@
+import os
+
 from django.conf import settings
 from django.utils.importlib import import_module
+
+from common.utilities import split_filename
 
 def load_generator(path):
     i = path.rfind('.')
@@ -30,3 +34,15 @@ def get_generator(file_type):
     
     return None
 
+def delete_thumbnails(file): # file -> models.FieldFile
+    (path, filename) = os.path.split(file.path)
+    thumbnail_path = path + '/thumbnails/'
+    (file_name, file_ext) = split_filename(filename)
+
+    for thumbnail_size in settings.THUMBNAIL_SIZES:
+        try:
+            os.remove('%s%s.thumbnail.%s.jpg' % (thumbnail_path, file_name, thumbnail_size[0]))
+        except:
+            # TODO: Log error
+            import sys
+            print sys.exc_info()

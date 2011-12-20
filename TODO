@@ -1,16 +1,13 @@
+- User invitation
+- user profile
+- thumbnails
+- 
+
+
 - PDF thumbnails
 - API
 - download file
 
-- move file module to another app
-- move publication models to general app (move from publisher app)
-- publisher app is for book/magazine publisher only
-
-
-
-TODO
-- publisher's prefix
-- 
 
 
 TODO - PHRASE 2
@@ -22,6 +19,7 @@ TODO - PHRASE 2
 - public publication (anyone can see)
 - per-shelf permission
 - multiple upload (http://www.uploadify.com/, http://www.swfupload.org/)
+- Drag file to any shelf page to add files to that shelf
 
 
 ########## 3rd Library + Resources ##########

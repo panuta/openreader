@@ -31,9 +31,9 @@ def format_abbr_date(datetime):
     except:
         return ''
 
-def splitext(path):
-    (file_name, file_ext) = os.path.splitext(path)
-    if file_ext and file_ext[0] == '.':
-        file_ext = file_ext[1:]
+def split_filename(filename):
+    (name, ext) = os.path.splitext(filename)
+    if ext and ext[0] == '.':
+        ext = ext[1:]
     
-    return (file_name, file_ext)
+    return (name, ext)

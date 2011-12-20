@@ -11,9 +11,9 @@
     
     <div class="head"><a href="{% url view_documents organization.slug %}">ชั้นหนังสือ</a></div>
     <ul>
-      <li class="shelf-all{% if shelf_type == 'all' %} active{% endif %}"><a href="{% url view_documents organization.slug %}">ไฟล์ทั้งหมด <span>({% print_all_publication_count user organization %})</span></a></li>
+      <li class="shelf-all{% if shelf_type == 'all' %} active{% endif %}"><a href="{% url view_documents organization.slug %}">ไฟล์ทั้งหมด <span>({% print_all_publication_count user organization %} ไฟล์)</span></a></li>
       {% generate_shelf_list user organization shelf %}
-      {% if no_shelf_count %}<li class="shelf-none{% if shelf_type == 'none' %} active{% endif %}"><a href="{% url view_documents_with_no_shelf organization.slug %}">ไฟล์ที่ไม่อยู่ในชั้น <span>({{no_shelf_count}})</span></a></li>{% endif %}
+      {% if no_shelf_count %}<li class="shelf-none{% if shelf_type == 'none' %} active{% endif %}"><a href="{% url view_documents_with_no_shelf organization.slug %}">ไฟล์ที่ไม่อยู่ในชั้น <span>({{no_shelf_count}} ไฟล์)</span></a></li>{% endif %}
       {% can user 'manage' organization %}<li class="add{% if shelf_type == 'create' %} active{% endif %}"><a href="{% url create_document_shelf organization.slug %}">สร้างชั้นหนังสือใหม่</a></li>{% endcan %}
     </ul>
   </div>
@@ -23,7 +23,7 @@
     <h2>สร้างชั้นหนังสือใหม่</h2>
     {% else %}
     <ul class="breadcrumb">
-      <li><a href="{% url view_documents_by_shelf organization.slug shelf.id %}">ไฟล์ในชั้นหนังสือ {{shelf.name}}</a> <span class="divider">/</span></li>
+      <li><a href="{% url view_documents_by_shelf organization.slug shelf.id %}">ชั้นหนังสือ {{shelf.name}}</a> <span class="divider">/</span></li>
       <li class="active">แก้ไขชั้นหนังสือ</li>
     </ul>
     <h2>แก้ไขชั้นหนังสือ</h2>

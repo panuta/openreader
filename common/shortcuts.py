@@ -7,8 +7,9 @@ def response_json(obj=None):
 	else:
 		return HttpResponse('{}')
 
-def response_json_success():
-    return HttpResponse(simplejson.dumps({'status':'success'}))
+def response_json_success(return_object={}):
+    return_object['status'] = 'success'
+    return HttpResponse(simplejson.dumps(return_object))
 
 def response_json_error(error_code):
 	return HttpResponse(simplejson.dumps({'status':'error', 'error':error_code}))

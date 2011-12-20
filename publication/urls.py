@@ -7,4 +7,5 @@ urlpatterns = patterns('publication.views',
     
     
     url(r'^publication/publish/$', 'publish_publication', name='publish_publication'),
+    url(r'^publication/unpublish/$', 'unpublish_publication', name='unpublish_publication'),
 )

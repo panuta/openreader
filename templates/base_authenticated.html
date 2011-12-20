@@ -25,6 +25,7 @@
 <link rel="stylesheet/less" type="text/css" href="{{STATIC_URL}}css/styles.less">
 
 <script type="text/javascript" src="{{STATIC_URL}}js/scripts.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}js/scripts.publication.js"></script>
 
 <script>
 var var_publisher_id = '{{publisher.id}}';
@@ -39,7 +40,7 @@ var var_publisher_id = '{{publisher.id}}';
       {% block topnav %}{% endblock %}
       
       <ul class="nav secondary-nav" data-dropdown="dropdown">
-        {% generate_publisher_menu user %}
+        {% generate_organization_menu user %}
 
         <li class="accounts_prefix">ชื่อผู้ใช้ระบบ</li>
 

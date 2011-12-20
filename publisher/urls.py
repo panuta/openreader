@@ -30,23 +30,4 @@ urlpatterns = patterns('publisher.views',
     url(r'^publication/(?P<publication_id>\d+)/set/schedule/$', 'set_publication_schedule', name='set_publication_schedule'),
     url(r'^publication/(?P<publication_id>\d+)/set/cancel_schedule/$', 'set_publication_cancel_schedule', name='set_publication_cancel_schedule'),
 
-    # Publisher Management
-    
-    url(r'^publisher/(?P<publisher_id>\d+)/profile/$', 'view_publisher_profile', name='view_publisher_profile'),
-    url(r'^publisher/(?P<publisher_id>\d+)/manage/$', 'edit_publisher_profile', name='edit_publisher_profile'),
-    
-    url(r'^publisher/(?P<publisher_id>\d+)/manage/shelfs/$', 'view_publisher_shelfs', name='view_publisher_shelfs'),
-    url(r'^publisher/(?P<publisher_id>\d+)/manage/shelfs/create/$', 'create_publisher_shelf', name='create_publisher_shelf'),
-    url(r'^publisher/shelf/(?P<publisher_shelf_id>\d+)/edit/$', 'edit_publisher_shelf', name='edit_publisher_shelf'),
-    url(r'^publisher/shelf/(?P<publisher_shelf_id>\d+)/delete/$', 'delete_publisher_shelf', name='delete_publisher_shelf'),
-    
-    url(r'^publisher/(?P<publisher_id>\d+)/manage/users/$', 'view_publisher_users', name='view_publisher_users'),
-    url(r'^publisher/(?P<publisher_id>\d+)/manage/users/invite/$', 'invite_publisher_user', name='invite_publisher_user'),
-    url(r'^publisher/invitation/(?P<invitation_id>\d+)/resend/$', 'resend_publisher_invitation', name='resend_publisher_invitation'),
-    url(r'^publisher/invitation/(?P<invitation_id>\d+)/cancel/$', 'cancel_publisher_invitation', name='cancel_publisher_invitation'),
-    url(r'^publisher/invitation/(?P<invitation_key>\w+)/$', 'claim_publisher_invitation', name='claim_publisher_invitation'),
-    url(r'^publisher/user/(?P<publisher_user_id>\d+)/edit/$', 'edit_publisher_user', name='edit_publisher_user'),
-    url(r'^publisher/user/(?P<publisher_user_id>\d+)/remove/$', 'remove_publisher_user', name='remove_publisher_user'),
-
-    url(r'^publisher/(?P<publisher_id>\d+)/manage/billing/$', 'view_publisher_billing', name='view_publisher_billing'),
 )

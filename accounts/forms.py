@@ -3,6 +3,9 @@ from django.contrib.auth import authenticate
 from django.utils.translation import ugettext_lazy as _
 
 from common.forms import StrippedCharField
+from common.permissions import ROLE_CHOICES
+
+from accounts.models import Role
 
 class EmailAuthenticationForm(forms.Form):
     """
@@ -54,3 +57,31 @@ class UserProfileForm(forms.Form):
     first_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'span9'}))
     last_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'span9'}))
 
+# ORGANIZATION MANAGEMENT
+
+class OrganizationProfileForm(forms.Form):
+    name = StrippedCharField(max_length=200)
+
+class OrganizationShelfForm(forms.Form):
+    name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'span9'}))
+    description = StrippedCharField(required=False, widget=forms.Textarea(attrs={'class':'span9', 'rows':'3'}))
+
+class InviteOrganizationUserForm(forms.Form):
+    email = forms.EmailField(widget=forms.TextInput(attrs={'class':'span6'}))
+    role = forms.ModelChoiceField(queryset=Role.objects.all(), empty_label='')
+
+class ClaimOrganizationUserForm(forms.Form):
+    first_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'span9'}))
+    last_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'span9'}))
+    password1 = forms.CharField(widget=forms.PasswordInput())
+    password2 = forms.CharField(widget=forms.PasswordInput())
+
+    def clean_password2(self):
+        password1 = self.cleaned_data.get("password1", "")
+        password2 = self.cleaned_data["password2"]
+        if password1 != password2:
+            raise forms.ValidationError(_("The two password fields didn't match."))
+        return password2
+
+class EditOrganizationUserForm(forms.Form):
+    role = forms.ModelChoiceField(queryset=Role.objects.all(), empty_label=None)

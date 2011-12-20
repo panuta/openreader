@@ -1,3 +1,5 @@
+# -*- encoding: utf-8 -*-
+
 import uuid
 
 from django.conf import settings
@@ -7,6 +9,8 @@ from django.db.models import Q
 
 from private_files import PrivateFileField
 
+from common.utilities import format_abbr_datetime
+
 def is_downloadable(request, instance):
     return True
 
@@ -15,7 +19,6 @@ def publication_media_dir(instance, filename):
 
 class Publication(models.Model):
     STATUS = {
-        'UPLOADED':0,
         'UNPUBLISHED':1,
         'SCHEDULED':2,
         'PUBLISHED':3,
@@ -34,7 +37,7 @@ class Publication(models.Model):
     file_ext = models.CharField(max_length=10)
     is_processing = models.BooleanField(default=True)
 
-    status = models.IntegerField(default=STATUS['UPLOADED'])
+    status = models.IntegerField(default=STATUS['UNPUBLISHED'])
     is_public_listing = models.BooleanField(default=False)
 
     scheduled =  models.DateTimeField(null=True, blank=True)
@@ -54,6 +57,25 @@ class Publication(models.Model):
         if not self.uid:
             self.uid = uuid.uuid4()
         super(Publication, self).save(*args, **kwargs)
+    
+    def get_status_text(self):
+        if self.status == Publication.STATUS['UNPUBLISHED']:
+        
+            if self.is_processing and PublicationNotice.objects.filter(publication=self, notice=PublicationNotice.NOTICE['PUBLISH_WHEN_READY']).exists():
+                return u'<span class="unpublished">ไฟล์จะเผยแพร่ทันทีที่ประมวลผลเสร็จ</span>'
+        
+            return u'<span class="unpublished">ยังไม่เผยแพร่</span>'
+
+        elif self.status == Publication.STATUS['SCHEDULED']:
+            return u'<span class="scheduled">ตั้งเวลาเผยแพร่</span>'
+        
+        elif self.status == Publication.STATUS['PUBLISHED']:
+            return u'<span class="published">เผยแพร่แล้ว</span>'
+        
+        return ''
+    
+    def is_publish_when_ready(self):
+        return PublicationNotice.objects.filter(publication=self, notice=PublicationNotice.NOTICE['PUBLISH_WHEN_READY']).exists()
 
 class PublicationNotice(models.Model):
     NOTICE = {

@@ -4,15 +4,15 @@ import os
 
 from django.conf import settings
 
-from common.thumbnails import get_generator
-from common.utilities import splitext
+from common.thumbnails import get_generator, delete_thumbnails
+from common.utilities import split_filename
 
 logger = logging.getLogger(settings.OPENREADER_LOGGER)
 
 from publication.models import Publication, PublicationNotice
 
 def upload_publication(request, publication_type, uploading_file, organization):
-    (file_name, file_ext) = splitext(uploading_file.name)
+    (file_name, file_ext) = split_filename(uploading_file.name)
     publication = Publication.objects.create(organization=organization, title=file_name, publication_type=publication_type, original_file_name=file_name, file_ext=file_ext, uploaded_by=request.user)
 
     try:
@@ -27,6 +27,10 @@ def upload_publication(request, publication_type, uploading_file, organization):
 
         publication.is_processing = not processed
         publication.save()
+    
+    # TODO
+    publication.is_processing = False
+    publication.save()
     
     return publication
 
@@ -45,3 +49,22 @@ def publish_publication(request, publication):
     publication.save()
     
     return publication
+
+def unpublish_publication(request, publication):
+    PublicationNotice.objects.filter(publication=publication, notice=PublicationNotice.NOTICE['PUBLISH_WHEN_READY']).delete()
+    publication.status = Publication.STATUS['UNPUBLISHED']
+
+    publication.published = None
+    publication.published_by = None
+    publication.scheduled = None
+    publication.scheduled_by = None
+    publication.save()
+    
+    return publication
+
+def delete_publication(publication):
+    delete_thumbnails(publication.uploaded_file)
+    publication.uploaded_file.delete()
+
+    PublicationNotice.objects.filter(publication=publication).delete()
+    publication.delete()
