@@ -7,6 +7,8 @@ from django.http import HttpResponse, HttpResponseServerError, Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import simplejson
 
+from private_files.views import get_file as private_files_get_file
+
 from common.permissions import can
 from common.shortcuts import response_json, response_json_success, response_json_error
 from common.utilities import format_abbr_datetime
@@ -15,6 +17,15 @@ from publication import functions as publication_functions
 
 from forms import *
 from models import *
+
+@login_required
+def download_publication(request, publication_uid):
+    publication = get_object_or_404(Publication, uid=publication_uid)
+
+    if not can(request.user, 'view', publication.organization):
+        raise Http404
+
+    return private_files_get_file(request, 'publication', 'Publication', 'uploaded_file', str(publication.id), '%s.%s' % (publication.original_file_name, publication.file_ext))
 
 @login_required
 def publish_publication(request):

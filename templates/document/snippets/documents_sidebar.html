@@ -1,7 +1,5 @@
 {% load helper_tags document_tags %}
 
-{% can user 'edit' organization %}<div class="buttons"><a href="{% url upload_documents organization.slug %}" class="btn primary span2"><span>อัพโหลดไฟล์</span></a></div>{% endcan %}
-
 <div class="head"><a href="{% url view_documents organization.slug %}">ชั้นหนังสือ</a></div>
 <ul>
   <li class="shelf-all{% if shelf_type == 'all' %} active{% endif %}"><a href="{% url view_documents organization.slug %}">ไฟล์ทั้งหมด <span>({% print_all_publication_count user organization %} ไฟล์)</span></a></li>

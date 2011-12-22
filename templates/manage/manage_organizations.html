@@ -26,7 +26,7 @@
         <tr>
           <td>{{organization.name}}</td>
           <td>{% print_organization_status organization %}</td>
-          <td class="row_actions"><a href="{% url manage_organization organization.id %}">การจัดการบริษัท</a></td>
+          <td class="row_actions"><a href="{% url manage_organization organization.slug %}">การจัดการบริษัท</a></td>
         </tr>
         {% endfor %}
       </tbody>

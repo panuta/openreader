@@ -9,6 +9,7 @@ from django.db.models import Q
 
 from private_files import PrivateFileField
 
+from common.thumbnails import get_thumbnail_url
 from common.utilities import format_abbr_datetime
 
 def is_downloadable(request, instance):
@@ -36,6 +37,7 @@ class Publication(models.Model):
     original_file_name = models.CharField(max_length=300)
     file_ext = models.CharField(max_length=10)
     is_processing = models.BooleanField(default=True)
+    has_thumbnail = models.BooleanField(default=False)
 
     status = models.IntegerField(default=STATUS['UNPUBLISHED'])
     is_public_listing = models.BooleanField(default=False)
@@ -76,6 +78,15 @@ class Publication(models.Model):
     
     def is_publish_when_ready(self):
         return PublicationNotice.objects.filter(publication=self, notice=PublicationNotice.NOTICE['PUBLISH_WHEN_READY']).exists()
+    
+    def get_large_thumbnail(self):
+        return get_thumbnail_url(self, 'large')
+    
+    def get_small_thumbnail():
+        return get_thumbnail_url(self, 'small')
+    
+    def get_download_url(self):
+        pass
 
 class PublicationNotice(models.Model):
     NOTICE = {

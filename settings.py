@@ -133,8 +133,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'private_files',
-    'mystorages',
+    'openreader.private_files',
+    'openreader.storages',
     'pagination',
 
     'openreader.accounts',

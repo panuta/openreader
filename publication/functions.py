@@ -23,12 +23,10 @@ def upload_publication(request, publication_type, uploading_file, organization):
 
     generator = get_generator(file_ext)
     if generator:
-        processed = generator.get_thumbnails(publication.uploaded_file.file)
-
-        publication.is_processing = not processed
+        generated = generator.get_thumbnails(publication.uploaded_file.file)
+        publication.has_thumbnail = generated
         publication.save()
     
-    # TODO
     publication.is_processing = False
     publication.save()
     

@@ -24,7 +24,7 @@ $(document).ready(function () {
 {% block body_authenticated %}
 <div class="container-fluid container-body publication_page document_page">
   <div class="sidebar">
-    <div class="cover"></div>
+    <div class="cover"><img src="{{document.publication.get_large_thumbnail}}" /></div>
   </div>
 
   <div class="content"><div class="content-inner">
@@ -38,15 +38,13 @@ $(document).ready(function () {
       <div class="uploaded">อัพโหลดเมื่อวันที่ {{document.publication.uploaded|format_abbr_datetime}} โดย {{document.publication.uploaded_by.get_profile.get_fullname}}</div>
     </h2>
   
-    {% can user 'edit' organization %}
     <div class="page_actions">
-      {% if document.publication.status == PUBLICATION_STATUS_UNPUBLISHED %}{% if document.publication.is_publish_when_ready %}<button class="primary btn unpublish_button"><span>หยุดการเผยแพร่</span></button>{% else %}<button class="primary btn publish_button"><span>เผยแพร่</span></button>{% endif %}{% endif %}
-      {% if document.publication.status == PUBLICATION_STATUS_PUBLISHED %}<button class="primary btn unpublish_button"><span>หยุดการเผยแพร่</span></button>{% endif %}
-
-      <a href="{% url edit_document document.publication.uid %}" class="btn edit_publication_button"><span>แก้ไขรายละเอียด</span></a>
+      {% can user 'edit' organization %}{% if document.publication.status == PUBLICATION_STATUS_UNPUBLISHED %}{% if document.publication.is_publish_when_ready %}<button class="primary btn unpublish_button"><span>หยุดการเผยแพร่</span></button>{% else %}<button class="primary btn publish_button"><span>เผยแพร่</span></button>{% endif %}{% endif %}{% endcan %}
+      {% can user 'edit' organization %}{% if document.publication.status == PUBLICATION_STATUS_PUBLISHED %}<button class="btn unpublish_button"><span>หยุดการเผยแพร่</span></button>{% endif %}{% endcan %}
+      <a href="{% url download_publication document.publication.uid %}" class="btn download_publication_button"><span>ดาวน์โหลดไฟล์</span></a>
+      {% can user 'edit' organization %}<a href="{% url edit_document document.publication.uid %}" class="btn edit_publication_button"><span>แก้ไขรายละเอียด</span></a>{% endcan %}
     </div>
-    {% endcan %}
-  
+    
     <h3>สถานะ</h3>
     <div class="status">
       <div class="text">{% print_publication_status document.publication %}
@@ -67,19 +65,12 @@ $(document).ready(function () {
 
     <div class="details">
       <h3>เนื้อหาไฟล์</h3>
-      {% if publication.description %}
-      <p>{{publication.description}}</p>
+      {% if document.publication.description %}
+      <p>{{document.publication.description}}</p>
       {% else %}
       <div class="no">ไม่มีข้อมูลเนื้อหาไฟล์</div>
       {% endif %}
     </div>
-
-    {% if publication.book.categories.all %}
-    <div class="details">
-      <h3>ประเภทสิ่งพิมพ์</h3>
-      <p>{{publication.book.categories.all|join:", " }}</p>
-    </div>
-    {% endif %}
 
     <!-- 
     <div class="statistics">

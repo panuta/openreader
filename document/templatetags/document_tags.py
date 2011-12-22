@@ -42,6 +42,14 @@ def generate_shelf_list(user, organization, active_shelf=None):
     return ''.join(shelf_html)
 
 @register.simple_tag
+def generate_shelf_permission_input(organization, user=None):
+    input_html = []
+    for shelf in OrganizationShelf.objects.filter(organization=organization).order_by('name'):
+        input_html.append('<span>%s</span><ul><li><input type="radio" name="shelf-%d-permission" /> Can edit</li><li><input type="radio" name="shelf-%d-permission" /> Can view only</li><li><input type="radio" name="shelf-%d-permission" /> No access</li></ul>' % (shelf.id, shelf.id, shelf.id))
+    
+    return ''.join(input_html)
+
+@register.simple_tag
 def print_all_publication_count(user, organization):
     if can(user, 'edit', organization):
         count = Document.objects.filter(publication__organization=organization, publication__publication_type='document').count()

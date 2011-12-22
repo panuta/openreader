@@ -429,7 +429,7 @@ body {
 }
 
 .unpublish_button span {
-    background:url(/static/images/buttons/button_unpublish_white.png) 0px 50% no-repeat;
+    background:url(/static/images/buttons/button_unpublish_black.png) 0px 50% no-repeat;
     padding-left:24px;
 }
 
@@ -464,7 +464,7 @@ button.upload_magazine_button span, button.upload_book_button span , button.uplo
 }
 
 a.download_publication_button span {
-    background:url(/static/images/buttons/button_download_white.png) 0px 50% no-repeat;
+    background:url(/static/images/buttons/button_download_black.png) 0px 50% no-repeat;
     padding-left:24px;
 }
 
@@ -572,6 +572,7 @@ form .note {
 form .inputs-list {
     li {
         margin-bottom:10px;
+        margin-top:3px;
     }
 
     label {
@@ -633,6 +634,27 @@ form .left_form_actions {
     margin:0px 0px 30px 0px;
 }
 
+/* Shelves */
+
+.shelves-list {
+    li {
+        margin-bottom:17px !important;
+    }
+
+    .shelf_name {
+        color:#333;
+        margin-bottom:7px;
+        width:250px;
+        font-size:1.1em;
+        font-weight:bold;
+    }
+
+    label {
+        color:#555 !important;
+        margin:0px 30px 0px 0px !important;
+    }
+}
+
 /* *************** Custom Styles *************** */
 
 ul {margin:0px;padding:0px;}
@@ -661,10 +683,9 @@ table td.row_actions a {
 
 .publication_page {
     .cover {
-        width:200px;
-        height:250px;
-        background-color:#CCC;
-        border:1px solid #999;
+        img {
+            border:1px solid #999;
+        }
     }
 
     h2 {

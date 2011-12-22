@@ -1,4 +1,5 @@
 {% extends 'accounts/manage/organization_base.html' %}
+{% load document_tags %}
 
 {% block organization_manage_head_title %} - เพิ่มทีมงาน{% endblock %}
 {% block organization_manage_menu %}{% include 'accounts/manage/snippets/organization_nav.html' with active_manage_menu='user' %}{% endblock %}
@@ -16,7 +17,21 @@
   {{form.non_field_errors}}
 
   <div class="clearfix"><label for="id_email">อีเมลของผู้ใช้ระบบ</label><div class="input">{{form.email}}{{form.email.errors}}</div></div>
-  <div class="clearfix"><label for="id_role">ตำแหน่ง</label><div class="input">{{form.role}}{{form.role.errors}}</div></div>
+  <div class="clearfix"><label for="id_role">สิทธิ์ผู้ดูแลระบบ</label><div class="input inputs-list"><ul><li><label><input type="checkbox" name="admin_task" /> อนุญาตให้เข้าถึงงานการจัดการระบบได้</label></li></ul></div></div>
+
+  <div class="clearfix">
+    <label for="id_permissions">การเข้าถึงชั้นหนังสือ</label>
+    <div class="input inputs-list shelves-list">
+      <ul>
+        <li>
+          <div class="shelf_name">ชั้นหนังสือส่วนกลาง</div>
+          <label><input type="radio" name="shelf-1-permission" />อัพโหลดและแก้ไขได้</label><label><input type="radio" name="shelf-1-permission" />ดูไฟล์ได้อย่างเดียว</label>
+        </li>
+        <li><div class="shelf_name">Another Shelf</div><label><input type="radio" name="shelf-2-permission" />อัพโหลดและแก้ไขได้</label><label><input type="radio" name="shelf-2-permission" />ดูไฟล์ได้อย่างเดียว</label><label><input type="radio" name="shelf-2-permission" />ไม่สามารถเข้าถึงได้</label></li>
+      </ul>
+    </div>
+  </div>
+  
 
   <div class="form_actions">
     <button type="submit" class="btn primary">บันทึกข้อมูล</button>

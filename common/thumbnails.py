@@ -5,6 +5,8 @@ from django.utils.importlib import import_module
 
 from common.utilities import split_filename
 
+NO_THUMBNAIL_URL = settings.STATIC_URL + 'images/no_thumbnail.jpg'
+
 def load_generator(path):
     i = path.rfind('.')
     module, attr = path[:i], path[i+1:]
@@ -34,15 +36,27 @@ def get_generator(file_type):
     
     return None
 
-def delete_thumbnails(file): # file -> models.FieldFile
+def get_thumbnail_root(file):
     (path, filename) = os.path.split(file.path)
-    thumbnail_path = path + '/thumbnails/'
+    return path + '/thumbnails/'
+
+def get_thumbnail_url(publication, size):
+    if publication.has_thumbnail:
+        (path, filename) = os.path.split(publication.uploaded_file.path)
+        (file_name, file_ext) = split_filename(filename)
+        return '%spublication/%d/thumbnails/%s.thumbnail.%s.jpg' % (settings.MEDIA_URL, publication.organization.id, file_name, size)
+    else:
+        return NO_THUMBNAIL_URL
+
+def delete_thumbnails(file): # file -> models.FieldFile
+    thumbnail_path = get_thumbnail_root()
     (file_name, file_ext) = split_filename(filename)
 
     for thumbnail_size in settings.THUMBNAIL_SIZES:
         try:
-            os.remove('%s%s.thumbnail.%s.jpg' % (thumbnail_path, file_name, thumbnail_size[0]))
+            os.remove('%s/%s.thumbnail.%s.jpg' % (thumbnail_path, file_name, thumbnail_size[0]))
         except:
             # TODO: Log error
             import sys
             print sys.exc_info()
+

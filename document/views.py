@@ -108,9 +108,13 @@ def _upload_documents(request, organization, shelf=None):
         
         uploading_file = UploadedFile(file)
 
-        publication = publication_functions.upload_publication(request, 'document', uploading_file, organization)
-        document = Document.objects.create(publication=publication)
-        publication.status = Publication.STATUS['UNPUBLISHED']
+        try:
+            publication = publication_functions.upload_publication(request, 'document', uploading_file, organization)
+            document = Document.objects.create(publication=publication)
+            publication.status = Publication.STATUS['UNPUBLISHED']
+        except:
+            import sys
+            print sys.exc_info()
 
         if shelf:
             DocumentShelf.objects.create(document=document, shelf=shelf, created_by=request.user)
