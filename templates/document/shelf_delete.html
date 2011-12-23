@@ -6,9 +6,7 @@
 
 {% block body_authenticated %}
 <div class="container-fluid container-body shelf_modify_page">
-  <div class="sidebar">
-    {% include 'document/snippets/documents_sidebar.html' with organization=organization shelf_type=shelf_type shelf=shelf no_shelf_count=no_shelf_count %}
-  </div>
+  {% include 'document/snippets/documents_sidebar.html' with organization=organization shelf_type=shelf_type shelf=shelf no_shelf_count=no_shelf_count %}
 
   <div class="content"><div class="content-inner">
     <ul class="breadcrumb">

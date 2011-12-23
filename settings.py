@@ -36,7 +36,6 @@ TIME_ZONE = 'Asia/Bangkok'
 LANGUAGE_CODE = 'th'
 
 SITE_ID = 1
-SITE_TYPE = 'document' # 'document' or 'publisher'
 
 USE_I18N = True
 USE_L10N = True
@@ -187,6 +186,7 @@ SFTP_STORAGE_PARAMS = {'username':'root', 'password':'panuta'}
 PAGINATION_DEFAULT_PAGINATION = 50
 
 ########## Open Reader Settings ##########
+SITE_TYPE = 'document' # 'document' or 'publisher'
 
 OPENREADER_LOGGER = 'openreader'
 

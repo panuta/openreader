@@ -19,6 +19,19 @@
   <div class="clearfix"><label for="id_email">อีเมลของผู้ใช้ระบบ</label><div class="input">{{form.email}}{{form.email.errors}}</div></div>
   <div class="clearfix"><label for="id_role">สิทธิ์ผู้ดูแลระบบ</label><div class="input inputs-list"><ul><li><label><input type="checkbox" name="admin_task" /> อนุญาตให้เข้าถึงงานการจัดการระบบได้</label></li></ul></div></div>
 
+  <div class="clearfix">
+    <label for="id_permissions">การเข้าถึงชั้นหนังสือ</label>
+    <div class="input inputs-list shelves-list">
+      <ul>
+        <li>
+          <div class="shelf_name">ชั้นหนังสือส่วนกลาง</div>
+          <label><input type="radio" name="shelf-1-permission" />อัพโหลดและแก้ไขได้</label><label><input type="radio" name="shelf-1-permission" />ดูไฟล์ได้อย่างเดียว</label>
+        </li>
+        <li><div class="shelf_name">Another Shelf</div><label><input type="radio" name="shelf-2-permission" />อัพโหลดและแก้ไขได้</label><label><input type="radio" name="shelf-2-permission" />ดูไฟล์ได้อย่างเดียว</label><label><input type="radio" name="shelf-2-permission" />ไม่สามารถเข้าถึงได้</label></li>
+      </ul>
+    </div>
+  </div>
+
   <div class="form_actions">
     <button type="submit" class="btn primary">บันทึกข้อมูล</button>
     <button type="reset" class="btn">ล้างข้อมูล</button>

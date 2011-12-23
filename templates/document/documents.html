@@ -99,6 +99,7 @@ $(document).ready(function () {
         var shelf_id = '';
         if($('#' + file_id + ' select[name="shelf"]').length && $('#' + file_id + ' select[name="shelf"]').is(':visible')) {
           shelf_id = $('#' + file_id + ' select[name="shelf"] option:selected').val();
+          if(!shelf_id) return false;
         }
         
         if(!uid || !title) {
@@ -166,9 +167,7 @@ $(document).ready(function () {
 {% autopaginate documents 50 %}
 
 <div class="container-fluid container-body documents_page">
-<div class="sidebar">
-  {% include 'document/snippets/documents_sidebar.html' with organization=organization shelf_type=shelf_type shelf=shelf no_shelf_count=no_shelf_count %}
-</div>
+{% include 'document/snippets/documents_sidebar.html' %}
 
 <div class="content"><div class="content-inner">
   <h2>{% if shelf_type == 'all' %}ไฟล์ทั้งหมด{% endif %}{% if shelf_type == 'none' %}ไฟล์ที่ไม่อยู่ในชั้นหนังสือ{% endif %}{% if shelf %}<span>ชั้นหนังสือ</span>{{shelf.name}}{% endif %}</h2>
@@ -206,7 +205,8 @@ $(document).ready(function () {
         <td class="status">{% print_publication_status document.publication %}</td>
         <td class="table_actions">
           {% if document.publication.status == PUBLICATION_STATUS_UNPUBLISHED and not document.publication.is_publish_when_ready %}<button class="small btn publish_button"><span>เผยแพร่</span></button>{% endif %}
-          <a href="{% url edit_document document.publication.uid %}" class="small btn" >แก้ไข</a></td>
+          <a href="{% url edit_document document.publication.uid %}" class="small btn" >แก้ไข</a>
+        </td>
       </tr>
       {% endfor %}
     </tbody>

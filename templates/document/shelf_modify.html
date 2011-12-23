@@ -6,9 +6,7 @@
 
 {% block body_authenticated %}
 <div class="container-fluid container-body shelf_modify_page">
-  <div class="sidebar">
-    {% include 'document/snippets/documents_sidebar.html' with organization=organization shelf_type=shelf_type shelf=shelf no_shelf_count=no_shelf_count %}
-  </div>
+  {% include 'document/snippets/documents_sidebar.html' %}
 
   <div class="content"><div class="content-inner">
     {% if not shelf %}
@@ -26,7 +24,7 @@
       {{form.non_field_errors}}
 
       <div class="clearfix"><label for="id_name">ชื่อชั้นหนังสือ</label><div class="input">{{form.name}}{{form.name.errors}}</div></div>
-      <div class="clearfix"><label for="id_description">คำอธิบาย</label><div class="input">{{form.description}}<span class="help-block">ไม่จำเป็นต้องกรอก</span>{{form.description.errors}}</div></div>
+      <div class="clearfix"><label for="id_shelf_type">ประเภท</label><div class="input inputs-list">{{form.shelf_type}}<span class="help-block">* ชั้นหนังสือส่วนกลาง ทุกคนในบริษัทจะสามารถเห็นไฟล์ได้</span>{{form.shelf_type.errors}}</div></div>
       
       <div class="form_actions">
         <button type="submit" class="btn primary">{% if not shelf %}สร้างชั้นหนังสือ{% else %}แก้ไขชั้นหนังสือ{% endif %}</button>

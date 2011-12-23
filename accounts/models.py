@@ -152,6 +152,7 @@ class UserOrganizationInvitation(models.Model):
         except:
             return False
 
+
 class UserDevice(models.Model):
     user = models.ForeignKey(User)
     device_id = models.CharField(max_length=300)

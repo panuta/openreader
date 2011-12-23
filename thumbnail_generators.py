@@ -7,7 +7,7 @@ class BaseThumbnailGenerator(object):
     supported_file_type = []
 
     def get_thumbnails(self, file):
-        return None
+        return False
 
 class ImageThumbnailGenerator(BaseThumbnailGenerator):
     supported_file_type = ['jpg', 'jpeg', 'png', 'gif']
@@ -41,10 +41,10 @@ class PDFThumbnailGenerator(BaseThumbnailGenerator):
 
     def get_thumbnails(self, file):
         
-        return None
+        return False
 
 class VideoThumbnailGenerator(BaseThumbnailGenerator):
     supported_file_type = ['mp4']
 
     def get_thumbnails(self, file):
-        pass
+        return False

@@ -20,6 +20,7 @@ def publication_media_dir(instance, filename):
 
 class Publication(models.Model):
     STATUS = {
+        'UNFINISHED':0,
         'UNPUBLISHED':1,
         'SCHEDULED':2,
         'PUBLISHED':3,
@@ -39,7 +40,7 @@ class Publication(models.Model):
     is_processing = models.BooleanField(default=True)
     has_thumbnail = models.BooleanField(default=False)
 
-    status = models.IntegerField(default=STATUS['UNPUBLISHED'])
+    status = models.IntegerField(default=STATUS['UNFINISHED'])
     is_public_listing = models.BooleanField(default=False)
 
     scheduled =  models.DateTimeField(null=True, blank=True)
@@ -61,7 +62,10 @@ class Publication(models.Model):
         super(Publication, self).save(*args, **kwargs)
     
     def get_status_text(self):
-        if self.status == Publication.STATUS['UNPUBLISHED']:
+        if self.status == Publication.STATUS['UNFINISHED']:
+            return u'<span class="unfinished">ข้อมูลยังไม่ครบถ้วน</span>'
+
+        elif self.status == Publication.STATUS['UNPUBLISHED']:
         
             if self.is_processing and PublicationNotice.objects.filter(publication=self, notice=PublicationNotice.NOTICE['PUBLISH_WHEN_READY']).exists():
                 return u'<span class="unpublished">ไฟล์จะเผยแพร่ทันทีที่ประมวลผลเสร็จ</span>'

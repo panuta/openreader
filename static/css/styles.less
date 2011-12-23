@@ -2,7 +2,7 @@
 
 @publication-published: #d8e0bd;
 
-@publication-unfinished: #e2c3b5;
+@publication-unfinished: #ffcccc;
 @publication-unfinished-bg: #f0e1da;
 
 @publication-scheduled: #abced5;
@@ -10,6 +10,8 @@
 
 @publication-unpublished: #CCC;
 @publication-unpublished-bg: #F3F3F3;
+
+@success-light-background: #c9edc5;
 
 .content_link() {
     &:link, &:active, &:visited {
@@ -212,12 +214,12 @@ body {
 
         .head {
             font-weight:bold;
-            color:#777;
+            color:#666;
             font-size:1.2em;
             margin:0px 0px 10px 10px;
 
             a {
-                color:#777;
+                color:#666;
             }
         }
 
@@ -235,8 +237,9 @@ body {
             &.publication {background:url(/static/images/menu/publication.png) 10px 50% transparent no-repeat;}
             &.publisher {background:url(/static/images/menu/publisher.png) 10px 50% transparent no-repeat;}
             &.shelf {background:url(/static/images/menu/shelf.png) 10px 50% transparent no-repeat;}
+            &.private-shelf {background:url(/static/images/menu/shelf-private.png) 10px 50% transparent no-repeat;}
             &.shelf-all {background:url(/static/images/menu/shelf-all.png) 10px 50% transparent no-repeat;}
-            &.shelf-none {background:url(/static/images/menu/shelf-none.png) 10px 50% transparent no-repeat;}
+            &.shelf-none {background:url(/static/images/menu/shelf-none.png) 10px 50% #FCC no-repeat;}
             &.user {background:url(/static/images/menu/user.png) 10px 50% transparent no-repeat;}
             &.manage {background:url(/static/images/menu/manage.png) 10px 50% transparent no-repeat;}
             &.billing {background:url(/static/images/menu/billing.png) 10px 50% transparent no-repeat;}
@@ -711,6 +714,10 @@ table td.row_actions a {
             border-radius:3px;
         }
 
+        .unfinished {
+            background-color:@publication-unfinished;
+        }
+
         .unpublished {
             background-color:@publication-unpublished;
         }
@@ -908,6 +915,22 @@ table td.row_actions a {
         tr.finished {
             background-color:#ccf2d1;
         }
+
+        .table_actions {
+            select {
+                margin:0px 10px;
+            }
+
+            .success {
+                background-color:@success-light-background;
+                margin-right:10px;
+            }
+
+            .error {
+                color:#C30;
+                margin-top:10px;
+            }
+        }
     }
 }
 
@@ -933,6 +956,7 @@ table td.row_actions a {
             display:block;
             line-height:25px;
             padding-left:33px;
+            margin-bottom:10px;
 
             background:url(/static/images/shelf/shelf24.png) transparent 0px center no-repeat;
 
@@ -940,6 +964,13 @@ table td.row_actions a {
                 .content_link;
             }
         }
+    }
+}
+
+.documents_sidebar {
+    
+    .head {
+        padding-top:20px;
     }
 }
 

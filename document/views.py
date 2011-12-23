@@ -6,7 +6,6 @@ from django.core.files.uploadedfile import UploadedFile
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseServerError, Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils import simplejson
 
 from common.permissions import can
 from common.shortcuts import response_json, response_json_success, response_json_error
@@ -30,14 +29,6 @@ def _organization_statistics(organization):
 def view_organization_front(request, organization_slug):
     return redirect('view_documents', organization_slug=organization_slug)
 
-def _no_shelf_count(user, organization):
-    if can(user, 'edit', organization):
-        count = Document.objects.filter(publication__organization=organization, publication__publication_type='document', shelves=None).count()
-    else:
-        count = Document.objects.filter(publication__organization=organization, publication__publication_type='document', publication__status=Publication.STATUS['PUBLISHED'], shelves=None).count()
-    
-    return count
-
 @login_required
 def view_documents(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
@@ -46,11 +37,11 @@ def view_documents(request, organization_slug):
         raise Http404
     
     if can(request.user, 'edit', organization):
-        documents = Document.objects.filter(publication__organization=organization, publication__publication_type='document').order_by('-publication__uploaded')
+        documents = Document.objects.filter(publication__organization=organization, publication__publication_type='document').exclude(publication__status=Publication.STATUS['UNFINISHED']).order_by('-publication__uploaded')
     else:
-        documents = Document.objects.filter(publication__organization=organization, publication__publication_type='document', publication__status=Publication.STATUS['PUBLISHED']).order_by('-publication__uploaded')
+        documents = Document.objects.filter(publication__organization=organization, publication__publication_type='document', publication__status=Publication.STATUS['PUBLISHED']).exclude(publication__status=Publication.STATUS['UNFINISHED']).order_by('-publication__uploaded')
     
-    return render(request, 'document/documents.html', {'organization':organization, 'documents':documents, 'no_shelf_count':_no_shelf_count(request.user, organization), 'shelf':None, 'shelf_type':'all'})
+    return render(request, 'document/documents.html', {'organization':organization, 'documents':documents, 'shelf':None, 'shelf_type':'all'})
 
 @login_required
 def view_documents_by_shelf(request, organization_slug, shelf_id):
@@ -65,7 +56,7 @@ def view_documents_by_shelf(request, organization_slug, shelf_id):
     else:
         documents = Document.objects.filter(publication__organization=organization, publication__publication_type='document', shelves__in=[shelf], publication__status=Publication.STATUS['PUBLISHED']).order_by('-publication__uploaded')
     
-    return render(request, 'document/documents.html', {'organization':organization, 'documents':documents, 'no_shelf_count':_no_shelf_count(request.user, organization), 'shelf':shelf, 'shelf_type':'shelf'})
+    return render(request, 'document/documents.html', {'organization':organization, 'documents':documents, 'shelf':shelf, 'shelf_type':'shelf'})
 
 @login_required
 def view_documents_with_no_shelf(request, organization_slug):
@@ -75,11 +66,11 @@ def view_documents_with_no_shelf(request, organization_slug):
         raise Http404
     
     if can(request.user, 'edit', organization):
-        documents = Document.objects.filter(publication__organization=organization, publication__publication_type='document', shelves=None).order_by('-publication__uploaded')
+        documents = Document.objects.filter(publication__organization=organization, publication__publication_type='document', shelves=None, publication__uploaded_by=request.user).order_by('-publication__uploaded')
     else:
-        documents = Document.objects.filter(publication__organization=organization, publication__publication_type='document', shelves=None, publication__status=Publication.STATUS['PUBLISHED']).order_by('-publication__uploaded')
+        documents = Document.objects.filter(publication__organization=organization, publication__publication_type='document', shelves=None, publication__status=Publication.STATUS['PUBLISHED'], publication__uploaded_by=request.user).order_by('-publication__uploaded')
 
-    return render(request, 'document/documents.html', {'organization':organization, 'documents':documents, 'no_shelf_count':_no_shelf_count(request.user, organization), 'shelf':None, 'shelf_type':'none'})
+    return render(request, 'document/documents_noshelf.html', {'organization':organization, 'documents':documents, 'shelf':None, 'shelf_type':'none'})
 
 @login_required
 def upload_documents(request, organization_slug):
@@ -108,16 +99,13 @@ def _upload_documents(request, organization, shelf=None):
         
         uploading_file = UploadedFile(file)
 
-        try:
-            publication = publication_functions.upload_publication(request, 'document', uploading_file, organization)
-            document = Document.objects.create(publication=publication)
-            publication.status = Publication.STATUS['UNPUBLISHED']
-        except:
-            import sys
-            print sys.exc_info()
+        publication = publication_functions.upload_publication(request, 'document', uploading_file, organization)
+        document = Document.objects.create(publication=publication)
 
         if shelf:
             DocumentShelf.objects.create(document=document, shelf=shelf, created_by=request.user)
+            document.publication.status = Publication.STATUS['UNPUBLISHED']
+            document.publication.save()
 
         return response_json_success({
             'uid': str(publication.uid),
@@ -153,20 +141,19 @@ def finishing_upload_documents(request, organization_slug):
         if not title:
             return HttpResponseBadRequest('missing-parameters')
         
+        try:
+            shelf = OrganizationShelf.objects.get(id=shelf_id)
+        except OrganizationShelf.DoesNotExist:
+            return HttpResponseBadRequest('shelf-not-found')
+        
+        if shelf.organization.id != organization.id:
+            return HttpResponseBadRequest('shelf-not-found')
+        
+        DocumentShelf.objects.create(shelf=shelf, document=document, created_by=request.user)
+
         document.publication.title = title
         document.publication.status = Publication.STATUS['UNPUBLISHED']
         document.publication.save()
-
-        if shelf_id:
-            try:
-                shelf = OrganizationShelf.objects.get(id=shelf_id)
-            except OrganizationShelf.DoesNotExist:
-                return HttpResponseBadRequest('shelf-not-found')
-            
-            if shelf.organization.id != organization.id:
-                return HttpResponseBadRequest('shelf-not-found')
-            
-            DocumentShelf.objects.create(shelf=shelf, document=document, created_by=request.user)
         
         return response_json({
             'uid':str(document.publication.uid),
@@ -193,9 +180,9 @@ def create_document_shelf(request, organization_slug):
         form = OrganizationShelfForm(request.POST)
         if form.is_valid():
             name = form.cleaned_data['name']
-            description = form.cleaned_data['description']
+            shelf_type = form.cleaned_data['shelf_type']
 
-            shelf = OrganizationShelf.objects.create(organization=organization, name=name, description=description, created_by=request.user)
+            shelf = OrganizationShelf.objects.create(organization=organization, name=name, is_shared=True if shelf_type == 'shared' else False ,created_by=request.user)
 
             messages.success(request, u'เพิ่มชั้นหนังสือเรียบร้อย')
             return redirect('view_documents_by_shelf', organization_slug=organization.slug, shelf_id=shelf.id)
@@ -203,7 +190,7 @@ def create_document_shelf(request, organization_slug):
     else:
         form = OrganizationShelfForm()
     
-    return render(request, 'document/shelf_modify.html', {'organization':organization, 'no_shelf_count':_no_shelf_count(request.user, organization), 'form':form, 'shelf':None, 'shelf_type':'create'})
+    return render(request, 'document/shelf_modify.html', {'organization':organization, 'form':form, 'shelf':None, 'shelf_type':'create'})
 
 @login_required
 def edit_document_shelf(request, organization_slug, shelf_id):
@@ -217,16 +204,17 @@ def edit_document_shelf(request, organization_slug, shelf_id):
         form = OrganizationShelfForm(request.POST)
         if form.is_valid():
             shelf.name = form.cleaned_data['name']
-            shelf.description = form.cleaned_data['description']
+            shelf.is_shared = True if form.cleaned_data['shelf_type'] == 'shared' else False
             shelf.save()
 
             messages.success(request, u'แก้ไขชั้นหนังสือเรียบร้อย')
             return redirect('view_documents_by_shelf', organization_slug=organization.slug, shelf_id=shelf.id)
 
     else:
-        form = OrganizationShelfForm(initial={'name':shelf.name, 'description':shelf.description})
+        shelf_type = 'shared' if shelf.is_shared else 'private'
+        form = OrganizationShelfForm(initial={'name':shelf.name, 'shelf_type':shelf_type})
     
-    return render(request, 'document/shelf_modify.html', {'organization':organization, 'no_shelf_count':_no_shelf_count(request.user, organization), 'form':form, 'shelf':shelf, 'shelf_type':'edit'})
+    return render(request, 'document/shelf_modify.html', {'organization':organization, 'form':form, 'shelf':shelf, 'shelf_type':'edit'})
 
 @login_required
 def delete_document_shelf(request, organization_slug, shelf_id):
@@ -259,7 +247,37 @@ def delete_document_shelf(request, organization_slug, shelf_id):
             return redirect('view_documents_by_shelf', organization_slug=organization.slug, shelf_id=shelf.id)
     
     shelf_documents_count = Document.objects.filter(shelves__in=[shelf], publication__publication_type='document').count()
-    return render(request, 'document/shelf_delete.html', {'organization':organization, 'no_shelf_count':_no_shelf_count(request.user, organization), 'shelf_documents_count':shelf_documents_count, 'shelf':shelf, 'shelf_type':'delete'})
+    return render(request, 'document/shelf_delete.html', {'organization':organization, 'shelf_documents_count':shelf_documents_count, 'shelf':shelf, 'shelf_type':'delete'})
+
+@login_required
+def move_document_to_shelf(request):
+    if request.method == 'POST':
+        uid = request.POST.get('uid')
+        shelf_id = request.POST.get('shelf_id')
+
+        try:
+            document = Document.objects.get(publication__uid=uid)
+        except Document.DoesNotExist:
+            return HttpResponseBadRequest('document-not-found')
+        
+        if not can(request.user, 'edit', document.publication.organization):
+            return HttpResponseBadRequest('access-denied')
+        
+        try:
+            shelf = OrganizationShelf.objects.get(id=shelf_id)
+        except OrganizationShelf.DoesNotExist:
+            return HttpResponseBadRequest('shelf-not-found')
+        
+        DocumentShelf.objects.create(shelf=shelf, document=document, created_by=request.user)
+        
+        document.publication.status = Publication.STATUS['UNPUBLISHED']
+        document.publication.save()
+
+        return response_json({
+            'uid':str(document.publication.uid),
+            'shelf_name':shelf.name,
+            'edit_url':reverse('edit_document', args=[document.publication.uid]),
+        })
 
 # DOCUMENT
 
@@ -272,9 +290,37 @@ def view_document(request, publication_uid):
     if not can(request.user, 'view', organization):
         raise Http404
     
+    if document.publication.status == Publication.STATUS['UNFINISHED'] and document.publication.uploaded_by != request.user:
+        raise Http404
+    
     shelves = DocumentShelf.objects.filter(document=document)
-
     return render(request, 'document/document_view.html', {'organization':organization, 'document':document, 'shelves':shelves})
+
+@login_required
+def download_publication(request, publication_uid):
+    publication = get_object_or_404(Publication, uid=publication_uid)
+
+    if publication.status == Publication.STATUS['UNFINISHED'] and publication.uploaded_by != request.user:
+        raise Http404
+
+    from publication.views import download_publication
+    return download_publication(request, publication)
+
+@login_required
+def publish_publication(request):
+    if document.publication.status == Publication.STATUS['UNFINISHED'] and document.publication.uploaded_by != request.user:
+        raise Http404
+
+    from publication.views import publish_publication
+    return publish_publication(request)
+
+@login_required
+def unpublish_publication(request):
+    if document.publication.status == Publication.STATUS['UNFINISHED'] and document.publication.uploaded_by != request.user:
+        raise Http404
+
+    from publication.views import unpublish_publication
+    return unpublish_publication(request)
 
 @login_required
 def edit_document(request, publication_uid):
@@ -283,6 +329,9 @@ def edit_document(request, publication_uid):
     document = publication.document
 
     if not can(request.user, 'edit', organization):
+        raise Http404
+    
+    if document.publication.status == Publication.STATUS['UNFINISHED'] and document.publication.uploaded_by != request.user:
         raise Http404
     
     if request.method == 'POST':
@@ -303,6 +352,10 @@ def edit_document(request, publication_uid):
 
             for shelf in creating_shelves:
                 DocumentShelf.objects.create(document=document, shelf=shelf, created_by=request.user)
+            
+            if creating_shelves and publication.status == Publication.STATUS['UNFINISHED']:
+                publication.status = Publication.STATUS['UNPUBLISHED']
+                publication.save()
 
             DocumentShelf.objects.filter(document=document, shelf__in=removing_shelves).delete()
             
@@ -324,6 +377,9 @@ def delete_document(request, publication_uid):
     document = publication.document
 
     if not can(request.user, 'edit', organization):
+        raise Http404
+    
+    if document.publication.status == Publication.STATUS['UNFINISHED'] and document.publication.uploaded_by != request.user:
         raise Http404
     
     return render(request, 'document/document_delete.html', {'organization':organization, 'document':document})

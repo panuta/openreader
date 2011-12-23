@@ -89,7 +89,10 @@ def generate_organization_menu(user):
 
 @register.simple_tag
 def print_publication_status(publication):
-    if publication.status == Publication.STATUS['UNPUBLISHED']:
+    if publication.status == Publication.STATUS['UNFINISHED']:
+        return u'<span class="unfinished">ข้อมูลยังไม่ครบถ้วน</span>'
+
+    elif publication.status == Publication.STATUS['UNPUBLISHED']:
     
         if publication.is_processing and PublicationNotice.objects.filter(publication=publication, notice=PublicationNotice.NOTICE['PUBLISH_WHEN_READY']).exists():
             return u'<span class="unpublished">ไฟล์จะเผยแพร่ทันทีที่ประมวลผลเสร็จ</span>'

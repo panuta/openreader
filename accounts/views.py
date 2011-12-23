@@ -11,6 +11,8 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import ugettext_lazy as _
 
+from common.extensions import get_extension_template
+
 from forms import *
 from models import *
 
@@ -165,8 +167,8 @@ def invite_organization_user(request, organization_slug):
 
     else:
         form = InviteOrganizationUserForm()
-
-    return render(request, 'accounts/manage/organization_user_invite.html', {'organization':organization, 'form':form})
+    
+    return render(request, get_extension_template('UserInvitationExtension', 'user_invite', 'accounts/manage/organization_user_invite.html'), {'organization':organization, 'form':form})
 
 def resend_user_invitation(request, invitation_id):
     invitation = get_object_or_404(UserOrganizationInvitation, pk=invitation_id)

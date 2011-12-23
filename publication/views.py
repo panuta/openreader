@@ -2,10 +2,8 @@
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseServerError, Http404
+from django.http import HttpResponse, HttpResponseServerError, Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils import simplejson
 
 from private_files.views import get_file as private_files_get_file
 
@@ -15,16 +13,13 @@ from common.utilities import format_abbr_datetime
 
 from publication import functions as publication_functions
 
-from forms import *
-from models import *
+from models import Publication
 
 @login_required
-def download_publication(request, publication_uid):
-    publication = get_object_or_404(Publication, uid=publication_uid)
-
+def download_publication(request, publication):
     if not can(request.user, 'view', publication.organization):
         raise Http404
-
+    
     return private_files_get_file(request, 'publication', 'Publication', 'uploaded_file', str(publication.id), '%s.%s' % (publication.original_file_name, publication.file_ext))
 
 @login_required
@@ -41,7 +36,7 @@ def publish_publication(request):
         if not can(request.user, 'edit', organization):
             return response_json_error('access-denied')
     
-        if publication.status == Publication.STATUS['PUBLISHED']:
+        if publication.status in (Publication.STATUS['UNFINISHED'], Publication.STATUS['PUBLISHED']):
             return response_json_error('invalid-status')
         
         publication_functions.publish_publication(request, publication)
@@ -67,7 +62,7 @@ def unpublish_publication(request):
         if not can(request.user, 'edit', organization):
             return response_json_error('access-denied')
     
-        if publication.status == Publication.STATUS['UNPUBLISHED']:
+        if publication.status in (Publication.STATUS['UNFINISHED'], Publication.STATUS['UNPUBLISHED']):
             if not publication.is_processing and not publication.status != Publication.STATUS['UNPUBLISHED']:
                 return response_json_error('invalid-status')
         
