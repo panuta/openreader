@@ -1,3 +1,4 @@
+- admin should be able to view/edit all shelves without having to specify shelf permission
 - per-shelf permission
 - API
 

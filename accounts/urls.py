@@ -22,5 +22,11 @@ urlpatterns = patterns('accounts.views',
     url(r'^user/(?P<organization_user_id>\d+)/edit/$', 'edit_organization_user', name='edit_organization_user'),
     url(r'^user/(?P<organization_user_id>\d+)/remove/$', 'remove_organization_user', name='remove_organization_user'),
 
+    url(r'^org/(?P<organization_slug>\w+)/manage/roles/$', 'view_organization_roles', name='view_organization_roles'),
+    url(r'^org/(?P<organization_slug>\w+)/manage/roles/add/$', 'add_organization_role', name='add_organization_role'),
+    url(r'^role/(?P<organization_role_id>\d+)/edit/$', 'edit_organization_role', name='edit_organization_role'),
+    url(r'^role/(?P<organization_role_id>\d+)/remove/$', 'remove_organization_role', name='remove_organization_role'),
+    
+
     url(r'^org/(?P<organization_slug>\w+)/manage/billing/$', 'view_organization_billing', name='view_organization_billing'),
 )

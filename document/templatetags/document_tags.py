@@ -10,8 +10,36 @@ from django.core.urlresolvers import reverse
 
 from common.permissions import can
 
-from document.models import OrganizationShelf, Document
+from accounts.models import OrganizationRole
+from document.models import SHELF_ACCESS, OrganizationShelf, Document
 from publication.models import Publication
+
+# Role
+
+@register.simple_tag
+def shelf_permissions_radio_table(organization, permissions=None): # EDITED
+    print permissions
+    
+    table_html = []
+    for role in OrganizationRole.objects.filter(organization=organization).order_by('-is_admin', 'name'):
+
+        check_publish = ''
+        check_view = ''
+        check_no = ''
+
+        if permissions:
+            if permissions[role.id] == SHELF_ACCESS['PUBLISH_ACCESS'] or permissions[role.id] == 'publish':
+                check_publish = 'checked="checked"'
+                
+            elif permissions[role.id] == SHELF_ACCESS['VIEW_ACCESS'] or permissions[role.id] == 'view':
+                check_view = 'checked="checked"'
+
+            elif permissions[role.id] == SHELF_ACCESS['NO_ACCESS'] or permissions[role.id] == 'no':
+                check_no = 'checked="checked"'
+
+        table_html.append(u'<tr class="role_permission"><td>%s</td><td><label><input type="radio" name="role_access-%d" value="publish" %s/> อัพโหลดและแก้ไข</label></td><td><label><input type="radio" name="role_access-%d" value="view" %s/> ดูอย่างเดียว</label></td><td><label><input type="radio" name="role_access-%d" value="no" %s/> ไม่สามารถเข้าถึงได้</label></td></tr>' % (role.name, role.id, check_publish, role.id, check_view, role.id, check_no))
+    
+    return ''.join(table_html)
 
 # SHELF
 
@@ -24,21 +52,21 @@ def generate_shelf_options(organization):
     return ''.join(shelf_html)
 
 @register.simple_tag
-def generate_shelf_list(user, organization, active_shelf=None):
-    if not isinstance(active_shelf, OrganizationShelf):
-        active_shelf = None
-    
+def generate_shelf_list(user, organization, active_shelf=None): # EDITED
     shelf_html = []
-    for shelf in OrganizationShelf.objects.filter(organization=organization).order_by('-is_shared', 'name'):
-        active_html = ' active' if active_shelf and active_shelf.id == shelf.id else ''
-        private_shelf = ' private-shelf' if not shelf.is_shared else ''
+    for shelf in OrganizationShelf.objects.filter(organization=organization).order_by('name'):
+        access_level = user.get_profile().get_shelf_access(shelf)
 
-        if can(user, 'edit', organization):
-            count = Document.objects.filter(shelves__in=[shelf], publication__publication_type='document').count()
-        else:
-            count = Document.objects.filter(shelves__in=[shelf], publication__publication_type='document', publication__status=Publication.STATUS['PUBLISHED']).count()
+        if access_level > SHELF_ACCESS['NO_ACCESS']:
+            active_html = ' active' if active_shelf and active_shelf.id == shelf.id else ''
+            restricted_shelf = ' restricted-shelf' if access_level == SHELF_ACCESS['VIEW_ACCESS'] else ''
 
-        shelf_html.append(u'<li class="shelf%s%s" id="shelf-%d"><a href="%s">%s <span>(%d ไฟล์)</span></a></li>' % (private_shelf, active_html, shelf.id, reverse('view_documents_by_shelf', args=[organization.slug, shelf.id]), shelf.name, count))
+            if can(user, 'edit', organization):
+                count = Document.objects.filter(shelves__in=[shelf], publication__publication_type='document').count()
+            else:
+                count = Document.objects.filter(shelves__in=[shelf], publication__publication_type='document', publication__status=Publication.STATUS['PUBLISHED']).count()
+
+            shelf_html.append(u'<li class="shelf%s%s" id="shelf-%d"><a href="%s">%s <span>(%d ไฟล์)</span></a></li>' % (restricted_shelf, active_html, shelf.id, reverse('view_documents_by_shelf', args=[organization.slug, shelf.id]), shelf.name, count))
     
     return ''.join(shelf_html)
 

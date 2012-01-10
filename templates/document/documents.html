@@ -171,7 +171,7 @@ $(document).ready(function () {
 
 <div class="content"><div class="content-inner">
   <h2>{% if shelf_type == 'all' %}ไฟล์ทั้งหมด{% endif %}{% if shelf_type == 'none' %}ไฟล์ที่ไม่อยู่ในชั้นหนังสือ{% endif %}{% if shelf %}<span>ชั้นหนังสือ</span>{{shelf.name}}{% endif %}</h2>
-  
+
   {% can user 'edit,manage' organization %}
     <div class="page_actions">
       {% can user 'edit' organization %}<a href="{% url upload_documents organization.slug %}" class="btn primary upload_publication_button"><span>อัพโหลดไฟล์</span></a>{% endcan %}

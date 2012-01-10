@@ -41,7 +41,7 @@ class Publication(models.Model):
     has_thumbnail = models.BooleanField(default=False)
 
     status = models.IntegerField(default=STATUS['UNFINISHED'])
-    is_public_listing = models.BooleanField(default=False)
+    is_public = models.BooleanField(default=False)
 
     scheduled =  models.DateTimeField(null=True, blank=True)
     scheduled_by =  models.ForeignKey(User, null=True, blank=True, related_name='publication_scheduled_by')

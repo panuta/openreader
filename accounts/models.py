@@ -12,46 +12,20 @@ from django.utils.hashcompat import sha_constructor
 
 from common.permissions import can
 
-"""
-User Type
-1. Reader [web_access=False]
-   This user can only use an app on a device. Cannot login to website.
-
-2. Organization/Admin
-   This user can do
-      - Organization management (Details, Users, Billing)
-      - Publish permission
-      - Publication management (Upload/Edit/Delete)
-      - View all organization's publication
-
-3. Organization/Staff
-   This user can do
-      - Publication management (Upload/Edit/Delete)
-      - View all organization's publication
-
-4. Organization/User
-   This user can do
-      - View all organization's publication
-"""
-
 SHA1_RE = re.compile('^[a-f0-9]{40}$')
-
-class Role(models.Model):
-    name = models.CharField(max_length=100)
-    code = models.CharField(max_length=100, unique=True)
-
-    def __unicode__(self):
-        return self.name
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     first_name = models.CharField(max_length=200) # first_name and last_name in contrib.auth.User is too short
     last_name = models.CharField(max_length=200)
-    web_access = models.BooleanField()
+    web_access = models.BooleanField(default=True)
     is_first_time = models.BooleanField(default=True)
 
     def __unicode__(self):
         return '%s %s' % (self.first_name, self.last_name)
+    
+    class Meta:
+        abstract = True
 
     def can(self, action, object):
         return can(self.user, action, object)
@@ -62,6 +36,9 @@ class UserProfile(models.Model):
                 return self.user.email
             return '%s %s' % (self.user.first_name, self.user.last_name)
         return '%s %s' % (self.first_name, self.last_name)
+    
+    def get_role(self, organization):
+        return UserOrganization.objects.get(user=self.user, organization=organization).role
 
 # Organization
 
@@ -92,14 +69,33 @@ class Organization(models.Model):
     def can_manage(self, user):
         try:
             user_organization = UserOrganization.objects.get(organization=self, user=user)
-            return user_organization.role.code in ('organization_admin', )
+            return user_organization.role.admin_level > 0
         except UserOrganization.DoesNotExist:
             return False
+
+class OrganizationRole(models.Model):
+    """
+    Admin level SUPER: Super admin can do and see everything within organization. This permission is not adjustable and will be created automatically when creating organization account.
+    Admin level NORMAL: Admin can manage organization
+    Admin level NOTHING: No admin permission
+    """
+
+    ADMIN_LEVEL_SUPER = 9
+    ADMIN_LEVEL_NORMAL = 1
+    ADMIN_LEVEL_NOTHING = 0
+
+    organization = models.ForeignKey(Organization)
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=500, blank=True)
+    admin_level = models.IntegerField(default=ADMIN_LEVEL_NOTHING)
+
+    def __unicode__(self):
+        return self.name
 
 class UserOrganization(models.Model):
     user = models.ForeignKey(User)
     organization = models.ForeignKey(Organization)
-    role = models.ForeignKey(Role)
+    role = models.ForeignKey(OrganizationRole)
     is_default = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
 
@@ -135,7 +131,7 @@ class UserInvitationManager(models.Manager):
 class UserOrganizationInvitation(models.Model):
     user_email = models.CharField(max_length=200, null=True, blank=True)
     organization = models.ForeignKey(Organization)
-    role = models.ForeignKey(Role)
+    role = models.ForeignKey(OrganizationRole)
     invitation_key = models.CharField(max_length=40, unique=True)
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='user_invitation_created_by')

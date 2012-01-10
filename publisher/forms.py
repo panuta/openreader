@@ -8,7 +8,6 @@ from widgets import YUICalendar, HourMinuteTimeInput
 from common.forms import StrippedCharField
 from common.permissions import ROLE_CHOICES
 
-from accounts.models import Role
 from publisher.models import PublicationCategory
 
 class PublicationCategoryMultipleChoiceField(forms.ModelMultipleChoiceField):

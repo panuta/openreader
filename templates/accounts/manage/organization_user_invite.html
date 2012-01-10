@@ -6,21 +6,24 @@
 
 {% block organization_manage_content %}
 <ul class="breadcrumb">
-  <li><a href="{% url view_organization_users organization.slug %}">ทีมงาน</a> <span class="divider">/</span></li>
-  <li class="active">เพิ่มทีมงาน</li>
+  <li><a href="{% url view_organization_users organization.slug %}">บัญชีผู้ใช้ระบบ</a> <span class="divider">/</span></li>
+  <li class="active">เพิ่มผู้ใช้ระบบ</li>
 </ul>
 
-<h2>เพิ่มทีมงาน</h2>
+<h2>เพิ่มผู้ใช้ระบบ</h2>
 
 <form method="POST" action=".">
   {% csrf_token %}
   {{form.non_field_errors}}
 
-  <div class="clearfix"><label for="id_email">อีเมลของผู้ใช้ระบบ</label><div class="input">{{form.email}}{{form.email.errors}}</div></div>
-  <div class="clearfix"><label for="id_role">สิทธิ์ผู้ดูแลระบบ</label><div class="input inputs-list"><ul><li><label><input type="checkbox" name="admin_task" /> อนุญาตให้เข้าถึงงานการจัดการระบบได้</label></li></ul></div></div>
+  <div class="clearfix"><label for="id_email">อีเมลผู้ใช้ระบบ</label><div class="input">{{form.email}}{{form.email.errors}}</div></div>
+  <div class="clearfix">
+    <label for="id_role">กลุ่มผู้ใช้</label>
+    <div class="input">{{form.role}}{{form.role.errors}}</div>
+  </div>
 
   <div class="form_actions">
-    <button type="submit" class="btn primary">บันทึกข้อมูล</button>
+    <button type="submit" class="btn primary">เพิ่มผู้ใช้ระบบ</button>
     <button type="reset" class="btn">ล้างข้อมูล</button>
   </div>
 

@@ -28,4 +28,3 @@ urlpatterns = patterns('document.views',
 
 )
 
-

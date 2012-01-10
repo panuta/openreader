@@ -1,31 +1,4 @@
 [
-	{
-		"model": "accounts.role",
-		"pk": 1,
-		"fields": {
-			"name": "Organization Admin",
-			"code": "organization_admin"
-		}
-	},
-	{
-		"model": "accounts.role",
-		"pk": 2,
-		"fields": {
-			"name": "Organization Staff",
-			"code": "organization_staff"
-		}
-	},
-	{
-		"model": "accounts.role",
-		"pk": 3,
-		"fields": {
-			"name": "Organization User",
-			"code": "organization_user"
-		}
-	},
-
-
-
 
 	{
 		"model": "publisher.category",
@@ -293,16 +266,25 @@
 	},
 
 
-{"pk": 1, "model": "auth.user", "fields": {"username": "system@openreader.com", "first_name": "", "last_name": "", "is_active": true, "is_superuser": true, "is_staff": true, "last_login": "2011-12-01 16:43:51", "groups": [], "user_permissions": [], "password": "sha1$01585$302a20e1e2d0a73652b63b57df52bd793472244b", "email": "system@openreader.com", "date_joined": "2011-12-01 16:43:51"}}, {"pk": 2, "model": "auth.user", "fields": {"username": "admin@openreader.com", "first_name": "", "last_name": "", "is_active": true, "is_superuser": false, "is_staff": false, "last_login": "2011-12-01 16:43:51", "groups": [], "user_permissions": [], "password": "sha1$b0f03$15fb4bd73eaca528c1e5e698a999cc3e0a20f7f1", "email": "admin@openreader.com", "date_joined": "2011-12-01 16:43:51"}}, {"pk": 3, "model": "auth.user", "fields": {"username": "staff@openreader.com", "first_name": "", "last_name": "", "is_active": true, "is_superuser": false, "is_staff": false, "last_login": "2011-12-01 16:43:51", "groups": [], "user_permissions": [], "password": "sha1$0286b$eb6f8978b020def24a1ebe92b8695f2c03616199", "email": "staff@openreader.com", "date_joined": "2011-12-01 16:43:51"}}, {"pk": 4, "model": "auth.user", "fields": {"username": "panuta@gmail.com", "first_name": "", "last_name": "", "is_active": true, "is_superuser": false, "is_staff": false, "last_login": "2011-12-01 16:43:51", "groups": [], "user_permissions": [], "password": "sha1$8d3a7$f6812e5ceed9592a08c0600ddccc0398e949e151", "email": "panuta@gmail.com", "date_joined": "2011-12-01 16:43:51"}},
+{"pk": 1, "model": "auth.user", "fields": {"username": "system@openreader.com", "first_name": "", "last_name": "", "is_active": true, "is_superuser": true, "is_staff": true, "last_login": "2011-12-01 16:43:51", "groups": [], "user_permissions": [], "password": "sha1$01585$302a20e1e2d0a73652b63b57df52bd793472244b", "email": "system@openreader.com", "date_joined": "2011-12-01 16:43:51"}}, 
+{"pk": 2, "model": "auth.user", "fields": {"username": "admin@openreader.com", "first_name": "", "last_name": "", "is_active": true, "is_superuser": false, "is_staff": false, "last_login": "2011-12-01 16:43:51", "groups": [], "user_permissions": [], "password": "sha1$b0f03$15fb4bd73eaca528c1e5e698a999cc3e0a20f7f1", "email": "admin@openreader.com", "date_joined": "2011-12-01 16:43:51"}}, 
+{"pk": 3, "model": "auth.user", "fields": {"username": "staff@openreader.com", "first_name": "", "last_name": "", "is_active": true, "is_superuser": false, "is_staff": false, "last_login": "2011-12-01 16:43:51", "groups": [], "user_permissions": [], "password": "sha1$0286b$eb6f8978b020def24a1ebe92b8695f2c03616199", "email": "staff@openreader.com", "date_joined": "2011-12-01 16:43:51"}}, 
 
 
-{"pk": 1, "model": "accounts.userprofile", "fields": {"web_access": false, "first_name": "System", "last_name": "Openreader", "is_first_time": true, "user": 1}}, {"pk": 2, "model": "accounts.userprofile", "fields": {"web_access": true, "first_name": "Admin", "last_name": "Openreader", "is_first_time": true, "user": 2}}, {"pk": 3, "model": "accounts.userprofile", "fields": {"web_access": true, "first_name": "Staff", "last_name": "Openreader", "is_first_time": true, "user": 3}}, {"pk": 4, "model": "accounts.userprofile", "fields": {"web_access": true, "first_name": "Panu", "last_name": "Tangchalermkul", "is_first_time": true, "user": 4}},
+{"pk": 1, "model": "document.userprofile", "fields": {"web_access": false, "first_name": "System", "last_name": "Openreader", "is_first_time": true, "user": 1}}, 
+{"pk": 2, "model": "document.userprofile", "fields": {"web_access": true, "first_name": "Admin", "last_name": "Openreader", "is_first_time": true, "user": 2}}, 
+{"pk": 3, "model": "document.userprofile", "fields": {"web_access": true, "first_name": "Staff", "last_name": "Openreader", "is_first_time": true, "user": 3}}, 
 
 
 {"pk": 1, "model": "accounts.organization", "fields": {"status": 0, "modified_by": 2, "name": "Opendream", "slug":"opendream", "prefix":"บริษัท", "created_by": 2}},
 
 
-{"pk": 1, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "role": 1, "user": 2}}, {"pk": 2, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "role": 2, "user": 3}}, {"pk": 3, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "role": 3, "user": 4}}
+{"pk": 1, "model": "accounts.organizationrole", "fields": {"organization": 1, "name": "Administrator", "description": "", "admin_level": 9}},
+{"pk": 2, "model": "accounts.organizationrole", "fields": {"organization": 1, "name": "Sale Staff", "description": "", "admin_level": 0}},
+
+
+{"pk": 1, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "role": 1, "user": 2}},
+{"pk": 2, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "role": 2, "user": 3}}
 
 
 

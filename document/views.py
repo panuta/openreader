@@ -11,7 +11,7 @@ from common.permissions import can
 from common.shortcuts import response_json, response_json_success, response_json_error
 from common.utilities import format_abbr_datetime
 
-from accounts.models import Organization
+from accounts.models import Organization, UserOrganization, OrganizationRole
 from publication.models import Publication, PublicationNotice
 
 from publication import functions as publication_functions
@@ -32,6 +32,9 @@ def view_organization_front(request, organization_slug):
 @login_required
 def view_documents(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
+
+    print request.user.get_profile().get_viewable_shelves(organization)
+
 
     if not can(request.user, 'view', organization):
         raise Http404
@@ -169,6 +172,42 @@ def finishing_upload_documents(request, organization_slug):
 
 # SHELF
 
+def _persist_shelf_permissions(request, organization, shelf):
+    all_access_permission = request.POST.get('all_access')
+
+    if all_access_permission == 'publish':
+        for role in OrganizationRole.objects.filter(organization=organization):
+            RoleShelfPermission.objects.create(role=role, shelf=shelf, access_level=SHELF_ACCESS['PUBLISH_ACCESS'], created_by=request.user)
+        
+    elif all_access_permission == 'view':
+        for role in OrganizationRole.objects.filter(organization=organization):
+            RoleShelfPermission.objects.create(role=role, shelf=shelf, access_level=SHELF_ACCESS['VIEW_ACCESS'], created_by=request.user)
+
+    else:
+        shelf_permissions = {}
+        for item in request.POST.keys():
+            if item[:12] == 'role_access-':
+                role_id = item.split('-')[1]
+                try:
+                    role = OrganizationRole.objects.get(id=role_id, organization=organization)
+                except:
+                    pass
+                else:
+                    access_lebel_name = request.POST[item]
+
+                    if access_lebel_name == 'publish':
+                        access_level = SHELF_ACCESS['PUBLISH_ACCESS']
+                    elif access_lebel_name == 'view':
+                        access_level = SHELF_ACCESS['VIEW_ACCESS']
+                    else:
+                        access_level = SHELF_ACCESS['NO_ACCESS']
+                        
+                    shelf_permissions[role.id] = access_level
+
+        for role in OrganizationRole.objects.filter(organization=organization):
+            access_level = shelf_permissions.get(role.id, SHELF_ACCESS['NO_ACCESS'])
+            RoleShelfPermission.objects.create(role=role, shelf=shelf, access_level=access_level, created_by=request.user)
+
 @login_required
 def create_document_shelf(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
@@ -180,17 +219,26 @@ def create_document_shelf(request, organization_slug):
         form = OrganizationShelfForm(request.POST)
         if form.is_valid():
             name = form.cleaned_data['name']
-            shelf_type = form.cleaned_data['shelf_type']
 
-            shelf = OrganizationShelf.objects.create(organization=organization, name=name, is_shared=True if shelf_type == 'shared' else False ,created_by=request.user)
+            shelf = OrganizationShelf.objects.create(organization=organization, name=name, created_by=request.user)
 
+            _persist_shelf_permissions(request, organization, shelf)
+            
             messages.success(request, u'เพิ่มชั้นหนังสือเรียบร้อย')
             return redirect('view_documents_by_shelf', organization_slug=organization.slug, shelf_id=shelf.id)
+        
+        all_access_permission = request.POST.get('all_access')
+
+        shelf_permissions = {}
+        for role in OrganizationRole.objects.filter(organization=organization):
+            shelf_permissions[role.id] = request.POST.get('role_access-%d' % role.id)
 
     else:
         form = OrganizationShelfForm()
+        all_access_permission = ''
+        shelf_permissions = {}
     
-    return render(request, 'document/shelf_modify.html', {'organization':organization, 'form':form, 'shelf':None, 'shelf_type':'create'})
+    return render(request, 'document/shelf_modify.html', {'organization':organization, 'form':form, 'shelf':None, 'shelf_type':'create', 'all_access_permission':all_access_permission, 'shelf_permissions':shelf_permissions})
 
 @login_required
 def edit_document_shelf(request, organization_slug, shelf_id):
@@ -204,17 +252,34 @@ def edit_document_shelf(request, organization_slug, shelf_id):
         form = OrganizationShelfForm(request.POST)
         if form.is_valid():
             shelf.name = form.cleaned_data['name']
-            shelf.is_shared = True if form.cleaned_data['shelf_type'] == 'shared' else False
             shelf.save()
+
+            RoleShelfPermission.objects.filter(shelf=shelf).delete()
+
+            _persist_shelf_permissions(request, organization, shelf)
 
             messages.success(request, u'แก้ไขชั้นหนังสือเรียบร้อย')
             return redirect('view_documents_by_shelf', organization_slug=organization.slug, shelf_id=shelf.id)
 
     else:
-        shelf_type = 'shared' if shelf.is_shared else 'private'
-        form = OrganizationShelfForm(initial={'name':shelf.name, 'shelf_type':shelf_type})
+        shelf_permissions = {}
+        permission_list = []
+        for permission in RoleShelfPermission.objects.filter(shelf=shelf):
+            shelf_permissions[permission.role.id] = permission.access_level
+            permission_list.append(permission.access_level)
+        
+        all_access_permission = ''
+
+        if len(set(permission_list)) <= 1:
+            if permission_list[0] == SHELF_ACCESS['VIEW_ACCESS']:
+                all_access_permission = 'view'
+            
+            if permission_list[0] == SHELF_ACCESS['PUBLISH_ACCESS']:
+                all_access_permission = 'publish'
+
+        form = OrganizationShelfForm(initial={'name':shelf.name})
     
-    return render(request, 'document/shelf_modify.html', {'organization':organization, 'form':form, 'shelf':shelf, 'shelf_type':'edit'})
+    return render(request, 'document/shelf_modify.html', {'organization':organization, 'form':form, 'shelf':shelf, 'shelf_type':'edit', 'shelf_permissions':shelf_permissions, 'all_access_permission':all_access_permission})
 
 @login_required
 def delete_document_shelf(request, organization_slug, shelf_id):
@@ -227,14 +292,16 @@ def delete_document_shelf(request, organization_slug, shelf_id):
     if request.method == 'POST':
         if 'submit-delete' in request.POST:
             delete_documents = 'delete_documents' in request.POST and request.POST.get('delete_documents') == 'on'
+
+            DocumentShelf.objects.filter(shelf=shelf).delete()
+            RoleShelfPermission.objects.filter(shelf=shelf).delete()
             
             if delete_documents:
                 for document in Document.objects.filter(publication__organization=organization, publication__publication_type='document', shelves__in=[shelf]):
                     publication_functions.delete_publication(document.publication)
                 
-                DocumentShelf.objects.filter(shelf=shelf).delete()
                 Document.objects.filter(publication__organization=organization, publication__publication_type='document', shelves__in=[shelf]).delete()
-                
+
                 messages.success(request, u'ลบชั้นหนังสือและไฟล์ในชั้นเรียบร้อย')
 
             else:

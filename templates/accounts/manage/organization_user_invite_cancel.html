@@ -5,11 +5,11 @@
 
 {% block organization_manage_content %}
 <ul class="breadcrumb">
-  <li><a href="{% url view_organization_users organization.slug %}">ทีมงาน</a> <span class="divider">/</span></li>
-  <li class="active">ยกเลิกคำขอ</li>
+  <li><a href="{% url view_organization_users organization.slug %}">บัญชีผู้ใช้ระบบ</a> <span class="divider">/</span></li>
+  <li class="active">ยกเลิกคำขอเพิ่มผู้ใช้ระบบ</li>
 </ul>
 
-<h2>ยกเลิกคำขอสำหรับ {{invitation.user_email}}</h2>
+<h2>ยกเลิกคำขอเพิ่มผู้ใช้ระบบสำหรับ {{invitation.user_email}}</h2>
 
 <form method="POST" action=".">
   {% csrf_token %}

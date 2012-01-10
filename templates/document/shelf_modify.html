@@ -4,6 +4,23 @@
 {% block head_title %}{% if not shelf %}สร้างชั้นหนังสือใหม่{% else %}แก้ไขชั้นหนังสือ{% endif %}{% endblock %}
 {% block topnav %}{% include 'snippets/organization_topnav.html' with active_menu='document' %}{% endblock %}
 
+{% block html_head %}
+{{block.super}}
+<script>
+$(document).ready(function () {
+  $('input[name="all_access"]').on('click', function(e) {
+    var level = $('input[name="all_access"]:checked').val();
+    $('.role-permissions input[value="' + level + '"]').attr("checked", "checked");
+    $(this).closest('tr').addClass('active');
+  });
+
+  $('.role_permission input[type="radio"]').on('click', function(e) {
+    $('input[name="all_access"]').attr("checked", false).closest('tr').removeClass('active');;
+  });
+})
+</script>
+{% endblock %}
+
 {% block body_authenticated %}
 <div class="container-fluid container-body shelf_modify_page">
   {% include 'document/snippets/documents_sidebar.html' %}
@@ -24,8 +41,26 @@
       {{form.non_field_errors}}
 
       <div class="clearfix"><label for="id_name">ชื่อชั้นหนังสือ</label><div class="input">{{form.name}}{{form.name.errors}}</div></div>
-      <div class="clearfix"><label for="id_shelf_type">ประเภท</label><div class="input inputs-list">{{form.shelf_type}}<span class="help-block">* ชั้นหนังสือส่วนกลาง ทุกคนในบริษัทจะสามารถเห็นไฟล์ได้</span>{{form.shelf_type.errors}}</div></div>
-      
+      <div class="clearfix">
+        <label>การเข้าถึงชั้นหนังสือ</label>
+        <div class="input table-inputs role-permissions">
+          <table>
+            <tr>
+              <td>ทุกคนใน{{organization.prefix}}</td>
+              <td><label><input type="radio" name="all_access" value="publish" {% if all_access_permission == 'publish' %}checked="checked"{% endif %}/> อัพโหลดและแก้ไข</label></td>
+              <td><label><input type="radio" name="all_access" value="view" {% if all_access_permission == 'view' %}checked="checked"{% endif %}/> ดูอย่างเดียว</label></td>
+              <td></td>
+            </tr>
+            <tr>
+              <th colspan="4">หรือ ตั้งค่าการเข้าถึงตามกลุ่มผู้ใช้</th>
+            </tr>
+
+            {% shelf_permissions_radio_table organization shelf_permissions %}
+            
+          </table>
+        </div>
+      </div>
+
       <div class="form_actions">
         <button type="submit" class="btn primary">{% if not shelf %}สร้างชั้นหนังสือ{% else %}แก้ไขชั้นหนังสือ{% endif %}</button>
         <button type="reset" class="btn">ล้างข้อมูล</button>

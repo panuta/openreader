@@ -11,8 +11,6 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import ugettext_lazy as _
 
-from common.extensions import get_extension_template
-
 from forms import *
 from models import *
 
@@ -132,43 +130,27 @@ def invite_organization_user(request, organization_slug):
 
     if not can(request.user, 'manage', organization):
         raise Http404
-    
+
     if request.method == 'POST':
-        form = InviteOrganizationUserForm(request.POST)
+        form = InviteOrganizationUserForm(organization, request.POST)
         if form.is_valid():
             email = form.cleaned_data['email']
             role = form.cleaned_data['role']
 
-            if UserOrganizationInvitation.objects.filter(user_email=email, organization=organization).exists():
-                form._errors['email'] = ErrorList([u'ส่งคำขอถึงผู้ใช้คนนี้แล้ว'])
-
+            invitation = UserOrganizationInvitation.objects.create_invitation(email, organization, role, request.user)
+            
+            if invitation:
+                invitation.send_invitation_email()
+                messages.success(request, u'ส่งคำขอเพิ่มผู้ใช้เรียบร้อย รอผู้ใช้ยืนยัน')
             else:
-                existing_users = User.objects.filter(email=email)
+                messages.error(request, u'ไม่สามารถส่งคำขอถึงผู้ใช้ได้')
 
-                if existing_users:
-                    user = existing_users[0]
-
-                    if not UserOrganization.objects.filter(organization=organization, user=user).exists():
-                        invitation = UserOrganizationInvitation.objects.create_invitation(user.email, organization, role, request.user)
-                    else:
-                        form._errors['email'] = ErrorList([u'ผู้ใช้เป็นทีมงานในสำนักพิมพ์อยู่แล้ว'])
-                        invitation = None
-                
-                else:
-                    invitation = UserOrganizationInvitation.objects.create_invitation(email, organization, role, request.user)
-                
-                if invitation:
-                    invitation.send_invitation_email()
-                    messages.success(request, u'ส่งคำขอถึงผู้ใช้เรียบร้อย')
-                else:
-                    messages.error(request, u'ไม่สามารถส่งคำขอถึงผู้ใช้ได้')
-                
-                return redirect('view_organization_users', organization_slug=organization.slug)
+            return redirect('view_organization_users', organization_slug=organization.slug)
 
     else:
-        form = InviteOrganizationUserForm()
-    
-    return render(request, get_extension_template('UserInvitationExtension', 'user_invite', 'accounts/manage/organization_user_invite.html'), {'organization':organization, 'form':form})
+        form = InviteOrganizationUserForm(organization)
+
+    return render(request, 'accounts/manage/organization_user_invite.html', {'organization':organization, 'form':form})
 
 def resend_user_invitation(request, invitation_id):
     invitation = get_object_or_404(UserOrganizationInvitation, pk=invitation_id)
@@ -205,10 +187,10 @@ def cancel_user_invitation(request, invitation_id):
 
 def claim_user_invitation(request, invitation_key):
     """
-    1. already have account, authenticated, owner -> redirect to publisher page
-    2. already have account, authenticated, not owner -> let user logout before continue claiming invitation
-    3. already have account, not authenticated -> redirect to login page with next url is publisher page
-    4. don't have account -> ask for password, authenticate, redirect to publisher page
+    1. have account, is authenticated, invitation user is matched -> redirect to front page
+    2. have account, is authenticated, invitation user is not matched -> ask user to logout
+    3. have account, is not authenticated -> ask user to login, redirect to front page after login
+    4. don't have account -> fill information, authenticate and redirect to front page after submit
     """
 
     invitation = UserOrganizationInvitation.objects.validate_invitation(invitation_key)
@@ -226,11 +208,11 @@ def claim_user_invitation(request, invitation_key):
             invitation = UserOrganizationInvitation.objects.validate_invitation(invitation_key)
 
             user = User.objects.create_user(invitation.user_email, invitation.user_email, password1)
-            user_profile = user.get_profile()
-            user_profile.first_name = first_name
-            user_profile.last_name = last_name
-            user_profile.web_access = True
-            user_profile.save()
+
+            from django.db import models
+            app_label, model_name = settings.AUTH_PROFILE_MODULE.split('.')
+            model = models.get_model(app_label, model_name)
+            user_profile = model._default_manager.create(user=user, first_name=first_name, last_name=last_name)
 
             UserOrganizationInvitation.objects.claim_invitation(invitation, user, True)
             
@@ -238,8 +220,6 @@ def claim_user_invitation(request, invitation_key):
             user = authenticate(email=invitation.user_email, password=password1)
             login(request, user)
             
-            # TODO: SEND MESSAGE
-
             return redirect('view_organization_front', organization_slug=invitation.organization.slug)
 
     else:
@@ -254,8 +234,7 @@ def claim_user_invitation(request, invitation_key):
             if user and request.user.id == user.id:
                 UserOrganizationInvitation.objects.claim_invitation(invitation, user)
                 
-                # TODO: SEND MESSAGE
-
+                messages.success(request, u'คุณได้เข้าร่วมเป็นส่วนหนึ่งของ%s %s เรียบร้อยแล้ว' % (invitation.organization.prefix, invitation.organization.name))
                 return redirect('view_organization_front', organization_slug=invitation.organization.slug)
             
             return render(request, 'accounts/manage/organization_user_invite_claim.html', {'invitation':invitation, 'logout_first':True})
@@ -263,7 +242,6 @@ def claim_user_invitation(request, invitation_key):
         else:
             if user:
                 form = EmailAuthenticationForm()
-
                 return render(request, 'accounts/manage/organization_user_invite_claim.html', {'invitation':invitation, 'form':form, 'login_first':reverse('claim_user_invitation', args=[invitation_key])})
             
         form = ClaimOrganizationUserForm()
@@ -279,9 +257,9 @@ def edit_organization_user(request, organization_user_id):
         raise Http404
     
     if request.method == 'POST':
-        form = EditOrganizationUserForm(request.POST)
+        form = EditOrganizationUserForm(organization, request.POST)
         if form.is_valid():
-            user_organization.role = name=form.cleaned_data['role']
+            user_organization.role = form.cleaned_data['role']
             user_organization.save()
 
             messages.success(request, u'แก้ไขข้อมูลผู้ใช้เรียบร้อย')
@@ -289,7 +267,7 @@ def edit_organization_user(request, organization_user_id):
             return redirect('view_organization_users', organization_slug=organization.slug)
 
     else:
-        form = EditOrganizationUserForm(initial={'role':user_organization.role})
+        form = EditOrganizationUserForm(organization, initial={'role':user_organization.role})
 
     return render(request, 'accounts/manage/organization_user_edit.html', {'organization':organization, 'user_organization':user_organization, 'form':form})
 
@@ -302,12 +280,106 @@ def remove_organization_user(request, organization_user_id):
         raise Http404
     
     if request.method == 'POST':
-        if 'submit-delete' in request.POST:
+        if 'submit-remove' in request.POST:
             user_organization.delete()
             messages.success(request, u'ถอดผู้ใช้ออกจากทีมเรียบร้อย')
         return redirect('view_organization_users', organization_slug=organization.slug)
 
     return render(request, 'accounts/manage/organization_user_remove.html', {'organization':organization, 'user_organization':user_organization})
+
+# Organization Roles
+
+@login_required
+def view_organization_roles(request, organization_slug):
+    organization = get_object_or_404(Organization, slug=organization_slug)
+    organization_roles = OrganizationRole.objects.filter(organization=organization).order_by('-admin_level', 'name')
+
+    if not can(request.user, 'manage', organization):
+        raise Http404
+
+    for role in organization_roles:
+        role.user_counter = UserOrganization.objects.filter(role=role).count()
+
+    return render(request, 'accounts/manage/organization_roles.html', {'organization':organization, 'organization_roles':organization_roles})
+
+@login_required
+def add_organization_role(request, organization_slug):
+    organization = get_object_or_404(Organization, slug=organization_slug)
+
+    if not can(request.user, 'manage', organization):
+        raise Http404
+
+    if request.method == 'POST':
+        form = OrganizationRoleForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['name']
+            description = form.cleaned_data['description']
+            is_admin = form.cleaned_data['is_admin']
+
+            role = OrganizationRole.objects.create(organization=organization, name=name, description=description, admin_level=OrganizationRole.ADMIN_LEVEL_NORMAL if is_admin else OrganizationRole.ADMIN_LEVEL_NOTHING)
+
+            messages.success(request, u'เพิ่มกลุ่มผู้ใช้เรียบร้อย')
+            return redirect('view_organization_roles', organization_slug=organization.slug)
+
+    else:
+        form = OrganizationRoleForm()
+    
+    return render(request, 'accounts/manage/organization_role_modify.html', {'organization':organization, 'form':form})
+
+@login_required
+def edit_organization_role(request, organization_role_id):
+    role = get_object_or_404(OrganizationRole, pk=organization_role_id)
+    organization = role.organization
+
+    if not can(request.user, 'manage', organization):
+        raise Http404
+
+    if request.method == 'POST':
+        form = OrganizationRoleForm(request.POST)
+        if form.is_valid():
+            role.name = form.cleaned_data['name']
+            role.description = form.cleaned_data['description']
+            role.admin_level = OrganizationRole.ADMIN_LEVEL_NORMAL if form.cleaned_data['is_admin'] else OrganizationRole.ADMIN_LEVEL_NOTHING
+            role.save()
+
+            messages.success(request, u'แก้ไขกลุ่มผู้ใช้เรียบร้อย')
+            return redirect('view_organization_roles', organization_slug=organization.slug)
+
+    else:
+        form = OrganizationRoleForm(initial={'name':role.name, 'description':role.description, 'is_admin':role.admin_level==OrganizationRole.ADMIN_LEVEL_NORMAL})
+    
+    return render(request, 'accounts/manage/organization_role_modify.html', {'organization':organization, 'role':role, 'form':form})
+
+@login_required
+def remove_organization_role(request, organization_role_id):
+    role = get_object_or_404(OrganizationRole, pk=organization_role_id)
+    organization = role.organization
+
+    if not can(request.user, 'manage', organization):
+        raise Http404
+
+    role.user_counter = UserOrganization.objects.filter(role=role).count()
+
+    if request.method == 'POST':
+        form = RemoveOrganizationRoleForm(organization, role, request.POST)
+        if form.is_valid():
+            if 'submit-remove' in request.POST:
+                new_role = form.cleaned_data['role']
+
+                rows = UserOrganization.objects.filter(role=role).update(role=new_role)
+                role.delete()
+
+                if rows:
+                    messages.success(request, u'ลบกลุ่มผู้ใช้และย้ายผู้ใช้ไปกลุ่มผู้ใช้ใหม่เรียบร้อย')
+                else:
+                    messages.success(request, u'ลบกลุ่มผู้ใช้เรียบร้อย')
+            
+            return redirect('view_organization_roles', organization_slug=organization.slug)
+
+    else:
+        form = RemoveOrganizationRoleForm(organization, role)
+    
+    return render(request, 'accounts/manage/organization_role_remove.html', {'organization':organization, 'role':role, 'form':form})
 
 # Billing
 

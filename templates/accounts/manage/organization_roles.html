@@ -1,0 +1,41 @@
+{% extends 'accounts/manage/organization_base.html' %}
+{% load helper_tags pagination_tags %}
+
+{% block organization_manage_head_title %} - กลุ่มผู้ใช้{% endblock %}
+{% block organization_manage_menu %}{% include 'accounts/manage/snippets/organization_nav.html' with active_manage_menu='role' %}{% endblock %}
+
+{% block organization_manage_content %}
+<h2>กลุ่มผู้ใช้</h2>
+
+{% can user 'manage' organization %}<div class="page_actions"><a href="{% url add_organization_role organization.slug %}" class="btn">เพิ่มกลุ่มผู้ใช้</a></div>{% endcan %}
+
+{% autopaginate organization_roles 20 %}
+
+<table class="zebra-striped">
+  <col width="330"/>
+  <col width="170"/>
+  <col />
+  <col width="100"/>
+  <thead>
+    <tr>
+      <th>ชื่อกลุ่มผู้ใช้</th>
+      <th>จำนวนผู้ใช้</th>
+      <th>คำอธิบาย</th>
+      {% can user 'manage' organization %}<th></th>{% endcan %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for role in organization_roles %}
+    <tr>
+      <td>{{role.name}}</td>
+      <td>{{role.user_counter}} คน</td>
+      <td>{% if role.description %}{{role.description}}{% else %}-{% endif %}</td>
+      {% can user 'manage' organization %}<td class="row_actions">{% if role.admin_level == 9 %}<span class="not_available">แก้ไขไม่ได้</span>{% else %}<a href="{% url edit_organization_role role.id %}">แก้ไขข้อมูล</a>{% endif %}</td>{% endcan %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% paginate %}
+
+{% endblock %}

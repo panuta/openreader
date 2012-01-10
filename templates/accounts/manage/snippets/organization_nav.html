@@ -1,3 +1,4 @@
 <li{% if active_manage_menu == "profile" %} class="publisher active"{% else %} class="publisher"{% endif %}><a href="{% url view_organization_profile organization.slug %}">ข้อมูล{{organization.prefix}}</a></li>
-<li{% if active_manage_menu == "user" %} class="user active"{% else %} class="user"{% endif %}><a href="{% url view_organization_users organization.slug %}">ทีมงาน</a></li>
+<li{% if active_manage_menu == "user" %} class="user active"{% else %} class="user"{% endif %}><a href="{% url view_organization_users organization.slug %}">บัญชีผู้ใช้ระบบ</a></li>
+<li{% if active_manage_menu == "role" %} class="role active"{% else %} class="role"{% endif %}><a href="{% url view_organization_roles organization.slug %}">กลุ่มผู้ใช้</a></li>
 <li{% if active_manage_menu == "billing" %} class="billing active"{% else %} class="billing"{% endif %}><a href="{% url view_organization_billing organization.slug %}">ค่าบริการ</a></li>

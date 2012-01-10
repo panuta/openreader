@@ -10,14 +10,10 @@ class DocumentAdmin(admin.ModelAdmin):
 class DocumentShelfAdmin(admin.ModelAdmin):
     pass
 
-class UserShelfPermissionAdmin(admin.ModelAdmin):
-    pass
-
-class UserInvitationShelfPermissionAdmin(admin.ModelAdmin):
+class RoleShelfPermissionAdmin(admin.ModelAdmin):
     pass
 
 admin.site.register(OrganizationShelf, OrganizationShelfAdmin)
 admin.site.register(Document, DocumentAdmin)
 admin.site.register(DocumentShelf, DocumentShelfAdmin)
-admin.site.register(UserShelfPermission, UserShelfPermissionAdmin)
-admin.site.register(UserInvitationShelfPermission, UserInvitationShelfPermissionAdmin)
+admin.site.register(RoleShelfPermission, RoleShelfPermissionAdmin)

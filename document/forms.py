@@ -18,7 +18,6 @@ class OrganizationShelfMultipleChoiceField(forms.ModelMultipleChoiceField):
 
 class OrganizationShelfForm(forms.Form):
     name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'span9'}))
-    shelf_type = forms.ChoiceField(choices=(('shared', 'ชั้นหนังสือส่วนกลาง'), ('private', 'ชั้นหนังสือตามหน่วยงาน')), widget=forms.RadioSelect())
 
 class EditFilePublicationForm(EditPublicationForm):
     shelves = OrganizationShelfMultipleChoiceField(required=False, widget=forms.CheckboxSelectMultiple())

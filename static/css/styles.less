@@ -237,10 +237,11 @@ body {
             &.publication {background:url(/static/images/menu/publication.png) 10px 50% transparent no-repeat;}
             &.publisher {background:url(/static/images/menu/publisher.png) 10px 50% transparent no-repeat;}
             &.shelf {background:url(/static/images/menu/shelf.png) 10px 50% transparent no-repeat;}
-            &.private-shelf {background:url(/static/images/menu/shelf-private.png) 10px 50% transparent no-repeat;}
+            &.restricted-shelf {background:url(/static/images/menu/shelf-restricted.png) 10px 50% transparent no-repeat;}
             &.shelf-all {background:url(/static/images/menu/shelf-all.png) 10px 50% transparent no-repeat;}
             &.shelf-none {background:url(/static/images/menu/shelf-none.png) 10px 50% #FCC no-repeat;}
             &.user {background:url(/static/images/menu/user.png) 10px 50% transparent no-repeat;}
+            &.role {background:url(/static/images/menu/role.png) 10px 50% transparent no-repeat;}
             &.manage {background:url(/static/images/menu/manage.png) 10px 50% transparent no-repeat;}
             &.billing {background:url(/static/images/menu/billing.png) 10px 50% transparent no-repeat;}
 
@@ -572,6 +573,56 @@ form .note {
 
 /* Input Lists */
 
+form .row-inputs {
+    li {
+        margin-bottom:10px;
+        line-height:25px;
+    }
+
+    label {
+        color:#444;
+        float:none;
+    }
+
+    input[type='radio'], input[type='checkbox'] {
+        margin-right:6px;
+    }
+
+    .errorlist {
+        margin-bottom:20px;
+    }
+}
+
+form .checkbox-input {
+
+    label {
+        margin-left:5px;
+        line-height:23px;
+        color:#444;
+        float:none;
+    }
+}
+
+form .table-inputs {
+    th {
+        padding-top:30px;
+    }
+
+    tr.active {
+        background-color:#FFC;
+    }
+
+    label {
+        color:#444;
+        float:none;
+        font-size:1em;
+    }
+
+    input[type='radio'], input[type='checkbox'] {
+        margin-right:6px;
+    }
+}
+
 form .inputs-list {
     li {
         margin-bottom:10px;
@@ -671,8 +722,15 @@ a.btn:visited {color:#333333;}
     padding:10px 0px;
 }
 
-table td.row_actions a {
-    .content_link;
+table td.row_actions {
+    a {
+        .content_link;
+    }
+
+    .not_available {
+        font-style:italic;
+        color:#666;
+    }
 }
 
 .modal .modal-message {

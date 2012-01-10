@@ -1,13 +1,13 @@
 from django.contrib import admin
 from accounts.models import *
 
-class RoleAdmin(admin.ModelAdmin):
-    pass
-
-class UserProfileAdmin(admin.ModelAdmin):
-    pass
+#class UserProfileAdmin(admin.ModelAdmin):
+#    pass
 
 class OrganizationAdmin(admin.ModelAdmin):
+    pass
+
+class OrganizationRoleAdmin(admin.ModelAdmin):
     pass
 
 class UserOrganizationAdmin(admin.ModelAdmin):
@@ -22,9 +22,10 @@ class UserDeviceAdmin(admin.ModelAdmin):
 class UserAccessTokenAdmin(admin.ModelAdmin):
     pass
 
-admin.site.register(Role, RoleAdmin)
-admin.site.register(UserProfile, UserProfileAdmin)
+
+#admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(Organization, OrganizationAdmin)
+admin.site.register(OrganizationRole, OrganizationRoleAdmin)
 admin.site.register(UserOrganization, UserOrganizationAdmin)
 admin.site.register(UserOrganizationInvitation, UserOrganizationInvitationAdmin)
 admin.site.register(UserDevice, UserDeviceAdmin)
