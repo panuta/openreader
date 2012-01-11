@@ -10,7 +10,6 @@ from django.core.urlresolvers import reverse
 
 from common.permissions import can
 
-from accounts.models import OrganizationRole
 from document.models import SHELF_ACCESS, OrganizationShelf, Document
 from publication.models import Publication
 

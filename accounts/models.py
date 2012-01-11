@@ -5,7 +5,7 @@ import re
 
 from django.conf import settings
 from django.core.mail import send_mail
-from django.contrib.auth.models import User, Permission
+from django.contrib.auth.models import User
 from django.db import models
 from django.template.loader import render_to_string
 from django.utils.hashcompat import sha_constructor
@@ -37,8 +37,8 @@ class UserProfile(models.Model):
             return '%s %s' % (self.user.first_name, self.user.last_name)
         return '%s %s' % (self.first_name, self.last_name)
     
-    def get_role(self, organization):
-        return UserOrganization.objects.get(user=self.user, organization=organization).role
+    #def get_role(self, organization):
+    #    return UserOrganization.objects.get(user=self.user, organization=organization).role
 
 # Organization
 
@@ -73,21 +73,10 @@ class Organization(models.Model):
         except UserOrganization.DoesNotExist:
             return False
 
-class OrganizationRole(models.Model):
-    """
-    Admin level SUPER: Super admin can do and see everything within organization. This permission is not adjustable and will be created automatically when creating organization account.
-    Admin level NORMAL: Admin can manage organization
-    Admin level NOTHING: No admin permission
-    """
-
-    ADMIN_LEVEL_SUPER = 9
-    ADMIN_LEVEL_NORMAL = 1
-    ADMIN_LEVEL_NOTHING = 0
-
+class OrganizationGroup(models.Model):
     organization = models.ForeignKey(Organization)
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=500, blank=True)
-    admin_level = models.IntegerField(default=ADMIN_LEVEL_NOTHING)
 
     def __unicode__(self):
         return self.name
@@ -95,24 +84,38 @@ class OrganizationRole(models.Model):
 class UserOrganization(models.Model):
     user = models.ForeignKey(User)
     organization = models.ForeignKey(Organization)
-    role = models.ForeignKey(OrganizationRole)
+    is_admin = models.BooleanField(default=False)
+    position = models.CharField(max_length=300)
     is_default = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
         return '%s:%s' % (self.user.get_profile().get_fullname(), self.organization.name)
 
-# User / Invitation
+class UserGroup(models.Model):
+    user = models.ForeignKey(User)
+    group = models.ForeignKey(OrganizationGroup)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return '%s:%s' % (self.user.get_profile().get_fullname(), self.group.name)
+
+# User Invitation
 
 class UserInvitationManager(models.Manager):
 
-    def create_invitation(self, user_email, organization, role, created_by):
+    def create_invitation(self, user_email, organization, is_admin, position, created_by, groups):
         salt = sha_constructor(str(random.random())).hexdigest()[:5]
         if isinstance(user_email, unicode):
             user_email = user_email.encode('utf-8')
         invitation_key = sha_constructor(salt+user_email).hexdigest()
 
-        return self.create(user_email=user_email, organization=organization, role=role, invitation_key=invitation_key, created_by=created_by)
+        invitation = self.create(user_email=user_email, organization=organization, is_admin=is_admin, position=position, invitation_key=invitation_key, created_by=created_by)
+
+        for group in groups:
+            UserOrganizationInvitationUserGroup.objects.create(invitation=invitation, group=group)
+
+        return invitation
     
     def validate_invitation(self, invitation_key):
         if SHA1_RE.search(invitation_key):
@@ -124,14 +127,21 @@ class UserInvitationManager(models.Manager):
             return None
     
     def claim_invitation(self, invitation, user, is_default=False):
-        user_organization = UserOrganization.objects.create(user=user, organization=invitation.organization, role=invitation.role, is_default=is_default)
+        user_organization = UserOrganization.objects.create(user=user, organization=invitation.organization, is_admin=is_admin, position=invitation.position, is_default=is_default)
+
+        for invitation_group in UserOrganizationInvitationUserGroup.objects.filter(invitation=invitation):
+            UserGroup.objects.create(user=user, group=invitation_group.group)
+        
+        UserOrganizationInvitationUserGroup.objects.filter(invitation=invitation).delete()
         invitation.delete()
+
         return user_organization
 
 class UserOrganizationInvitation(models.Model):
     user_email = models.CharField(max_length=200, null=True, blank=True)
     organization = models.ForeignKey(Organization)
-    role = models.ForeignKey(OrganizationRole)
+    is_admin = models.BooleanField()
+    position = models.CharField(max_length=300)
     invitation_key = models.CharField(max_length=40, unique=True)
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='user_invitation_created_by')
@@ -148,20 +158,6 @@ class UserOrganizationInvitation(models.Model):
         except:
             return False
 
-
-class UserDevice(models.Model):
-    user = models.ForeignKey(User)
-    device_id = models.CharField(max_length=300)
-    created = models.DateTimeField(auto_now_add=True)
-
-    def __unicode__(self):
-        return '%s:%s' % (self.user.get_profile().get_fullname(), self.device_id)
-
-class UserAccessToken(models.Model):
-    user = models.ForeignKey(User)
-    token = models.CharField(max_length=300)
-    expired = models.DateField()
-    created = models.DateTimeField(auto_now_add=True)
-
-    def __unicode__(self):
-        return '%s:%s' % (self.user.get_profile().get_fullname(), self.token)
+class UserOrganizationInvitationUserGroup(models.Model):
+    invitation = models.ForeignKey(UserOrganizationInvitation)
+    group = models.ForeignKey(OrganizationGroup)

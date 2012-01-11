@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from common.forms import StrippedCharField
 from common.permissions import ROLE_CHOICES
 
-from accounts.models import OrganizationRole, UserOrganizationInvitation, UserOrganization
+from accounts.models import OrganizationGroup, UserOrganizationInvitation, UserOrganization
 
 class EmailAuthenticationForm(forms.Form):
     """
@@ -70,13 +70,13 @@ class OrganizationShelfForm(forms.Form):
 
 class InviteOrganizationUserForm(forms.Form):
     email = forms.EmailField(widget=forms.TextInput(attrs={'class':'span6'}))
-    role = forms.ModelChoiceField(queryset=OrganizationRole.objects.all(), empty_label='')
+    role = forms.ModelMultipleChoiceField(queryset=OrganizationGroup.objects.all())
 
     def __init__(self, organization, *args, **kwargs):
         forms.Form.__init__(self, *args, **kwargs)
 
         self.organization = organization
-        self.fields['role'].queryset = OrganizationRole.objects.filter(organization=organization).order_by('name')
+        self.fields['role'].queryset = OrganizationGroup.objects.filter(organization=organization).order_by('name')
 
     def clean_email(self):
         email = self.cleaned_data.get('email', '')
@@ -103,29 +103,14 @@ class ClaimOrganizationUserForm(forms.Form):
         return password2
 
 class EditOrganizationUserForm(forms.Form):
-    role = forms.ModelChoiceField(queryset=OrganizationRole.objects.all(), empty_label=None)
+    role = forms.ModelMultipleChoiceField(queryset=OrganizationGroup.objects.all())
 
     def __init__(self, organization, *args, **kwargs):
         forms.Form.__init__(self, *args, **kwargs)
-        self.fields['role'].queryset = OrganizationRole.objects.filter(organization=organization).order_by('name')
+        self.fields['role'].queryset = OrganizationGroup.objects.filter(organization=organization).order_by('name')
 
-class OrganizationRoleForm(forms.Form):
+class OrganizationGroupForm(forms.Form):
     name = StrippedCharField(max_length=100, widget=forms.TextInput(attrs={'class':'span9'}))
     description = StrippedCharField(required=False, max_length=500, widget=forms.Textarea(attrs={'class':'span9', 'rows':'3'}))
     is_admin = forms.BooleanField(required=False)
 
-class RemoveOrganizationRoleForm(forms.Form):
-    role = forms.ModelChoiceField(required=False, queryset=OrganizationRole.objects.all(), empty_label='')
-
-    def __init__(self, organization, role, *args, **kwargs):
-        forms.Form.__init__(self, *args, **kwargs)
-        self.role = role
-        self.fields['role'].queryset = OrganizationRole.objects.filter(organization=organization).exclude(id=role.id).order_by('name')
-    
-    def clean_role(self):
-        new_role = self.cleaned_data.get('role', '')
-
-        if not new_role and UserOrganization.objects.filter(role=self.role).count():
-            raise forms.ValidationError(_('This field is required.'))
-        
-        return new_role

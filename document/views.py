@@ -11,7 +11,7 @@ from common.permissions import can
 from common.shortcuts import response_json, response_json_success, response_json_error
 from common.utilities import format_abbr_datetime
 
-from accounts.models import Organization, UserOrganization, OrganizationRole
+from accounts.models import Organization, UserOrganization
 from publication.models import Publication, PublicationNotice
 
 from publication import functions as publication_functions

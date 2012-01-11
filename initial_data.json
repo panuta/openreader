@@ -279,39 +279,16 @@
 {"pk": 1, "model": "accounts.organization", "fields": {"status": 0, "modified_by": 2, "name": "Opendream", "slug":"opendream", "prefix":"บริษัท", "created_by": 2}},
 
 
-{"pk": 1, "model": "accounts.organizationrole", "fields": {"organization": 1, "name": "Administrator", "description": "", "admin_level": 9}},
-{"pk": 2, "model": "accounts.organizationrole", "fields": {"organization": 1, "name": "Sale Staff", "description": "", "admin_level": 0}},
+{"pk": 1, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "position": "Admin Position", "user": 2}},
+{"pk": 2, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "position": "Staff Position", "user": 3}},
 
 
-{"pk": 1, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "role": 1, "user": 2}},
-{"pk": 2, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "role": 2, "user": 3}}
+{"pk": 1, "model": "accounts.organizationgroup", "fields": {"organization": 1, "name": "Administrator", "description": ""}},
+{"pk": 2, "model": "accounts.organizationgroup", "fields": {"organization": 1, "name": "Sale Staff", "description": ""}},
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+{"pk": 1, "model": "accounts.usergroup", "fields": {"user": 2, "group": 1}},
+{"pk": 2, "model": "accounts.usergroup", "fields": {"user": 3, "group": 2}}
 
 
 
