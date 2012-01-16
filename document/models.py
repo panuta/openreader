@@ -4,8 +4,6 @@ from django.contrib.auth.models import User
 from accounts.models import UserProfile as BaseUserProfile
 from accounts.models import UserOrganization, UserGroup
 
-# from accounts.models import UserProfile as BaseUserProfile
-
 class OrganizationShelf(models.Model):
     organization = models.ForeignKey('accounts.Organization')
     name = models.CharField(max_length=200)
@@ -38,23 +36,50 @@ class DocumentTag(models.Model):
     tag = models.ForeignKey(OrganizationTag)
 
 class UserProfile(BaseUserProfile):
+
+    def check_permission(self, action, parameters):
+        print parameters
+        try:
+            if action == 'view_shelf':
+                return get_shelf_access(parameters['shelf']) >= SHELF_ACCESS['VIEW_ACCESS']
+            
+            if action == 'upload_shelf':
+                return self.get_shelf_access(parameters['shelf']) == SHELF_ACCESS['PUBLISH_ACCESS']
+            
+        except:
+            pass
+        
+        return BaseUserProfile.check_permission(self, action, parameters)
     
     def get_viewable_shelves(self, organization):
-        shelves = set()
+        user_organization = UserOrganization.objects.get(user=self.user, organization=organization)
+
+        if user_organization.is_admin:
+            return OrganizationShelf.objects.filter(organization=organization).order_by('name')
+        else:
+            shelves = []
+            for shelf in OrganizationShelf.objects.filter(organization=organization).order_by('name'):
+                shelf_access = get_shelf_access(shelf)
+                if shelf_access >= SHELF_ACCESS['VIEW_ACCESS']:
+                    shelves.append(shelf)
         
-        for group in UserGroup.objects.filter(user=self.user):
-            for shelf_permission in ShelfPermission.objects.filter(group=group):
-                if shelf_permission.access_level >= SHELF_ACCESS['VIEW_ACCESS']:
-                    shelves.append(shelf_permission.shelf)
-        
-        return shelves
+            return shelves
     
     def get_shelf_access(self, shelf):
-        role = UserOrganization.objects.get(user=self.user, organization=shelf.organization).role
-        try:
-            return RoleShelfPermission.objects.get(role=role, shelf=shelf).access_level
-        except:
-            return SHELF_ACCESS['NO_ACCESS']
+        level = SHELF_ACCESS['NO_ACCESS']
+
+        user_organization = UserOrganization.objects.get(user=self.user, organization=shelf.organization)
+        for group in UserGroup.objects.filter(user_organization=user_organization):
+
+            try:
+                access_level = ShelfPermission.objects.get(group=group, shelf=shelf).access_level
+            except:
+                access_level = SHELF_ACCESS['NO_ACCESS']
+
+            if level < access_level:
+                level = access_level
+        
+        return level
 
 # Shelf Permissions
 

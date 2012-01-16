@@ -6,6 +6,7 @@
 {% block organization_manage_content %}
 <ul class="breadcrumb">
   <li><a href="{% url view_organization_users organization.slug %}">บัญชีผู้ใช้ระบบ</a> <span class="divider">/</span></li>
+  <li><a href="{% url view_user_invitation organization.slug %}">รายละเอียดคำขอ</a> <span class="divider">/</span></li>
   <li class="active">ส่งอีเมลคำขออีกครั้ง</li>
 </ul>
 

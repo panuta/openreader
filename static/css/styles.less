@@ -241,7 +241,7 @@ body {
             &.shelf-all {background:url(/static/images/menu/shelf-all.png) 10px 50% transparent no-repeat;}
             &.shelf-none {background:url(/static/images/menu/shelf-none.png) 10px 50% #FCC no-repeat;}
             &.user {background:url(/static/images/menu/user.png) 10px 50% transparent no-repeat;}
-            &.role {background:url(/static/images/menu/role.png) 10px 50% transparent no-repeat;}
+            &.group {background:url(/static/images/menu/group.png) 10px 50% transparent no-repeat;}
             &.manage {background:url(/static/images/menu/manage.png) 10px 50% transparent no-repeat;}
             &.billing {background:url(/static/images/menu/billing.png) 10px 50% transparent no-repeat;}
 
@@ -346,12 +346,12 @@ body {
     padding:15px 15px 15px 45px;
     background:url(/static/images/icons/danger_icon.png) 15px 50% no-repeat;
 
-    a:link, a:active, a:visited {
+    a.danger:link, a.danger:active, a.danger:visited {
         text-decoration:underline;
         color:#666;
     }
 
-    a:hover {
+    a.danger:hover {
         background-color:#C30;
         color:#FFF;
         text-shadow:none;
@@ -520,6 +520,11 @@ form, .form-stacked {
         }
     }
 
+    .fixed-value {
+        font-size:1.1em;
+        line-height:21px;
+    }
+
     .help-block {
         margin-top:5px;
     }
@@ -592,6 +597,30 @@ form .row-inputs {
         margin-bottom:20px;
     }
 }
+
+form .checkbox-inputs {
+    li {
+        margin-bottom:10px;
+    }
+
+    label {
+        line-height:23px;
+        color:#444;
+        float:none;
+
+        input {
+            margin-right:5px;
+        }
+
+        span {
+            color:#666;
+            font-style:italic;
+        }
+    }
+}
+
+
+
 
 form .checkbox-input {
 
@@ -733,12 +762,19 @@ table td.row_actions {
     }
 }
 
-.modal .modal-message {
-    padding:10px 15px;
-    background-color:#C30;
-    color:#FFF;
-    border-bottom:1px solid #EEE;
-}
+.modal {
+    h3 em {
+        color:#369;
+        font-style:normal;
+    }
+
+    .modal-message {
+        padding:10px 15px;
+        background-color:#C30;
+        color:#FFF;
+        border-bottom:1px solid #EEE;
+    }
+} 
 
 /* *************** Publication Page *************** */
 
@@ -810,6 +846,93 @@ table td.row_actions {
     .statistics {
         margin-top:25px;
     }
+}
+
+/*
+ *
+ * UPLOAD DOCUMENTS
+ *
+ */
+
+#upload-document-modal {
+    .upload_dropzone {
+        text-align:center;
+        padding:25px 0px;
+        border:1px dashed #CCC;
+    }
+}
+
+.documents_upload_page {
+    .upload_dropzone {
+        border:1px dashed #CCC;
+        padding:20px 0px;
+        text-align:center;
+        margin-bottom:20px;
+
+        .dragdrop {
+            margin-top:15px;
+            color:#555;
+            font-size:1.2em;
+        }
+    }
+
+    .metadata_panel {
+        width:330px;
+        float:right;
+        border-left:1px solid #999;
+        padding-left:10px;
+
+        label {
+            float:none;
+            color:#444;
+            font-size:1.1em;
+            display:block;
+            width:auto;
+            text-align:left;
+            margin-bottom:5px;
+        }
+        
+    }
+
+    .uploading_panel {
+        margin-right:350px;
+
+        li {
+            margin-bottom:15px;
+            border:1px solid #CCC;
+            padding:10px 10px 10px 35px;
+
+            .filename {
+                font-weight:bold;
+                color:#444;
+            }
+        }
+
+        li.uploading {
+            background:url('/static/images/file_uploading.png') #FFF 10px 10px no-repeat;
+
+            .upload_progressbar {
+                margin:8px 0px;
+                img {
+                    vertical-align:middle;
+                }
+            }
+        }
+
+        li.uploaded {
+            background:url('/static/images/file_uploaded.png') #d5ead2 10px 10px no-repeat;
+
+            a {
+                text-decoration:underline;
+
+                &:hover {
+                    background-color:@linkColor !important;
+                    color:#FFF !important;
+                }
+            }
+        }
+    }
+    
 }
 
 /*

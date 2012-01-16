@@ -6,7 +6,64 @@
 
 {% block html_head %}
 {{block.super}}
+
+{% if shelf %}
+{% can user 'upload_shelf' organization=organization shelf=shelf %}
+
 <script type="text/javascript" src="{{STATIC_URL}}libs/plupload/plupload.full.js"></script>
+
+<script>
+$(document).ready(function () {
+
+  
+/*
+  //$('.upload_publication_button').on('click', function(e) {
+    //if(!$('#upload-document-modal').length) {
+      //$('body').append('<div class="modal hide fade" id="upload-document-modal" style="display:none;"><div class="modal-header"><a class="close" href="#">×</a><h3><span>อัพโหลดไฟล์</span> ชั้นหนังสือธรรมดา</h3></div><div class="modal-message"></div><div class="modal-body"><div class="upload_dropzone" id="upload_dropzone"><a href="#" class="btn select_files_button" id="select_files_button"><span>เลือกไฟล์</span></a></div></div><div class="modal-footer"><input class="btn" type="button" value="ยกเลิก" /><input class="btn primary" type="submit" value="บันทึกไฟล์" /></div></div>');
+      $("#upload-document-modal").modal({backdrop:'static'});
+
+      console.log('init');
+
+      var uploader = new plupload.Uploader({
+        runtimes : 'html5,flash',
+        browse_button : 'select_files_button',
+        container : 'upload_dropzone',
+        drop_element: 'upload_dropzone',
+        url : '{% url upload_documents_to_shelf organization.slug shelf.id %}',
+        flash_swf_url : '{{STATIC_URL}}libs/plupload/plupload.flash.swf',
+        multipart: true,
+        headers: {'X-Requested-With':'XMLHttpRequest', 'X-CSRFToken':'{{csrf_token}}'}
+      });
+
+      uploader.init();
+
+      uploader.bind('FilesAdded', function(up, files) {
+        window.location = '{% url upload_documents_to_shelf organization.slug shelf.id %}';
+      });
+
+    //}
+
+    $('#upload-document-modal .modal-message').hide();
+    $("#upload-document-modal").modal('show');
+    
+    //return false;
+  //});
+
+
+*/
+  
+  
+
+
+});
+</script>
+
+{% endcan %}
+{% endif %}
+
+
+{% comment %}
+
 <script>
 function increaseAllCount(shelf_id) {
   var count_num = $('.sidebar .shelf-all span').text().split(' ')[0].substring(1) * 1;
@@ -161,6 +218,9 @@ $(document).ready(function () {
   {% endcan %}
 })
 </script>
+
+{% endcomment %}
+
 {% endblock %}
 
 {% block body_authenticated %}
@@ -172,18 +232,20 @@ $(document).ready(function () {
 <div class="content"><div class="content-inner">
   <h2>{% if shelf_type == 'all' %}ไฟล์ทั้งหมด{% endif %}{% if shelf_type == 'none' %}ไฟล์ที่ไม่อยู่ในชั้นหนังสือ{% endif %}{% if shelf %}<span>ชั้นหนังสือ</span>{{shelf.name}}{% endif %}</h2>
 
-  {% can user 'edit,manage' organization %}
+  {% if shelf %}
     <div class="page_actions">
-      {% can user 'edit' organization %}<a href="{% url upload_documents organization.slug %}" class="btn primary upload_publication_button"><span>อัพโหลดไฟล์</span></a>{% endcan %}
-      {% can user 'manage' organization %}{% if shelf %}<a href="{% url edit_document_shelf organization.slug shelf.id %}" class="btn edit_shelf_button"><span>แก้ไขชั้นหนังสือ</span></a>{% endif %}{% endcan %}
+      {% can user 'upload_shelf' organization=organization shelf=shelf %}<a href="{% url upload_documents_to_shelf organization.slug shelf.id %}" class="btn primary upload_publication_button"><span>อัพโหลดไฟล์</span></a>{% endcan %}
+      {% can user 'admin' organization=organization %}<a href="{% url edit_document_shelf organization.slug shelf.id %}" class="btn edit_shelf_button"><span>แก้ไขชั้นหนังสือ</span></a>{% endcan %}
     </div>
-  {% endcan %}
+  {% endif %}
 
+  {% comment %}
   <div class="upload_dropzone" id="upload_dropzone" style="display:none;">
     <div class="close_panel"><a href="#">ปิดช่องอัพโหลด</a></div>
     <a href="#" class="btn select_files_button" id="select_files_button"><span>เลือกไฟล์</span></a>
     <div class="dragdrop">หรือลากไฟล์มาวางที่กรอบนี้</div>
   </div>
+  {% endcomment %}
 
   <ul id="upload_errors"></ul>
   <ul id="upload_jobs"></ul>
@@ -220,5 +282,14 @@ $(document).ready(function () {
 
 </div></div>
 </div>
+
+<div class="modal hide fade" id="upload-document-modal" style="display:none;">
+  <div class="modal-header"><a class="close" href="#">×</a><h3>อัพโหลดไฟล์ไปที่ <em>ชั้นหนังสือธรรมดา</em></h3></div>
+  <div class="modal-message"></div>
+  <div class="modal-body">
+    <div class="upload_dropzone" id="upload_dropzone"><a href="#" class="btn select_files_button" id="select_files_button"><span>เลือกไฟล์</span></a></div>
+  </div>
+</div>
+
 
 {% endblock %}

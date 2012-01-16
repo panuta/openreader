@@ -11,7 +11,7 @@ from common.permissions import can
 from common.shortcuts import response_json, response_json_success, response_json_error
 from common.utilities import format_abbr_datetime
 
-from accounts.models import Organization, UserOrganization
+from accounts.models import Organization, UserOrganization, OrganizationGroup
 from publication.models import Publication, PublicationNotice
 
 from publication import functions as publication_functions
@@ -36,7 +36,9 @@ def view_documents(request, organization_slug):
     print request.user.get_profile().get_viewable_shelves(organization)
 
 
-    if not can(request.user, 'view', organization):
+
+
+    if not can(request.user, 'view', {'organization':organization}):
         raise Http404
     
     if can(request.user, 'edit', organization):
@@ -51,7 +53,7 @@ def view_documents_by_shelf(request, organization_slug, shelf_id):
     organization = get_object_or_404(Organization, slug=organization_slug)
     shelf = get_object_or_404(OrganizationShelf, pk=shelf_id)
 
-    if shelf.organization.id != organization.id or not can(request.user, 'view', organization):
+    if shelf.organization.id != organization.id or not can(request.user, 'view', {'organization':organization}):
         raise Http404
     
     if can(request.user, 'edit', organization):
@@ -65,7 +67,7 @@ def view_documents_by_shelf(request, organization_slug, shelf_id):
 def view_documents_with_no_shelf(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
-    if not can(request.user, 'view', organization):
+    if not can(request.user, 'view', {'organization':organization}):
         raise Http404
     
     if can(request.user, 'edit', organization):
@@ -76,10 +78,46 @@ def view_documents_with_no_shelf(request, organization_slug):
     return render(request, 'document/documents_noshelf.html', {'organization':organization, 'documents':documents, 'shelf':None, 'shelf_type':'none'})
 
 @login_required
+def upload_documents_to_shelf(request, organization_slug, shelf_id):
+    organization = get_object_or_404(Organization, slug=organization_slug)
+    shelf = get_object_or_404(OrganizationShelf, pk=shelf_id)
+
+    if shelf.organization.id != organization.id or not can(request.user, 'upload_shelf', {'organization':organization, 'shelf':shelf}):
+        raise Http404
+    
+    if request.method == 'POST':
+        file = request.FILES[u'file']
+
+        if not file:
+            return response_json_error('file-missing')
+        
+        uploading_file = UploadedFile(file)
+
+        publication = publication_functions.upload_publication(request, 'document', uploading_file, organization)
+        document = Document.objects.create(publication=publication)
+
+        DocumentShelf.objects.create(document=document, shelf=shelf, created_by=request.user)
+        document.publication.status = Publication.STATUS['PUBLISHED']
+        document.publication.save()
+
+        return response_json_success({
+            'uid': str(publication.uid),
+            'title': publication.title,
+            'size': uploading_file.file.size,
+            'shelf':shelf.id if shelf else '',
+            'url': reverse('view_document', args=[publication.uid])
+        })
+    
+    return render(request, 'document/documents_upload.html', {'organization':organization, 'shelf':shelf, 'shelf_type':'shelf'})
+    
+
+
+@login_required
 def upload_documents(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
     return _upload_documents(request, organization)
 
+"""
 @login_required
 def upload_documents_to_shelf(request, organization_slug, shelf_id):
     organization = get_object_or_404(Organization, slug=organization_slug)
@@ -89,6 +127,7 @@ def upload_documents_to_shelf(request, organization_slug, shelf_id):
         raise Http404
 
     return _upload_documents(request, organization, shelf)
+"""
 
 def _upload_documents(request, organization, shelf=None):
     if not can(request.user, 'edit', organization):
@@ -176,20 +215,20 @@ def _persist_shelf_permissions(request, organization, shelf):
     all_access_permission = request.POST.get('all_access')
 
     if all_access_permission == 'publish':
-        for role in OrganizationRole.objects.filter(organization=organization):
-            RoleShelfPermission.objects.create(role=role, shelf=shelf, access_level=SHELF_ACCESS['PUBLISH_ACCESS'], created_by=request.user)
+        for group in OrganizationGroup.objects.filter(organization=organization):
+            ShelfPermission.objects.create(group=group, shelf=shelf, access_level=SHELF_ACCESS['PUBLISH_ACCESS'], created_by=request.user)
         
     elif all_access_permission == 'view':
-        for role in OrganizationRole.objects.filter(organization=organization):
-            RoleShelfPermission.objects.create(role=role, shelf=shelf, access_level=SHELF_ACCESS['VIEW_ACCESS'], created_by=request.user)
+        for group in OrganizationGroup.objects.filter(organization=organization):
+            ShelfPermission.objects.create(group=group, shelf=shelf, access_level=SHELF_ACCESS['VIEW_ACCESS'], created_by=request.user)
 
     else:
         shelf_permissions = {}
         for item in request.POST.keys():
-            if item[:12] == 'role_access-':
-                role_id = item.split('-')[1]
+            if item[:13] == 'group_access-':
+                group_id = item.split('-')[1]
                 try:
-                    role = OrganizationRole.objects.get(id=role_id, organization=organization)
+                    group = OrganizationGroup.objects.get(id=group_id, organization=organization)
                 except:
                     pass
                 else:
@@ -202,17 +241,17 @@ def _persist_shelf_permissions(request, organization, shelf):
                     else:
                         access_level = SHELF_ACCESS['NO_ACCESS']
                         
-                    shelf_permissions[role.id] = access_level
+                    shelf_permissions[group.id] = access_level
 
-        for role in OrganizationRole.objects.filter(organization=organization):
-            access_level = shelf_permissions.get(role.id, SHELF_ACCESS['NO_ACCESS'])
-            RoleShelfPermission.objects.create(role=role, shelf=shelf, access_level=access_level, created_by=request.user)
+        for group in OrganizationGroup.objects.filter(organization=organization):
+            access_level = shelf_permissions.get(group.id, SHELF_ACCESS['NO_ACCESS'])
+            ShelfPermission.objects.create(group=group, shelf=shelf, access_level=access_level, created_by=request.user)
 
 @login_required
 def create_document_shelf(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
-    if not can(request.user, 'manage', organization):
+    if not can(request.user, 'admin', {'organization':organization}):
         raise Http404
     
     if request.method == 'POST':
@@ -230,8 +269,8 @@ def create_document_shelf(request, organization_slug):
         all_access_permission = request.POST.get('all_access')
 
         shelf_permissions = {}
-        for role in OrganizationRole.objects.filter(organization=organization):
-            shelf_permissions[role.id] = request.POST.get('role_access-%d' % role.id)
+        for group in OrganizationGroup.objects.filter(organization=organization):
+            shelf_permissions[group.id] = request.POST.get('group_access-%d' % group.id)
 
     else:
         form = OrganizationShelfForm()
@@ -245,7 +284,7 @@ def edit_document_shelf(request, organization_slug, shelf_id):
     organization = get_object_or_404(Organization, slug=organization_slug)
     shelf = get_object_or_404(OrganizationShelf, pk=shelf_id)
 
-    if shelf.organization.id != organization.id or not can(request.user, 'manage', organization):
+    if shelf.organization.id != organization.id or not can(request.user, 'admin', {'organization':organization}):
         raise Http404
     
     if request.method == 'POST':
@@ -254,7 +293,7 @@ def edit_document_shelf(request, organization_slug, shelf_id):
             shelf.name = form.cleaned_data['name']
             shelf.save()
 
-            RoleShelfPermission.objects.filter(shelf=shelf).delete()
+            ShelfPermission.objects.filter(shelf=shelf).delete()
 
             _persist_shelf_permissions(request, organization, shelf)
 
@@ -264,8 +303,8 @@ def edit_document_shelf(request, organization_slug, shelf_id):
     else:
         shelf_permissions = {}
         permission_list = []
-        for permission in RoleShelfPermission.objects.filter(shelf=shelf):
-            shelf_permissions[permission.role.id] = permission.access_level
+        for permission in ShelfPermission.objects.filter(shelf=shelf):
+            shelf_permissions[permission.group.id] = permission.access_level
             permission_list.append(permission.access_level)
         
         all_access_permission = ''
@@ -277,6 +316,7 @@ def edit_document_shelf(request, organization_slug, shelf_id):
             if permission_list[0] == SHELF_ACCESS['PUBLISH_ACCESS']:
                 all_access_permission = 'publish'
 
+        print shelf_permissions
         form = OrganizationShelfForm(initial={'name':shelf.name})
     
     return render(request, 'document/shelf_modify.html', {'organization':organization, 'form':form, 'shelf':shelf, 'shelf_type':'edit', 'shelf_permissions':shelf_permissions, 'all_access_permission':all_access_permission})
@@ -286,7 +326,7 @@ def delete_document_shelf(request, organization_slug, shelf_id):
     organization = get_object_or_404(Organization, slug=organization_slug)
     shelf = get_object_or_404(OrganizationShelf, pk=shelf_id)
 
-    if shelf.organization.id != organization.id or not can(request.user, 'manage', organization):
+    if shelf.organization.id != organization.id or not can(request.user, 'admin', {'organization':organization}):
         raise Http404
     
     if request.method == 'POST':
@@ -294,7 +334,7 @@ def delete_document_shelf(request, organization_slug, shelf_id):
             delete_documents = 'delete_documents' in request.POST and request.POST.get('delete_documents') == 'on'
 
             DocumentShelf.objects.filter(shelf=shelf).delete()
-            RoleShelfPermission.objects.filter(shelf=shelf).delete()
+            ShelfPermission.objects.filter(shelf=shelf).delete()
             
             if delete_documents:
                 for document in Document.objects.filter(publication__organization=organization, publication__publication_type='document', shelves__in=[shelf]):

@@ -1,30 +1,27 @@
 ROLE_CHOICES = (('organization_admin', 'Organization Admin'), ('organization_staff', 'Organization Staff'), ('organization_user', 'Organization User'))
 
-def can(user, action, object):
-    return _dispatch(user, action, object)
-
-def _dispatch(user, action, object):
-    action_permits = []
-
+def can(user, action, parameters={}):
     if ',' in action:
         actions = action.split(',')
+        use_AND = True
+
     elif '+' in action:
         actions = action.split('+')
+        use_AND = False
+
     else:
         actions = (action, )
-    
-    for action_name in actions:
-        try:
-            action_permits.append(getattr(object, 'can_%s' % action_name)(user))
-        except AttributeError:
-            action_permits.append(False)
-    
-    result = action_permits[0]
 
-    for action_permit in action_permits[1:]:
-        if ',' in action:
-            result = result or action_permit
-        elif '+' in action:
-            result = result or action_permit
+    permission_list = []
+    for action_name in actions:
+        permission_list.append(user.get_profile().check_permission(action_name, parameters))
+    
+    result = permission_list[0]
+
+    for permission in permission_list[1:]:
+        if use_AND:
+            result = result and permission
+        else:
+            result = result or permission
     
     return result

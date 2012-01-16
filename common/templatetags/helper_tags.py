@@ -36,19 +36,25 @@ def format_abbr_date(datetime):
 # PERMISSION #################################################################
 
 class CanNode(template.Node):
-    def __init__(self, nodelist_true, nodelist_false, user, action, object):
+    def __init__(self, nodelist_true, nodelist_false, user, actions, parameters):
         self.nodelist_true = nodelist_true
         self.nodelist_false = nodelist_false
         self.user = template.Variable(user)
-        self.action = action.strip(' \"\'')
-        self.object = template.Variable(object)
+        self.actions = actions.strip(' \"\'')
+
+        self.parameters = {}
+        for key in parameters.keys():
+            self.parameters[key] = template.Variable(parameters[key])
     
     def render(self, context):
         user = self.user.resolve(context)
-        object = self.object.resolve(context)
-        action = self.action
+        actions = self.actions
 
-        if can(user, action, object):
+        parameters = {}
+        for key in self.parameters.keys():
+            parameters[key] = self.parameters[key].resolve(context)
+        
+        if can(user, actions, parameters):
             output = self.nodelist_true.render(context)
             return output
         else:
@@ -57,11 +63,21 @@ class CanNode(template.Node):
 
 @register.tag(name="can")
 def do_can(parser, token):
-    try:
-        tag_name, user, action, object = token.split_contents()
-    except ValueError:
-        raise template.TemplateSyntaxError, "can tag raise ValueError"
+    bits = token.split_contents()
+    if len(bits) < 3:
+        raise TemplateSyntaxError('can tag takes user, action name and base object as a required argument')
     
+    parameters = {}
+    remaining_bits = bits[3:]
+    while remaining_bits:
+        option = remaining_bits.pop(0)
+
+        try:
+            (key, value) = option.split('=')
+            parameters[key] = value
+        except:
+            pass
+
     nodelist_true = parser.parse(('else', 'endcan'))
     token = parser.next_token()
     if token.contents == 'else':
@@ -70,7 +86,7 @@ def do_can(parser, token):
     else:
         nodelist_false = NodeList()
     
-    return CanNode(nodelist_true, nodelist_false, user, action, object)
+    return CanNode(nodelist_true, nodelist_false, bits[1], bits[2], parameters)
 
 # HTML GENERATOR #################################################################
 

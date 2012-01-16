@@ -5,8 +5,10 @@ urlpatterns = patterns('document.views',
     url(r'^org/(?P<organization_slug>\w+)/documents/shelf/(?P<shelf_id>\d+)/$', 'view_documents_by_shelf', name='view_documents_by_shelf'),
     url(r'^org/(?P<organization_slug>\w+)/documents/no-shelf/$', 'view_documents_with_no_shelf', name='view_documents_with_no_shelf'),
 
+    url(r'^org/(?P<organization_slug>\w+)/documents/shelf/(?P<shelf_id>\d+)/upload/$', 'upload_documents_to_shelf', name='upload_documents_to_shelf'),
+
     url(r'^org/(?P<organization_slug>\w+)/documents/upload/$', 'upload_documents', name='upload_documents'),
-    url(r'^org/(?P<organization_slug>\w+)/documents/upload/(?P<shelf_id>\d+)/$', 'upload_documents_to_shelf', name='upload_documents_to_shelf'),
+    #url(r'^org/(?P<organization_slug>\w+)/documents/upload/(?P<shelf_id>\d+)/$', 'upload_documents_to_shelf', name='upload_documents_to_shelf'),
     url(r'^org/(?P<organization_slug>\w+)/documents/upload/finishing/$', 'finishing_upload_documents', name='finishing_upload_documents'),
 
     url(r'^org/(?P<organization_slug>\w+)/shelf/create/$', 'create_document_shelf', name='create_document_shelf'),

@@ -37,6 +37,22 @@ class UserProfile(models.Model):
             return '%s %s' % (self.user.first_name, self.user.last_name)
         return '%s %s' % (self.first_name, self.last_name)
     
+    def check_permission(self, action, parameters):
+        try:
+            if action == 'view':
+                return UserOrganization.objects.filter(user=self, organization=parameters['organization']).exists()
+            
+            if action == 'edit':
+                pass
+            
+            if action == 'admin':
+                return UserOrganization.objects.get(user=self, organization=parameters['organization']).is_admin
+            
+            return False
+        
+        except:
+            return False
+    
     #def get_role(self, organization):
     #    return UserOrganization.objects.get(user=self.user, organization=organization).role
 
@@ -55,6 +71,22 @@ class Organization(models.Model):
 
     def __unicode__(self):
         return self.name
+    
+    def check_permission(self, user, action, parameters):
+        try:
+            if action == 'view':
+                return UserOrganization.objects.filter(organization=self, user=user).exists()
+            
+            if action == 'edit':
+                pass
+            
+            if action == 'manage':
+                return UserOrganization.objects.get(organization=self, user=user).is_admin
+            
+            return False
+        
+        except:
+            return False
 
     def can_view(self, user):
         return UserOrganization.objects.filter(user=user, organization=self).exists()
@@ -65,7 +97,7 @@ class Organization(models.Model):
             return user_organization.role.code in ('organization_admin', 'organization_staff')
         except UserOrganization.DoesNotExist:
             return False
-    
+
     def can_manage(self, user):
         try:
             user_organization = UserOrganization.objects.get(organization=self, user=user)
@@ -89,11 +121,13 @@ class UserOrganization(models.Model):
     is_default = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
 
+    groups = models.ManyToManyField(OrganizationGroup, through='UserGroup')
+
     def __unicode__(self):
         return '%s:%s' % (self.user.get_profile().get_fullname(), self.organization.name)
 
 class UserGroup(models.Model):
-    user = models.ForeignKey(User)
+    user_organization = models.ForeignKey(UserOrganization)
     group = models.ForeignKey(OrganizationGroup)
     created = models.DateTimeField(auto_now_add=True)
 
@@ -104,13 +138,13 @@ class UserGroup(models.Model):
 
 class UserInvitationManager(models.Manager):
 
-    def create_invitation(self, user_email, organization, is_admin, position, created_by, groups):
+    def create_invitation(self, email, organization, is_admin, position, groups, created_by):
         salt = sha_constructor(str(random.random())).hexdigest()[:5]
-        if isinstance(user_email, unicode):
-            user_email = user_email.encode('utf-8')
-        invitation_key = sha_constructor(salt+user_email).hexdigest()
+        if isinstance(email, unicode):
+            email = email.encode('utf-8')
+        invitation_key = sha_constructor(salt + email).hexdigest()
 
-        invitation = self.create(user_email=user_email, organization=organization, is_admin=is_admin, position=position, invitation_key=invitation_key, created_by=created_by)
+        invitation = self.create(email=email, organization=organization, is_admin=is_admin, position=position, invitation_key=invitation_key, created_by=created_by)
 
         for group in groups:
             UserOrganizationInvitationUserGroup.objects.create(invitation=invitation, group=group)
@@ -127,10 +161,10 @@ class UserInvitationManager(models.Manager):
             return None
     
     def claim_invitation(self, invitation, user, is_default=False):
-        user_organization = UserOrganization.objects.create(user=user, organization=invitation.organization, is_admin=is_admin, position=invitation.position, is_default=is_default)
+        user_organization = UserOrganization.objects.create(user=user, organization=invitation.organization, is_admin=invitation.is_admin, position=invitation.position, is_default=is_default)
 
         for invitation_group in UserOrganizationInvitationUserGroup.objects.filter(invitation=invitation):
-            UserGroup.objects.create(user=user, group=invitation_group.group)
+            UserGroup.objects.create(user_organization=user_organization, group=invitation_group.group)
         
         UserOrganizationInvitationUserGroup.objects.filter(invitation=invitation).delete()
         invitation.delete()
@@ -138,7 +172,7 @@ class UserInvitationManager(models.Manager):
         return user_organization
 
 class UserOrganizationInvitation(models.Model):
-    user_email = models.CharField(max_length=200, null=True, blank=True)
+    email = models.CharField(max_length=200, null=True, blank=True)
     organization = models.ForeignKey(Organization)
     is_admin = models.BooleanField()
     position = models.CharField(max_length=300)
@@ -146,14 +180,16 @@ class UserOrganizationInvitation(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='user_invitation_created_by')
 
+    groups = models.ManyToManyField(OrganizationGroup, through='UserOrganizationInvitationUserGroup')
+
     def __unicode__(self):
-        return '%s:%s' % (self.user_email, self.organization.name)
+        return '%s:%s' % (self.email, self.organization.name)
 
     objects = UserInvitationManager()
 
     def send_invitation_email(self, is_created_organization=False):
         try:
-            send_mail('%s want to invite you to join their team' % self.organization.name, render_to_string('accounts/manage/emails/user_organization_invitation.html', {'invitation':self }), settings.EMAIL_FOR_USER_PUBLISHER_INVITATION, [self.user_email], fail_silently=False)
+            send_mail('%s want to invite you to join their team' % self.organization.name, render_to_string('accounts/manage/emails/user_organization_invitation.html', {'invitation':self }), settings.EMAIL_FOR_USER_PUBLISHER_INVITATION, [self.email], fail_silently=False)
             return True
         except:
             return False

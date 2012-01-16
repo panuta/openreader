@@ -2,12 +2,22 @@
 
 from django import forms
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
 from common.forms import StrippedCharField
 from common.permissions import ROLE_CHOICES
 
 from accounts.models import OrganizationGroup, UserOrganizationInvitation, UserOrganization
+
+class UserOrganizationMultipleChoiceField(forms.ModelMultipleChoiceField):
+    def __init__(self, *args, **kwargs):
+        kwargs['queryset'] = UserOrganization.objects.all()
+        kwargs['widget'] = forms.CheckboxSelectMultiple()
+        forms.ModelMultipleChoiceField.__init__(self, *args, **kwargs)
+
+    def label_from_instance(self, obj):
+        return '%s (%s)' % (obj.user.get_profile().get_fullname(), obj.position)
 
 class EmailAuthenticationForm(forms.Form):
     """
@@ -64,30 +74,39 @@ class UserProfileForm(forms.Form):
 class OrganizationProfileForm(forms.Form):
     name = StrippedCharField(max_length=200)
 
-class OrganizationShelfForm(forms.Form):
-    name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'span9'}))
-    description = StrippedCharField(required=False, widget=forms.Textarea(attrs={'class':'span9', 'rows':'3'}))
-
 class InviteOrganizationUserForm(forms.Form):
     email = forms.EmailField(widget=forms.TextInput(attrs={'class':'span6'}))
-    role = forms.ModelMultipleChoiceField(queryset=OrganizationGroup.objects.all())
+    position = forms.CharField(max_length=300, widget=forms.TextInput(attrs={'class':'span6'}))
+    is_admin = forms.BooleanField(required=False, label='admin role?')
+    groups = forms.ModelMultipleChoiceField(queryset=OrganizationGroup.objects.all(), widget=forms.CheckboxSelectMultiple())
 
     def __init__(self, organization, *args, **kwargs):
         forms.Form.__init__(self, *args, **kwargs)
 
         self.organization = organization
-        self.fields['role'].queryset = OrganizationGroup.objects.filter(organization=organization).order_by('name')
+        self.fields['groups'].queryset = OrganizationGroup.objects.filter(organization=organization).order_by('name')
 
     def clean_email(self):
         email = self.cleaned_data.get('email', '')
         
-        if UserOrganizationInvitation.objects.filter(user_email=email, organization=self.organization).exists():
+        if UserOrganizationInvitation.objects.filter(email=email, organization=self.organization).exists():
             raise forms.ValidationError(u'มีการส่งคำขอเพิ่มผู้ใช้ถึงผู้ใช้คนนี้ก่อนหน้านี้แล้ว')
         
         if UserOrganization.objects.filter(organization=self.organization, user__email=email).exists():
             raise forms.ValidationError(u'ผู้ใช้คนนี้อยู่ใน%s %s แล้ว' % (self.organization.prefix, self.organization.name))
         
         return email
+
+class UpdateOrganizationUserInviteForm(forms.Form):
+    position = forms.CharField(max_length=300, widget=forms.TextInput(attrs={'class':'span6'}))
+    is_admin = forms.BooleanField(required=False, label='admin role?')
+    groups = forms.ModelMultipleChoiceField(queryset=OrganizationGroup.objects.all(), widget=forms.CheckboxSelectMultiple())
+
+    def __init__(self, organization, *args, **kwargs):
+        forms.Form.__init__(self, *args, **kwargs)
+
+        self.organization = organization
+        self.fields['groups'].queryset = OrganizationGroup.objects.filter(organization=organization).order_by('name')
 
 class ClaimOrganizationUserForm(forms.Form):
     first_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'span9'}))
@@ -103,14 +122,23 @@ class ClaimOrganizationUserForm(forms.Form):
         return password2
 
 class EditOrganizationUserForm(forms.Form):
-    role = forms.ModelMultipleChoiceField(queryset=OrganizationGroup.objects.all())
+    position = forms.CharField(max_length=300, widget=forms.TextInput(attrs={'class':'span6'}))
+    is_admin = forms.BooleanField(required=False, label='admin role?')
+    groups = forms.ModelMultipleChoiceField(queryset=OrganizationGroup.objects.all(), widget=forms.CheckboxSelectMultiple())
 
     def __init__(self, organization, *args, **kwargs):
         forms.Form.__init__(self, *args, **kwargs)
-        self.fields['role'].queryset = OrganizationGroup.objects.filter(organization=organization).order_by('name')
+
+        self.organization = organization
+        self.fields['groups'].queryset = OrganizationGroup.objects.filter(organization=organization).order_by('name')
 
 class OrganizationGroupForm(forms.Form):
     name = StrippedCharField(max_length=100, widget=forms.TextInput(attrs={'class':'span9'}))
     description = StrippedCharField(required=False, max_length=500, widget=forms.Textarea(attrs={'class':'span9', 'rows':'3'}))
-    is_admin = forms.BooleanField(required=False)
+    members = UserOrganizationMultipleChoiceField(required=False)
+
+    def __init__(self, organization, *args, **kwargs):
+        super(OrganizationGroupForm, self).__init__(*args, **kwargs)
+        self.fields['members'].queryset = UserOrganization.objects.filter(organization=organization).order_by('user__userprofile__first_name')
+        
 

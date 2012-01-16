@@ -19,9 +19,11 @@
       {% csrf_token %}
       {{form.non_field_errors}}
 
+      {% if shelf_documents_count %}
       <div class="delete_documents">
         <input type="checkbox" name="delete_documents" id="id_delete_documents" /><label for="id_delete_documents">ลบไฟล์ที่อยู่ในชั้น {{shelf.name}} ทั้งหมด ({{shelf_documents_count}} ไฟล์)</label>
       </div>
+      {% endif %}
 
       <div class="form_actions left_form_actions">
         <button type="submit" name="submit-delete" class="btn danger">ยืนยันการลบชั้นหนังสือ</button>

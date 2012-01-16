@@ -8,6 +8,6 @@
   <div class="head"><a href="{% url view_documents organization.slug %}">ชั้นหนังสือ</a></div>
   <ul>
     {% generate_shelf_list user organization shelf %}
-    {% can user 'manage' organization %}<li class="add{% if shelf_type == 'create' %} active{% endif %}"><a href="{% url create_document_shelf organization.slug %}">สร้างชั้นหนังสือใหม่</a></li>{% endcan %}
+    {% can user 'admin' organization=organization %}<li class="add{% if shelf_type == 'create' %} active{% endif %}"><a href="{% url create_document_shelf organization.slug %}">สร้างชั้นหนังสือใหม่</a></li>{% endcan %}
   </ul>
 </div>

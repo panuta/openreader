@@ -10,11 +10,11 @@
 $(document).ready(function () {
   $('input[name="all_access"]').on('click', function(e) {
     var level = $('input[name="all_access"]:checked').val();
-    $('.role-permissions input[value="' + level + '"]').attr("checked", "checked");
+    $('.group-permissions input[value="' + level + '"]').attr("checked", "checked");
     $(this).closest('tr').addClass('active');
   });
 
-  $('.role_permission input[type="radio"]').on('click', function(e) {
+  $('.permission_row input[type="radio"]').on('click', function(e) {
     $('input[name="all_access"]').attr("checked", false).closest('tr').removeClass('active');;
   });
 })
@@ -43,7 +43,7 @@ $(document).ready(function () {
       <div class="clearfix"><label for="id_name">ชื่อชั้นหนังสือ</label><div class="input">{{form.name}}{{form.name.errors}}</div></div>
       <div class="clearfix">
         <label>การเข้าถึงชั้นหนังสือ</label>
-        <div class="input table-inputs role-permissions">
+        <div class="input table-inputs group-permissions">
           <table>
             <tr>
               <td>ทุกคนใน{{organization.prefix}}</td>

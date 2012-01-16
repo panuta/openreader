@@ -1,0 +1,38 @@
+{% extends 'accounts/manage/organization_base.html' %}
+{% load helper_tags pagination_tags %}
+
+{% block organization_manage_head_title %} - ผู้ใช้งาน{% endblock %}
+{% block organization_manage_menu %}{% include 'accounts/manage/snippets/organization_nav.html' with active_manage_menu='user' %}{% endblock %}
+
+{% block organization_manage_content %}
+<ul class="breadcrumb">
+  <li><a href="{% url view_organization_users organization.slug %}">บัญชีผู้ใช้ระบบ</a> <span class="divider">/</span></li>
+  <li class="active">รายละเอียดคำขอ</li>
+</ul>
+
+<h2>รายละเอียดคำขอ</h2>
+
+<form method="POST" action=".">
+  {% csrf_token %}
+  {{form.non_field_errors}}
+
+  <div class="clearfix"><label for="id_email">อีเมลผู้ใช้</label><div class="input fixed-value">{{invitation.email}}</div></div>
+  <div class="clearfix"><label for="id_position">ตำแหน่งใน{{organization.prefix}}</label><div class="input">{{form.position}}{{form.position.errors}}</div></div>
+  <div class="clearfix"><label>สิทธิ์การจัดการ</label><div class="input checkbox-inputs"><label>{{form.is_admin}} ผู้ใช้สามารถจัดการระบบ เช่น บัญชีผู้ใช้ ชั้นหนังสือ และสิทธิ์การใช้งาน ได้</label>{{form.is_admin.errors}}</div></div>
+  <div class="clearfix">
+    <label for="id_role">กลุ่มผู้ใช้</label>
+    <div class="input checkbox-inputs">{{form.groups}}{{form.groups.errors}}</div>
+  </div>
+
+  <div class="form_actions">
+    <button type="submit" class="btn primary">บันทึกข้อมูล</button>
+    <button type="reset" class="btn">ล้างข้อมูล</button>
+  </div>
+</form>
+
+<div class="delete_panel page_actions">
+  <a href="{% url resend_user_invitation invitation.id %}" class="btn">ส่งคำขออีกครั้ง</a>
+  <a href="{% url cancel_user_invitation invitation.id %}" class="btn">ยกเลิกคำขอ</a>
+</div>
+
+{% endblock %}

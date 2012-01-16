@@ -93,7 +93,7 @@ def view_organization_profile(request, organization_slug):
 def edit_organization_profile(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
-    if not can(request.user, 'manage', organization):
+    if not can(request.user, 'admin', {'organization':organization}):
         raise Http404
     
     if request.method == 'POST':
@@ -117,7 +117,7 @@ def view_organization_users(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
     organization_users = UserOrganization.objects.filter(organization=organization).order_by('user__userprofile__first_name', 'user__userprofile__last_name')
 
-    if can(request.user, 'manage', organization):
+    if can(request.user, 'admin', {'organization':organization}):
         invited_users = UserOrganizationInvitation.objects.filter(organization=organization)
     else:
         invited_users = None
@@ -128,16 +128,18 @@ def view_organization_users(request, organization_slug):
 def invite_organization_user(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
-    if not can(request.user, 'manage', organization):
+    if not can(request.user, 'admin', {'organization':organization}):
         raise Http404
 
     if request.method == 'POST':
         form = InviteOrganizationUserForm(organization, request.POST)
         if form.is_valid():
             email = form.cleaned_data['email']
-            role = form.cleaned_data['role']
+            position = form.cleaned_data['position']
+            is_admin = form.cleaned_data['is_admin']
+            groups = form.cleaned_data['groups']
 
-            invitation = UserOrganizationInvitation.objects.create_invitation(email, organization, role, request.user)
+            invitation = UserOrganizationInvitation.objects.create_invitation(email, organization, is_admin, position, groups, request.user)
             
             if invitation:
                 invitation.send_invitation_email()
@@ -152,11 +154,37 @@ def invite_organization_user(request, organization_slug):
 
     return render(request, 'accounts/manage/organization_user_invite.html', {'organization':organization, 'form':form})
 
+@login_required
+def view_user_invitation(request, invitation_id):
+    invitation = get_object_or_404(UserOrganizationInvitation, pk=invitation_id)
+    organization = invitation.organization
+
+    if request.method == 'POST':
+        form = UpdateOrganizationUserInviteForm(organization, request.POST)
+        if form.is_valid():
+            invitation.position = form.cleaned_data['position']
+            invitation.is_admin = form.cleaned_data['is_admin']
+
+            invitation.groups.clear()
+
+            for group in form.cleaned_data['groups']:
+                UserOrganizationInvitationUserGroup.objects.create(invitation=invitation, group=group)
+            
+            messages.success(request, u'แก้ไขข้อมูลคำขอเรียบร้อยแล้ว')
+
+            return redirect('view_organization_users', organization_slug=organization.slug)
+
+    else:
+        form = UpdateOrganizationUserInviteForm(organization, initial={'position':invitation.position, 'is_admin':invitation.is_admin, 'groups':invitation.groups.all()})
+
+    return render(request, 'accounts/manage/organization_user_invite_details.html', {'organization':organization, 'invitation':invitation, 'form':form})
+
+@login_required
 def resend_user_invitation(request, invitation_id):
     invitation = get_object_or_404(UserOrganizationInvitation, pk=invitation_id)
     organization = invitation.organization
 
-    if not can(request.user, 'manage', organization):
+    if not can(request.user, 'admin', {'organization':organization}):
         raise Http404
     
     if request.method == 'POST':
@@ -170,11 +198,12 @@ def resend_user_invitation(request, invitation_id):
 
     return render(request, 'accounts/manage/organization_user_invite_resend.html', {'organization':organization, 'invitation':invitation})
 
+@login_required
 def cancel_user_invitation(request, invitation_id):
     invitation = get_object_or_404(UserOrganizationInvitation, pk=invitation_id)
     organization = invitation.organization
 
-    if not can(request.user, 'manage', organization):
+    if not can(request.user, 'admin', {'organization':organization}):
         raise Http404
     
     if request.method == 'POST':
@@ -207,7 +236,7 @@ def claim_user_invitation(request, invitation_key):
 
             invitation = UserOrganizationInvitation.objects.validate_invitation(invitation_key)
 
-            user = User.objects.create_user(invitation.user_email, invitation.user_email, password1)
+            user = User.objects.create_user(invitation.email, invitation.email, password1)
 
             from django.db import models
             app_label, model_name = settings.AUTH_PROFILE_MODULE.split('.')
@@ -217,13 +246,13 @@ def claim_user_invitation(request, invitation_key):
             UserOrganizationInvitation.objects.claim_invitation(invitation, user, True)
             
             # Automatically log user in
-            user = authenticate(email=invitation.user_email, password=password1)
+            user = authenticate(email=invitation.email, password=password1)
             login(request, user)
             
             return redirect('view_organization_front', organization_slug=invitation.organization.slug)
 
     else:
-        existing_users = User.objects.filter(email=invitation.user_email)
+        existing_users = User.objects.filter(email=invitation.email)
 
         if existing_users:
             user = existing_users[0]
@@ -253,21 +282,38 @@ def edit_organization_user(request, organization_user_id):
     user_organization = get_object_or_404(UserOrganization, pk=organization_user_id)
     organization = user_organization.organization
 
-    if not can(request.user, 'manage', organization):
+    if not can(request.user, 'admin', {'organization':organization}):
         raise Http404
     
     if request.method == 'POST':
         form = EditOrganizationUserForm(organization, request.POST)
         if form.is_valid():
-            user_organization.role = form.cleaned_data['role']
+            user_organization.position = form.cleaned_data['position']
+            user_organization.is_admin = form.cleaned_data['is_admin']
             user_organization.save()
+
+            new_groups = set()
+            for group in form.cleaned_data['groups']:
+                new_groups.add(group)
+            
+            old_groups = set()
+            for user_group in UserGroup.objects.filter(user_organization=user_organization):
+                old_groups.add(user_group.group)
+            
+            creating_groups = new_groups.difference(old_groups)
+            removing_groups = old_groups.difference(new_groups)
+
+            for group in creating_groups:
+                UserGroup.objects.create(group=group, user_organization=user_organization)
+            
+            UserGroup.objects.filter(user_organization=user_organization, group__in=removing_groups).delete()
 
             messages.success(request, u'แก้ไขข้อมูลผู้ใช้เรียบร้อย')
 
             return redirect('view_organization_users', organization_slug=organization.slug)
 
     else:
-        form = EditOrganizationUserForm(organization, initial={'role':user_organization.role})
+        form = EditOrganizationUserForm(organization, initial={'position':user_organization.position, 'is_admin':user_organization.is_admin, 'groups':user_organization.groups.all()})
 
     return render(request, 'accounts/manage/organization_user_edit.html', {'organization':organization, 'user_organization':user_organization, 'form':form})
 
@@ -276,7 +322,7 @@ def remove_organization_user(request, organization_user_id):
     user_organization = get_object_or_404(UserOrganization, pk=organization_user_id)
     organization = user_organization.organization
 
-    if not can(request.user, 'manage', organization):
+    if not can(request.user, 'admin', {'organization':organization}):
         raise Http404
     
     if request.method == 'POST':
@@ -287,99 +333,108 @@ def remove_organization_user(request, organization_user_id):
 
     return render(request, 'accounts/manage/organization_user_remove.html', {'organization':organization, 'user_organization':user_organization})
 
-# Organization Roles
+# Organization Groups
 
 @login_required
-def view_organization_roles(request, organization_slug):
+def view_organization_groups(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
-    organization_roles = OrganizationRole.objects.filter(organization=organization).order_by('-admin_level', 'name')
+    organization_groups = OrganizationGroup.objects.filter(organization=organization).order_by('name')
 
-    if not can(request.user, 'manage', organization):
+    if not can(request.user, 'admin', {'organization':organization}):
         raise Http404
 
-    for role in organization_roles:
-        role.user_counter = UserOrganization.objects.filter(role=role).count()
+    for group in organization_groups:
+        group.user_counter = UserGroup.objects.filter(group=group).count()
 
-    return render(request, 'accounts/manage/organization_roles.html', {'organization':organization, 'organization_roles':organization_roles})
+    return render(request, 'accounts/manage/organization_groups.html', {'organization':organization, 'organization_groups':organization_groups})
 
 @login_required
-def add_organization_role(request, organization_slug):
+def add_organization_group(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
-    if not can(request.user, 'manage', organization):
+    if not can(request.user, 'admin', {'organization':organization}):
         raise Http404
 
     if request.method == 'POST':
-        form = OrganizationRoleForm(request.POST)
+        form = OrganizationGroupForm(organization, request.POST)
         if form.is_valid():
             name = form.cleaned_data['name']
             description = form.cleaned_data['description']
-            is_admin = form.cleaned_data['is_admin']
+            
+            group = OrganizationGroup.objects.create(organization=organization, name=name, description=description)
 
-            role = OrganizationRole.objects.create(organization=organization, name=name, description=description, admin_level=OrganizationRole.ADMIN_LEVEL_NORMAL if is_admin else OrganizationRole.ADMIN_LEVEL_NOTHING)
+            for member in form.cleaned_data['members']:
+                UserGroup.objects.create(group=group, user_organization=member)
 
             messages.success(request, u'เพิ่มกลุ่มผู้ใช้เรียบร้อย')
-            return redirect('view_organization_roles', organization_slug=organization.slug)
+            return redirect('view_organization_groups', organization_slug=organization.slug)
 
     else:
-        form = OrganizationRoleForm()
+        form = OrganizationGroupForm(organization)
     
-    return render(request, 'accounts/manage/organization_role_modify.html', {'organization':organization, 'form':form})
+    return render(request, 'accounts/manage/organization_group_modify.html', {'organization':organization, 'form':form})
 
 @login_required
-def edit_organization_role(request, organization_role_id):
-    role = get_object_or_404(OrganizationRole, pk=organization_role_id)
-    organization = role.organization
+def edit_organization_group(request, organization_group_id):
+    group = get_object_or_404(OrganizationGroup, pk=organization_group_id)
+    organization = group.organization
 
-    if not can(request.user, 'manage', organization):
+    if not can(request.user, 'admin', {'organization':organization}):
         raise Http404
 
     if request.method == 'POST':
-        form = OrganizationRoleForm(request.POST)
+        form = OrganizationGroupForm(organization, request.POST)
         if form.is_valid():
-            role.name = form.cleaned_data['name']
-            role.description = form.cleaned_data['description']
-            role.admin_level = OrganizationRole.ADMIN_LEVEL_NORMAL if form.cleaned_data['is_admin'] else OrganizationRole.ADMIN_LEVEL_NOTHING
-            role.save()
+            group.name = form.cleaned_data['name']
+            group.description = form.cleaned_data['description']
+            group.save()
+
+            new_members = set(form.cleaned_data['members'])
+            
+            old_members = set()
+            for member in UserGroup.objects.filter(group=group):
+                old_members.add(member.user_organization)
+            
+            creating_members = new_members.difference(old_members)
+            removing_members = old_members.difference(new_members)
+
+            for member in creating_members:
+                UserGroup.objects.create(group=group, user_organization=member)
+            
+            UserGroup.objects.filter(group=group, user_organization__in=removing_members).delete()
 
             messages.success(request, u'แก้ไขกลุ่มผู้ใช้เรียบร้อย')
-            return redirect('view_organization_roles', organization_slug=organization.slug)
+            return redirect('view_organization_groups', organization_slug=organization.slug)
 
     else:
-        form = OrganizationRoleForm(initial={'name':role.name, 'description':role.description, 'is_admin':role.admin_level==OrganizationRole.ADMIN_LEVEL_NORMAL})
+        members = []
+        for member in UserGroup.objects.filter(group=group):
+            members.append(member.user_organization)
+
+        form = OrganizationGroupForm(organization, initial={'name':group.name, 'description':group.description, 'members':members})
     
-    return render(request, 'accounts/manage/organization_role_modify.html', {'organization':organization, 'role':role, 'form':form})
+    return render(request, 'accounts/manage/organization_group_modify.html', {'organization':organization, 'group':group, 'form':form})
 
 @login_required
-def remove_organization_role(request, organization_role_id):
-    role = get_object_or_404(OrganizationRole, pk=organization_role_id)
-    organization = role.organization
+def remove_organization_group(request, organization_group_id):
+    group = get_object_or_404(OrganizationGroup, pk=organization_group_id)
+    organization = group.organization
 
-    if not can(request.user, 'manage', organization):
+    if not can(request.user, 'admin', {'organization':organization}):
         raise Http404
 
-    role.user_counter = UserOrganization.objects.filter(role=role).count()
+    group.user_counter = UserGroup.objects.filter(group=group).count()
 
     if request.method == 'POST':
-        form = RemoveOrganizationRoleForm(organization, role, request.POST)
-        if form.is_valid():
-            if 'submit-remove' in request.POST:
-                new_role = form.cleaned_data['role']
+        if 'submit-delete' in request.POST:
+            UserGroup.objects.filter(group=group).delete()
+            group.delete()
 
-                rows = UserOrganization.objects.filter(role=role).update(role=new_role)
-                role.delete()
-
-                if rows:
-                    messages.success(request, u'ลบกลุ่มผู้ใช้และย้ายผู้ใช้ไปกลุ่มผู้ใช้ใหม่เรียบร้อย')
-                else:
-                    messages.success(request, u'ลบกลุ่มผู้ใช้เรียบร้อย')
-            
-            return redirect('view_organization_roles', organization_slug=organization.slug)
-
-    else:
-        form = RemoveOrganizationRoleForm(organization, role)
+            messages.success(request, u'ลบกลุ่มผู้ใช้เรียบร้อย')
+        
+        return redirect('view_organization_groups', organization_slug=organization.slug)
     
-    return render(request, 'accounts/manage/organization_role_remove.html', {'organization':organization, 'role':role, 'form':form})
+    return render(request, 'accounts/manage/organization_group_remove.html', {'organization':organization, 'group':group})
 
 # Billing
 
@@ -387,7 +442,7 @@ def remove_organization_role(request, organization_role_id):
 def view_organization_billing(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
-    if not can(request.user, 'manage', organization):
+    if not can(request.user, 'admin', {'organization':organization}):
         raise Http404
 
     return render(request, 'accounts/manage/organization_billing.html', {'organization':organization, })    

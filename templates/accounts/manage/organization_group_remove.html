@@ -1,0 +1,28 @@
+{% extends 'accounts/manage/organization_base.html' %}
+
+{% block organization_manage_head_title %} - ลบกลุ่มผู้ใช้{% endblock %}
+{% block organization_manage_menu %}{% include 'accounts/manage/snippets/organization_nav.html' with active_manage_menu='group' %}{% endblock %}
+
+{% block organization_manage_content %}
+<ul class="breadcrumb">
+  <li><a href="{% url view_organization_groups organization.slug %}">กลุ่มผู้ใช้</a> <span class="divider">/</span></li>
+  <li class="active">ลบกลุ่มผู้ใช้</li>
+</ul>
+
+<h2>ลบกลุ่มผู้ใช้ {{group.name}}</h2>
+
+<form method="POST" action=".">
+  {% csrf_token %}
+  {{form.non_field_errors}}
+
+  <div class="note">
+    <p>มีผู้ใช้อยู่กลุ่มผู้ใช้นี้ {{group.user_counter}} คน</p>
+  </div>
+
+  <div class="form_actions left_form_actions">
+    <button type="submit" name="submit-delete" class="btn danger">ยืนยันลบกลุ่มผู้ใช้</button>
+    <button type="submit" name="submit-cancel" class="btn">ยกเลิก</button>
+  </div>
+
+</form>
+{% endblock %}

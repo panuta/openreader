@@ -7,20 +7,19 @@
 {% block organization_manage_content %}
 <h2>บัญชีผู้ใช้ระบบ</h2>
 
-{% can user 'manage' organization %}<div class="page_actions"><a href="{% url invite_organization_user organization.slug %}" class="btn">เพิ่มผู้ใช้ระบบ</a></div>{% endcan %}
+{% can user 'admin' organization=organization %}<div class="page_actions"><a href="{% url invite_organization_user organization.slug %}" class="btn">เพิ่มผู้ใช้ระบบ</a></div>{% endcan %}
 
 {% if invited_users %}
+{% can user 'admin' organization=organization %}
 <h3>คำขอเพิ่มผู้ใช้ระบบ</h3>
 
 <table class="zebra-striped">
   <col />
-  <col width="240"/>
-  <col width="240"/>
-  <col width="165"/>
+  <col width="250"/>
+  <col width="100"/>
   <thead>
     <tr>
       <th>อีเมล</th>
-      <th>กลุ่มผู้ใช้</th>
       <th>ส่งเมื่อวันที่</th>
       <th></th>
     </tr>
@@ -28,40 +27,38 @@
   <tbody>
     {% for invitation in invited_users %}
     <tr>
-      <td>{{invitation.user_email}}</td>
-      <td>{{invitation.role.name}}</td>
+      <td>{{invitation.email}}</td>
       <td>{{invitation.created|format_abbr_datetime}}</td>
-      <td class="row_actions"><a href="{% url resend_user_invitation invitation.id %}">ส่งอีเมลอีกครั้ง</a> | <a href="{% url cancel_user_invitation invitation.id %}">ยกเลิก</a></td>
+      <td class="row_actions"><a href="{% url view_user_invitation invitation.id %}">แก้ไขข้อมูล</a></td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
 
 <h3>ผู้ใช้ระบบทั้งหมด</h3>
+{% endcan %}
 {% endif %}
 
 {% autopaginate organization_users 20 %}
 
 <table class="zebra-striped">
   <col />
-  <col width="300"/>
-  <col width="260"/>
+  <col width="340"/>
   <col width="100"/>
+  {% can user 'admin' organization=organization %}<col />{% endcan %}
   <thead>
     <tr>
       <th>ชื่อ</th>
-      <th>อีเมล</th>
-      <th>กลุ่มผู้ใช้</th>
-      {% can user 'manage' organization %}<th></th>{% endcan %}
+      <th>ตำแหน่ง</th>
+      {% can user 'admin' organization=organization %}<th></th>{% endcan %}
     </tr>
   </thead>
   <tbody>
     {% for organization_user in organization_users %}
     <tr>
       <td>{{organization_user.user.get_profile.get_fullname}}</td>
-      <td>{{organization_user.user.email}}</td>
-      <td>{{organization_user.role.name}}</td>
-      {% can user 'manage' organization %}<td class="row_actions"><a href="{% url edit_organization_user organization_user.id %}">แก้ไขข้อมูล</a></td>{% endcan %}
+      <td>{{organization_user.position}}</td>
+      {% can user 'admin' organization=organization %}<td class="row_actions"><a href="{% url edit_organization_user organization_user.id %}">แก้ไขข้อมูล</a></td>{% endcan %}
     </tr>
     {% endfor %}
   </tbody>

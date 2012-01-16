@@ -1,14 +1,13 @@
-- admin should be able to view/edit all shelves without having to specify shelf permission
-- per-shelf permission
+- upload document
+- check validation for creating/editing shelf
+- replace file (update version)
 - API
-
-
 - PDF thumbnails
 
+
+
 TODO - PHRASE 2
-- user group
 - advanced pagination -> [prev] [1] [2] ... [5] [6] [[7]] [8] [9] ... [14] [15] [next]
-- replace file (update version)
 - revision
 - public publication (anyone can see)
 

@@ -279,16 +279,16 @@
 {"pk": 1, "model": "accounts.organization", "fields": {"status": 0, "modified_by": 2, "name": "Opendream", "slug":"opendream", "prefix":"บริษัท", "created_by": 2}},
 
 
-{"pk": 1, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "position": "Admin Position", "user": 2}},
-{"pk": 2, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "position": "Staff Position", "user": 3}},
+{"pk": 1, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "position": "Admin Position", "user": 2, "is_admin":true}},
+{"pk": 2, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "position": "Staff Position", "user": 3, "is_admin":false}},
 
 
 {"pk": 1, "model": "accounts.organizationgroup", "fields": {"organization": 1, "name": "Administrator", "description": ""}},
 {"pk": 2, "model": "accounts.organizationgroup", "fields": {"organization": 1, "name": "Sale Staff", "description": ""}},
 
 
-{"pk": 1, "model": "accounts.usergroup", "fields": {"user": 2, "group": 1}},
-{"pk": 2, "model": "accounts.usergroup", "fields": {"user": 3, "group": 2}}
+{"pk": 1, "model": "accounts.usergroup", "fields": {"user_organization": 1, "group": 1}},
+{"pk": 2, "model": "accounts.usergroup", "fields": {"user_organization": 2, "group": 2}}
 
 
 

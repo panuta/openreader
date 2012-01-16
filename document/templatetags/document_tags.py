@@ -10,33 +10,31 @@ from django.core.urlresolvers import reverse
 
 from common.permissions import can
 
+from accounts.models import OrganizationGroup
 from document.models import SHELF_ACCESS, OrganizationShelf, Document
 from publication.models import Publication
 
-# Role
-
+# Used in create/edit shelf page
 @register.simple_tag
-def shelf_permissions_radio_table(organization, permissions=None): # EDITED
-    print permissions
-    
+def shelf_permissions_radio_table(organization, permissions=None):
     table_html = []
-    for role in OrganizationRole.objects.filter(organization=organization).order_by('-is_admin', 'name'):
+    for group in OrganizationGroup.objects.filter(organization=organization).order_by('name'):
 
         check_publish = ''
         check_view = ''
         check_no = ''
 
         if permissions:
-            if permissions[role.id] == SHELF_ACCESS['PUBLISH_ACCESS'] or permissions[role.id] == 'publish':
+            if permissions[group.id] == SHELF_ACCESS['PUBLISH_ACCESS'] or permissions[group.id] == 'publish':
                 check_publish = 'checked="checked"'
                 
-            elif permissions[role.id] == SHELF_ACCESS['VIEW_ACCESS'] or permissions[role.id] == 'view':
+            elif permissions[group.id] == SHELF_ACCESS['VIEW_ACCESS'] or permissions[group.id] == 'view':
                 check_view = 'checked="checked"'
 
-            elif permissions[role.id] == SHELF_ACCESS['NO_ACCESS'] or permissions[role.id] == 'no':
+            elif permissions[group.id] == SHELF_ACCESS['NO_ACCESS'] or permissions[group.id] == 'no':
                 check_no = 'checked="checked"'
 
-        table_html.append(u'<tr class="role_permission"><td>%s</td><td><label><input type="radio" name="role_access-%d" value="publish" %s/> อัพโหลดและแก้ไข</label></td><td><label><input type="radio" name="role_access-%d" value="view" %s/> ดูอย่างเดียว</label></td><td><label><input type="radio" name="role_access-%d" value="no" %s/> ไม่สามารถเข้าถึงได้</label></td></tr>' % (role.name, role.id, check_publish, role.id, check_view, role.id, check_no))
+        table_html.append(u'<tr class="permission_row"><td>%s</td><td><label><input type="radio" name="group_access-%d" value="publish" %s/> อัพโหลดและแก้ไข</label></td><td><label><input type="radio" name="group_access-%d" value="view" %s/> ดูอย่างเดียว</label></td><td><label><input type="radio" name="group_access-%d" value="no" %s/> ไม่สามารถเข้าถึงได้</label></td></tr>' % (group.name, group.id, check_publish, group.id, check_view, group.id, check_no))
     
     return ''.join(table_html)
 
@@ -55,6 +53,7 @@ def generate_shelf_list(user, organization, active_shelf=None): # EDITED
     shelf_html = []
     for shelf in OrganizationShelf.objects.filter(organization=organization).order_by('name'):
         access_level = user.get_profile().get_shelf_access(shelf)
+        print access_level
 
         if access_level > SHELF_ACCESS['NO_ACCESS']:
             active_html = ' active' if active_shelf and active_shelf.id == shelf.id else ''
