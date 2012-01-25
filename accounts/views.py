@@ -82,16 +82,18 @@ def change_my_account_password(request):
 
 # ORGANIZATION ##############################################################################################################
 
+@login_required
 def view_organization_profile(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
     statistics = {
-        'document_count': Publication.objects.filter(organization=organization, publication_type='document', status=Publication.STATUS['PUBLISHED']).count(),
+        'document_count': Publication.objects.filter(organization=organization).count(),
         'shelf_count': OrganizationShelf.objects.filter(organization=organization).count()
     }
     
     return render(request, 'accounts/manage/organization_profile.html', {'organization':organization, 'statistics':statistics})
 
+@login_required
 def edit_organization_profile(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
@@ -439,14 +441,3 @@ def remove_organization_group(request, organization_group_id):
         return redirect('view_organization_groups', organization_slug=organization.slug)
     
     return render(request, 'accounts/manage/organization_group_remove.html', {'organization':organization, 'group':group})
-
-# Billing
-
-@login_required
-def view_organization_billing(request, organization_slug):
-    organization = get_object_or_404(Organization, slug=organization_slug)
-
-    if not can(request.user, 'admin', {'organization':organization}):
-        raise Http404
-
-    return render(request, 'accounts/manage/organization_billing.html', {'organization':organization, })    

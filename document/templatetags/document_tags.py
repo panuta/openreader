@@ -11,7 +11,7 @@ from django.core.urlresolvers import reverse
 from common.permissions import can
 
 from accounts.models import OrganizationGroup
-from document.models import SHELF_ACCESS, Publication, OrganizationShelf, Document
+from document.models import SHELF_ACCESS, Publication, OrganizationShelf
 
 # Used in create/edit shelf page
 @register.simple_tag
@@ -40,70 +40,19 @@ def shelf_permissions_radio_table(organization, permissions=None):
 # SHELF
 
 @register.simple_tag
-def generate_shelf_options(organization):
+def generate_shelf_list(user, organization, active_shelf=None): # DONE
     shelf_html = []
-    for shelf in OrganizationShelf.objects.filter(organization=organization).order_by('name'):
-        # This code for wait for is_shared field append in model
-        is_shared = False
-        try:
-            is_shared = shelf.is_shared
-        except:
-            pass
-            
-        shelf_html.append('<option value="%d">%s%s</option>' % (shelf.id, shelf.name, u' (ส่วนกลาง)' if is_shared else ''))
+    for shelf in user.get_profile().get_viewable_shelves(organization):
+        active_html = ' active' if active_shelf and active_shelf.id == shelf.id else ''
+        count = Publication.objects.filter(shelves__in=[shelf]).count()
+        shelf_html.append(u'<li class="shelf%s" id="shelf-%d"><a href="%s">%s <span>(%d ไฟล์)</span></a></li>' % (active_html, shelf.id, reverse('view_documents_by_shelf', args=[organization.slug, shelf.id]), shelf.name, count))
     
     return ''.join(shelf_html)
 
 @register.simple_tag
-def generate_shelf_list(user, organization, active_shelf=None): # EDITED
-    shelf_html = []
-    for shelf in OrganizationShelf.objects.filter(organization=organization).order_by('name'):
-        access_level = user.get_profile().get_shelf_access(shelf)
-        print access_level
-
-        if access_level > SHELF_ACCESS['NO_ACCESS']:
-            active_html = ' active' if active_shelf and active_shelf.id == shelf.id else ''
-            restricted_shelf = ' restricted-shelf' if access_level == SHELF_ACCESS['VIEW_ACCESS'] else ''
-
-            if can(user, 'edit', organization):
-                count = Document.objects.filter(shelves__in=[shelf], publication__publication_type='document').count()
-            else:
-                count = Document.objects.filter(shelves__in=[shelf], publication__publication_type='document', publication__status=Publication.STATUS['PUBLISHED']).count()
-
-            shelf_html.append(u'<li class="shelf%s%s" id="shelf-%d"><a href="%s">%s <span>(%d ไฟล์)</span></a></li>' % (restricted_shelf, active_html, shelf.id, reverse('view_documents_by_shelf', args=[organization.slug, shelf.id]), shelf.name, count))
-    
-    return ''.join(shelf_html)
-
-@register.simple_tag
-def generate_documents_with_no_shelf_menu(organization, user, shelf_type):
-    if can(user, 'edit', organization):
-        count = Document.objects.filter(publication__organization=organization, publication__publication_type='document', shelves=None, publication__uploaded_by=user).count()
-    else:
-        count = Document.objects.filter(publication__organization=organization, publication__publication_type='document', publication__status=Publication.STATUS['PUBLISHED'], shelves=None, publication__uploaded_by=user).count()
-    
-    if shelf_type == 'none' or count:
-        active_html = ' active' if shelf_type == 'none' else ''
-        return u'<li class="shelf-none%s"><a href="%s">ไฟล์ที่ยังไม่อยู่ในชั้น <span>(%d ไฟล์)</span></a></li>' % (active_html, reverse('view_documents_with_no_shelf', args=[organization.slug]), count)
-    else:
-        return ''
-
-
-@register.simple_tag
-def generate_shelf_permission_input(organization, user=None):
-    input_html = []
-    for shelf in OrganizationShelf.objects.filter(organization=organization).order_by('name'):
-        input_html.append('<span>%s</span><ul><li><input type="radio" name="shelf-%d-permission" /> Can edit</li><li><input type="radio" name="shelf-%d-permission" /> Can view only</li><li><input type="radio" name="shelf-%d-permission" /> No access</li></ul>' % (shelf.id, shelf.id, shelf.id))
-    
-    return ''.join(input_html)
-
-@register.simple_tag
-def print_all_publication_count(user, organization):
-    if can(user, 'edit', organization):
-        count = Document.objects.filter(publication__organization=organization, publication__publication_type='document').count()
-    else:
-        count = Document.objects.filter(publication__organization=organization, publication__publication_type='document', publication__status=Publication.STATUS['PUBLISHED']).count()
-    
-    return count
+def print_all_publication_count(user, organization): # DONE
+    shelves = user.get_profile().get_viewable_shelves(organization)
+    return Publication.objects.filter(shelves__in=shelves).order_by('-uploaded_by').count()
 
 class HasShelfNode(template.Node):
     def __init__(self, nodelist_true, nodelist_false, organization):

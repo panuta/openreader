@@ -102,26 +102,6 @@ def generate_organization_menu(user):
         return ''
 
 @register.simple_tag
-def print_publication_status(publication):
-    if publication.status == Publication.STATUS['UNFINISHED']:
-        return u'<span class="unfinished">ข้อมูลยังไม่ครบถ้วน</span>'
-
-    elif publication.status == Publication.STATUS['UNPUBLISHED']:
-    
-        if publication.is_processing and PublicationNotice.objects.filter(publication=publication, notice=PublicationNotice.NOTICE['PUBLISH_WHEN_READY']).exists():
-            return u'<span class="unpublished">ไฟล์จะเผยแพร่ทันทีที่ประมวลผลเสร็จ</span>'
-    
-        return u'<span class="unpublished">ยังไม่เผยแพร่</span>'
-
-    elif publication.status == Publication.STATUS['SCHEDULED']:
-        return u'<span class="scheduled" title="ตั้งเวลาไว้วันที่ %s">ตั้งเวลาเผยแพร่</span>' % utilities.format_abbr_datetime(publication.scheduled)
-    
-    elif publication.status == Publication.STATUS['PUBLISHED']:
-        return u'<span class="published" title="เผยแพร่เมื่อวันที่ %s">เผยแพร่แล้ว</span>' % utilities.format_abbr_datetime(publication.published)
-    
-    return ''
-
-@register.simple_tag
 def genetate_publication_category_multiple_checkbox(existing_categories):
     from publisher.models import PublicationCategory
 

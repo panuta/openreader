@@ -29,7 +29,7 @@
     <tr>
       <td>{{invitation.email}}</td>
       <td>{{invitation.created|format_abbr_datetime}}</td>
-      <td class="row_actions"><a href="{% url view_user_invitation invitation.id %}">แก้ไขข้อมูล</a></td>
+      <td class="row_actions"><a href="{% url view_user_invitation invitation.id %}">แก้ไข</a></td>
     </tr>
     {% endfor %}
   </tbody>

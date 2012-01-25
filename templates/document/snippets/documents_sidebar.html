@@ -2,7 +2,6 @@
 <div class="sidebar documents_sidebar">
   <ul>
     <li class="shelf-all{% if shelf_type == 'all' %} active{% endif %}"><a href="{% url view_documents organization.slug %}">ไฟล์ทั้งหมด <span>({% print_all_publication_count user organization %} ไฟล์)</span></a></li>
-    {% generate_documents_with_no_shelf_menu organization user shelf_type %}
   </ul>
 
   <div class="head"><a href="{% url view_documents organization.slug %}">ชั้นหนังสือ</a></div>

@@ -4,227 +4,8 @@
 {% block head_title %}ไฟล์เอกสาร{% endblock %}
 {% block topnav %}{% include 'snippets/organization_topnav.html' with active_menu='document' %}{% endblock %}
 
-{% block html_head %}
-{{block.super}}
-
-{% if shelf %}
-{% can user 'upload_shelf' organization=organization shelf=shelf %}
-
-<script type="text/javascript" src="{{STATIC_URL}}libs/plupload/plupload.full.js"></script>
-
-<script>
-$(document).ready(function () {
-
-  
-/*
-  //$('.upload_publication_button').on('click', function(e) {
-    //if(!$('#upload-document-modal').length) {
-      //$('body').append('<div class="modal hide fade" id="upload-document-modal" style="display:none;"><div class="modal-header"><a class="close" href="#">×</a><h3><span>อัพโหลดไฟล์</span> ชั้นหนังสือธรรมดา</h3></div><div class="modal-message"></div><div class="modal-body"><div class="upload_dropzone" id="upload_dropzone"><a href="#" class="btn select_files_button" id="select_files_button"><span>เลือกไฟล์</span></a></div></div><div class="modal-footer"><input class="btn" type="button" value="ยกเลิก" /><input class="btn primary" type="submit" value="บันทึกไฟล์" /></div></div>');
-      $("#upload-document-modal").modal({backdrop:'static'});
-
-      console.log('init');
-
-      var uploader = new plupload.Uploader({
-        runtimes : 'html5,flash',
-        browse_button : 'select_files_button',
-        container : 'upload_dropzone',
-        drop_element: 'upload_dropzone',
-        url : '{% url upload_documents_to_shelf organization.slug shelf.id %}',
-        flash_swf_url : '{{STATIC_URL}}libs/plupload/plupload.flash.swf',
-        multipart: true,
-        headers: {'X-Requested-With':'XMLHttpRequest', 'X-CSRFToken':'{{csrf_token}}'}
-      });
-
-      uploader.init();
-
-      uploader.bind('FilesAdded', function(up, files) {
-        window.location = '{% url upload_documents_to_shelf organization.slug shelf.id %}';
-      });
-
-    //}
-
-    $('#upload-document-modal .modal-message').hide();
-    $("#upload-document-modal").modal('show');
-    
-    //return false;
-  //});
-
-
-*/
-  
-  
-
-
-});
-</script>
-
-{% endcan %}
-{% endif %}
-
-
-{% comment %}
-
-<script>
-function increaseAllCount(shelf_id) {
-  var count_num = $('.sidebar .shelf-all span').text().split(' ')[0].substring(1) * 1;
-  count_num = count_num + 1;
-  $('.sidebar .shelf-all span').text('(' + count_num + ' ไฟล์)');
-}
-
-function increaseShelfCount(shelf_id) {
-  var count_num = $('#shelf-' + shelf_id + ' span').text().split(' ')[0].substring(1) * 1;
-  count_num = count_num + 1;
-  $('#shelf-' + shelf_id + ' span').text('(' + count_num + ' ไฟล์)');
-}
-
-$(document).ready(function () {
-  {% can user 'edit' organization %}
-
-  $('.upload_publication_button').on('click', function(e) {
-    $('#upload_dropzone').slideToggle('fast');
-    return false;
-  });
-
-  $('#upload_dropzone .close_panel').click(function(e) {
-    $('#upload_dropzone').slideUp('fast');
-    return false;
-  });
-
-  var uploader = new plupload.Uploader({
-    runtimes : 'html5,flash',
-    browse_button : 'select_files_button',
-    container : 'upload_dropzone',
-    drop_element: 'upload_dropzone',
-    {% if shelf %}url : '{% url upload_documents_to_shelf organization.slug shelf.id %}',{% else %}url : '{% url upload_documents organization.slug %}',{% endif %}
-    flash_swf_url : '{{STATIC_URL}}libs/plupload/plupload.flash.swf',
-    multipart: true,
-    headers: {'X-Requested-With':'XMLHttpRequest', 'X-CSRFToken':'{{csrf_token}}'}
-  });
-
-  uploader.init();
-
-  uploader.bind('FilesAdded', function(up, files) {
-    $.each(files, function(i, file) {
-      var new_job = $('<li class="uploading" id="' + file.id + '"><div class="filename">กำลังอัพโหลดไฟล์ ' + file.name + '</div><div class="upload_progressbar"></div><div class="upload_actions"></div></li>');
-      new_job.find('.upload_progressbar').progressBar({width:262, height:20, boxImage:'/static/libs/progressbar/images/progressbar.png', barImage:{0:'/static/libs/progressbar/images/progressbg.png', 30:'/static/libs/progressbar/images/progressbg.png', 70:'/static/libs/progressbar/images/progressbg.png'}});
-      new_job.prependTo('#upload_jobs');
-    });
-
-    up.refresh(); // Reposition Flash/Silverlight
-    up.start();
-  });
-
-  uploader.bind('UploadProgress', function(up, file) {
-    $('#' + file.id + ' .upload_progressbar').progressBar(file.percent);
-  });
-
-  uploader.bind('Error', function(up, err) {
-    if(err.file) {
-      $('#' + err.file.id + ' .upload_actions').append('<span class="error">' + err.message + '</span>')
-    } else {
-      $('#upload_errors').prepend('<li>' + err.message + '<span>[ <a href="#">ปิดข้อความ</a> ]</span></li>')
-    }
-
-    up.refresh(); // Reposition Flash/Silverlight
-  });
-
-  uploader.bind('FileUploaded', function(up, file, response) {
-    var file_id = file.id;
-    var responseObject = eval('(' + response.response + ')'); // Django returns response as JSON
-
-    if(responseObject.status == 'success') {
-      $('#' + file_id).removeClass('uploading').addClass('uploaded');
-
-      increaseAllCount();
-
-      if(responseObject.shelf) {
-        $('#' + file_id).html('<div class="filename">' + file.name + '</div><div class="finished"><strong>อัพโหลดเรียบร้อย</strong> กรอกรายละเอียดไฟล์ด้านล่าง</div><div class="input"><form><label>ชื่อไฟล์</label><input type="text" name="title" value="' + responseObject.title + '" /> <input type="hidden" name="uid" value="' + responseObject.uid + '" /><button class="save btn">บันทึก</button></form></div>');
-        increaseShelfCount(responseObject.shelf);
-
-      } else {
-        $('#' + file_id).html('<div class="filename">' + file.name + '</div><div class="finished"><strong>อัพโหลดเรียบร้อย</strong> กรอกรายละเอียดไฟล์ด้านล่าง</div><div class="input"><form><label>ชื่อไฟล์</label><input type="text" name="title" value="' + responseObject.title + '" /> <span class="shelf_input"><label>ชั้นหนังสือ</label><select name="shelf"><option></option>{% generate_shelf_options organization %}</select></span> <input type="hidden" name="uid" value="' + responseObject.uid + '" /><button class="save btn">บันทึก</button></form></div>');
-
-        if(!$('#' + file_id + ' select').text()) {
-          $('#' + file_id + ' .shelf_input').remove();
-        }
-      }
-
-      $('#' + file_id + ' button.save').on('click', function(e) {
-        var uid = $('#' + file_id + ' input[name="uid"]').val();
-        var title = $('#' + file_id + ' input[name="title"]').val();
-
-        var shelf_id = '';
-        if($('#' + file_id + ' select[name="shelf"]').length && $('#' + file_id + ' select[name="shelf"]').is(':visible')) {
-          shelf_id = $('#' + file_id + ' select[name="shelf"] option:selected').val();
-          if(!shelf_id) return false;
-        }
-        
-        if(!uid || !title) {
-          return false;
-        }
-
-        $.post('{% url finishing_upload_documents organization.slug %}', {uid:uid, title:title, shelf_id:shelf_id}, function(result) {
-          $('#' + file_id).remove();
-
-          $('div.no_row').remove();
-          $('.publications_table').show();
-
-          $('.publications_table tbody').prepend('<tr class="finished" id="' + result.uid + '"><td class="name"><div><a href="' + result.view_url + '">' + result.title + '</a></div><div class="uploaded">อัพโหลดเมื่อ ' + result.uploaded + '</div></td><td class="status"><span class="unpublished">' + result.status + '</span></td><td class="table_actions"><button class="small btn publish_button"><span>เผยแพร่</span></button><a href="' + result.edit_url + '" class="small btn" >แก้ไข</a></td></tr>');
-
-          if(shelf_id) {
-            increaseShelfCount(shelf_id);
-          }
-
-        }, 'json').error(function(e) { // SAVE DETAILS ERRORS
-          $('#' + file_id + ' .input .error').remove();
-          if(e.responseText == 'document-not-found') $('#' + file_id + ' .input').append('<span class="error">ไม่พบไฟล์เอกสารที่ต้องการบันทึกข้อมูล</span>');
-          if(e.responseText == 'shelf-not-found') $('#' + file_id + ' .input').append('<span class="error">ไม่พบชั้นหนังสือที่ต้องการบันทึกข้อมูล</span>');
-          if(e.responseText == 'access-denied') $('#' + file_id + ' .input').append('<span class="error">ผู้ใช้ไม่มีสิทธิ์เข้าถึงข้อมูลที่ต้องการบันทึก</span>');
-          if(e.responseText == 'missing-parameters') $('#' + file_id + ' .input').append('<span class="error">ข้อมูลไม่ครบถ้วย</span>');
-        });
-
-        return false;
-      });
-
-      
-    } else if(responseObject.status == 'error') { // UPLOAD ERRORS
-      if(responseObject.error == 'file-missing') $('#' + file_id + ' .upload_actions').append('<span class="error">ไม่สามารถอ่านไฟล์ที่ต้องการอัพโหลดได้</span>')
-    }
-  });
-
-  $('.publications_table .publish_button').live('click', function(e) {
-    var rowObject = $(this).closest('tr');
-    rowObject.removeClass('finished');
-
-    open_publish_modal(rowObject.attr('id'), function(result, uid) {
-      if(result.error == 'processing') {
-        rowObject.find('td.status span').removeClass().addClass('unpublished').text('ไฟล์กำลังประมวลผล และจะเผยแพร่ทันทีที่ประมวลผลเสร็จ');
-
-      } else {
-        rowObject.find('td.status span').removeClass().addClass('published').text('เผยแพร่แล้ว');
-      }
-      
-      rowObject.find('button.publish_button').remove();
-      return true;
-    });
-    
-    return false;
-  });
-
-  $('#upload_errors li a').live('click', function(e) {
-    $(this).closest('li').remove();
-  });
-
-  {% endcan %}
-})
-</script>
-
-{% endcomment %}
-
-{% endblock %}
-
 {% block body_authenticated %}
-{% autopaginate documents 50 %}
+{% autopaginate publications 50 %}
 
 <div class="container-fluid container-body documents_page">
 {% include 'document/snippets/documents_sidebar.html' %}
@@ -234,40 +15,29 @@ $(document).ready(function () {
 
   {% if shelf %}
     <div class="page_actions">
-      {% can user 'upload_shelf' organization=organization shelf=shelf %}<a href="{% url upload_documents_to_shelf organization.slug shelf.id %}" class="btn primary upload_publication_button"><span>อัพโหลดไฟล์</span></a>{% endcan %}
+      {% can user 'upload_shelf' organization=organization shelf=shelf %}<a href="{% url upload_documents_to_shelf organization.slug shelf.id %}" class="btn primary upload_publication_button"><span>อัพโหลดไฟล์เข้าชั้นหนังสือ</span></a>{% endcan %}
       {% can user 'admin' organization=organization %}<a href="{% url edit_document_shelf organization.slug shelf.id %}" class="btn edit_shelf_button"><span>แก้ไขชั้นหนังสือ</span></a>{% endcan %}
     </div>
   {% endif %}
 
-  {% comment %}
-  <div class="upload_dropzone" id="upload_dropzone" style="display:none;">
-    <div class="close_panel"><a href="#">ปิดช่องอัพโหลด</a></div>
-    <a href="#" class="btn select_files_button" id="select_files_button"><span>เลือกไฟล์</span></a>
-    <div class="dragdrop">หรือลากไฟล์มาวางที่กรอบนี้</div>
-  </div>
-  {% endcomment %}
-
   <ul id="upload_errors"></ul>
   <ul id="upload_jobs"></ul>
 
-  <table class="publications_table" {% if not documents %}style="display:none;"{% endif %}>
+  <table class="publications_table" {% if not publications %}style="display:none;"{% endif %}>
     <colgroup>
       <col width=""/>
-      <col width="220"/>
       <col width="155"/>
     </colgroup>
     
     <tbody>
-      {% for document in documents %}
-      <tr id="{{document.publication.uid}}">
+      {% for publication in publications %}
+      <tr id="{{publication.uid}}">
         <td class="name">
-          <div><a href="{% url view_document document.publication.uid %}">{{document.publication.title}}</a></div>
-          <div class="uploaded">อัพโหลดเมื่อ {{document.publication.uploaded|format_abbr_datetime}}</div>
+          <div><a href="{% url view_document publication.uid %}">{{publication.title}}</a></div>
+          <div class="uploaded">อัพโหลดเมื่อ {{publication.uploaded|format_abbr_datetime}}</div>
         </td>
-        <td class="status">{% print_publication_status document.publication %}</td>
         <td class="table_actions">
-          {% if document.publication.status == PUBLICATION_STATUS_UNPUBLISHED and not document.publication.is_publish_when_ready %}<button class="small btn publish_button"><span>เผยแพร่</span></button>{% endif %}
-          <a href="{% url edit_document document.publication.uid %}" class="small btn" >แก้ไข</a>
+          <a href="{% url edit_document publication.uid %}" class="small btn" >แก้ไข</a>
         </td>
       </tr>
       {% endfor %}
@@ -276,7 +46,7 @@ $(document).ready(function () {
 
   {% paginate %}
 
-  {% if not documents %}
+  {% if not publications %}
   <div class="no_row">ไม่มีไฟล์</div>
   {% endif %}
 

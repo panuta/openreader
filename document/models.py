@@ -117,8 +117,7 @@ class UserProfile(BaseUserProfile):
         else:
             shelves = []
             for shelf in OrganizationShelf.objects.filter(organization=organization).order_by('name'):
-                shelf_access = self.get_shelf_access(shelf)
-                if shelf_access >= SHELF_ACCESS['VIEW_ACCESS']:
+                if self.get_shelf_access(shelf) >= SHELF_ACCESS['VIEW_ACCESS']:
                     shelves.append(shelf)
         
             return shelves

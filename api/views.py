@@ -8,12 +8,9 @@ from django.core import serializers
 from django.forms.models import model_to_dict
 from django.core.urlresolvers import reverse
 
-
-from publisher.models import *
 from api.models import *
 from accounts.models import UserOrganization
 from document.models import *
-from publication.models import publication_media_dir
 
 from httpauth import logged_in_or_basicauth
 

@@ -28,6 +28,4 @@ urlpatterns = patterns('accounts.views',
     url(r'^group/(?P<organization_group_id>\d+)/edit/$', 'edit_organization_group', name='edit_organization_group'),
     url(r'^group/(?P<organization_group_id>\d+)/remove/$', 'remove_organization_group', name='remove_organization_group'),
     
-
-    url(r'^org/(?P<organization_slug>\w+)/manage/billing/$', 'view_organization_billing', name='view_organization_billing'),
 )

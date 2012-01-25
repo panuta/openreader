@@ -5,11 +5,10 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    url('', include('openreader.document.urls')),
-
+    
     url('', include('openreader.accounts.urls')),
+    url('', include('openreader.document.urls')),
     url('api/', include('openreader.api.urls')),
-    url('', include('openreader.publication.urls')),
     url('management/', include('openreader.management.urls')),
 
     url(r'^accounts/logout/$', 'django.contrib.auth.views.logout', {'next_page':'/accounts/login/'},name='auth_logout'),
