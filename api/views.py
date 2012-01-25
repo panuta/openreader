@@ -8,9 +8,12 @@ from django.core import serializers
 from django.forms.models import model_to_dict
 from django.core.urlresolvers import reverse
 
+
+from publisher.models import *
 from api.models import *
 from accounts.models import UserOrganization
 from document.models import *
+from publication.models import publication_media_dir
 
 from httpauth import logged_in_or_basicauth
 
@@ -21,7 +24,7 @@ import base64
 def _has_required_parameters(request, names):
     if request.method != 'GET':
         raise Http404
-
+		
     for name in names:
         if name not in request.GET:
             raise Http404
@@ -61,7 +64,8 @@ def list_publication(request):
             user_organization = UserOrganization.objects.get(organization__slug=organization, user=user_profile.user)
         except:
             raise Http404
-            
+        
+        result['user_profile'] = model_to_dict(user_profile)
         result['organization'] = model_to_dict(user_organization.organization)
         
         shelves = user_profile.get_viewable_shelves(user_organization.organization)
@@ -89,52 +93,32 @@ def list_publication(request):
         result['shelves'] = shelves_list
     
     return HttpResponse(simplejson.dumps(result))
-"""
-Required Parameters
-'publisher' -
-'type' -
 
-Optional Parameters
-'shelf' -
-'sort' -
-'limit' -
-"""
-def list_publication_tmp(request):
-    if request.method == 'GET':
-        if not _has_required_parameters(request, ['publisher', 'type']):
-            raise Http404
-        
-        publisher = request.GET.get('publisher')
-        shelf = request.GET.get('shelf')
-        publication_type = request.GET.get('type')
-        sort = request.GET.get('sort')
-        limit = request.GET.get('limit')
-        
-        publisher = get_object_or_404(Publisher, pk=publisher)
-
-        if publication_type not in ('book', 'magazine', 'file'):
-            raise Http404
-        
-        objects = Publication.objects.filter(publisher=publisher, publication_type=publication_type)
-
-        if shelf:
-            shelf = get_object_or_404(PublisherShelf, pk=shelf)
-            objects.filter(shelves__in=[shelf])
-        
-        if sort and sort in ('uploaded', '-uploaded'):
-            objects.order_by(sort)
-        
-        result = []
-        for publication in objects:
-            result.append({'uid':publication.uid, 'title':publication.title, })
-        
-        return HttpResponse(simplejson.dumps(result))
-        
-    else:
-        raise Http404
+@logged_in_or_basicauth()
+def get_user_organization(request):
+    #http://admin@openreader.com:panuta@10.0.1.14:8000/api/get/userorganization/
+    email = _get_email(request)
+    user_profile = UserProfile.objects.get(user__email=email)
+    user = user_profile.user
+    user_organization = UserOrganization.objects.filter(user=user)
+    
+    result = {}
+    result['user_profile'] = model_to_dict(user_profile)
+    result['user_profile']['fullname'] = user_profile.get_fullname()
+    
+    result['organizations'] = []
+    
+    for item in user_organization:
+        data = model_to_dict(item.organization)
+        result['organizations'].append(data)
+    
+    
+    return HttpResponse(simplejson.dumps(result))
 
 
-
+# ===============
+# Old code
+# ===============
 def get_publication(request):
     if request.method == 'GET':
         publication = request.GET.get('publication')
@@ -240,3 +224,4 @@ def get_accounts_purchase_history(request):
         pass
     else:
         raise Http404
+
