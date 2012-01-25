@@ -42,7 +42,6 @@ USE_L10N = True
 
 MEDIA_ROOT = os.path.join(base_path, 'media/')
 MEDIA_URL = '/media/'
-ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 # DEFAULT_FILE_STORAGE = 'mystorages.backends.sftpstorage.SFTPStorage'
 
@@ -67,12 +66,12 @@ CACHES = {
     }
 }
 
-#AUTH_PROFILE_MODULE = 'accounts.UserProfile'
 AUTH_PROFILE_MODULE = 'document.UserProfile'
 LOGIN_REDIRECT_URL = '/'
 
 AUTHENTICATION_BACKENDS = (
     'openreader.backends.EmailAuthenticationBackend',
+    'django.contrib.auth.backends.RemoteUserBackend',
     #'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -100,9 +99,10 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.transaction.TransactionMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.RemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'pagination.middleware.PaginationMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
 
 ROOT_URLCONF = 'openreader.urls'
@@ -119,7 +119,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.static',
     'django.contrib.messages.context_processors.messages',
     'django.core.context_processors.request',
-    'openreader.context_processors.constants',
     )
 
 FILE_UPLOAD_HANDLERS = ('openreader.handlers.UploadProgressCachedHandler', ) + global_settings.FILE_UPLOAD_HANDLERS
@@ -138,10 +137,9 @@ INSTALLED_APPS = (
     'pagination',
 
     'openreader.accounts',
+    'openreader.api',
     'openreader.common',
     'openreader.document',
-    'openreader.publication',
-    'openreader.publisher',
     'openreader.management',
 )
 
@@ -187,8 +185,6 @@ SFTP_STORAGE_PARAMS = {'username':'root', 'password':'panuta'}
 PAGINATION_DEFAULT_PAGINATION = 50
 
 ########## Open Reader Settings ##########
-SITE_TYPE = 'document' # 'document' or 'publisher'
-
 OPENREADER_LOGGER = 'openreader'
 
 MAGAZINE_LOGO_ROOT = MEDIA_ROOT + 'magazine_logo/'

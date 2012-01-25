@@ -9,11 +9,9 @@ from django.template import loader
 
 from common import utilities
 from common.permissions import can
-from common.modules import *
 
 from accounts.models import UserOrganization
-
-from publication.models import Publication, PublicationNotice
+from document.models import Publication
 
 # DATE TIME #################################################################
 

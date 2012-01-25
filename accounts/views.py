@@ -11,6 +11,10 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import ugettext_lazy as _
 
+from common.utilities import generate_random_username
+
+from document.models import Publication, OrganizationShelf
+
 from forms import *
 from models import *
 
@@ -81,13 +85,11 @@ def change_my_account_password(request):
 def view_organization_profile(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
-    if settings.SITE_TYPE == 'document':
-        from document.views import _organization_statistics
-        statistics = [_organization_statistics(organization)]
+    statistics = {
+        'document_count': Publication.objects.filter(organization=organization, publication_type='document', status=Publication.STATUS['PUBLISHED']).count(),
+        'shelf_count': OrganizationShelf.objects.filter(organization=organization).count()
+    }
     
-    elif settings.SITE_TYPE == 'publisher':
-        pass
-
     return render(request, 'accounts/manage/organization_profile.html', {'organization':organization, 'statistics':statistics})
 
 def edit_organization_profile(request, organization_slug):
@@ -236,12 +238,14 @@ def claim_user_invitation(request, invitation_key):
 
             invitation = UserOrganizationInvitation.objects.validate_invitation(invitation_key)
 
-            user = User.objects.create_user(invitation.email, invitation.email, password1)
+            user = User.objects.create_user(generate_random_username(), '', password1)
+            user.username = user.id
+            user.save()
 
             from django.db import models
             app_label, model_name = settings.AUTH_PROFILE_MODULE.split('.')
             model = models.get_model(app_label, model_name)
-            user_profile = model._default_manager.create(user=user, first_name=first_name, last_name=last_name)
+            user_profile = model._default_manager.create(user=user, email=invitation.email, first_name=first_name, last_name=last_name, web_access=True)
 
             UserOrganizationInvitation.objects.claim_invitation(invitation, user, True)
             

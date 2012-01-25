@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-import os
+import os, base64
 
 from datetime import date
 
@@ -37,3 +37,6 @@ def split_filename(filename):
         ext = ext[1:]
     
     return (name, ext)
+
+def generate_random_username():
+    return base64.urlsafe_b64encode(os.urandom(10))

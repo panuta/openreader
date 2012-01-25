@@ -17,7 +17,7 @@ from models import Publication
 
 @login_required
 def download_publication(request, publication):
-    if not can(request.user, 'view', publication.organization):
+    if not can(request.user, 'view', {'organization':publication.organization}):
         raise Http404
     
     return private_files_get_file(request, 'publication', 'Publication', 'uploaded_file', str(publication.id), '%s.%s' % (publication.original_file_name, publication.file_ext))
@@ -33,7 +33,7 @@ def publish_publication(request):
         publication = get_object_or_404(Publication, uid=publication_uid)
         organization = publication.organization
 
-        if not can(request.user, 'edit', organization):
+        if not can(request.user, 'edit', {'organization':organization}):
             return response_json_error('access-denied')
     
         if publication.status in (Publication.STATUS['UNFINISHED'], Publication.STATUS['PUBLISHED']):
@@ -59,7 +59,7 @@ def unpublish_publication(request):
         publication = get_object_or_404(Publication, uid=publication_uid)
         organization = publication.organization
 
-        if not can(request.user, 'edit', organization):
+        if not can(request.user, 'edit', {'organization':organization}):
             return response_json_error('access-denied')
     
         if publication.status in (Publication.STATUS['UNFINISHED'], Publication.STATUS['UNPUBLISHED']):

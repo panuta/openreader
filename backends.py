@@ -12,7 +12,7 @@ class EmailAuthenticationBackend(ModelBackend):
     def authenticate(self, email=None, password=None):
         # If username is an email address, then try to pull it up
         if email_re.search(email):
-            user = User.objects.filter(email__iexact=email)
+            user = User.objects.filter(userprofile__email__iexact=email)
             if user.count() > 0:
                 user = user[0]
 

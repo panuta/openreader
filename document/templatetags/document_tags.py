@@ -11,8 +11,7 @@ from django.core.urlresolvers import reverse
 from common.permissions import can
 
 from accounts.models import OrganizationGroup
-from document.models import SHELF_ACCESS, OrganizationShelf, Document
-from publication.models import Publication
+from document.models import SHELF_ACCESS, Publication, OrganizationShelf, Document
 
 # Used in create/edit shelf page
 @register.simple_tag
@@ -44,7 +43,14 @@ def shelf_permissions_radio_table(organization, permissions=None):
 def generate_shelf_options(organization):
     shelf_html = []
     for shelf in OrganizationShelf.objects.filter(organization=organization).order_by('name'):
-        shelf_html.append('<option value="%d">%s%s</option>' % (shelf.id, shelf.name, u' (ส่วนกลาง)' if shelf.is_shared else ''))
+        # This code for wait for is_shared field append in model
+        is_shared = False
+        try:
+            is_shared = shelf.is_shared
+        except:
+            pass
+            
+        shelf_html.append('<option value="%d">%s%s</option>' % (shelf.id, shelf.name, u' (ส่วนกลาง)' if is_shared else ''))
     
     return ''.join(shelf_html)
 

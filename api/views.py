@@ -1,82 +1,108 @@
 from django.utils import simplejson
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate
 from django.http import HttpResponse, HttpResponseServerError, Http404
 from django.shortcuts import get_object_or_404, redirect, render
+from django.core import serializers
+from django.forms.models import model_to_dict
+from django.core.urlresolvers import reverse
+
 
 from publisher.models import *
+from api.models import *
+from accounts.models import UserOrganization
+from document.models import *
+from publication.models import publication_media_dir
+
+from httpauth import logged_in_or_basicauth
+
+from datetime import datetime, timedelta
+import md5
+import base64
 
 def _has_required_parameters(request, names):
+    if request.method != 'GET':
+        raise Http404
+
     for name in names:
         if name not in request.GET:
-            return False
+            raise Http404
     return True
-
+def _get_email(request):
+    # TODO: check if use token, return email from database
+    
+    auth = request.META['HTTP_AUTHORIZATION'].split()
+    email, password = base64.b64decode(auth[1]).split(':')
+    return email
+    
+@logged_in_or_basicauth()
 def request_access(request):
-    if request.method == 'GET':
-        email = request.GET.get('email', '')
-        password = request.GET.get('password', '')
-        device_id = request.GET.get('device_id', '')
-        app_secret = request.GET.get('app_secret', '')
-        app_id = request.GET.get('app_id', '')
+    #http://staff%40openreader.com:panuta@localhost:8000/api/request/access/
+    email = _get_email(request)
+    
+    t = datetime.now()
+    token = md5.md5(email + t.strftime('%s') + str(t.microsecond)).hexdigest()
+    expired = datetime.now() + timedelta(days=1)
+    Token.objects.filter(email=email).delete()
+    Token.objects.create(email=email, token=token, expired=expired)
+        
+    return HttpResponse(simplejson.dumps({'token': token}))
 
-        if email and password and device_id and app_secret:
+@logged_in_or_basicauth()
+def list_publication(request):
+    #http://admin%40openreader.com:panuta@localhost:8000/api/list/publication/?organization=opendream
+    if _has_required_parameters(request, ['organization']):
+        result = {}
+        
+        email = _get_email(request)
+        organization = request.GET.get('organization')
+        
+        user_profile = UserProfile.objects.get(user__email=email)
+        
+        try:
+            user_organization = UserOrganization.objects.get(organization__slug=organization, user=user_profile.user)
+        except:
+            raise Http404
+            
+        result['organization'] = model_to_dict(user_organization.organization)
+        
+        shelves = user_profile.get_viewable_shelves(user_organization.organization)
+        shelves_list = []
+        for shelf in shelves:
+            shelf_dict = model_to_dict(shelf)
+            shelf_dict['icon'] = ''
+            shelf_dict['publications'] = []
+            for document in shelf.document_set.all():
+                document_dict = model_to_dict(document)
+                document_dict.update(model_to_dict(document.publication))
 
-            # Check app secret
-
-            # Check email + password
-
-            # Check device id
-
-            # Check access
-
-            # Generate access token
-
-            return HttpResponse('this_is_your_token')
-
-        else:
-            return HttpResponse('missing parameters')
-
-    else:
-        raise Http404
-
-def request_download(request):
-    if request.method == 'GET':
-        device_id = request.GET.get('device_id', '')
-        app_secret = request.GET.get('app_secret', '')
-        app_id = request.GET.get('app_id', '')
-
-        access_token = request.GET.get('access_token', '')
-        publication_id = request.GET.get('publication_id', '')
-
-        if device_id and app_secret and access_token and publication_id:
-
-            # Check app secret
-
-            # Check access token and device id
-
-            # Processing publication
-
-            # Return publication unlock key
-
-            return HttpResponse('use_this_to_unlock')
-
-        else:
-            return HttpResponse('missing parameters')
-    else:
-        raise Http404
-
+                url = reverse('download_publication', args=[document.publication.uid])
+                url = request.build_absolute_uri(url)
+                document_dict['url'] = url
+                
+                document_dict['large_thumbnail'] = request.build_absolute_uri(document.publication.get_large_thumbnail())
+                document_dict['small_thumbnail'] = request.build_absolute_uri(document.publication.get_small_thumbnail())
+                
+                del(document_dict['uploaded_file'])
+                shelf_dict['publications'].append(document_dict)
+                
+            shelves_list.append(shelf_dict)
+        
+        result['shelves'] = shelves_list
+    
+    return HttpResponse(simplejson.dumps(result))
 """
 Required Parameters
-'publisher' - 
-'type'      - 
+'publisher' -
+'type' -
 
 Optional Parameters
-'shelf'     - 
-'sort'      - 
-'limit'     - 
+'shelf' -
+'sort' -
+'limit' -
 """
-def list_publication(request):
+def list_publication_tmp(request):
     if request.method == 'GET':
         if not _has_required_parameters(request, ['publisher', 'type']):
             raise Http404
@@ -217,4 +243,3 @@ def get_accounts_purchase_history(request):
         pass
     else:
         raise Http404
-

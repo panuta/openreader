@@ -16,8 +16,9 @@ SHA1_RE = re.compile('^[a-f0-9]{40}$')
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
-    first_name = models.CharField(max_length=200) # first_name and last_name in contrib.auth.User is too short
-    last_name = models.CharField(max_length=200)
+    email = models.CharField(max_length=254) # use this field as username to login
+    first_name = models.CharField(max_length=100) # first_name and last_name in contrib.auth.User is too short
+    last_name = models.CharField(max_length=100)
     web_access = models.BooleanField(default=True)
     is_first_time = models.BooleanField(default=True)
 
@@ -52,9 +53,6 @@ class UserProfile(models.Model):
         
         except:
             return False
-    
-    #def get_role(self, organization):
-    #    return UserOrganization.objects.get(user=self.user, organization=organization).role
 
 # Organization
 

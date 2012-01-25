@@ -9,7 +9,7 @@ from common.utilities import split_filename
 
 logger = logging.getLogger(settings.OPENREADER_LOGGER)
 
-from publication.models import Publication, PublicationNotice
+from document.models import Publication
 
 def upload_publication(request, publication_type, uploading_file, organization):
     (file_name, file_ext) = split_filename(uploading_file.name)
@@ -28,34 +28,6 @@ def upload_publication(request, publication_type, uploading_file, organization):
         publication.save()
     
     publication.is_processing = False
-    publication.save()
-    
-    return publication
-
-def publish_publication(request, publication):
-    published = datetime.datetime.today()
-
-    if publication.is_processing:
-        PublicationNotice.objects.get_or_create(publication=publication, notice=PublicationNotice.NOTICE['PUBLISH_WHEN_READY'])
-    else:
-        publication.status = Publication.STATUS['PUBLISHED']
-        publication.published = published
-    
-    publication.scheduled = None
-    publication.scheduled_by = None
-    publication.published_by = request.user
-    publication.save()
-    
-    return publication
-
-def unpublish_publication(request, publication):
-    PublicationNotice.objects.filter(publication=publication, notice=PublicationNotice.NOTICE['PUBLISH_WHEN_READY']).delete()
-    publication.status = Publication.STATUS['UNPUBLISHED']
-
-    publication.published = None
-    publication.published_by = None
-    publication.scheduled = None
-    publication.scheduled_by = None
     publication.save()
     
     return publication
