@@ -224,8 +224,9 @@ def create_document_shelf(request, organization_slug):
         form = OrganizationShelfForm(request.POST)
         if form.is_valid():
             name = form.cleaned_data['name']
+            auto_sync = bool(request.POST.get('auto_sync'))
 
-            shelf = OrganizationShelf.objects.create(organization=organization, name=name, created_by=request.user)
+            shelf = OrganizationShelf.objects.create(organization=organization, name=name, created_by=request.user, auto_sync=auto_sync)
 
             _persist_shelf_permissions(request, organization, shelf)
             
@@ -257,6 +258,8 @@ def edit_document_shelf(request, organization_slug, shelf_id):
         form = OrganizationShelfForm(request.POST)
         if form.is_valid():
             shelf.name = form.cleaned_data['name']
+            auto_sync = bool(request.POST.get('auto_sync'))
+            shelf.auto_sync = auto_sync
             shelf.save()
 
             ShelfPermission.objects.filter(shelf=shelf).delete()

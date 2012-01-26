@@ -66,6 +66,7 @@ class OrganizationShelf(models.Model):
     organization = models.ForeignKey('accounts.Organization')
     name = models.CharField(max_length=200)
     description = models.CharField(max_length=500, blank=True)
+    auto_sync = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='organization_shelf_created_by')
 

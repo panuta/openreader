@@ -51,13 +51,15 @@ and returning the view if all goes well, otherwise responding with a 401.
             #
             if auth[0].lower() == "basic":
                 uname, passwd = base64.b64decode(auth[1]).split(':')
+                print uname
                 email_user = User.objects.filter(email=uname)
                 if not email_user:
                     username = uname
                 else:
-                    username = email_user[0].username
+                    username = email_user[0].email
 
                 user = authenticate(email=username, password=passwd)
+                print username
                 if user is not None:
                     if user.is_active:
                         #login(request, user)

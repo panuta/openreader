@@ -13,7 +13,6 @@ from publisher.models import *
 from api.models import *
 from accounts.models import UserOrganization
 from document.models import *
-from publication.models import publication_media_dir
 
 from httpauth import logged_in_or_basicauth
 
@@ -74,19 +73,23 @@ def list_publication(request):
             shelf_dict = model_to_dict(shelf)
             shelf_dict['icon'] = ''
             shelf_dict['publications'] = []
-            for document in shelf.document_set.all():
-                document_dict = model_to_dict(document)
-                document_dict.update(model_to_dict(document.publication))
-
-                url = reverse('download_publication', args=[document.publication.uid])
+            for publication in shelf.publication_set.all():
+                publication_dict = model_to_dict(publication)
+                
+                publication_dict['auto_sync'] =  shelf.auto_sync
+                
+                url = reverse('download_publication', args=[publication.uid])
                 url = request.build_absolute_uri(url)
-                document_dict['url'] = url
+                publication_dict['url'] = url
                 
-                document_dict['large_thumbnail'] = request.build_absolute_uri(document.publication.get_large_thumbnail())
-                document_dict['small_thumbnail'] = request.build_absolute_uri(document.publication.get_small_thumbnail())
+                publication_dict['large_thumbnail'] = request.build_absolute_uri(publication.get_large_thumbnail())
+                publication_dict['small_thumbnail'] = request.build_absolute_uri(publication.get_small_thumbnail())
                 
-                del(document_dict['uploaded_file'])
-                shelf_dict['publications'].append(document_dict)
+                publication_dict['uploaded'] = publication.uploaded.strftime("%Y/%m/%d")
+                publication_dict['modified'] = publication.modified.strftime("%Y/%m/%d")
+                
+                del(publication_dict['uploaded_file'])
+                shelf_dict['publications'].append(publication_dict)
                 
             shelves_list.append(shelf_dict)
         

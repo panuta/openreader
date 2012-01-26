@@ -60,6 +60,27 @@ $(document).ready(function () {
           </table>
         </div>
       </div>
+      <div class="clearfix">
+        <label for="id_auto_sync">บังคับโหลด</label>
+        <div class="input table-inputs auto-sync" style="width: 213px;">
+          <table>
+            <tr>
+              <td>
+                <label>
+                  <input type="radio" name="auto_sync" value="0" {% if not shelf.auto_sync  %}checked="checked"{% endif %}/>
+                  ไม่บังคับ
+                </label>
+              </td>
+              <td>
+                <label>
+                  <input type="radio" name="auto_sync" value="1" {% if shelf.auto_sync  %}checked="checked"{% endif %}/>
+                  บังคับ
+                </label>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
 
       <div class="form_actions">
         <button type="submit" class="btn primary">{% if not shelf %}สร้างชั้นหนังสือ{% else %}แก้ไขชั้นหนังสือ{% endif %}</button>
