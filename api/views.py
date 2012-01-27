@@ -85,8 +85,8 @@ def list_publication(request):
                 publication_dict['large_thumbnail'] = request.build_absolute_uri(publication.get_large_thumbnail())
                 publication_dict['small_thumbnail'] = request.build_absolute_uri(publication.get_small_thumbnail())
                 
-                publication_dict['uploaded'] = publication.uploaded.strftime("%Y/%m/%d")
-                publication_dict['modified'] = publication.modified.strftime("%Y/%m/%d")
+                publication_dict['uploaded'] = publication.uploaded.strftime("%Y-%m-%d %H:%M:%S")
+                publication_dict['modified'] = publication.modified.strftime("%Y-%m-%d %H:%M:%S")
                 
                 del(publication_dict['uploaded_file'])
                 shelf_dict['publications'].append(publication_dict)
