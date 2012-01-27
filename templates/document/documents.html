@@ -4,53 +4,62 @@
 {% block head_title %}ไฟล์เอกสาร{% endblock %}
 {% block topnav %}{% include 'snippets/organization_topnav.html' with active_menu='document' %}{% endblock %}
 
+{% block html_head %}
+{{block.super}}
+<script>
+$(document).ready(function () {
+  
+});
+</script>
+{% endblock %}
+
 {% block body_authenticated %}
 {% autopaginate publications 50 %}
 
-<div class="container-fluid container-body documents_page">
-{% include 'document/snippets/documents_sidebar.html' %}
+<div class="fluid-container sidebar-left page-documents">
+  {% include 'document/snippets/documents_sidebar.html' %}
+  <div class="fluid-content"><div class="inner-content">
+    <h2>{% if shelf_type == 'all' %}ไฟล์ทั้งหมด{% endif %}{% if shelf_type == 'none' %}ไฟล์ที่ไม่อยู่ในชั้นหนังสือ{% endif %}{% if shelf %}<span>ชั้นหนังสือ</span>{{shelf.name}}{% endif %}</h2>
 
-<div class="content"><div class="content-inner">
-  <h2>{% if shelf_type == 'all' %}ไฟล์ทั้งหมด{% endif %}{% if shelf_type == 'none' %}ไฟล์ที่ไม่อยู่ในชั้นหนังสือ{% endif %}{% if shelf %}<span>ชั้นหนังสือ</span>{{shelf.name}}{% endif %}</h2>
+    {% if shelf %}
+      <div class="page_actions">
+        {% can user 'upload_shelf' organization=organization shelf=shelf %}<a href="{% url upload_documents_to_shelf organization.slug shelf.id %}" class="btn primary upload_publication_button"><span>อัพโหลดไฟล์เข้าชั้นหนังสือ</span></a>{% endcan %}
+        {% can user 'admin' organization=organization %}<a href="{% url edit_document_shelf organization.slug shelf.id %}" class="btn edit_shelf_button"><span>แก้ไขชั้นหนังสือ</span></a>{% endcan %}
+      </div>
+    {% endif %}
 
-  {% if shelf %}
-    <div class="page_actions">
-      {% can user 'upload_shelf' organization=organization shelf=shelf %}<a href="{% url upload_documents_to_shelf organization.slug shelf.id %}" class="btn primary upload_publication_button"><span>อัพโหลดไฟล์เข้าชั้นหนังสือ</span></a>{% endcan %}
-      {% can user 'admin' organization=organization %}<a href="{% url edit_document_shelf organization.slug shelf.id %}" class="btn edit_shelf_button"><span>แก้ไขชั้นหนังสือ</span></a>{% endcan %}
-    </div>
-  {% endif %}
+    <table class="table table-striped table-documents" {% if not publications %}style="display:none;"{% endif %}>
+      <thead>
+        <tr>
+          <th class="checkbox_column"></th>
+          <th>ชื่อไฟล์</th>
+          <th>แถบป้าย (Tag)</th>
+          <th class="datetime_column">อัพโหลดเมื่อ</th>
+          <th class="edit_column"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for publication in publications %}
+        <tr id="{{publication.uid}}">
+          <td><input type="checkbox" /></td>
+          <td class="name"><a href="{% url view_document publication.uid %}" title="ดาวน์โหลดไฟล์">{{publication.title}}</a></td>
+          <td>#tagname</td>
+          <td>{{publication.uploaded|format_abbr_datetime}}</td>
+          <td class="table_actions">
+            <a href="{% url edit_document publication.uid %}" class="small btn" >แก้ไข</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 
-  <ul id="upload_errors"></ul>
-  <ul id="upload_jobs"></ul>
+    {% paginate %}
 
-  <table class="publications_table" {% if not publications %}style="display:none;"{% endif %}>
-    <colgroup>
-      <col width=""/>
-      <col width="155"/>
-    </colgroup>
-    
-    <tbody>
-      {% for publication in publications %}
-      <tr id="{{publication.uid}}">
-        <td class="name">
-          <div><a href="{% url view_document publication.uid %}">{{publication.title}}</a></div>
-          <div class="uploaded">อัพโหลดเมื่อ {{publication.uploaded|format_abbr_datetime}}</div>
-        </td>
-        <td class="table_actions">
-          <a href="{% url edit_document publication.uid %}" class="small btn" >แก้ไข</a>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+    {% if not publications %}
+    <div class="no_information">ไม่มีไฟล์</div>
+    {% endif %}
 
-  {% paginate %}
-
-  {% if not publications %}
-  <div class="no_row">ไม่มีไฟล์</div>
-  {% endif %}
-
-</div></div>
+  </div></div>
 </div>
 
 <div class="modal hide fade" id="upload-document-modal" style="display:none;">

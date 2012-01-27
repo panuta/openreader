@@ -2,7 +2,7 @@
 {% load helper_tags pagination_tags %}
 
 {% block organization_manage_head_title %} - กลุ่มผู้ใช้{% endblock %}
-{% block organization_manage_menu %}{% include 'accounts/manage/snippets/organization_nav.html' with active_manage_menu='group' %}{% endblock %}
+{% block organization_manage_sidebar %}{% include 'accounts/manage/snippets/organization_sidebar.html' with active_manage_menu='group' %}{% endblock %}
 
 {% block organization_manage_content %}
 <h2>กลุ่มผู้ใช้</h2>
@@ -11,17 +11,13 @@
 
 {% autopaginate organization_groups 20 %}
 
-<table class="zebra-striped">
-  <col width="300"/>
-  <col width="170"/>
-  <col />
-  <col width="70"/>
+<table class="table table-bordered table-striped">
   <thead>
     <tr>
       <th>ชื่อกลุ่มผู้ใช้</th>
       <th>จำนวนผู้ใช้</th>
       <th>คำอธิบาย</th>
-      {% can user 'manage' organization %}<th></th>{% endcan %}
+      {% can user 'admin' organization=organization %}<th class="edit_column"></th>{% endcan %}
     </tr>
   </thead>
   <tbody>
@@ -30,7 +26,7 @@
       <td>{{group.name}}</td>
       <td>{{group.user_counter}} คน</td>
       <td>{% if group.description %}{{group.description}}{% else %}-{% endif %}</td>
-      {% can user 'admin' organization=organization %}<td class="row_actions"><a href="{% url edit_organization_group group.id %}">แก้ไข</a></td>{% endcan %}
+      {% can user 'admin' organization=organization %}<td class="row_actions"><a href="{% url edit_organization_group group.id %}" class="small btn"><i class="icon edit"></i> แก้ไข</a></td>{% endcan %}
     </tr>
     {% endfor %}
   </tbody>

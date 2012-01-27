@@ -1,7 +1,7 @@
 {% extends 'accounts/manage/organization_base.html' %}
 
 {% block organization_manage_head_title %} - ลบกลุ่มผู้ใช้{% endblock %}
-{% block organization_manage_menu %}{% include 'accounts/manage/snippets/organization_nav.html' with active_manage_menu='group' %}{% endblock %}
+{% block organization_manage_sidebar %}{% include 'accounts/manage/snippets/organization_sidebar.html' with active_manage_menu='group' %}{% endblock %}
 
 {% block organization_manage_content %}
 <ul class="breadcrumb">
@@ -19,7 +19,7 @@
     <p>มีผู้ใช้อยู่กลุ่มผู้ใช้นี้ {{group.user_counter}} คน</p>
   </div>
 
-  <div class="form_actions left_form_actions">
+  <div class="form-actions left_form_actions">
     <button type="submit" name="submit-delete" class="btn danger">ยืนยันลบกลุ่มผู้ใช้</button>
     <button type="submit" name="submit-cancel" class="btn">ยกเลิก</button>
   </div>

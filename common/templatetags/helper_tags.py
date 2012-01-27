@@ -3,6 +3,7 @@
 from django import template
 register = template.Library()
 
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.template import NodeList
 from django.template import loader
@@ -10,7 +11,7 @@ from django.template import loader
 from common import utilities
 from common.permissions import can
 
-from accounts.models import UserOrganization
+from accounts.models import UserOrganization, OrganizationGroup
 from document.models import Publication
 
 # DATE TIME #################################################################
@@ -89,6 +90,25 @@ def do_can(parser, token):
 # HTML GENERATOR #################################################################
 
 @register.simple_tag
+def generate_shelf_permission_list(shelf_permissions):
+    li_html = []
+    for shelf_permission in shelf_permissions:
+        permit = shelf_permission.split('-')
+
+        if permit[0] == 'all':
+            li_html.append(u'<li>ทุกคนในบริษัทสามารถ%s<input type="hidden" name="permission" value="%s"/></li>' % (u'อัพโหลดไฟล์และแก้ไขไฟล์ได้' if permit[1] == '2' else u'ดูไฟล์ได้อย่างเดียว (ยกเว้นผู้ดูแลระบบ)', shelf_permission))
+            
+        elif permit[0] == 'group':
+            group = OrganizationGroup.objects.get(id=permit[1])
+            li_html.append(u'<li>กลุ่มผู้ใช้ <em>%s</em> สามารถ%s<input type="hidden" name="permission" value="%s"/></li>' % (group.name, u'อัพโหลดไฟล์และแก้ไขไฟล์ได้' if permit[1] == '2' else u'ดูไฟล์ได้อย่างเดียว', shelf_permission))
+            
+        elif permit[0] == 'user':
+            user = User.objects.get(id=permit[1])
+            li_html.append(u'<li>ผู้ใช้ <em>%s</em> สามารถ%s<input type="hidden" name="permission" value="%s"/></li>' % (user.get_profile().get_fullname(), u'อัพโหลดไฟล์และแก้ไขไฟล์ได้' if permit[1] == '2' else u'ดูไฟล์ได้อย่างเดียว', shelf_permission))
+    
+    return ''.join(li_html)
+
+@register.simple_tag
 def generate_organization_menu(user):
     user_organizations = UserOrganization.objects.filter(user=user).order_by('organization__name')
 
@@ -122,6 +142,17 @@ def genetate_publication_category_multiple_checkbox(existing_categories):
         htmls.append('<div class="checkbox_column"><ul>%s</ul></div>' % ''.join(columns[i]))
     
     return ''.join(htmls)
+
+# INPUT GENERATOR ################################################################################
+
+@register.simple_tag
+def generate_group_select_options(organization):
+    options = ['<option></option>']
+    for group in OrganizationGroup.objects.filter(organization=organization).order_by('name'):
+        options.append('<option value="%d">%s</option>' % (group.id, group.name))
+    
+    return ''.join(options)
+
 
 # MANAGEMENT ################################################################################
 

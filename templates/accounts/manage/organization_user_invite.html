@@ -1,7 +1,7 @@
 {% extends 'accounts/manage/organization_base.html' %}
 
 {% block organization_manage_head_title %} - เพิ่มทีมงาน{% endblock %}
-{% block organization_manage_menu %}{% include 'accounts/manage/snippets/organization_nav.html' with active_manage_menu='user' %}{% endblock %}
+{% block organization_manage_sidebar %}{% include 'accounts/manage/snippets/organization_sidebar.html' with active_manage_menu='user' %}{% endblock %}
 
 {% block organization_manage_content %}
 <ul class="breadcrumb">
@@ -15,18 +15,18 @@
   {% csrf_token %}
   {{form.non_field_errors}}
 
-  <div class="clearfix"><label for="id_email">อีเมลผู้ใช้</label><div class="input">{{form.email}}{{form.email.errors}}</div></div>
-  <div class="clearfix"><label for="id_position">ตำแหน่งใน{{organization.prefix}}</label><div class="input">{{form.position}}{{form.position.errors}}</div></div>
-  <div class="clearfix"><label>สิทธิ์การจัดการ</label><div class="input checkbox-inputs"><label>{{form.is_admin}} ผู้ใช้สามารถจัดการระบบ เช่น บัญชีผู้ใช้ ชั้นหนังสือ และสิทธิ์การใช้งาน</label>{{form.is_admin.errors}}</div></div>
-  <div class="clearfix">
-    <label for="id_role">กลุ่มผู้ใช้</label>
-    <div class="input checkbox-inputs">{{form.groups}}{{form.groups.errors}}</div>
+  <div class="item"><label for="id_email">อีเมลผู้ใช้</label><div class="input">{{form.email}}{{form.email.errors}}</div></div>
+  <div class="item"><label for="id_position">ชื่อตำแหน่ง</label><div class="input">{{form.position}}{{form.position.errors}}</div></div>
+  <div class="item"><label for="id_is_admin">สิทธิ์การจัดการ</label><div class="input"><label class="checkbox">{{form.is_admin}} ผู้ใช้สามารถจัดการระบบ เช่น บัญชีผู้ใช้ ชั้นหนังสือ และสิทธิ์การใช้งาน</label>{{form.is_admin.errors}}</div></div>
+
+  <div class="item">
+    <label for="id_groups">กลุ่มผู้ใช้</label>
+    <div class="input row-inputs">{{form.groups}}{{form.groups.errors}}</div>
   </div>
 
-  <div class="form_actions">
-    <button type="submit" class="btn primary">เพิ่มผู้ใช้ระบบ</button>
+  <div class="form-actions">
+    <button type="submit" class="btn primary">บันทึกข้อมูล</button>
     <button type="reset" class="btn">ล้างข้อมูล</button>
   </div>
-
 </form>
 {% endblock %}

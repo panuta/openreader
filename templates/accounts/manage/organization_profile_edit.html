@@ -2,7 +2,7 @@
 {% load helper_tags %}
 
 {% block organization_manage_head_title %} - แก้ไขข้อมูล{{organization.prefix}}{% endblock %}
-{% block organization_manage_menu %}{% include 'accounts/manage/snippets/organization_nav.html' with active_manage_menu='profile' %}{% endblock %}
+{% block organization_manage_sidebar %}{% include 'accounts/manage/snippets/organization_sidebar.html' with active_manage_menu='profile' %}{% endblock %}
 
 {% block organization_manage_content %}
   <ul class="breadcrumb">
@@ -16,9 +16,9 @@
     {% csrf_token %}
     {{form.non_field_errors}}
 
-    <div class="clearfix"><label for="id_name">ชื่อ{{organization.prefix}}</label><div class="input">{{form.name}}{{form.name.errors}}</div></div>
+    <div class="item"><label for="id_name">ชื่อ{{organization.prefix}}</label><div class="input">{{form.name}}{{form.name.errors}}</div></div>
 
-    <div class="form_actions">
+    <div class="form-actions">
       <button type="submit" class="btn primary">บันทึกข้อมูล</button>
       <button type="reset" class="btn">ล้างข้อมูล</button>
     </div>

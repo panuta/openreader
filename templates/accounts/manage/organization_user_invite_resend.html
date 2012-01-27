@@ -1,12 +1,12 @@
 {% extends 'accounts/manage/organization_base.html' %}
 
 {% block organization_manage_head_title %} - ส่งอีเมลคำขออีกครั้ง{% endblock %}
-{% block organization_manage_menu %}{% include 'accounts/manage/snippets/organization_nav.html' with active_manage_menu='user' %}{% endblock %}
+{% block organization_manage_sidebar %}{% include 'accounts/manage/snippets/organization_sidebar.html' with active_manage_menu='user' %}{% endblock %}
 
 {% block organization_manage_content %}
 <ul class="breadcrumb">
   <li><a href="{% url view_organization_users organization.slug %}">บัญชีผู้ใช้ระบบ</a> <span class="divider">/</span></li>
-  <li><a href="{% url view_user_invitation organization.slug %}">รายละเอียดคำขอ</a> <span class="divider">/</span></li>
+  <li><a href="{% url view_user_invitation invitation.id %}">รายละเอียดคำขอ</a> <span class="divider">/</span></li>
   <li class="active">ส่งอีเมลคำขออีกครั้ง</li>
 </ul>
 
