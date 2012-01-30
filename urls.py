@@ -4,6 +4,8 @@ from django.views.generic import RedirectView
 from django.contrib import admin
 admin.autodiscover()
 
+import settings
+
 urlpatterns = patterns('',
     
     url('', include('openreader.accounts.urls')),
@@ -23,6 +25,13 @@ urlpatterns = patterns('',
 
     url(r'^$', 'accounts.views.view_user_home', name='view_user_home'),
 )
+
+if settings.DEBUG:
+    urlpatterns += patterns('',
+        url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
+            'document_root': settings.MEDIA_ROOT,
+        }),
+   )
 
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 urlpatterns += staticfiles_urlpatterns()
