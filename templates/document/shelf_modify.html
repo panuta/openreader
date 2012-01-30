@@ -6,26 +6,166 @@
 
 {% block html_head %}
 {{block.super}}
+
+<script type="text/javascript" src="{{STATIC_URL}}libs/autosuggest/jquery.autoSuggest.js"></script>
+<link rel="stylesheet/less" type="text/css" href="{{STATIC_URL}}libs/autosuggest/autoSuggest.css">
+
 <script>
+
+function _append_permission(str, value) {
+  $('.input-shelf-permissions ul').append('<li>' + str + ' <span>[ <a href="#">ลบออก</a> ]</span><input type="hidden" name="permission" value="' + value + '" /></li>');
+}
+
 $(document).ready(function () {
-  $('input[name="all_access"]').on('click', function(e) {
-    var level = $('input[name="all_access"]:checked').val();
-    $('.group-permissions input[value="' + level + '"]').attr("checked", "checked");
-    $(this).closest('tr').addClass('active');
+  $('#shelf_permission_all_button').on('click', function(e) {
+    if($('#shelf-permission-all-modal').hasClass('uninitialized-modal')) {
+      $('#shelf-permission-all-modal').removeClass('uninitialized-modal').modal({backdrop:'static'});
+
+      $('#shelf-permission-all-modal .modal-body input[type="radio"]').on('click', function(e) {
+        var permission_value = $(this).val();
+        if(permission_value == '2') {
+          $('#shelf-permission-all-modal .modal-footer button.primary').data('permission_text', 'อัพโหลดไฟล์และแก้ไขไฟล์ได้').data('permission_value', permission_value);
+        } else if(permission_value == '1') {
+          $('#shelf-permission-all-modal .modal-footer button.primary').data('permission_text', 'ดูไฟล์ได้อย่างเดียว (ยกเว้นผู้ดูแลระบบ)').data('permission_value', permission_value);
+        } else {
+          return;
+        }
+
+        $('#shelf-permission-all-modal .modal-footer button.primary').attr('disabled', false).removeClass('disabled');
+      });
+
+      $('#shelf-permission-all-modal .modal-footer button.primary').on('click', function(e) {
+        _append_permission('ทุกคนในบริษัทสามารถ' + $(this).data('permission_text'), 'all-' + $(this).data('permission_value'));
+        $('#shelf-permission-all-modal').modal('hide');
+      });
+    } else {
+      $('#shelf-permission-all-modal').modal('show');
+    }
+
+    $('#shelf-permission-all-modal .modal-body input[type="radio"]').attr('checked', false);
+    $('#shelf-permission-all-modal .modal-footer button.primary').attr('disabled', true).addClass('disabled');
+
+    return false;
   });
 
-  $('.permission_row input[type="radio"]').on('click', function(e) {
-    $('input[name="all_access"]').attr("checked", false).closest('tr').removeClass('active');;
+  $('#shelf_permission_group_button').on('click', function(e) {
+    if($('#shelf-permission-group-modal').hasClass('uninitialized-modal')) {
+      $('#shelf-permission-group-modal').removeClass('uninitialized-modal').modal({backdrop:'static'});
+
+      $('#shelf-permission-group-modal .modal-body input[type="radio"]').on('click', function(e) {
+        var permission_value = $(this).val();
+        if(permission_value == '2') {
+          $('#shelf-permission-group-modal .modal-footer button.primary').data('permission_text', 'อัพโหลดไฟล์และแก้ไขไฟล์ได้').data('permission_value', permission_value);
+        } else if(permission_value == '1') {
+          $('#shelf-permission-group-modal .modal-footer button.primary').data('permission_text', 'ดูไฟล์ได้อย่างเดียว').data('permission_value', permission_value);
+        } else {
+          return;
+        }
+
+        if($('#shelf-permission-group-modal .modal-body select').val() && $('#shelf-permission-group-modal .modal-body input[name="group-shelf-permission"]:checked').length) {
+          $('#shelf-permission-group-modal .modal-footer button.primary').attr('disabled', false).removeClass('disabled');
+        }
+      });
+
+      $('#shelf-permission-group-modal .modal-body select').on('change', function(e) {
+        if($('#shelf-permission-group-modal .modal-body select').val() && $('#shelf-permission-group-modal .modal-body input[name="group-shelf-permission"]:checked').length) {
+          $('#shelf-permission-group-modal .modal-footer button.primary').attr('disabled', false).removeClass('disabled');
+        } else {
+          $('#shelf-permission-group-modal .modal-footer button.primary').attr('disabled', true).addClass('disabled');
+        }
+      });
+
+      $('#shelf-permission-group-modal .modal-footer button.primary').on('click', function(e) {
+        var group_id = $('#shelf-permission-group-modal .modal-body select option:selected').val();
+        var group_name = $('#shelf-permission-group-modal .modal-body select option:selected').text();
+        _append_permission('กลุ่มผู้ใช้ <em>' + group_name + '</em> สามารถ' + $(this).data('permission_text'), 'group-' + group_id + '-' + $(this).data('permission_value'));
+        $('#shelf-permission-group-modal').modal('hide');
+      });
+    } else {
+      $('#shelf-permission-group-modal').modal('show');
+    }
+
+    $('#shelf-permission-group-modal .modal-body select option:first').attr('selected', true);
+    $('#shelf-permission-group-modal .modal-body input[type="radio"]').attr('checked', false);
+    $('#shelf-permission-group-modal .modal-footer button.primary').attr('disabled', true).addClass('disabled');
+
+    return false;
   });
+
+  $('#shelf_permission_individual_button').on('click', function(e) {
+    if($('#shelf-permission-individual-modal').hasClass('uninitialized-modal')) {
+      $('#shelf-permission-individual-modal').removeClass('uninitialized-modal').modal({backdrop:'static'});
+
+      $('#shelf-permission-individual-modal .modal-body input[type="radio"]').on('click', function(e) {
+        var permission_value = $(this).val();
+        if(permission_value == '2') {
+          $('#shelf-permission-individual-modal .modal-footer button.primary').data('permission_text', 'อัพโหลดไฟล์และแก้ไขไฟล์ได้').data('permission_value', permission_value);;
+        } else if(permission_value == '1') {
+          $('#shelf-permission-individual-modal .modal-footer button.primary').data('permission_text', 'ดูไฟล์ได้อย่างเดียว').data('permission_value', permission_value);;
+        } else {
+          return;
+        }
+
+        if($('#shelf-permission-individual-modal .select_individual .as-values').val() && $('#shelf-permission-individual-modal .modal-body input[name="individual-shelf-permission"]:checked').length) {
+          $('#shelf-permission-individual-modal .modal-footer button.primary').attr('disabled', false).removeClass('disabled');
+        }
+      });
+
+      $('#shelf-permission-individual-modal .modal-footer button.primary').on('click', function(e) {
+        var permission_value = $(this).data('permission_value');
+        var permission_text = $(this).data('permission_text');
+
+        $('#shelf-permission-individual-modal .as-selection-item').each(function() {
+          _append_permission('ผู้ใช้ <em>' + $(this).data('user_name') + '</em> สามารถ' + permission_text, 'user-' + $(this).data('user_id') + '-' + permission_value);
+        });
+        
+        $('#shelf-permission-individual-modal').modal('hide');
+      });
+    } else {
+      $('#shelf-permission-individual-modal').modal('show');
+    }
+
+    // Clear AutoSuggest
+    $('#shelf-permission-individual-modal .select_individual .as-selection-item').remove();
+    $('#shelf-permission-individual-modal .select_individual .as-values').val('');
+    // BUG : startText is missing
+
+    $('#shelf-permission-individual-modal .modal-body input[type="radio"]').attr('checked', false);
+    $('#shelf-permission-individual-modal .modal-footer button.primary').attr('disabled', true).addClass('disabled');
+
+    return false;
+  });
+
+  $('#shelf-permission-individual-modal .select_individual input').autoSuggest('{% url ajax_query_users organization.slug %}', {
+    startText:"พิมพ์ชื่อผู้ใช้", emptyText:"ไม่พบผู้ใช้", selectedItemProp:'name', searchObjProps:'name',
+    selectionAdded:function(elem, data) {
+      elem.data('user_name', data['name']).data('user_id', data['value']);
+
+      if($('#shelf-permission-individual-modal .modal-body input[name="individual-shelf-permission"]:checked').length) {
+        $('#shelf-permission-individual-modal .modal-footer button.primary').attr('disabled', false).removeClass('disabled');
+      }
+    },
+    selectionRemoved:function(elem) {
+      if($('#shelf-permission-individual-modal .select_individual .as-values').val() == '' || $('#shelf-permission-individual-modal .modal-body input[name="individual-shelf-permission"]:checked').length == 0) {
+        $('#shelf-permission-individual-modal .modal-footer button.primary').attr('disabled', true).addClass('disabled');
+      }
+    }
+  });
+
+  $('.input-shelf-permissions li a').live('click', function(e) {
+    $(this).closest('li').remove();
+    return false;
+  });
+
 })
 </script>
 {% endblock %}
 
 {% block body_authenticated %}
-<div class="container-fluid container-body shelf_modify_page">
-  {% include 'document/snippets/documents_sidebar.html' %}
 
-  <div class="content"><div class="content-inner">
+<div class="fluid-container sidebar-left page-shelf">
+  {% include 'document/snippets/documents_sidebar.html' %}
+  <div class="fluid-content"><div class="inner-content">
     {% if not shelf %}
     <h2>สร้างชั้นหนังสือใหม่</h2>
     {% else %}
@@ -40,61 +180,77 @@ $(document).ready(function () {
       {% csrf_token %}
       {{form.non_field_errors}}
 
-      <div class="clearfix"><label for="id_name">ชื่อชั้นหนังสือ</label><div class="input">{{form.name}}{{form.name.errors}}</div></div>
-      <div class="clearfix">
+      <div class="item"><label for="id_name">ชื่อชั้นหนังสือ</label><div class="input">{{form.name}}{{form.name.errors}}</div></div>
+      <div class="item"><label for="id_autosync">Auto-Sync</label><div class="input"><label class="checkbox">{{form.auto_sync}} ทุกไฟล์ในชั้นหนังสือนี้จะถูกดาวน์โหลดลงเครื่องผู้ใช้โดยอัตโนมัติ</label>{{form.auto_sync.errors}}</div></div>
+      <div class="item">
         <label>การเข้าถึงชั้นหนังสือ</label>
-        <div class="input table-inputs group-permissions">
-          <table>
-            <tr>
-              <td>ทุกคนใน{{organization.prefix}}</td>
-              <td><label><input type="radio" name="all_access" value="publish" {% if all_access_permission == 'publish' %}checked="checked"{% endif %}/> อัพโหลดและแก้ไข</label></td>
-              <td><label><input type="radio" name="all_access" value="view" {% if all_access_permission == 'view' %}checked="checked"{% endif %}/> ดูอย่างเดียว</label></td>
-              <td></td>
-            </tr>
-            <tr>
-              <th colspan="4">หรือ ตั้งค่าการเข้าถึงตามกลุ่มผู้ใช้</th>
-            </tr>
-
-            {% shelf_permissions_radio_table organization shelf_permissions %}
-            
-          </table>
-        </div>
-      </div>
-      <div class="clearfix">
-        <label for="id_auto_sync">บังคับโหลด</label>
-        <div class="input table-inputs auto-sync" style="width: 213px;">
-          <table>
-            <tr>
-              <td>
-                <label>
-                  <input type="radio" name="auto_sync" value="0" {% if not shelf.auto_sync  %}checked="checked"{% endif %}/>
-                  ไม่บังคับ
-                </label>
-              </td>
-              <td>
-                <label>
-                  <input type="radio" name="auto_sync" value="1" {% if shelf.auto_sync  %}checked="checked"{% endif %}/>
-                  บังคับ
-                </label>
-              </td>
-            </tr>
-          </table>
+        <div class="input input-shelf-permissions">
+          <ul>{% generate_shelf_permission_list shelf_permissions %}</ul>
+          <div class="add_actions">
+            <button class="small btn" id="shelf_permission_all_button">สำหรับทุกคนใบบริษัท</button> / <button class="small btn" id="shelf_permission_group_button">สำหรับกลุ่มผู้ใช้</button> / <button class="small btn" id="shelf_permission_individual_button">สำหรับรายบุคคล</button>
+          </div>
         </div>
       </div>
 
-      <div class="form_actions">
+      <div class="form-actions">
         <button type="submit" class="btn primary">{% if not shelf %}สร้างชั้นหนังสือ{% else %}แก้ไขชั้นหนังสือ{% endif %}</button>
         <button type="reset" class="btn">ล้างข้อมูล</button>
       </div>
     </form>
 
     {% if shelf %}
-    <div class="delete_panel">
+    <div class="delete-panel">
       <a href="{% url delete_document_shelf organization.slug shelf.id %}" class="danger">ลบชั้นหนังสือ</a>
     </div>
     {% endif %}
-
   </div></div>
+</div>
+
+<div class="modal fade uninitialized-modal modal-shelf-permission" id="shelf-permission-all-modal">
+  <div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>การเข้าถึงชั้นหนังสือสำหรับทุกคนในบริษัท</h3></div>
+  <div class="modal-body">
+    <p>ความสามารถในการเข้าถึง</p>
+    <ul>
+      <li><label><input type="radio" name="all-shelf-permission" value="2"/> อัพโหลดไฟล์และแก้ไขไฟล์ได้</label></li>
+      <li><label><input type="radio" name="all-shelf-permission" value="1"/> ดูไฟล์ได้อย่างเดียว (ยกเว้นผู้ดูแลระบบ)</label></li>
+    </ul>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal">ยกเลิก</button>
+    <button class="btn primary">ตั้งค่าการเข้าถึง</button>
+  </div>
+</div>
+
+<div class="modal fade uninitialized-modal modal-shelf-permission" id="shelf-permission-group-modal">
+  <div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>การเข้าถึงชั้นหนังสือสำหรับกลุ่มผู้ใช้</h3></div>
+  <div class="modal-body">
+    <div class="select_group">กลุ่มผู้ใช้ <select>{% generate_group_select_options organization %}</select></div>
+    <p>ความสามารถในการเข้าถึง</p>
+    <ul>
+      <li><label><input type="radio" name="group-shelf-permission" value="2"/> อัพโหลดไฟล์และแก้ไขไฟล์ได้</label></li>
+      <li><label><input type="radio" name="group-shelf-permission" value="1"/> ดูไฟล์ได้อย่างเดียว</label></li>
+    </ul>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal">ยกเลิก</button>
+    <button class="btn primary">ตั้งค่าการเข้าถึง</button>
+  </div>
+</div>
+
+<div class="modal fade uninitialized-modal modal-shelf-permission" id="shelf-permission-individual-modal">
+  <div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>การเข้าถึงชั้นหนังสือสำหรับรายบุคคล</h3></div>
+  <div class="modal-body">
+    <div class="select_individual"><input type="text" /></div>
+    <p>ความสามารถในการเข้าถึง</p>
+    <ul>
+      <li><label><input type="radio" name="individual-shelf-permission" value="2"/> อัพโหลดไฟล์และแก้ไขไฟล์ได้</label></li>
+      <li><label><input type="radio" name="individual-shelf-permission" value="1"/> ดูไฟล์ได้อย่างเดียว</label></li>
+    </ul>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal">ยกเลิก</button>
+    <button class="btn primary">ตั้งค่าการเข้าถึง</button>
+  </div>
 </div>
 
 {% endblock %}

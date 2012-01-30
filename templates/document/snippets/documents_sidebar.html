@@ -1,5 +1,5 @@
 {% load helper_tags document_tags %}
-<div class="sidebar documents_sidebar">
+<div class="fluid-sidebar documents-sidebar">
   <ul>
     <li class="shelf-all{% if shelf_type == 'all' %} active{% endif %}"><a href="{% url view_documents organization.slug %}">ไฟล์ทั้งหมด <span>({% print_all_publication_count user organization %} ไฟล์)</span></a></li>
   </ul>

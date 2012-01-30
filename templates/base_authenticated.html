@@ -7,20 +7,9 @@
 {{block.super}}
 <script src="{{STATIC_URL}}libs/bootstrap/js/bootstrap-dropdown.js"></script>
 <script src="{{STATIC_URL}}libs/bootstrap/js/bootstrap-modal.js"></script>
-<link rel="stylesheet/less" type="text/css" href="{{STATIC_URL}}libs/bootstrap/lib/bootstrap.less">
-
-<link rel="stylesheet" media="all" type="text/css" href="{{STATIC_URL}}libs/yui/build/container/assets/skins/sam/container.css">
-<link rel="stylesheet" media="all" type="text/css" href="{{STATIC_URL}}libs/yui/build/calendar/assets/skins/sam/calendar.css">
-<link rel="stylesheet" media="all" type="text/css" href="{{STATIC_URL}}css/yui.calendar.widget.css">
-<script type="text/javascript" src="{{STATIC_URL}}libs/yui/build/yahoo-dom-event/yahoo-dom-event.js"></script>
-<script type="text/javascript" src="{{STATIC_URL}}libs/yui/build/element/element-min.js"></script>
-<script type="text/javascript" src="{{STATIC_URL}}libs/yui/build/container/container-min.js"></script>
-<script type="text/javascript" src="{{STATIC_URL}}libs/yui/build/calendar/calendar-min.js"></script>
-<script type="text/javascript" src="{{STATIC_URL}}js/yui.calendar.widget.js"></script>
 
 <script type="text/javascript" src="{{STATIC_URL}}libs/jquery.form.js"></script>
 <script type="text/javascript" src="{{STATIC_URL}}libs/progressbar/jquery.progressbar.js"></script>
-
 
 <link rel="stylesheet/less" type="text/css" href="{{STATIC_URL}}css/styles.less">
 
@@ -28,44 +17,29 @@
 <script type="text/javascript" src="{{STATIC_URL}}js/scripts.publication.js"></script>
 
 <script>
-var var_publisher_id = '{{publisher.id}}';
-
+var var_organization_id = '{{organization.id}}';
 </script>
 {% endblock %}
 
 {% block body %}
-<div class="topbar">
-  <div class="fill">
-    <div class="container-fluid">
+<div class="navbar navbar-fix">
+  <div class="navbar-inner">
+    <div class="container">
       {% block topnav %}{% endblock %}
-      
-      <ul class="nav secondary-nav" data-dropdown="dropdown">
+
+      <ul class="nav pull-right" data-dropdown="dropdown">
         {% generate_organization_menu user %}
 
-        <li class="accounts_prefix">ชื่อผู้ใช้ระบบ</li>
-
-        <li class="accounts">
-          <a href="{% url view_my_profile %}">{{user.get_profile.get_fullname}}</a>
-        </li>
-
+        <li class="accounts"><a href="{% url view_my_profile %}">{{user.get_profile.get_fullname}}</a></li>
         <li><a href="/accounts/logout/">ออกจากระบบ</a></li>
       </ul>
+
     </div>
   </div>
 </div>
 
-<div class="body_authenticated">
-  {% if messages %}
-      {% for message in messages %}
-      <div class="alert-message block-message {% if message.tags %}{{message.tags}}{% endif %}"><p>{{message}}</p></div>
-      {% endfor %}
-  {% endif %}
-
+<div class="authenticated-container">
+  {% if messages %}{% for message in messages %}<div class="alert alert-{% if message.tags %}{{message.tags}}{% endif %}"><p>{{message}}</p></div>{% endfor %}{% endif %}
   {% block body_authenticated %}{% endblock %}
 </div>
-
-<div class="clear"></div>
-
-<!-- <div class="footer"><p>&copy; OpenReader 2011</p></div> -->
-
 {% endblock %}

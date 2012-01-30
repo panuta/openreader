@@ -1,0 +1,22 @@
+.content_link() {
+    &:link, &:active, &:visited {
+        text-decoration:underline;
+        color:@linkColor;
+    }
+
+    &:hover {
+        background-color:@linkColor !important;
+        color:#FFF !important;
+        text-shadow:none;
+    }
+}
+
+.danger_link() {
+    color:#C30;
+    text-decoration:underline;
+
+    &:hover {
+        background-color:#C30;
+        color:#FFF;
+    }
+}

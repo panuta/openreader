@@ -79,6 +79,28 @@ class PublicationShelf(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='publication_shelf_created_by')
 
+SHELF_ACCESS = {'NO_ACCESS':0, 'VIEW_ACCESS':1, 'PUBLISH_ACCESS':2}
+
+class OrganizationShelfPermission(models.Model):
+    shelf = models.OneToOneField(OrganizationShelf)
+    access_level = models.IntegerField(default=SHELF_ACCESS['NO_ACCESS'])
+    created = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(User, related_name='organization_shelf_permission_created_by')
+
+class GroupShelfPermission(models.Model):
+    group = models.ForeignKey('accounts.OrganizationGroup')
+    shelf = models.ForeignKey(OrganizationShelf)
+    access_level = models.IntegerField(default=SHELF_ACCESS['NO_ACCESS'])
+    created = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, related_name='group_shelf_permission_created_by')
+
+class UserShelfPermission(models.Model):
+    user = models.ForeignKey(User)
+    shelf = models.ForeignKey(OrganizationShelf)
+    access_level = models.IntegerField(default=SHELF_ACCESS['NO_ACCESS'])
+    created = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, related_name='user_shelf_permission_created_by')
+
 # TAG
 ############################################################
 
@@ -124,26 +146,35 @@ class UserProfile(BaseUserProfile):
             return shelves
     
     def get_shelf_access(self, shelf):
-        level = SHELF_ACCESS['NO_ACCESS']
-
         user_organization = UserOrganization.objects.get(user=self.user, organization=shelf.organization)
-        for group in UserGroup.objects.filter(user_organization=user_organization):
 
-            try:
-                access_level = ShelfPermission.objects.get(group=group, shelf=shelf).access_level
-            except:
-                access_level = SHELF_ACCESS['NO_ACCESS']
+        if user_organization.is_admin:
+            return SHELF_ACCESS['PUBLISH_ACCESS']
 
-            if level < access_level:
-                level = access_level
+        max_access_level = SHELF_ACCESS['NO_ACCESS']
+
+        try:
+            access_level = OrganizationShelfPermission.objects.get(shelf=shelf).access_level
+            max_access_level = access_level if max_access_level < access_level else max_access_level
+        except OrganizationShelfPermission.DoesNotExist:
+            pass
         
-        return level
+        if max_access_level == SHELF_ACCESS['PUBLISH_ACCESS']: return SHELF_ACCESS['PUBLISH_ACCESS'] # No need to query further
 
-SHELF_ACCESS = {'NO_ACCESS':0, 'VIEW_ACCESS':1, 'PUBLISH_ACCESS':2}
+        for user_group in UserGroup.objects.filter(user_organization=user_organization):
+            try:
+                access_level = GroupShelfPermission.objects.get(shelf=shelf, group=user_group.group).access_level
+                max_access_level = access_level if max_access_level < access_level else max_access_level
+            except GroupShelfPermission.DoesNotExist:
+                pass
+        
+        if max_access_level == SHELF_ACCESS['PUBLISH_ACCESS']: return SHELF_ACCESS['PUBLISH_ACCESS'] # No need to query further
 
-class ShelfPermission(models.Model):
-    group = models.ForeignKey('accounts.OrganizationGroup')
-    shelf = models.ForeignKey(OrganizationShelf)
-    access_level = models.IntegerField(default=SHELF_ACCESS['NO_ACCESS']) # 0 = NO ACCESS, 1 = VIEW ONLY, 2 = PUBLISH/EDIT
-    created = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, related_name='shelf_permission_created_by')
+        try:
+            access_level = UserShelfPermission.objects.get(shelf=shelf, user=self.user).access_level
+            max_access_level = access_level if max_access_level < access_level else max_access_level
+        except UserShelfPermission.DoesNotExist:
+            pass
+        
+        return max_access_level
+

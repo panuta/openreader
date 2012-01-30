@@ -9,17 +9,10 @@
 {% endblock %}
 
 {% block body_authenticated %}
-<div class="container-fluid container-body publisher_manage_page">
-
-  <div class="sidebar">
-    <div class="head"></div>
-    <ul>
-      {% block my_account_menu %}{% endblock %}
-    </ul>
-  </div>
-
-  <div class="content"><div class="content-inner">
-    {% block my_account_content %}{% endblock %}
+<div class="fluid-container sidebar-left page-accounts-manage">
+  <div class="fluid-sidebar"><ul>{% block my_account_sidebar %}{% endblock %}</ul></div>
+  <div class="fluid-content"><div class="inner-content">
+  {% block my_account_content %}{% endblock %}
   </div></div>
 </div>
 {% endblock %}

@@ -5,16 +5,10 @@
 {% block topnav %}{% include 'snippets/organization_topnav.html' with active_menu='management' %}{% endblock %}
 
 {% block body_authenticated %}
-<div class="container-fluid container-body organization_manage_page">
-
-  <div class="sidebar">
-    <ul>
-      {% block organization_manage_menu %}{% endblock %}
-    </ul>
-  </div>
-
-  <div class="content"><div class="content-inner">
-    {% block organization_manage_content %}{% endblock %}
+<div class="fluid-container sidebar-left page-accounts-manage">
+  <div class="fluid-sidebar"><ul>{% block organization_manage_sidebar %}{% endblock %}</ul></div>
+  <div class="fluid-content"><div class="inner-content">
+  {% block organization_manage_content %}{% endblock %}
   </div></div>
 </div>
 {% endblock %}

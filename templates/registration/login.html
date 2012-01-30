@@ -3,6 +3,10 @@
 {% block head_title %}เข้าสู่ระบบ{% endblock %}
 
 {% block body_single %}
-<h1>เข้าสู่ระบบ</h1>
-{% include 'snippets/login_form.html' with form=form next=next %}
+<div class="outer-container span6 offset3">
+  <div class="inner-container">
+    <h1>เข้าสู่ระบบ</h1>
+    {% include 'snippets/login_form.html' with form=form next=next %}
+  </div>
+</div>
 {% endblock %}

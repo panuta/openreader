@@ -6,10 +6,15 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.core.urlresolvers import reverse
+from django.db import models
+from django.db.models import Q
 from django.forms.util import ErrorList
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import simplejson
 from django.utils.translation import ugettext_lazy as _
+
+from openreader.http import Http403
 
 from common.utilities import generate_random_username
 
@@ -244,7 +249,6 @@ def claim_user_invitation(request, invitation_key):
             user.username = user.id
             user.save()
 
-            from django.db import models
             app_label, model_name = settings.AUTH_PROFILE_MODULE.split('.')
             model = models.get_model(app_label, model_name)
             user_profile = model._default_manager.create(user=user, email=invitation.email, first_name=first_name, last_name=last_name, web_access=True)
@@ -441,3 +445,29 @@ def remove_organization_group(request, organization_group_id):
         return redirect('view_organization_groups', organization_slug=organization.slug)
     
     return render(request, 'accounts/manage/organization_group_remove.html', {'organization':organization, 'group':group})
+
+# AJAX SERVICES
+############################################################################################################################################
+
+@login_required
+def ajax_query_users(request, organization_slug):
+    organization = get_object_or_404(Organization, slug=organization_slug)
+
+    if not can(request.user, 'view', {'organization':organization}):
+        raise Http403
+    
+    query_string = request.GET.get('q')
+    
+    if query_string:
+        result = []
+
+        app_label, model_name = settings.AUTH_PROFILE_MODULE.split('.')
+        model = models.get_model(app_label, model_name)
+        for user_profile in model._default_manager.filter(user__userorganization__in=[organization]).filter(Q(first_name__icontains=query_string) | Q(last_name__icontains=query_string)):
+            #result.append({'userid':str(user_profile.user.id), 'name':user_profile.get_fullname(), 'value':user_profile.get_fullname()})
+            result.append({'name':user_profile.get_fullname(), 'value':str(user_profile.user.id)})
+        
+        # return HttpResponse(simplejson.dumps({'items':result}))
+        return HttpResponse(simplejson.dumps(result))
+    
+    print request.GET

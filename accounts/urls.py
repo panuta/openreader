@@ -28,4 +28,6 @@ urlpatterns = patterns('accounts.views',
     url(r'^group/(?P<organization_group_id>\d+)/edit/$', 'edit_organization_group', name='edit_organization_group'),
     url(r'^group/(?P<organization_group_id>\d+)/remove/$', 'remove_organization_group', name='remove_organization_group'),
     
+    # Ajax Services
+    url(r'^ajax/(?P<organization_slug>\w+)/query/users/$', 'ajax_query_users', name='ajax_query_users'),
 )
