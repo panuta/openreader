@@ -7,9 +7,11 @@ from django.core.files.uploadedfile import UploadedFile
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseServerError, Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import simplejson
 
 from openreader.http import Http403
 
+from private_files.views import get_file as private_files_get_file
 from httpauth import logged_in_or_basicauth
 
 from common.permissions import can
@@ -48,6 +50,9 @@ def view_documents_by_shelf(request, organization_slug, shelf_id):
     publications = Publication.objects.filter(organization=organization, shelves__in=[shelf]).order_by('-uploaded')
     return render(request, 'document/documents.html', {'organization':organization, 'publications':publications, 'shelf':shelf, 'shelf_type':'shelf'})
 
+# UPLOAD DOCUMENT
+######################################################################################################################################################
+
 @login_required
 def upload_documents_to_shelf(request, organization_slug, shelf_id):
     organization = get_object_or_404(Organization, slug=organization_slug)
@@ -72,111 +77,114 @@ def upload_documents_to_shelf(request, organization_slug, shelf_id):
             'title': publication.title,
             'size': uploading_file.file.size,
             'shelf':shelf.id if shelf else '',
-            'url': reverse('view_document', args=[publication.uid])
+            'uploaded':format_abbr_datetime(publication.uploaded),
+            'download_url': reverse('download_publication', args=[publication.uid])
         })
     
     return render(request, 'document/documents_upload.html', {'organization':organization, 'shelf':shelf, 'shelf_type':'shelf'})
+
+# DOWNLOAD DOCUMENT
+######################################################################################################################################################
+
+@logged_in_or_basicauth()
+def download_publication(request, publication_uid):
+    publication = get_object_or_404(Publication, uid=publication_uid)
+
+    can_download = False
+    for shelf in publication.shelves.all():
+        if request.user.get_profile().get_shelf_access(shelf) >= SHELF_ACCESS['VIEW_ACCESS']:
+            can_download = True
+
+    if not can_download:
+        raise Http403
     
+    return private_files_get_file(request, 'document', 'Publication', 'uploaded_file', str(publication.id), '%s.%s' % (publication.original_file_name, publication.file_ext))
 
+# EDIT DOCUMENT
+######################################################################################################################################################
 
 @login_required
-def upload_documents(request, organization_slug):
+def ajax_edit_publication(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
-    return _upload_documents(request, organization)
-
-"""
-@login_required
-def upload_documents_to_shelf(request, organization_slug, shelf_id):
-    organization = get_object_or_404(Organization, slug=organization_slug)
-    shelf = get_object_or_404(OrganizationShelf, id=shelf_id)
-
-    if shelf.organization.id != organization.id:
-        raise Http404
-
-    return _upload_documents(request, organization, shelf)
-"""
-
-def _upload_documents(request, organization, shelf=None):
-    if not can(request.user, 'edit', {'organization':organization}):
-        raise Http404
 
     if request.method == 'POST':
-        file = request.FILES[u'file']
+        publication_uid = request.POST.get('uid')
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        tag_names = request.POST.getlist('tags[]')
 
-        if not file:
-            return response_json_error('file-missing')
+        try:
+            publication = Publication.objects.get(uid=publication_uid)
+        except Publication.DoesNotExist:
+            return response_json_error('invalid-publication')
         
-        uploading_file = UploadedFile(file)
+        if not title:
+            return response_json_error('missing-parameter')
+        
+        publication.title = title
+        publication.description = description
+        publication.save()
 
-        publication = publication_functions.upload_publication(request, 'document', uploading_file, organization)
-        document = Document.objects.create(publication=publication)
+        PublicationTag.objects.filter(publication=publication).delete()
 
-        if shelf:
-            DocumentShelf.objects.create(document=document, shelf=shelf, created_by=request.user)
-            document.publication.status = Publication.STATUS['UNPUBLISHED']
-            document.publication.save()
-
-        return response_json_success({
-            'uid': str(publication.uid),
-            'title': publication.title,
-            'size': uploading_file.file.size,
-            'shelf':shelf.id if shelf else '',
-            'url': reverse('view_document', args=[publication.uid])
-        })
+        for tag_name in tag_names:
+            if tag_name:
+                try:
+                    tag = OrganizationTag.objects.get(organization=organization, tag_name=tag_name)
+                except OrganizationTag.DoesNotExist:
+                    tag = OrganizationTag.objects.create(organization=organization, tag_name=tag_name)
+                
+                PublicationTag.objects.create(publication=publication, tag=tag)
+        
+        return response_json_success()
 
     else:
         raise Http404
 
 @login_required
-def finishing_upload_documents(request, organization_slug):
+def ajax_add_publications_tag(request, organization_slug):
+    organization = get_object_or_404(Organization, slug=organization_slug)
+
     if request.method == 'POST':
-        organization = get_object_or_404(Organization, slug=organization_slug)
+        publication_uids = request.POST.getlist('publication[]')
+        tag_name = request.POST.get('tag')
 
-        uid = request.POST.get('uid')
-        title = request.POST.get('title')
-        shelf_id = request.POST.get('shelf_id')
+        if tag_name:
+            try:
+                tag = OrganizationTag.objects.get(organization=organization, tag_name=tag_name)
+            except OrganizationTag.DoesNotExist:
+                tag = OrganizationTag.objects.create(organization=organization, tag_name=tag_name)
 
-        if not can(request.user, 'edit', {'organization':organization}):
-            return HttpResponseBadRequest('access-denied')
+            for publication_uid in publication_uids:
+                try:
+                    publication = Publication.objects.get(uid=publication_uid)
+                except Publication.DoesNotExist:
+                    continue
+                
+                PublicationTag.objects.get_or_create(publication=publication, tag=tag)
+            
+            return response_json_success()
+        else:
+            return response_json_error('missing-parameter')
 
-        try:
-            document = Document.objects.get(publication__uid=uid)
-        except Document.DoesNotExist:
-            return HttpResponseBadRequest('document-not-found')
-        
-        if document.publication.organization.id != organization.id:
-            return HttpResponseBadRequest('document-not-found')
-        
-        if not title:
-            return HttpResponseBadRequest('missing-parameters')
-        
-        try:
-            shelf = OrganizationShelf.objects.get(id=shelf_id)
-        except OrganizationShelf.DoesNotExist:
-            return HttpResponseBadRequest('shelf-not-found')
-        
-        if shelf.organization.id != organization.id:
-            return HttpResponseBadRequest('shelf-not-found')
-        
-        DocumentShelf.objects.create(shelf=shelf, document=document, created_by=request.user)
+    else:
+        raise Http404
 
-        document.publication.title = title
-        document.publication.status = Publication.STATUS['UNPUBLISHED']
-        document.publication.save()
-        
-        return response_json({
-            'uid':str(document.publication.uid),
-            'title':document.publication.title,
-            'shelf_name':shelf.name if shelf_id else '',
-            'uploaded':format_abbr_datetime(document.publication.uploaded),
-            'status':document.publication.get_status_text(),
-            'view_url':reverse('view_document', args=[document.publication.uid]),
-            'edit_url':reverse('edit_document', args=[document.publication.uid]),
-        })
+@login_required
+def ajax_query_document_tags(request, organization_slug):
+    organization = get_object_or_404(Organization, slug=organization_slug)
+    term = request.GET.get('term')
+
+    tags = OrganizationTag.objects.filter(organization=organization, tag_name__icontains=term)
+
+    result = []
+    for tag in tags:
+        result.append({'id':str(tag.id), 'label':tag.tag_name, 'value':tag.tag_name})
     
-    raise Http404
+    return HttpResponse(simplejson.dumps(result))
 
 # SHELF
+######################################################################################################################################################
 
 def _persist_shelf_permissions(request, organization, shelf):
     OrganizationShelfPermission.objects.filter(shelf=shelf).delete()
@@ -303,36 +311,6 @@ def delete_document_shelf(request, organization_slug, shelf_id):
     shelf_documents_count = Document.objects.filter(shelves__in=[shelf], publication__publication_type='document').count()
     return render(request, 'document/shelf_delete.html', {'organization':organization, 'shelf_documents_count':shelf_documents_count, 'shelf':shelf, 'shelf_type':'delete'})
 
-@login_required
-def move_document_to_shelf(request):
-    if request.method == 'POST':
-        uid = request.POST.get('uid')
-        shelf_id = request.POST.get('shelf_id')
-
-        try:
-            document = Document.objects.get(publication__uid=uid)
-        except Document.DoesNotExist:
-            return HttpResponseBadRequest('document-not-found')
-        
-        if not can(request.user, 'edit', {'organization':document.publication.organization}):
-            return HttpResponseBadRequest('access-denied')
-        
-        try:
-            shelf = OrganizationShelf.objects.get(id=shelf_id)
-        except OrganizationShelf.DoesNotExist:
-            return HttpResponseBadRequest('shelf-not-found')
-        
-        DocumentShelf.objects.create(shelf=shelf, document=document, created_by=request.user)
-        
-        document.publication.status = Publication.STATUS['UNPUBLISHED']
-        document.publication.save()
-
-        return response_json({
-            'uid':str(document.publication.uid),
-            'shelf_name':shelf.name,
-            'edit_url':reverse('edit_document', args=[document.publication.uid]),
-        })
-
 # DOCUMENT
 
 @login_required
@@ -344,16 +322,6 @@ def view_document(request, publication_uid):
         raise Http403
     
     return render(request, 'document/document_view.html', {'organization':organization, 'publication':publication})
-
-@logged_in_or_basicauth()
-def download_publication(request, publication_uid):
-    publication = get_object_or_404(Publication, uid=publication_uid)
-
-    if publication.status == Publication.STATUS['UNFINISHED'] and publication.uploaded_by != request.user:
-        raise Http403
-
-    from publication.views import download_publication
-    return download_publication(request, publication)
 
 @login_required
 def edit_document(request, publication_uid):

@@ -67,6 +67,15 @@ a.btn:visited {
     clear:both;
 }
 
+a.danger {
+    color:#C30;
+
+    &:hover {
+        background-color:#C30;
+        color:#FFF;
+    }
+}
+
 /* PAGE ELEMENTS
 ==================================================================================================== */
 
@@ -448,6 +457,10 @@ table {
             .content_link;
         }
     }
+
+    tr.checked td {
+        background-color:#FFD !important;
+    }
 }
 
 .delete-panel {
@@ -481,12 +494,198 @@ table {
         }
     }
 
-    .table-documents {
+    .upload_dropzone {
+        border:1px dashed #CCC;
+        padding:20px 0px;
+        text-align:center;
+        margin-bottom:20px;
+        display:none;
+
+        .dragdrop {
+            margin-top:15px;
+            color:#555;
+            font-size:1.2em;
+        }
+    }
+
+    .checkbox_actions {
+        display:none;
+        color:#FFF;
+        background:url(../images/checkbox_down_arrow.png) 7px 50px transparent no-repeat;
+        padding-bottom:12px;
         
+        .inner {
+            line-height:50px;
+            background-color:#666;
+            margin-bottom:12px;
+        }
+        
+        span.check {
+            padding:8px;
+            margin-right:5px;
+        }
+
+        span.file_selected {
+            margin-right:20px;
+            background-color:#888;
+            padding:3px 10px;
+            border-radius:5px;
+
+            em {
+                font-style:normal;
+            }
+        }
+    }
+
+    .documents-upload-table {
+        .progress_column {
+            width:320px;
+        }
+
+        .action_column {
+            width:100px;
+        }
+
+        .upload_progressbar {
+            span {
+                vertical-align:top;
+            }
+        }
+    }
+
+    .documents-table {
+        .download_column {
+            width:16px;
+        }
+
+        .download {
+            padding-top:10px;
+
+            a {
+                text-indent:-9999px;
+                display:block;
+                width:16px;
+                height:16px;
+                background:url(../images/download.png) no-repeat;
+                outline:none;
+
+                &:hover {
+                    background-position:right center;
+                }
+            }
+        }
+
+        .uploaded_row {
+            background-color:@success-light-background;
+        }
+
+        .tag {
+            li {
+                background-color:#4c6c99;
+                color:#FFF;
+                font-size:0.9em;
+                display: inline-block;
+                margin-right:10px;
+                border-radius:3px;
+                padding:0px 5px;
+            }
+        }
+
+        .editing_row {
+            display:none;
+            border-left:5px solid @linkColor;
+
+            td {
+                padding:15px 25px;
+
+                .cover {
+                    float:left;
+                    width:140px;
+                    height:180px;
+                    background-color:#999;
+                }
+
+                form {
+                    
+                    padding:0px;
+
+                    margin:0px 0px 30px 170px;
+                    
+
+                    .item {
+                        margin-bottom:10px;
+
+                        .input {
+                            margin-left:0px;
+                        }
+
+                        input {
+                            width:550px;
+                        }
+
+                        textarea {
+                            width:550px;
+                            height:50px;
+                        }
+                    }
+
+                    .error_message {
+                        color:#C30;
+                        margin-left:20px;
+                    }
+                }
+
+                .ui-menu {
+                    .ui-menu-item {
+                        float:none;
+
+                        a {
+                            font-size:1.1em;
+                            color:#333;
+                            padding:10px 20px;
+                            cursor:pointer;
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
-.page-shelf {
+#add_tag_modal {
+    form {
+        margin:0px;
+        padding:0px;
+
+        .item {
+            .input {
+                margin-left:0px;
+            }
+
+            input {
+                width:350px;
+            }
+        }
+    }
+}
+
+#edit_publication_modal {
+    .cover {
+        width:140px;
+        height:180px;
+        background-color:#DDD;
+        float:right;
+    }
+
+    
+
+    .delete_publication {
+        float:left !important;
+        margin-top:5px;
+    }
+}
+
+.page-shelf-modify {
     .input-shelf-permissions {
         margin:10px 0px 40px;
 
@@ -514,7 +713,7 @@ table {
         }
 
         .add_actions {
-            color:#CCC;
+            color:#666;
             margin-top:15px;
 
             button {
@@ -883,22 +1082,6 @@ a.download_publication_button span {
         margin-bottom:20px;
         background-color:#FFD;
 
-        .close_panel {
-            float:right;
-
-            a {
-                text-indent:-9999px;
-                margin-right:10px;
-                display:block;
-                width:16px;
-                height:16px;
-                background:url(/static/images/ui/close_panel.png) left center no-repeat;
-
-                &:hover {
-                    background-position:right center;
-                }
-            }
-        }
 
         .dragdrop {
             margin-top:10px;

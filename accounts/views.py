@@ -463,10 +463,11 @@ def ajax_query_users(request, organization_slug):
 
         app_label, model_name = settings.AUTH_PROFILE_MODULE.split('.')
         model = models.get_model(app_label, model_name)
-        for user_profile in model._default_manager.filter(user__userorganization__in=[organization]).filter(Q(first_name__icontains=query_string) | Q(last_name__icontains=query_string)):
+        for user_profile in model._default_manager.filter(user__userorganization__organization=organization).filter(Q(first_name__icontains=query_string) | Q(last_name__icontains=query_string)):
             #result.append({'userid':str(user_profile.user.id), 'name':user_profile.get_fullname(), 'value':user_profile.get_fullname()})
             result.append({'name':user_profile.get_fullname(), 'value':str(user_profile.user.id)})
         
+        print result
         # return HttpResponse(simplejson.dumps({'items':result}))
         return HttpResponse(simplejson.dumps(result))
     

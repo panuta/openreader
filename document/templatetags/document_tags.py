@@ -13,29 +13,13 @@ from common.permissions import can
 from accounts.models import OrganizationGroup
 from document.models import SHELF_ACCESS, Publication, OrganizationShelf
 
-# Used in create/edit shelf page
 @register.simple_tag
-def shelf_permissions_radio_table(organization, permissions=None):
-    table_html = []
-    for group in OrganizationGroup.objects.filter(organization=organization).order_by('name'):
-
-        check_publish = ''
-        check_view = ''
-        check_no = ''
-
-        if permissions:
-            if permissions[group.id] == SHELF_ACCESS['PUBLISH_ACCESS'] or permissions[group.id] == 'publish':
-                check_publish = 'checked="checked"'
-                
-            elif permissions[group.id] == SHELF_ACCESS['VIEW_ACCESS'] or permissions[group.id] == 'view':
-                check_view = 'checked="checked"'
-
-            elif permissions[group.id] == SHELF_ACCESS['NO_ACCESS'] or permissions[group.id] == 'no':
-                check_no = 'checked="checked"'
-
-        table_html.append(u'<tr class="permission_row"><td>%s</td><td><label><input type="radio" name="group_access-%d" value="publish" %s/> อัพโหลดและแก้ไข</label></td><td><label><input type="radio" name="group_access-%d" value="view" %s/> ดูอย่างเดียว</label></td><td><label><input type="radio" name="group_access-%d" value="no" %s/> ไม่สามารถเข้าถึงได้</label></td></tr>' % (group.name, group.id, check_publish, group.id, check_view, group.id, check_no))
+def print_publication_tags(publication):
+    tag_names = []
+    for tag in publication.tags.all():
+        tag_names.append('<li>%s</li>' % tag.tag_name)
     
-    return ''.join(table_html)
+    return '<ul>%s</ul>' % ''.join(tag_names)
 
 # SHELF
 

@@ -163,7 +163,7 @@ $(document).ready(function () {
 
 {% block body_authenticated %}
 
-<div class="fluid-container sidebar-left page-shelf">
+<div class="fluid-container sidebar-left page-shelf-modify">
   {% include 'document/snippets/documents_sidebar.html' %}
   <div class="fluid-content"><div class="inner-content">
     {% if not shelf %}
@@ -187,7 +187,7 @@ $(document).ready(function () {
         <div class="input input-shelf-permissions">
           <ul>{% generate_shelf_permission_list shelf_permissions %}</ul>
           <div class="add_actions">
-            <button class="small btn" id="shelf_permission_all_button">สำหรับทุกคนใบบริษัท</button> / <button class="small btn" id="shelf_permission_group_button">สำหรับกลุ่มผู้ใช้</button> / <button class="small btn" id="shelf_permission_individual_button">สำหรับรายบุคคล</button>
+            เพิ่มการเข้าถึงสำหรับ <button class="small btn" id="shelf_permission_all_button">ทุกคนใบบริษัท</button> <button class="small btn" id="shelf_permission_group_button">กลุ่มผู้ใช้</button> <button class="small btn" id="shelf_permission_individual_button">รายบุคคล</button>
           </div>
         </div>
       </div>

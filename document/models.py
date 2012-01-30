@@ -107,8 +107,6 @@ class UserShelfPermission(models.Model):
 class OrganizationTag(models.Model):
     organization = models.ForeignKey('accounts.Organization')
     tag_name = models.CharField(max_length=200)
-    created = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, related_name='organization_tag_created_by')
 
 class PublicationTag(models.Model):
     publication = models.ForeignKey(Publication)

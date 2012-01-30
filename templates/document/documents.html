@@ -6,9 +6,235 @@
 
 {% block html_head %}
 {{block.super}}
+
+{% if shelf %}
+<script type="text/javascript" src="{{STATIC_URL}}libs/plupload/plupload.full.js"></script>
+{% endif %}
+<script type="text/javascript" src="{{STATIC_URL}}libs/jqueryui/jquery-ui-1.8.17.custom.min.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}libs/jquery.color.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}libs/tagit/tagit.js"></script>
+<link rel="stylesheet/less" type="text/css" href="{{STATIC_URL}}libs/tagit/tagit-simple-grey.css">
+
 <script>
+{% if shelf %}
+function increaseAllCount(shelf_id) {
+  var count_num = $('.sidebar .shelf-all span').text().split(' ')[0].substring(1) * 1;
+  count_num = count_num + 1;
+  $('.sidebar .shelf-all span').text('(' + count_num + ' ไฟล์)');
+}
+
+function increaseShelfCount(shelf_id) {
+  var count_num = $('#shelf-' + shelf_id + ' span').text().split(' ')[0].substring(1) * 1;
+  count_num = count_num + 1;
+  $('#shelf-' + shelf_id + ' span').text('(' + count_num + ' ไฟล์)');
+}
+{% endif %}
+
 $(document).ready(function () {
-  
+
+  /* EDIT BUTTON
+   *************************************/
+
+  function split( val ) {
+    return val.split(/,\s*/);
+  }
+
+  function extractLast(term) {
+    return split(term).pop();
+  }
+
+  $('.edit_publication_button').button();
+  $('.edit_publication_button').live('click', function(e) {
+    if($(this).hasClass('active')) {
+      var trObject = $(this).closest('tr');
+      trObject.prevAll().find('.edit_publication_button').removeClass('active');
+      trObject.nextAll().find('.edit_publication_button').removeClass('active');
+
+      var title = trObject.find('td.name').text();
+      var description = trObject.find('input[name="description"]').val();
+      var tags = trObject.find('td.tag ul').html();
+      
+      $('.editing_row').remove();
+      var editing_row = $('<tr class="editing_row"><td colspan="6"><div class="wrapper" style="display:none;"><div class="cover"></div><form><div class="item"><label for="id_name">ชื่อไฟล์</label><div class="input"><input type="text" name="name" value="' + title + '" /></div></div><div class="item"><label for="id_description">คำอธิบาย</label><div class="input"><textarea>' + description + '</textarea></div></div><div class="item"><label for="id_tags">แถบป้าย</label><div class="input"><ul id="edit_tags">' + tags + '</ul></div></div><div class="form_actions"><button class="primary btn save_button">บันทึกข้อมูล</button><button class="btn cancel_button">ยกเลิก</button><span class="error_message"></span></div></form></div></td></tr>');
+      editing_row.insertAfter($(this).closest('tr')).show().find('.wrapper').slideDown('fast');
+
+      $('#edit_tags').tagit({tagSource: function(request, response) {
+        $.getJSON('{% url ajax_query_document_tags organization.slug %}', {
+          term: extractLast(request.term)
+        }, response);
+
+      }, triggerKeys: ['enter', 'comma', 'tab']});
+
+      editing_row.find('.form_actions .save_button').on('click', function(e) {
+        var title = $('.editing_row input[name="name"]').val();
+        var description = $('.editing_row textarea').val();
+        var tags = new Array();
+        var tag_html = '';
+
+        var editing_tags = $('#edit_tags').tagit('tags');
+        for(var i=0; i<editing_tags.length; i++) {
+          tags.push(editing_tags[i].label);
+          tag_html = tag_html + '<li>' + editing_tags[i].label + '</li>';
+        }
+
+        $.post('{% url ajax_edit_publication organization.slug %}', {uid:trObject.attr('id'), title:title, description:description, tags:tags}, function(response) {
+          if(response.status == 'success') {
+            trObject.find('td.name').text(title);
+            trObject.find('input[name="description"]').val(description);
+            trObject.find('td.tag ul').html(tag_html);
+
+            trObject.css('backgroundColor', '#99cc99');
+            trObject.animate({backgroundColor:"#FFFFFF"}, 1500);
+
+            $('.edit_publication_button').removeClass('active');
+            $('.editing_row .wrapper').slideUp('fast', function() {
+              $(this).closest('tr').remove();
+            });
+          } else {
+            if(response.error == 'invalid-publication') {
+              editing_row.find('.error_message').text('ข้อมูลไม่ถูกต้อง');
+            }
+
+            if(response.error == 'missing-parameter') {
+              editing_row.find('.error_message').text('ข้อมูลไม่ครบถ้วน');
+            }
+          }
+        });
+        return false;
+      });
+
+      editing_row.find('.form_actions .cancel_button').on('click', function(e) {
+        $('.edit_publication_button').removeClass('active');
+        $('.editing_row .wrapper').slideUp('fast', function() {
+          $(this).closest('tr').remove();
+        });
+        return false;
+      });
+
+    } else {
+      $('.editing_row .wrapper').slideUp('fast', function() {
+        $(this).closest('tr').remove();
+      })
+    }
+    return false;
+  });
+
+  /* UPLOAD BUTTON
+   *************************************/
+
+  {% if shelf %}
+  $('.upload_publication_button').button();
+  $('.upload_publication_button').on('click', function(e) {
+    $('#upload_dropzone').slideToggle('fast');
+  });
+
+  var uploader = new plupload.Uploader({
+    runtimes : 'html5,flash',
+    browse_button : 'select_files_button',
+    container : 'upload_dropzone',
+    drop_element: 'upload_dropzone',
+    url : '{% url upload_documents_to_shelf organization.slug shelf.id %}',
+    flash_swf_url : '{{STATIC_URL}}libs/plupload/plupload.flash.swf',
+    multipart: true,
+    headers: {'X-Requested-With':'XMLHttpRequest', 'X-CSRFToken':'{{csrf_token}}'}
+  });
+
+  uploader.init();
+
+  uploader.bind('FilesAdded', function(up, files) {
+    $.each(files, function(i, file) {
+      var new_row = $('<tr id="' + file.id + '"><td>' + file.name + '</td><td><div class="upload_progressbar"></div></td><td class="row_actions"><button class="small danger btn" >ยกเลิก</button></td></tr>');
+      new_row.find('.upload_progressbar').progressBar({width:262, height:20, boxImage:'/static/libs/progressbar/images/progressbar.png', barImage:{0:'/static/libs/progressbar/images/progressbg.png', 30:'/static/libs/progressbar/images/progressbg.png', 70:'/static/libs/progressbar/images/progressbg.png'}});
+      new_row.prependTo('.documents-upload-table tbody');
+    });
+
+    up.refresh(); // Reposition Flash/Silverlight
+    up.start();
+  });
+
+  uploader.bind('UploadProgress', function(up, file) {
+    $('#' + file.id + ' .upload_progressbar').progressBar(file.percent);
+  });
+
+  uploader.bind('FileUploaded', function(up, file, response) {
+    var file_id = file.id;
+    var responseObject = eval('(' + response.response + ')'); // Django returns response as JSON
+
+    if(responseObject.status == 'success') {
+      var uploaded_file = $('<tr id="' + responseObject.uid + '" class="uploaded_row"><td><input type="checkbox" checked="checked"/></td><td class="download"><a href="' + response.download_url + '" title="ดาวน์โหลดไฟล์">ดาวน์โหลดไฟล์</a></td><td class="name">' + file.name + '</td><td class="tag"><ul></ul></td><td>' + responseObject.uploaded + '</td><td class="row_actions"><a href="#" class="small btn" >แก้ไข</a></td></tr>');
+
+      increaseAllCount();
+      increaseShelfCount(responseObject.shelf);
+
+      uploaded_file.prependTo('.documents-table tbody');
+
+      $('.checkbox_actions').show().find('input[type="checkbox"]').attr('checked', true);
+      $('.checkbox_actions .file_selected em').text($('.documents-table input[type="checkbox"]:checked').length);
+
+    } else if(responseObject.status == 'error') { // UPLOAD ERRORS
+      if(responseObject.error == 'file-missing') $('#' + file_id + ' .upload_actions').append('<span class="error">ไม่สามารถอ่านไฟล์ที่ต้องการอัพโหลดได้</span>')
+    }
+  });
+
+  $('.documents-upload-table .cancel_button').live('click', function(e) {
+    // TODO Cancel upload
+  });
+  {% endif %}
+
+  /* TABLE CHECKBOX
+   *************************************/
+
+  $('.checkbox_actions input[type="checkbox"]').on('click', function(e) {
+    $('.documents-table input[type="checkbox"]').attr('checked', false);
+    $('.documents-table tr').removeClass('checked');
+    $('.checkbox_actions').hide();
+  });
+
+  $('.add_tag_button').on('click', function(e) {
+    if($('#add_tag_modal').hasClass('uninitialized-modal')) {
+      $('#add_tag_modal').removeClass('uninitialized-modal').modal({backdrop:'static'});
+
+      $('#add_tag_modal .modal-footer button.primary').on('click', function(e) {
+        var tag_name = $('#add_tag_modal .modal-body input[name="tag"]').val();
+        var publications = Array();
+
+        $('.documents-table input[type="checkbox"]:checked').each(function(e) {
+          publications.push($(this).closest('tr').attr('id'));
+        });
+
+        $.post('{% url ajax_add_publications_tag organization.slug %}', {tag:tag_name, publication:publications}, function(response) {
+          $('.documents-table input[type="checkbox"]:checked').each(function(e) {
+            $(this).closest('tr').find('.tag ul').append('<li>' + tag_name + '</li>')
+          });
+
+          $('#add_tag_modal').modal('hide');
+        });
+      });
+
+    } else {
+      $('#add_tag_modal').modal('show');
+    }
+
+    $('#add_tag_modal .modal-body input[name="tag"]').val('');
+
+    return false;
+  });
+
+  $('.documents-table input[type="checkbox"]').live('click', function(e) {
+    if($(this).attr('checked')) {
+      $(this).closest('tr').addClass('checked');
+    } else {
+      $(this).closest('tr').removeClass('checked');
+    }
+
+    if($('.documents-table input[type="checkbox"]:checked').length) {
+      $('.checkbox_actions').show().find('input[type="checkbox"]').attr('checked', true);
+      $('.checkbox_actions .file_selected em').text($('.documents-table input[type="checkbox"]:checked').length);
+    } else {
+      $('.checkbox_actions').hide();
+    }
+  });
+
 });
 </script>
 {% endblock %}
@@ -22,16 +248,35 @@ $(document).ready(function () {
     <h2>{% if shelf_type == 'all' %}ไฟล์ทั้งหมด{% endif %}{% if shelf_type == 'none' %}ไฟล์ที่ไม่อยู่ในชั้นหนังสือ{% endif %}{% if shelf %}<span>ชั้นหนังสือ</span>{{shelf.name}}{% endif %}</h2>
 
     {% if shelf %}
-      <div class="page_actions">
-        {% can user 'upload_shelf' organization=organization shelf=shelf %}<a href="{% url upload_documents_to_shelf organization.slug shelf.id %}" class="btn primary upload_publication_button"><span>อัพโหลดไฟล์เข้าชั้นหนังสือ</span></a>{% endcan %}
-        {% can user 'admin' organization=organization %}<a href="{% url edit_document_shelf organization.slug shelf.id %}" class="btn edit_shelf_button"><span>แก้ไขชั้นหนังสือ</span></a>{% endcan %}
-      </div>
+    <div class="page_actions">
+      {% can user 'upload_shelf' organization=organization shelf=shelf %}<button class="btn primary upload_publication_button" data-toggle="button"><span>อัพโหลดไฟล์เข้าชั้นหนังสือ</span></button>{% endcan %}
+      {% can user 'admin' organization=organization %}<a href="{% url edit_document_shelf organization.slug shelf.id %}" class="btn edit_shelf_button"><span>แก้ไขชั้นหนังสือ</span></a>{% endcan %}
+    </div>
     {% endif %}
 
-    <table class="table table-striped table-documents" {% if not publications %}style="display:none;"{% endif %}>
+    <div class="upload_dropzone" id="upload_dropzone">
+      <a href="#" class="btn select_files_button" id="select_files_button"><span>เลือกไฟล์</span></a>
+      <div class="dragdrop">หรือลากไฟล์มาวางที่กรอบนี้</div>
+    </div>
+
+    <div class="checkbox_actions">
+      <div class="inner">
+        <span class="check"><input type="checkbox"/></span>
+        <span class="file_selected">เลือก <em>0</em> ไฟล์</span>
+        <a href="#" class="small btn add_tag_button"><i class="icon tag"></i> เพิ่มแถบป้าย</a>
+      </div>
+    </div>
+
+    <table class="table documents-upload-table" style="display:none;">
+      <thead><tr><th>กำลังอัพโหลด</th><th class="progress_column"></th><th class="action_column"></th></tr></thead>
+      <tbody></tbody>
+    </table>
+
+    <table class="table documents-table" {% if not publications %}style="display:none;"{% endif %}>
       <thead>
         <tr>
           <th class="checkbox_column"></th>
+          <th class="download_column"></th>
           <th>ชื่อไฟล์</th>
           <th>แถบป้าย (Tag)</th>
           <th class="datetime_column">อัพโหลดเมื่อ</th>
@@ -42,14 +287,17 @@ $(document).ready(function () {
         {% for publication in publications %}
         <tr id="{{publication.uid}}">
           <td><input type="checkbox" /></td>
-          <td class="name"><a href="{% url view_document publication.uid %}" title="ดาวน์โหลดไฟล์">{{publication.title}}</a></td>
-          <td>#tagname</td>
+          <td class="download"><a href="{% url download_publication publication.uid %}" title="ดาวน์โหลดไฟล์">ดาวน์โหลดไฟล์</a></td>
+          <td class="name">{{publication.title}}</td>
+          <td class="tag">{% print_publication_tags publication %}</td>
           <td>{{publication.uploaded|format_abbr_datetime}}</td>
-          <td class="table_actions">
-            <a href="{% url edit_document publication.uid %}" class="small btn" >แก้ไข</a>
+          <td class="row_actions">
+            <input type="hidden" name="description" value="{{publication.description}}"/>
+            <button class="small btn edit_publication_button" data-toggle="button">แก้ไข</button>
           </td>
         </tr>
         {% endfor %}
+        
       </tbody>
     </table>
 
@@ -62,13 +310,18 @@ $(document).ready(function () {
   </div></div>
 </div>
 
-<div class="modal hide fade" id="upload-document-modal" style="display:none;">
-  <div class="modal-header"><a class="close" href="#">×</a><h3>อัพโหลดไฟล์ไปที่ <em>ชั้นหนังสือธรรมดา</em></h3></div>
-  <div class="modal-message"></div>
+<div class="modal fade uninitialized-modal" id="add_tag_modal">
+  <div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>เพิ่มแถบป้าย</h3></div>
   <div class="modal-body">
-    <div class="upload_dropzone" id="upload_dropzone"><a href="#" class="btn select_files_button" id="select_files_button"><span>เลือกไฟล์</span></a></div>
+    <form method="POST" action=".">
+      {% csrf_token %}
+      <div class="item"><label for="id_tag">ชื่อแถบป้าย</label><div class="input"><input type="text" name="tag" /></div></div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal">ยกเลิก</button>
+    <button class="btn primary">เพิ่มแถบป้าย</button>
   </div>
 </div>
-
 
 {% endblock %}

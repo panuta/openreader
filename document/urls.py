@@ -6,19 +6,15 @@ urlpatterns = patterns('document.views',
 
     url(r'^org/(?P<organization_slug>\w+)/documents/shelf/(?P<shelf_id>\d+)/upload/$', 'upload_documents_to_shelf', name='upload_documents_to_shelf'),
 
-    url(r'^org/(?P<organization_slug>\w+)/documents/upload/$', 'upload_documents', name='upload_documents'),
-    #url(r'^org/(?P<organization_slug>\w+)/documents/upload/(?P<shelf_id>\d+)/$', 'upload_documents_to_shelf', name='upload_documents_to_shelf'),
-    url(r'^org/(?P<organization_slug>\w+)/documents/upload/finishing/$', 'finishing_upload_documents', name='finishing_upload_documents'),
-
     url(r'^org/(?P<organization_slug>\w+)/shelf/create/$', 'create_document_shelf', name='create_document_shelf'),
     url(r'^org/(?P<organization_slug>\w+)/shelf/(?P<shelf_id>\d+)/edit/$', 'edit_document_shelf', name='edit_document_shelf'),
     url(r'^org/(?P<organization_slug>\w+)/shelf/(?P<shelf_id>\d+)/delete/$', 'delete_document_shelf', name='delete_document_shelf'),
 
-    # Shelf
-    url(r'^document/move/$', 'move_document_to_shelf', name='move_document_to_shelf'),
+    url(r'^ajax/(?P<organization_slug>\w+)/publication/tag/add/$', 'ajax_add_publications_tag', name='ajax_add_publications_tag'),
+    url(r'^ajax/(?P<organization_slug>\w+)/publication/edit/$', 'ajax_edit_publication', name='ajax_edit_publication'),
+    url(r'^ajax/(?P<organization_slug>\w+)/query/document-tags/$', 'ajax_query_document_tags', name='ajax_query_document_tags'),
 
     # Document
-
     url(r'^download/(?P<publication_uid>[a-zA-Z0-9\-]+)/$', 'download_publication', name='download_publication'),
 
     url(r'^document/(?P<publication_uid>[a-zA-Z0-9\-]+)/$', 'view_document', name='view_document'),
@@ -26,4 +22,3 @@ urlpatterns = patterns('document.views',
     url(r'^document/(?P<publication_uid>[a-zA-Z0-9\-]+)/delete/$', 'delete_document', name='delete_document'),
 
 )
-
