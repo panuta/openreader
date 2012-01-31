@@ -9,7 +9,6 @@ from django.forms.models import model_to_dict
 from django.core.urlresolvers import reverse
 
 
-from publisher.models import *
 from api.models import *
 from accounts.models import UserOrganization
 from document.models import *
