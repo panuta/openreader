@@ -149,6 +149,8 @@ def ajax_add_publications_tag(request, organization_slug):
         publication_uids = request.POST.getlist('publication[]')
         tag_name = request.POST.get('tag')
 
+        return response_json_error('missing-parameter')
+
         if tag_name:
             try:
                 tag = OrganizationTag.objects.get(organization=organization, tag_name=tag_name)
@@ -244,7 +246,7 @@ def create_document_shelf(request, organization_slug):
 
     else:
         form = OrganizationShelfForm()
-        shelf_permissions = []
+        shelf_permissions = ['all-1']
     
     return render(request, 'document/shelf_modify.html', {'organization':organization, 'form':form, 'shelf':None, 'shelf_type':'create', 'shelf_permissions':shelf_permissions})
 

@@ -90,6 +90,7 @@ $(document).ready(function () {
             $('.editing_row .wrapper').slideUp('fast', function() {
               $(this).closest('tr').remove();
             });
+
           } else {
             if(response.error == 'invalid-publication') {
               editing_row.find('.error_message').text('ข้อมูลไม่ถูกต้อง');
@@ -99,7 +100,7 @@ $(document).ready(function () {
               editing_row.find('.error_message').text('ข้อมูลไม่ครบถ้วน');
             }
           }
-        });
+        }, 'json');
         return false;
       });
 
@@ -142,6 +143,9 @@ $(document).ready(function () {
   uploader.init();
 
   uploader.bind('FilesAdded', function(up, files) {
+    $('.no_information').remove();
+    $('.documents-upload-table').show();
+
     $.each(files, function(i, file) {
       var new_row = $('<tr id="' + file.id + '"><td>' + file.name + '</td><td><div class="upload_progressbar"></div></td><td class="row_actions"><button class="small danger btn" >ยกเลิก</button></td></tr>');
       new_row.find('.upload_progressbar').progressBar({width:262, height:20, boxImage:'/static/libs/progressbar/images/progressbar.png', barImage:{0:'/static/libs/progressbar/images/progressbg.png', 30:'/static/libs/progressbar/images/progressbg.png', 70:'/static/libs/progressbar/images/progressbg.png'}});
@@ -161,17 +165,22 @@ $(document).ready(function () {
     var responseObject = eval('(' + response.response + ')'); // Django returns response as JSON
 
     if(responseObject.status == 'success') {
-      var uploaded_file = $('<tr id="' + responseObject.uid + '" class="uploaded_row"><td><input type="checkbox" checked="checked"/></td><td class="download"><a href="' + response.download_url + '" title="ดาวน์โหลดไฟล์">ดาวน์โหลดไฟล์</a></td><td class="name">' + file.name + '</td><td class="tag"><ul></ul></td><td>' + responseObject.uploaded + '</td><td class="row_actions"><a href="#" class="small btn" >แก้ไข</a></td></tr>');
+      $('.documents-table').show();
+      $('#' + file.id).remove();
+      if(!$('.documents-upload-table tbody tr').length) $('.documents-upload-table').hide();
+
+      var uploaded_file = $('<tr id="' + responseObject.uid + '" class="uploaded_row"><td><input type="checkbox" checked="checked"/></td><td class="download"><a href="' + response.download_url + '" title="ดาวน์โหลดไฟล์">ดาวน์โหลดไฟล์</a></td><td class="name">' + file.name + '</td><td class="tag"><ul></ul></td><td>' + responseObject.uploaded + '</td><td class="row_actions"><input type="hidden" name="description" value=""/><button class="small btn edit_publication_button" data-toggle="button">แก้ไข</button></td></tr>');
+      uploaded_file.find('.edit_publication_button').button();
 
       increaseAllCount();
       increaseShelfCount(responseObject.shelf);
 
       uploaded_file.prependTo('.documents-table tbody');
 
-      $('.checkbox_actions').show().find('input[type="checkbox"]').attr('checked', true);
-      $('.checkbox_actions .file_selected em').text($('.documents-table input[type="checkbox"]:checked').length);
+      $('.checkbox_actions input[type="checkbox"]').attr('checked', true);
+      $('.checkbox_actions').addClass('checkbox_actions_selected').find('a').removeClass('disabled');
 
-    } else if(responseObject.status == 'error') { // UPLOAD ERRORS
+    } else { // UPLOAD ERRORS
       if(responseObject.error == 'file-missing') $('#' + file_id + ' .upload_actions').append('<span class="error">ไม่สามารถอ่านไฟล์ที่ต้องการอัพโหลดได้</span>')
     }
   });
@@ -185,10 +194,36 @@ $(document).ready(function () {
    *************************************/
 
   $('.checkbox_actions input[type="checkbox"]').on('click', function(e) {
-    $('.documents-table input[type="checkbox"]').attr('checked', false);
-    $('.documents-table tr').removeClass('checked');
-    $('.checkbox_actions').hide();
+    if($(this).attr('checked')) {
+      $('.documents-table input[type="checkbox"]').attr('checked', true);
+      $('.documents-table tr').addClass('checked');
+      $('.checkbox_actions').addClass('checkbox_actions_selected').find('a').removeClass('disabled');
+    } else {
+      $('.documents-table input[type="checkbox"]').attr('checked', false);
+      $('.documents-table tr').removeClass('checked');
+      $('.checkbox_actions').removeClass('checkbox_actions_selected').find('a').addClass('disabled');
+    }
   });
+
+  $('.documents-table input[type="checkbox"]').live('click', function(e) {
+    if($(this).attr('checked')) {
+      $(this).closest('tr').addClass('checked');
+    } else {
+      $(this).closest('tr').removeClass('checked');
+    }
+
+    var checkbox_num = $('.documents-table input[type="checkbox"]:checked').length;
+    if(checkbox_num) {
+      $('.checkbox_actions').addClass('checkbox_actions_selected').find('input[type="checkbox"]').attr('checked', true);
+      $('.checkbox_actions a').removeClass('disabled');
+    } else {
+      $('.checkbox_actions').removeClass('checkbox_actions_selected').find('input[type="checkbox"]').attr('checked', false);
+      $('.checkbox_actions a').addClass('disabled');
+    }
+  });
+
+  /* CHECKBOX ACTIONS
+   *************************************/
 
   $('.add_tag_button').on('click', function(e) {
     if($('#add_tag_modal').hasClass('uninitialized-modal')) {
@@ -202,39 +237,31 @@ $(document).ready(function () {
           publications.push($(this).closest('tr').attr('id'));
         });
 
-        $.post('{% url ajax_add_publications_tag organization.slug %}', {tag:tag_name, publication:publications}, function(response) {
-          $('.documents-table input[type="checkbox"]:checked').each(function(e) {
-            $(this).closest('tr').find('.tag ul').append('<li>' + tag_name + '</li>')
-          });
-
-          $('#add_tag_modal').modal('hide');
-        });
+        if(tag_name) {
+          $.post('{% url ajax_add_publications_tag organization.slug %}', {tag:tag_name, publication:publications}, function(response) {
+            if(response.status == 'success') {
+              $('.documents-table input[type="checkbox"]:checked').each(function(e) {
+                $(this).closest('tr').find('.tag ul').append('<li>' + tag_name + '</li>')
+              });
+              $('#add_tag_modal').modal('hide');
+            
+            } else {
+              if(response.error == 'missing-parameter') {
+                $('#add_tag_modal .modal-header').after('<div class="modal-message">ข้อมูลไม่เพียงพอที่จะเพิ่มแถบป้าย</div>');
+              }
+            }
+          }, 'json');
+        }
       });
 
     } else {
       $('#add_tag_modal').modal('show');
+      $('#add_tag_modal .modal-message').remove();
     }
 
     $('#add_tag_modal .modal-body input[name="tag"]').val('');
-
     return false;
   });
-
-  $('.documents-table input[type="checkbox"]').live('click', function(e) {
-    if($(this).attr('checked')) {
-      $(this).closest('tr').addClass('checked');
-    } else {
-      $(this).closest('tr').removeClass('checked');
-    }
-
-    if($('.documents-table input[type="checkbox"]:checked').length) {
-      $('.checkbox_actions').show().find('input[type="checkbox"]').attr('checked', true);
-      $('.checkbox_actions .file_selected em').text($('.documents-table input[type="checkbox"]:checked').length);
-    } else {
-      $('.checkbox_actions').hide();
-    }
-  });
-
 });
 </script>
 {% endblock %}
@@ -259,18 +286,17 @@ $(document).ready(function () {
       <div class="dragdrop">หรือลากไฟล์มาวางที่กรอบนี้</div>
     </div>
 
-    <div class="checkbox_actions">
-      <div class="inner">
-        <span class="check"><input type="checkbox"/></span>
-        <span class="file_selected">เลือก <em>0</em> ไฟล์</span>
-        <a href="#" class="small btn add_tag_button"><i class="icon tag"></i> เพิ่มแถบป้าย</a>
-      </div>
-    </div>
-
     <table class="table documents-upload-table" style="display:none;">
-      <thead><tr><th>กำลังอัพโหลด</th><th class="progress_column"></th><th class="action_column"></th></tr></thead>
+      <thead><tr><th>กำลังอัพโหลดไฟล์</th><th class="progress_column"></th><th class="action_column"></th></tr></thead>
       <tbody></tbody>
     </table>
+
+    <div class="checkbox_actions" {% if not publications %}style="display:none;"{% endif %}>
+      <div class="inner">
+        <span class="check"><input type="checkbox"/></span>
+        <a href="#" class="small btn add_tag_button disabled"><i class="icon tag"></i> เพิ่มแถบป้าย</a>
+      </div>
+    </div>
 
     <table class="table documents-table" {% if not publications %}style="display:none;"{% endif %}>
       <thead>

@@ -85,6 +85,7 @@ body {
 
 .navbar {
     height:50px;
+    position:relative;
     
     .navbar-inner {
         background:url(/static/images/bg-topbar.png);
@@ -228,15 +229,13 @@ body {
     .modal-header {
         padding:10px 15px;
     }
-    h3 {
 
+    h3 {
         em {
             color:#369;
             font-style:normal;
         }
     }
-
-    h3 
 
     .modal-message {
         padding:10px 15px;
@@ -509,14 +508,12 @@ table {
     }
 
     .checkbox_actions {
-        display:none;
-        color:#FFF;
-        background:url(../images/checkbox_down_arrow.png) 7px 50px transparent no-repeat;
-        padding-bottom:12px;
+        background:url(../images/checkbox_down_arrow.png) 0px 0px transparent no-repeat;
+        height:62px;
         
         .inner {
             line-height:50px;
-            background-color:#666;
+            background-color:#EEE;
             margin-bottom:12px;
         }
         
@@ -524,16 +521,13 @@ table {
             padding:8px;
             margin-right:5px;
         }
+    }
 
-        span.file_selected {
-            margin-right:20px;
-            background-color:#888;
-            padding:3px 10px;
-            border-radius:5px;
+    .checkbox_actions_selected {
+        background:url(../images/checkbox_down_arrow.png) 0px -62px transparent no-repeat;
 
-            em {
-                font-style:normal;
-            }
+        .inner {
+            background-color:#666;
         }
     }
 
@@ -594,6 +588,7 @@ table {
         .editing_row {
             display:none;
             border-left:5px solid @linkColor;
+            border-right:5px solid @linkColor;
 
             td {
                 padding:15px 25px;
@@ -606,11 +601,8 @@ table {
                 }
 
                 form {
-                    
                     padding:0px;
-
                     margin:0px 0px 30px 170px;
-                    
 
                     .item {
                         margin-bottom:10px;
@@ -650,6 +642,10 @@ table {
             }
         }
     }
+
+    .no_information {
+        margin-top:20px;
+    }
 }
 
 #add_tag_modal {
@@ -669,27 +665,14 @@ table {
     }
 }
 
-#edit_publication_modal {
-    .cover {
-        width:140px;
-        height:180px;
-        background-color:#DDD;
-        float:right;
-    }
-
-    
-
-    .delete_publication {
-        float:left !important;
-        margin-top:5px;
-    }
-}
+/* SHELF MODIFY PAGE
+-------------------------------------------------- */
 
 .page-shelf-modify {
-    .input-shelf-permissions {
+    .shelf_permissions_input {
         margin:10px 0px 40px;
 
-        li {
+        .permissions li {
             background-color:#FFD;
             list-style:disc;
             margin:0px 0px 10px 20px;
@@ -712,7 +695,7 @@ table {
             }
         }
 
-        .add_actions {
+        .actions {
             color:#666;
             margin-top:15px;
 
@@ -720,43 +703,58 @@ table {
                 margin:0px 8px;
             }
         }
-    }
-}
 
-.modal-shelf-permission {
-    .modal-body {
-        p {
-            font-size:1.1em;
-            color:#11717a;
-        }
+        .permission_panel {
+            display:none;
+            background-color:#666;
+            border:1px solid #999;
+            padding:15px;
+            margin-top:20px;
 
-        .select_group {
-            margin-bottom:15px;
+            .head {
+                font-size:1.1em;
+                color:#ceecef;
+                margin-bottom:15px;
 
-            select {
-                margin-left:10px;
-            }
-        }
-
-        .select_individual {
-
-            .as-selections {
-                margin:7px 0px 15px;
+                select {
+                    margin:0px 10px;
+                }
             }
 
-            input.as-input {
-                box-shadow:none;
+            li {
+                margin-bottom:10px;
             }
-        }
 
-        li {
-            font-size:1.1em;
-            margin:10px 0px;
-        }
+            input {
+                display:inline;
+                margin-right:8px;
+            }
 
-        input {
-            display:inline;
-            margin-right:5px;
+            label {
+                color:#FFF;
+                display:inline;
+                font-size:1em;
+            }
+
+            .permission_actions {
+                margin-top:20px;
+
+                button {
+                    margin-right:15px;
+                }
+            }
+
+            .select_individual {
+                margin-bottom:15px;
+
+                .as-selections {
+                    margin:7px 0px 15px;
+                }
+
+                input.as-input {
+                    box-shadow:none;
+                }
+            }
         }
     }
 }
