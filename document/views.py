@@ -149,6 +149,8 @@ def ajax_add_publications_tag(request, organization_slug):
         publication_uids = request.POST.getlist('publication[]')
         tag_name = request.POST.get('tag')
 
+        return response_json_error('missing-parameter')
+
         if tag_name:
             try:
                 tag = OrganizationTag.objects.get(organization=organization, tag_name=tag_name)
