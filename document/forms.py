@@ -19,6 +19,7 @@ class OrganizationShelfMultipleChoiceField(forms.ModelMultipleChoiceField):
 class OrganizationShelfForm(forms.Form):
     name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'span9'}))
     auto_sync = forms.BooleanField(required=False)
+    permission = forms.CharField()
 
 class EditFilePublicationForm(EditPublicationForm):
     shelves = OrganizationShelfMultipleChoiceField(required=False, widget=forms.CheckboxSelectMultiple())

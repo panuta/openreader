@@ -246,7 +246,7 @@ def create_document_shelf(request, organization_slug):
 
     else:
         form = OrganizationShelfForm()
-        shelf_permissions = []
+        shelf_permissions = ['all-1']
     
     return render(request, 'document/shelf_modify.html', {'organization':organization, 'form':form, 'shelf':None, 'shelf_type':'create', 'shelf_permissions':shelf_permissions})
 
