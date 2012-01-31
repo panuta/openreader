@@ -7,14 +7,6 @@
 {% block html_head %}
 {{block.super}}
 
-{% if shelf %}
-<script type="text/javascript" src="{{STATIC_URL}}libs/plupload/plupload.full.js"></script>
-{% endif %}
-<script type="text/javascript" src="{{STATIC_URL}}libs/jqueryui/jquery-ui-1.8.17.custom.min.js"></script>
-<script type="text/javascript" src="{{STATIC_URL}}libs/jquery.color.js"></script>
-<script type="text/javascript" src="{{STATIC_URL}}libs/tagit/tagit.js"></script>
-<link rel="stylesheet/less" type="text/css" href="{{STATIC_URL}}libs/tagit/tagit-simple-grey.css">
-
 <script>
 {% if shelf %}
 function increaseAllCount(shelf_id) {

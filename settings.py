@@ -57,6 +57,7 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    'compressor.finders.CompressorFinder',
 )
 
 CACHES = {
@@ -134,6 +135,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'private_files',
+    'compressor',
     'storages',
     'pagination',
 
@@ -181,6 +183,14 @@ SFTP_STORAGE_HOST = '172.16.204.129'
 SFTP_STORAGE_ROOT = '/web/sites/openreader/files/'
 SFTP_STORAGE_PARAMS = {'username':'root', 'password':'panuta'}
 
+########## Django Compressor ##########
+COMPRESS_ENABLED = True
+
+COMPRESS_PRECOMPILERS = (
+    ('text/less', os.path.join(base_path, 'misc/less/lessc') + ' {infile} {outfile}'),
+    # ('text/less', 'lessc {infile} {outfile}'),
+)
+
 ########## Django Pagination ##########
 
 PAGINATION_DEFAULT_PAGINATION = 50
@@ -188,7 +198,6 @@ PAGINATION_DEFAULT_PAGINATION = 50
 ########## Open Reader Settings ##########
 OPENREADER_LOGGER = 'openreader'
 
-MAGAZINE_LOGO_ROOT = MEDIA_ROOT + 'magazine_logo/'
 PUBLICATION_ROOT = MEDIA_ROOT + 'publication/'
 
 EMAIL_FOR_USER_PUBLISHER_INVITATION = 'noreply@' + WEBSITE_HOST
@@ -205,5 +214,9 @@ THUMBNAIL_SIZES = (
     ('small', (70, 85)),
     ('large', (200, 250)),
 )
+
+# Shelf Icons
+DEFAULT_SHELF_ICON = 'basic2-092'
+SHELF_ICONS = ['basic1-006','basic1-041','basic1-060','basic1-107','basic1-122','basic1-129','basic2-001','basic2-092','basic2-143','basic2-182','basic2-196','basic2-215','basic2-241','basic2-253','basic2-256']
 
 #######################################################

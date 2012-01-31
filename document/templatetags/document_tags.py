@@ -3,6 +3,7 @@
 from django import template
 register = template.Library()
 
+from django.conf import settings
 from django.template import NodeList
 from django.template import loader
 
@@ -29,7 +30,7 @@ def generate_shelf_list(user, organization, active_shelf=None): # DONE
     for shelf in user.get_profile().get_viewable_shelves(organization):
         active_html = ' active' if active_shelf and active_shelf.id == shelf.id else ''
         count = Publication.objects.filter(shelves__in=[shelf]).count()
-        shelf_html.append(u'<li class="shelf%s" id="shelf-%d"><a href="%s">%s <span>(%d ไฟล์)</span></a></li>' % (active_html, shelf.id, reverse('view_documents_by_shelf', args=[organization.slug, shelf.id]), shelf.name, count))
+        shelf_html.append(u'<li class="shelf%s%s" id="shelf-%d"><a href="%s">%s <span>(%d ไฟล์)</span></a></li>' % (active_html, ' '+shelf.icon, shelf.id, reverse('view_documents_by_shelf', args=[organization.slug, shelf.id]), shelf.name, count))
     
     return ''.join(shelf_html)
 
@@ -70,3 +71,11 @@ def do_has_shelf(parser, token):
         nodelist_false = NodeList()
     
     return HasShelfNode(nodelist_true, nodelist_false, organization)
+
+@register.simple_tag
+def generate_shelf_icons():
+    li_html = []
+    for icon in settings.SHELF_ICONS:
+        li_html.append('<li><a href="#" rel="%s"><img src="%simages/shelficons/24/%s.png" /></a></li>' % (icon, settings.STATIC_URL, icon))
+
+    return ''.join(li_html)

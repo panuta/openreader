@@ -231,9 +231,10 @@ def create_document_shelf(request, organization_slug):
         if form.is_valid():
             name = form.cleaned_data['name']
             auto_sync = form.cleaned_data['auto_sync']
+            shelf_icon = form.cleaned_data['shelf_icon']
             permissions = request.POST.getlist('permission')
 
-            shelf = OrganizationShelf.objects.create(organization=organization, name=name, auto_sync=auto_sync, created_by=request.user)
+            shelf = OrganizationShelf.objects.create(organization=organization, name=name, auto_sync=auto_sync, icon=shelf_icon, created_by=request.user)
 
             _persist_shelf_permissions(request, organization, shelf)
 
@@ -243,7 +244,7 @@ def create_document_shelf(request, organization_slug):
         shelf_permissions = request.POST.getlist('permission')
 
     else:
-        form = OrganizationShelfForm()
+        form = OrganizationShelfForm(initial={'shelf_icon':settings.DEFAULT_SHELF_ICON})
         shelf_permissions = ['all-1']
     
     return render(request, 'document/shelf_modify.html', {'organization':organization, 'form':form, 'shelf':None, 'shelf_type':'create', 'shelf_permissions':shelf_permissions})
@@ -261,6 +262,7 @@ def edit_document_shelf(request, organization_slug, shelf_id):
         if form.is_valid():
             shelf.name = form.cleaned_data['name']
             shelf.auto_sync = form.cleaned_data['auto_sync']
+            shelf.icon = form.cleaned_data['shelf_icon']
             shelf.save()
 
             _persist_shelf_permissions(request, organization, shelf)
@@ -271,7 +273,7 @@ def edit_document_shelf(request, organization_slug, shelf_id):
         shelf_permissions = request.POST.getlist('permission')
 
     else:
-        form = OrganizationShelfForm(initial={'name':shelf.name, 'auto_sync':shelf.auto_sync})
+        form = OrganizationShelfForm(initial={'name':shelf.name, 'auto_sync':shelf.auto_sync, 'shelf_icon':shelf.icon})
         shelf_permissions = _extract_shelf_permissions(shelf)
     
     return render(request, 'document/shelf_modify.html', {'organization':organization, 'form':form, 'shelf':shelf, 'shelf_type':'edit', 'shelf_permissions':shelf_permissions})

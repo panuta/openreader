@@ -5,17 +5,30 @@
 
 {% block html_head %}
 {{block.super}}
-<script src="{{STATIC_URL}}libs/bootstrap/js/bootstrap-dropdown.js"></script>
-<script src="{{STATIC_URL}}libs/bootstrap/js/bootstrap-modal.js"></script>
-<script src="{{STATIC_URL}}libs/bootstrap/js/bootstrap-button.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}libs/jquery-1.7.1.min.js"></script>
+
+
+<script type="text/javascript" src="{{STATIC_URL}}libs/bootstrap/js/bootstrap-dropdown.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}libs/bootstrap/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}libs/bootstrap/js/bootstrap-button.js"></script>
 
 <script type="text/javascript" src="{{STATIC_URL}}libs/jquery.form.js"></script>
 <script type="text/javascript" src="{{STATIC_URL}}libs/progressbar/jquery.progressbar.js"></script>
 
-<link rel="stylesheet/less" type="text/css" href="{{STATIC_URL}}css/styles.less">
+<script type="text/javascript" src="{{STATIC_URL}}libs/plupload/plupload.full.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}libs/jqueryui/jquery-ui-1.8.17.custom.min.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}libs/jquery.color.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}libs/tagit/tagit.js"></script>
+
+<script type="text/javascript" src="{{STATIC_URL}}libs/autosuggest/jquery.autoSuggest.js"></script>
 
 <script type="text/javascript" src="{{STATIC_URL}}js/scripts.js"></script>
-<script type="text/javascript" src="{{STATIC_URL}}js/scripts.publication.js"></script>
+
+<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}libs/bootstrap/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}libs/autosuggest/autoSuggest.css">
+<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}libs/tagit/tagit-simple-grey.css">
+<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/styles.css">
+
 
 <script>
 var var_organization_id = '{{organization.id}}';
