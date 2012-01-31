@@ -78,6 +78,7 @@ def upload_documents_to_shelf(request, organization_slug, shelf_id):
             'size': uploading_file.file.size,
             'shelf':shelf.id if shelf else '',
             'uploaded':format_abbr_datetime(publication.uploaded),
+            'thumbnail_url':publication.get_large_thumbnail(),
             'download_url': reverse('download_publication', args=[publication.uid])
         })
     

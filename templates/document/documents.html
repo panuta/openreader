@@ -163,7 +163,7 @@ $(document).ready(function () {
       $('#' + file.id).remove();
       if(!$('.documents-upload-table tbody tr').length) $('.documents-upload-table').hide();
 
-      var uploaded_file = $('<tr id="' + responseObject.uid + '" class="uploaded_row"><td><input type="checkbox" checked="checked"/></td><td class="download"><a href="' + response.download_url + '" title="ดาวน์โหลดไฟล์">ดาวน์โหลดไฟล์</a></td><td class="name">' + file.name + '</td><td class="tag"><ul></ul></td><td>' + responseObject.uploaded + '</td><td class="row_actions"><input type="hidden" name="description" value=""/><button class="small btn edit_publication_button" data-toggle="button">แก้ไข</button></td></tr>');
+      var uploaded_file = $('<tr id="' + responseObject.uid + '" class="uploaded_row"><td><input type="checkbox" checked="checked"/></td><td class="download"><a href="' + response.download_url + '" title="ดาวน์โหลดไฟล์">ดาวน์โหลดไฟล์</a></td><td class="name">' + file.name + '</td><td class="tag"><ul></ul></td><td>' + responseObject.uploaded + '</td><td class="row_actions"><input type="hidden" name="description" value=""/><input type="hidden" name="thumbnail" value="' + responseObject.thumbnail_url + '"/><button class="small btn edit_publication_button" data-toggle="button">แก้ไข</button></td></tr>');
       uploaded_file.find('.edit_publication_button').button();
 
       increaseAllCount();
