@@ -14,7 +14,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import simplejson
 from django.utils.translation import ugettext_lazy as _
 
-from openreader.http import Http403
+from http import Http403
 
 from common.utilities import generate_random_username
 

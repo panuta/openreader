@@ -70,7 +70,7 @@ AUTH_PROFILE_MODULE = 'document.UserProfile'
 LOGIN_REDIRECT_URL = '/'
 
 AUTHENTICATION_BACKENDS = (
-    'openreader.backends.EmailAuthenticationBackend',
+    'backends.EmailAuthenticationBackend',
     'django.contrib.auth.backends.RemoteUserBackend',
     #'django.contrib.auth.backends.ModelBackend',
 )
@@ -94,8 +94,8 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    'openreader.middleware.AJAXSimpleExceptionResponse',
-    'openreader.http.Http403Middleware',
+    'middleware.AJAXSimpleExceptionResponse',
+    'http.Http403Middleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -106,7 +106,7 @@ MIDDLEWARE_CLASSES = (
     'pagination.middleware.PaginationMiddleware',
 )
 
-ROOT_URLCONF = 'openreader.urls'
+ROOT_URLCONF = 'urls'
 
 TEMPLATE_DIRS = (
     os.path.join(base_path, 'templates'),
@@ -122,7 +122,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     )
 
-FILE_UPLOAD_HANDLERS = ('openreader.handlers.UploadProgressCachedHandler', ) + global_settings.FILE_UPLOAD_HANDLERS
+FILE_UPLOAD_HANDLERS = ('handlers.UploadProgressCachedHandler', ) + global_settings.FILE_UPLOAD_HANDLERS
 
 INSTALLED_APPS = (
     'django.contrib.admin',
@@ -133,15 +133,15 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'openreader.private_files',
-    'openreader.storages',
+    'private_files',
+    'storages',
     'pagination',
 
-    'openreader.accounts',
-    'openreader.api',
-    'openreader.common',
-    'openreader.document',
-    'openreader.management',
+    'accounts',
+    'api',
+    'common',
+    'document',
+    'management',
 )
 
 LOGGING = {
@@ -159,7 +159,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': 'openreader.log',
+            'filename': '/tmp/openreader.log',
             'formatter': 'verbose'
         }
     },
@@ -196,9 +196,9 @@ EMAIL_FOR_USER_PUBLISHER_INVITATION = 'noreply@' + WEBSITE_HOST
 # Thumbnail
 
 THUMBNAIL_GENERATORS = (
-    'openreader.thumbnail_generators.ImageThumbnailGenerator',
-    'openreader.thumbnail_generators.PDFThumbnailGenerator',
-    'openreader.thumbnail_generators.VideoThumbnailGenerator',
+    'thumbnail_generators.ImageThumbnailGenerator',
+    'thumbnail_generators.PDFThumbnailGenerator',
+    'thumbnail_generators.VideoThumbnailGenerator',
 )
 
 THUMBNAIL_SIZES = (

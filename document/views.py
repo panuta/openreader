@@ -9,7 +9,7 @@ from django.http import HttpResponse, HttpResponseServerError, Http404, HttpResp
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import simplejson
 
-from openreader.http import Http403
+from http import Http403
 
 from private_files.views import get_file as private_files_get_file
 from httpauth import logged_in_or_basicauth
