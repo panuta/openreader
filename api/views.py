@@ -77,6 +77,7 @@ def list_publication(request):
                 publication_dict = model_to_dict(publication)
                 
                 publication_dict['auto_sync'] =  shelf.auto_sync
+                publication_dict['tags'] = [tag.tag_name for tag in publication.tags.all()]
                 
                 url = reverse('download_publication', args=[publication.uid])
                 url = request.build_absolute_uri(url)
@@ -87,6 +88,8 @@ def list_publication(request):
                 
                 publication_dict['uploaded'] = publication.uploaded.strftime("%Y-%m-%d %H:%M:%S")
                 publication_dict['modified'] = publication.modified.strftime("%Y-%m-%d %H:%M:%S")
+                
+                publication_dict['filesize'] = publication.uploaded_file.size
                 
                 del(publication_dict['uploaded_file'])
                 shelf_dict['publications'].append(publication_dict)
@@ -117,114 +120,3 @@ def get_user_organization(request):
     
     
     return HttpResponse(simplejson.dumps(result))
-
-
-# ===============
-# Old code
-# ===============
-def get_publication(request):
-    if request.method == 'GET':
-        publication = request.GET.get('publication')
-
-        publication = get_object_or_404(Publication, uid=publication)
-
-        result = {'uid':publication.uid, 'title':publication.title, 'description':publication.description}
-        return HttpResponse(simplejson.dumps(result))
-
-    else:
-        raise Http404
-
-
-
-def search_publication(request):
-    if request.method == 'GET':
-        title = request.GET.get('title')
-
-        search_result = None
-
-        if title:
-            search_result = Publication.objects.filter(title__icontains=title)
-        
-        if search_result:
-            result = []
-            for publication in search_result:
-                result.append({'uid':publication.uid, 'title':publication.title, })
-            return HttpResponse(simplejson.dumps(result))
-        
-        else:
-            return HttpResponse('')
-        
-    else:
-        raise Http404
-
-
-
-def list_shelf(request):
-    if request.method == 'GET':
-        publisher = request.GET.get('publisher')
-
-        publisher = get_object_or_404(Publisher, pk=publisher)
-
-        shelves = PublisherShelf.objects.filter(publisher=publisher).order_by('name')
-
-        result = []
-        for shelf in shelves:
-            result.append({'id':shelf.id, 'name':shelf.name})
-        
-        return HttpResponse(simplejson.dumps(result))
-
-    else:
-        raise Http404
-
-
-
-
-
-def get_publication_new_release(request):
-    if request.method == 'GET':
-        pass
-    else:
-        raise Http404
-
-def get_publication_top_charts(request):
-    if request.method == 'GET':
-        pass
-    else:
-        raise Http404
-
-def get_publication_categories(request):
-    if request.method == 'GET':
-        pass
-    else:
-        raise Http404
-
-def get_publication_list(request):
-    if request.method == 'GET':
-        pass
-    else:
-        raise Http404
-
-def get_publication_covers(request):
-    if request.method == 'GET':
-        pass
-    else:
-        raise Http404
-
-def get_publication_details(request):
-    if request.method == 'GET':
-        pass
-    else:
-        raise Http404
-
-def search_publication(request):
-    if request.method == 'GET':
-        pass
-    else:
-        raise Http404
-
-def get_accounts_purchase_history(request):
-    if request.method == 'GET':
-        pass
-    else:
-        raise Http404
-
