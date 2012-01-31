@@ -345,13 +345,22 @@ form {
         margin-bottom:7px;
     }
 
-    .form-actions, .form_actions {
+    .form_actions {
         button, a {
             margin-right:15px;
         }
 
         a {
             .content_link;
+        }
+
+        a.danger {
+            color:#C30;
+
+            &:hover {
+                background-color:#C30;
+                color:#FFF;
+            }
         }
     }
 
@@ -608,6 +617,11 @@ table {
                         }
                     }
 
+                    a.danger {
+                        float:right;
+                        margin-top:6px;
+                    }
+
                     .error_message {
                         color:#C30;
                         margin-left:20px;
@@ -749,6 +763,21 @@ table {
                     box-shadow:none;
                 }
             }
+        }
+    }
+
+    .delete_documents {
+        margin-bottom:20px;
+
+        input {
+            display:inline;
+            margin-right:7px;
+        }
+
+        label {
+            display:inline;
+            color:#C30;
+            font-size:1.1em;
         }
     }
 }

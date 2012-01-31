@@ -49,8 +49,8 @@ def get_thumbnail_url(publication, size):
         return NO_THUMBNAIL_URL
 
 def delete_thumbnails(file): # file -> models.FieldFile
-    thumbnail_path = get_thumbnail_root()
-    (file_name, file_ext) = split_filename(filename)
+    thumbnail_path = get_thumbnail_root(file)
+    (file_name, file_ext) = split_filename(file.name)
 
     for thumbnail_size in settings.THUMBNAIL_SIZES:
         try:

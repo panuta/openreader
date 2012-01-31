@@ -143,6 +143,25 @@ def ajax_edit_publication(request, organization_slug):
         raise Http404
 
 @login_required
+def ajax_delete_publication(request, organization_slug):
+    organization = get_object_or_404(Organization, slug=organization_slug)
+
+    if request.method == 'POST':
+        publication_uid = request.POST.get('uid')
+
+        try:
+            publication = Publication.objects.get(uid=publication_uid)
+        except Publication.DoesNotExist:
+            return response_json_error('invalid-publication')
+        
+        delete_publication(publication)
+
+        return response_json_success()
+
+    else:
+        raise Http404
+
+@login_required
 def ajax_add_publications_tag(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
@@ -291,15 +310,15 @@ def delete_document_shelf(request, organization_slug, shelf_id):
         if 'submit-delete' in request.POST:
             delete_documents = 'delete_documents' in request.POST and request.POST.get('delete_documents') == 'on'
 
-            DocumentShelf.objects.filter(shelf=shelf).delete()
-            ShelfPermission.objects.filter(shelf=shelf).delete()
+            PublicationShelf.objects.filter(shelf=shelf).delete()
+            OrganizationShelfPermission.objects.filter(shelf=shelf).delete()
+            GroupShelfPermission.objects.filter(shelf=shelf).delete()
+            UserShelfPermission.objects.filter(shelf=shelf).delete()
             
             if delete_documents:
-                for document in Document.objects.filter(publication__organization=organization, publication__publication_type='document', shelves__in=[shelf]):
-                    publication_functions.delete_publication(document.publication)
+                for publication in Publication.objects.filter(shelves__in=[shelf]):
+                    delete_publication(publication)
                 
-                Document.objects.filter(publication__organization=organization, publication__publication_type='document', shelves__in=[shelf]).delete()
-
                 messages.success(request, u'ลบชั้นหนังสือและไฟล์ในชั้นเรียบร้อย')
 
             else:
@@ -311,76 +330,6 @@ def delete_document_shelf(request, organization_slug, shelf_id):
         else:
             return redirect('view_documents_by_shelf', organization_slug=organization.slug, shelf_id=shelf.id)
     
-    shelf_documents_count = Document.objects.filter(shelves__in=[shelf], publication__publication_type='document').count()
+    shelf_documents_count = Publication.objects.filter(shelves__in=[shelf]).count()
     return render(request, 'document/shelf_delete.html', {'organization':organization, 'shelf_documents_count':shelf_documents_count, 'shelf':shelf, 'shelf_type':'delete'})
-
-# DOCUMENT
-
-@login_required
-def view_document(request, publication_uid):
-    publication = get_object_or_404(Publication, uid=publication_uid)
-    organization = publication.organization
-
-    if not can(request.user, 'view', {'organization':organization}):
-        raise Http403
-    
-    return render(request, 'document/document_view.html', {'organization':organization, 'publication':publication})
-
-@login_required
-def edit_document(request, publication_uid):
-    publication = get_object_or_404(Publication, uid=publication_uid)
-    organization = publication.organization
-
-    if not can(request.user, 'edit', {'organization':organization}):
-        raise Http403
-    
-    if request.method == 'POST':
-        form = EditFilePublicationForm(request.POST, organization=organization)
-        if form.is_valid():
-            publication.title = form.cleaned_data['title']
-            publication.description = form.cleaned_data['description']
-            publication.save()
-
-            new_shelves = set(form.cleaned_data['shelves']) # OrganizationShelf model
-
-            old_shelves = set()
-            for shelf in document.shelves.all():
-                old_shelves.add(shelf)
-
-            creating_shelves = new_shelves.difference(old_shelves)
-            removing_shelves = old_shelves.difference(new_shelves)
-
-            for shelf in creating_shelves:
-                DocumentShelf.objects.create(document=document, shelf=shelf, created_by=request.user)
-            
-            if creating_shelves and publication.status == Publication.STATUS['UNFINISHED']:
-                publication.status = Publication.STATUS['UNPUBLISHED']
-                publication.save()
-
-            DocumentShelf.objects.filter(document=document, shelf__in=removing_shelves).delete()
-            
-            messages.success(request, u'แก้ไขรายละเอียดเรียบร้อย')
-            if request.POST.get('from_page'):
-                return redirect(request.POST.get('from_page'))
-
-            return redirect('view_document', publication.uid)
-
-    else:
-        form = EditFilePublicationForm(organization=organization, initial={'title':publication.title, 'description':publication.description, 'shelves':document.shelves.all(), 'from_page':request.GET.get('from')})
-    
-    return render(request, 'document/document_edit.html', {'organization':organization, 'document':document, 'form':form})
-
-@login_required
-def delete_document(request, publication_uid):
-    publication = get_object_or_404(Publication, uid=publication_uid)
-    organization = publication.organization
-    document = publication.document
-
-    if not can(request.user, 'edit', {'organization':organization}):
-        raise Http403
-    
-    if document.publication.status == Publication.STATUS['UNFINISHED'] and document.publication.uploaded_by != request.user:
-        raise Http404
-    
-    return render(request, 'document/document_delete.html', {'organization':organization, 'document':document})
 

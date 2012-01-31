@@ -30,6 +30,4 @@ def upload_publication(request, uploading_file, organization):
 def delete_publication(publication):
     delete_thumbnails(publication.uploaded_file)
     publication.uploaded_file.delete()
-
-    PublicationNotice.objects.filter(publication=publication).delete()
     publication.delete()

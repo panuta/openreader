@@ -12,13 +12,11 @@ urlpatterns = patterns('document.views',
 
     url(r'^ajax/(?P<organization_slug>\w+)/publication/tag/add/$', 'ajax_add_publications_tag', name='ajax_add_publications_tag'),
     url(r'^ajax/(?P<organization_slug>\w+)/publication/edit/$', 'ajax_edit_publication', name='ajax_edit_publication'),
+    url(r'^ajax/(?P<organization_slug>\w+)/publication/delete/$', 'ajax_delete_publication', name='ajax_delete_publication'),
     url(r'^ajax/(?P<organization_slug>\w+)/query/document-tags/$', 'ajax_query_document_tags', name='ajax_query_document_tags'),
 
     # Document
     url(r'^download/(?P<publication_uid>[a-zA-Z0-9\-]+)/$', 'download_publication', name='download_publication'),
 
-    url(r'^document/(?P<publication_uid>[a-zA-Z0-9\-]+)/$', 'view_document', name='view_document'),
-    url(r'^document/(?P<publication_uid>[a-zA-Z0-9\-]+)/edit/$', 'edit_document', name='edit_document'),
-    url(r'^document/(?P<publication_uid>[a-zA-Z0-9\-]+)/delete/$', 'delete_document', name='delete_document'),
 
 )
