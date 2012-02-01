@@ -48,7 +48,7 @@ $(document).ready(function () {
       var tags = trObject.find('td.tag ul').html();
       
       $('.editing_row').remove();
-      var editing_row = $('<tr class="editing_row" rel="' + trObject.attr('id') + '"><td colspan="6"><div class="wrapper" style="display:none;"><div class="cover"><img src="' + thumbnail + '" /></div><form><div class="item"><label for="id_name">ชื่อไฟล์</label><div class="input"><input type="text" name="name" value="' + title + '" /></div></div><div class="item"><label for="id_description">คำอธิบาย</label><div class="input"><textarea>' + description + '</textarea></div></div><div class="item"><label for="id_tags">แถบป้าย</label><div class="input"><ul id="edit_tags">' + tags + '</ul></div></div><div class="form_actions"><a href="#" class="danger delete_link">ลบไฟล์ออกจากระบบ</a><button class="primary btn save_button">บันทึกข้อมูล</button><button class="btn cancel_button">ยกเลิก</button><span class="error_message"></span></div></form></div></td></tr>');
+      var editing_row = $('<tr class="editing_row" rel="' + trObject.attr('id') + '"><td colspan="6"><div class="wrapper" style="display:none;"><div class="cover"><img src="' + thumbnail + '" /></div><form><div class="item"><label for="id_name">หัวข้อ</label><div class="input"><input type="text" name="name" value="' + title + '" /></div></div><div class="item"><label for="id_description">คำอธิบาย</label><div class="input"><textarea>' + description + '</textarea></div></div><div class="item"><label for="id_tags">แถบป้าย</label><div class="input"><ul id="edit_tags">' + tags + '</ul></div></div><div class="form_actions"><a href="#" class="danger delete_link">ลบไฟล์ออกจากระบบ</a><button class="primary btn save_button">บันทึกข้อมูล</button><button class="btn cancel_button">ยกเลิก</button><span class="error_message"></span></div></form></div></td></tr>');
       editing_row.insertAfter($(this).closest('tr')).show().find('.wrapper').slideDown('fast');
 
       $('#edit_tags').tagit({tagSource: function(request, response) {
@@ -324,7 +324,7 @@ $(document).ready(function () {
         <tr>
           <th class="checkbox_column"></th>
           <th class="download_column"></th>
-          <th>ชื่อไฟล์</th>
+          <th>หัวข้อ</th>
           <th>แถบป้าย (Tag)</th>
           <th class="datetime_column">อัพโหลดเมื่อ</th>
           <th class="edit_column"></th>
