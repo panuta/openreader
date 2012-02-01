@@ -56,7 +56,7 @@ class PDFThumbnailGenerator(BaseThumbnailGenerator):
             img_gen.get_thumbnails(img)
             
             # Remove temp image fron publiction root dir
-            os.system('rm %s' % dst)
+            # os.system('rm %s' % dst)
 
         except:
             return False
