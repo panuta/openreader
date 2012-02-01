@@ -214,6 +214,9 @@ THUMBNAIL_SIZES = (
     ('large', (200, 250)),
 )
 
+# Set to False if server can generate thumbnail 99%
+THUMBNAIL_REGENERATE = True
+
 # Shelf Icons
 DEFAULT_SHELF_ICON = 'basic2-092'
 SHELF_ICONS = ['basic1-006','basic1-041','basic1-060','basic1-107','basic1-122','basic1-129','basic2-001','basic2-092','basic2-143','basic2-182','basic2-196','basic2-215','basic2-241','basic2-253','basic2-256']

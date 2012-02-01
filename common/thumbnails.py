@@ -46,6 +46,15 @@ def get_thumbnail_url(publication, size):
         (file_name, file_ext) = split_filename(filename)
         return '%spublication/%d/thumbnails/%s.thumbnail.%s.jpg' % (settings.MEDIA_URL, publication.organization.id, file_name, size)
     else:
+        if settings.THUMBNAIL_REGENERATE:
+            (file_name, file_ext) = split_filename(publication.uploaded_file.name)
+            generator = get_generator(file_ext)
+            if generator:
+                generated = generator.get_thumbnails(publication.uploaded_file.file)
+                publication.has_thumbnail = generated
+                publication.save()
+                return '%spublication/%d/thumbnails/%s.thumbnail.%s.jpg' % (settings.MEDIA_URL, publication.organization.id, file_name, size)
+                
         return NO_THUMBNAIL_URL
 
 def delete_thumbnails(file): # file -> models.FieldFile
