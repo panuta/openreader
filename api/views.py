@@ -70,7 +70,7 @@ def list_publication(request):
         shelves_list = []
         for shelf in shelves:
             shelf_dict = model_to_dict(shelf)
-            shelf_dict['icon'] = ''
+            #shelf_dict['icon'] = ''
             shelf_dict['publications'] = []
             for publication in shelf.publication_set.all():
                 publication_dict = model_to_dict(publication)
