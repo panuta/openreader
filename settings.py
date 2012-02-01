@@ -135,7 +135,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'private_files',
-    'compressor',
     'storages',
     'pagination',
 

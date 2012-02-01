@@ -29,8 +29,9 @@ def generate_shelf_list(user, organization, active_shelf=None): # DONE
     shelf_html = []
     for shelf in user.get_profile().get_viewable_shelves(organization):
         active_html = ' active' if active_shelf and active_shelf.id == shelf.id else ''
+        shelficon = ' %s' % shelf.icon if shelf.icon else ''
         count = Publication.objects.filter(shelves__in=[shelf]).count()
-        shelf_html.append(u'<li class="shelf%s%s" id="shelf-%d"><a href="%s">%s <span>(%d ไฟล์)</span></a></li>' % (active_html, ' '+shelf.icon, shelf.id, reverse('view_documents_by_shelf', args=[organization.slug, shelf.id]), shelf.name, count))
+        shelf_html.append(u'<li class="shelf%s%s" id="shelf-%d"><a href="%s">%s <span>(%d ไฟล์)</span></a></li>' % (active_html, shelficon, shelf.id, reverse('view_documents_by_shelf', args=[organization.slug, shelf.id]), shelf.name, count))
     
     return ''.join(shelf_html)
 
