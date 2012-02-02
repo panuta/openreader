@@ -18,10 +18,6 @@ a.btn:visited {
     color:#333333;
 }
 
-.icon {
-  background-image: url(/static/libs/bootstrap/docs/assets/img/glyphicons-halflings-sprite.png);
-}
-
 .clear {
     clear:both;
 }
@@ -115,9 +111,8 @@ body {
     margin-top:20px;
 }
 
-.fluid-container {
-    .fluid-content {
-        margin-right:0px;
+.container-fluid {
+    .content {
         padding:1px;
         border:1px solid #EEE;
         background-color:#DDD;
@@ -164,12 +159,18 @@ body {
 
     .page_actions {
         margin-bottom:25px;
+
         a, button {
             margin-right:15px;
+            vertical-align:top;
         }
 
-        a.primary {
+        a.btn-primary {
             color:#FFF;
+
+            &:visited, &:active {
+                color:#FFF;
+            }
         }
     }
 }
@@ -241,7 +242,7 @@ body {
 
 /* Sidebar */
 
-.fluid-sidebar {
+.content-sidebar {
     .buttons {
         margin-bottom:25px;
 
@@ -273,8 +274,8 @@ body {
             display:block;
         }
 
-        //&.shelf {background:url(/static/images/menu/shelf.png) 10px 50% transparent no-repeat;}
         &.shelf-all {background:url(/static/images/menu/shelf-all.png) 10px 50% transparent no-repeat;}
+        &.organization {background:url(/static/images/menu/organization.png) 10px 50% transparent no-repeat;}
         &.user {background:url(/static/images/menu/user.png) 10px 50% transparent no-repeat;}
         &.group {background:url(/static/images/menu/group.png) 10px 50% transparent no-repeat;}
 
@@ -345,7 +346,7 @@ form {
         margin-bottom:7px;
     }
 
-    .form_actions {
+    .form-actions {
         button, a {
             margin-right:15px;
         }
@@ -467,8 +468,9 @@ table {
 /* DOCUMENTS PAGE
 -------------------------------------------------- */
 
-.page-documents {
-    .fluid-sidebar {
+.documents_page {
+    .content-sidebar {
+        padding-top:10px;
         .head {
             margin:15px 0px 5px 10px;
         }
@@ -488,19 +490,9 @@ table {
         }
     }
 
-    .upload_publication_button span {
-        background:url(/static/images/buttons/button_upload_white.png) 0px 50% no-repeat;
-        padding-left:24px;
-    }
-
     .select_files_button {
         width:160px;
         text-align:center;
-
-        span {
-            background:url(/static/images/buttons/button_select_files.png) 0px 50% no-repeat;
-            padding-left:24px;
-        }
     }
 
     .checkbox_actions {
@@ -665,10 +657,10 @@ table {
     }
 }
 
-/* SHELF MODIFY PAGE
+/* MODIFY SHELF PAGE
 -------------------------------------------------- */
 
-.page-shelf-modify {
+.modify_shelf_page {
     .icon_input {
         img {
             vertical-align:middle;
@@ -702,12 +694,12 @@ table {
             }
         }
 
-        .actions {
-            color:#666;
-            margin-top:15px;
+        .add_permissions {
+            color:#333;
+            margin:20px 0px 0px 3px;
 
-            button {
-                margin:0px 8px;
+            a {
+                margin-left:10px;
             }
         }
 

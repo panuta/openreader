@@ -9,10 +9,10 @@
 {% endblock %}
 
 {% block body_authenticated %}
-<div class="fluid-container sidebar-left page-accounts-manage">
-  <div class="fluid-sidebar"><ul>{% block my_account_sidebar %}{% endblock %}</ul></div>
-  <div class="fluid-content"><div class="inner-content">
+<div class="container-fluid documents_page"><div class="row-fluid">
+  <div class="span3 content-sidebar"><ul>{% block my_account_sidebar %}{% endblock %}</ul></div>
+  <div class="span9"><div class="content"><div class="inner-content">
   {% block my_account_content %}{% endblock %}
-  </div></div>
-</div>
+  </div></div></div>
+</div></div>
 {% endblock %}

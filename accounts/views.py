@@ -91,8 +91,11 @@ def change_my_account_password(request):
 def view_organization_profile(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
+    if not can(request.user, 'view', {'organization':organization}):
+        raise Http403
+
     statistics = {
-        'document_count': Publication.objects.filter(organization=organization).count(),
+        'publication_count': Publication.objects.filter(organization=organization).count(),
         'shelf_count': OrganizationShelf.objects.filter(organization=organization).count()
     }
     
@@ -103,7 +106,7 @@ def edit_organization_profile(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
     if not can(request.user, 'admin', {'organization':organization}):
-        raise Http404
+        raise Http403
     
     if request.method == 'POST':
         form = OrganizationProfileForm(request.POST)

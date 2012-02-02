@@ -24,7 +24,7 @@
     <div class="input row-inputs">{{form.members}}{{form.members.errors}}</div></div>
 
   <div class="form-actions">
-    <button type="submit" class="btn primary">{% if not group %}เพิ่มกลุ่มผู้ใช้{% else %}แก้ไขกลุ่มผู้ใช้{% endif %}</button>
+    <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> {% if not group %}เพิ่มกลุ่มผู้ใช้{% else %}แก้ไขกลุ่มผู้ใช้{% endif %}</button>
     <button type="reset" class="btn">ล้างข้อมูล</button>
   </div>
 </form>

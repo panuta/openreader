@@ -290,20 +290,20 @@ $(document).ready(function () {
 {% block body_authenticated %}
 {% autopaginate publications 50 %}
 
-<div class="fluid-container sidebar-left page-documents">
+<div class="container-fluid documents_page"><div class="row-fluid">
   {% include 'document/snippets/documents_sidebar.html' %}
-  <div class="fluid-content"><div class="inner-content">
+  <div class="span9"><div class="content"><div class="inner-content">
     <h2>{% if shelf_type == 'all' %}ไฟล์ทั้งหมด{% endif %}{% if shelf_type == 'none' %}ไฟล์ที่ไม่อยู่ในชั้นหนังสือ{% endif %}{% if shelf %}<span>ชั้นหนังสือ</span>{{shelf.name}}{% endif %}</h2>
 
     {% if shelf %}
     <div class="page_actions">
-      {% can user 'upload_shelf' organization=organization shelf=shelf %}<button class="btn primary upload_publication_button" data-toggle="button"><span>อัพโหลดไฟล์เข้าชั้นหนังสือ</span></button>{% endcan %}
-      {% can user 'admin' organization=organization %}<a href="{% url edit_document_shelf organization.slug shelf.id %}" class="btn edit_shelf_button"><span>แก้ไขชั้นหนังสือ</span></a>{% endcan %}
+      {% can user 'upload_shelf' organization=organization shelf=shelf %}<button class="btn btn-primary upload_publication_button" data-toggle="button"><i class="icon-upload icon-white"></i> อัพโหลดไฟล์เข้าชั้นหนังสือ</button>{% endcan %}
+      {% can user 'admin' organization=organization %}<a href="{% url edit_document_shelf organization.slug shelf.id %}" class="btn edit_shelf_button"><i class="icon-edit"></i> แก้ไขชั้นหนังสือ</a>{% endcan %}
     </div>
     {% endif %}
 
     <div class="upload_dropzone" id="upload_dropzone">
-      <a href="#" class="btn select_files_button" id="select_files_button"><span>เลือกไฟล์</span></a>
+      <a href="#" class="btn select_files_button" id="select_files_button"><i class="icon-file"></i> เลือกไฟล์</a>
       <div class="dragdrop">หรือลากไฟล์มาวางที่กรอบนี้</div>
     </div>
 
@@ -315,7 +315,7 @@ $(document).ready(function () {
     <div class="checkbox_actions" {% if not publications %}style="display:none;"{% endif %}>
       <div class="inner">
         <span class="check"><input type="checkbox"/></span>
-        <a href="#" class="small btn add_tag_button disabled"><i class="icon tag"></i> เพิ่มแถบป้าย</a>
+        <a href="#" class="btn-small btn add_tag_button disabled"><i class="icon-tag"></i> เพิ่มแถบป้าย</a>
       </div>
     </div>
 
@@ -325,7 +325,7 @@ $(document).ready(function () {
           <th class="checkbox_column"></th>
           <th class="download_column"></th>
           <th>หัวข้อ</th>
-          <th>แถบป้าย (Tag)</th>
+          <th><i class="icon-tag"></i> แถบป้าย</th>
           <th class="datetime_column">อัพโหลดเมื่อ</th>
           <th class="edit_column"></th>
         </tr>
@@ -354,9 +354,8 @@ $(document).ready(function () {
     {% if not publications %}
     <div class="no_information">ไม่มีไฟล์</div>
     {% endif %}
-
-  </div></div>
-</div>
+  </div></div></div>
+</div></div>
 
 <div class="modal fade uninitialized-modal" id="add_tag_modal">
   <div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>เพิ่มแถบป้าย</h3></div>
@@ -368,7 +367,7 @@ $(document).ready(function () {
   </div>
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal">ยกเลิก</button>
-    <button class="btn primary">เพิ่มแถบป้าย</button>
+    <button class="btn btn-primary"><i class="icon-tag icon-white"></i> เพิ่มแถบป้าย</button>
   </div>
 </div>
 
@@ -376,7 +375,7 @@ $(document).ready(function () {
   <div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>ยืนยันการลบไฟล์</h3></div>
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal">ยกเลิก</button>
-    <button class="btn danger">ยืนยันการลบไฟล์</button>
+    <button class="btn btn-danger">ยืนยันการลบไฟล์</button>
   </div>
 </div>
 

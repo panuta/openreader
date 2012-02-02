@@ -40,38 +40,24 @@ def print_all_publication_count(user, organization): # DONE
     shelves = user.get_profile().get_viewable_shelves(organization)
     return Publication.objects.filter(shelves__in=shelves).order_by('-uploaded_by').count()
 
-class HasShelfNode(template.Node):
-    def __init__(self, nodelist_true, nodelist_false, organization):
-        self.nodelist_true = nodelist_true
-        self.nodelist_false = nodelist_false
-        self.organization = template.Variable(organization)
-    
-    def render(self, context):
-        organization = self.organization.resolve(context)
-        
-        if OrganizationShelf.objects.filter(organization=organization).exists():
-            output = self.nodelist_true.render(context)
-            return output
-        else:
-            output = self.nodelist_false.render(context)
-            return output
+@register.simple_tag
+def generate_shelf_permission_list(shelf_permissions):
+    li_html = []
+    for shelf_permission in shelf_permissions:
+        permit = shelf_permission.split('-')
 
-@register.tag(name="has_shelf")
-def do_has_shelf(parser, token):
-    try:
-        tag_name, organization = token.split_contents()
-    except ValueError:
-        raise template.TemplateSyntaxError, "has_shelf tag raise ValueError"
+        if permit[0] == 'all':
+            li_html.append(u'<li>ทุกคนในบริษัทสามารถ%s<span>[ <a href="#">ลบออก</a> ]</span><input type="hidden" name="permission" value="%s"/></li>' % (u'อัพโหลดไฟล์และแก้ไขไฟล์ได้' if permit[1] == '2' else u'ดูไฟล์ได้อย่างเดียว (ยกเว้นผู้ดูแลระบบ)', shelf_permission))
+            
+        elif permit[0] == 'group':
+            group = OrganizationGroup.objects.get(id=permit[1])
+            li_html.append(u'<li>กลุ่มผู้ใช้ <em>%s</em> สามารถ%s<span>[ <a href="#">ลบออก</a> ]</span><input type="hidden" name="permission" value="%s"/></li>' % (group.name, u'อัพโหลดไฟล์และแก้ไขไฟล์ได้' if permit[1] == '2' else u'ดูไฟล์ได้อย่างเดียว', shelf_permission))
+            
+        elif permit[0] == 'user':
+            user = User.objects.get(id=permit[1])
+            li_html.append(u'<li>ผู้ใช้ <em>%s</em> สามารถ%s<span>[ <a href="#">ลบออก</a> ]</span><input type="hidden" name="permission" value="%s"/></li>' % (user.get_profile().get_fullname(), u'อัพโหลดไฟล์และแก้ไขไฟล์ได้' if permit[1] == '2' else u'ดูไฟล์ได้อย่างเดียว', shelf_permission))
     
-    nodelist_true = parser.parse(('else', 'end_has_shelf'))
-    token = parser.next_token()
-    if token.contents == 'else':
-        nodelist_false = parser.parse(('end_has_shelf',))
-        parser.delete_first_token()
-    else:
-        nodelist_false = NodeList()
-    
-    return HasShelfNode(nodelist_true, nodelist_false, organization)
+    return ''.join(li_html)
 
 @register.simple_tag
 def generate_shelf_icons():

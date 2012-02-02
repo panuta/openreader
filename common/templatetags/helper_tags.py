@@ -90,25 +90,6 @@ def do_can(parser, token):
 # HTML GENERATOR #################################################################
 
 @register.simple_tag
-def generate_shelf_permission_list(shelf_permissions):
-    li_html = []
-    for shelf_permission in shelf_permissions:
-        permit = shelf_permission.split('-')
-
-        if permit[0] == 'all':
-            li_html.append(u'<li>ทุกคนในบริษัทสามารถ%s<span>[ <a href="#">ลบออก</a> ]</span><input type="hidden" name="permission" value="%s"/></li>' % (u'อัพโหลดไฟล์และแก้ไขไฟล์ได้' if permit[1] == '2' else u'ดูไฟล์ได้อย่างเดียว (ยกเว้นผู้ดูแลระบบ)', shelf_permission))
-            
-        elif permit[0] == 'group':
-            group = OrganizationGroup.objects.get(id=permit[1])
-            li_html.append(u'<li>กลุ่มผู้ใช้ <em>%s</em> สามารถ%s<span>[ <a href="#">ลบออก</a> ]</span><input type="hidden" name="permission" value="%s"/></li>' % (group.name, u'อัพโหลดไฟล์และแก้ไขไฟล์ได้' if permit[1] == '2' else u'ดูไฟล์ได้อย่างเดียว', shelf_permission))
-            
-        elif permit[0] == 'user':
-            user = User.objects.get(id=permit[1])
-            li_html.append(u'<li>ผู้ใช้ <em>%s</em> สามารถ%s<span>[ <a href="#">ลบออก</a> ]</span><input type="hidden" name="permission" value="%s"/></li>' % (user.get_profile().get_fullname(), u'อัพโหลดไฟล์และแก้ไขไฟล์ได้' if permit[1] == '2' else u'ดูไฟล์ได้อย่างเดียว', shelf_permission))
-    
-    return ''.join(li_html)
-
-@register.simple_tag
 def generate_organization_menu(user):
     user_organizations = UserOrganization.objects.filter(user=user).order_by('organization__name')
 
