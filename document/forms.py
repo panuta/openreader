@@ -4,8 +4,6 @@ from django import forms
 
 from common.forms import StrippedCharField
 
-from publication.forms import EditPublicationForm
-
 from models import OrganizationShelf
 
 class OrganizationShelfMultipleChoiceField(forms.ModelMultipleChoiceField):
@@ -21,12 +19,3 @@ class OrganizationShelfForm(forms.Form):
     auto_sync = forms.BooleanField(required=False)
     shelf_icon = forms.CharField(max_length=100)
     permission = forms.CharField()
-
-class EditFilePublicationForm(EditPublicationForm):
-    shelves = OrganizationShelfMultipleChoiceField(required=False, widget=forms.CheckboxSelectMultiple())
-
-    def __init__(self, *args, **kwargs):
-        self.organization = kwargs.pop('organization', None)
-        forms.Form.__init__(self, *args, **kwargs)
-        
-        self.fields['shelves'].queryset = OrganizationShelf.objects.filter(organization=self.organization).order_by('name')

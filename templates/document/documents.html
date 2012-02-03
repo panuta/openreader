@@ -48,7 +48,7 @@ $(document).ready(function () {
       var tags = trObject.find('td.tag ul').html();
       
       $('.editing_row').remove();
-      var editing_row = $('<tr class="editing_row" rel="' + trObject.attr('id') + '"><td colspan="6"><div class="wrapper" style="display:none;"><div class="cover"><img src="' + thumbnail + '" /></div><form><div class="item"><label for="id_name">หัวข้อ</label><div class="input"><input type="text" name="name" value="' + title + '" /></div></div><div class="item"><label for="id_description">คำอธิบาย</label><div class="input"><textarea>' + description + '</textarea></div></div><div class="item"><label for="id_tags">แถบป้าย</label><div class="input"><ul id="edit_tags">' + tags + '</ul></div></div><div class="form_actions"><a href="#" class="danger delete_link">ลบไฟล์ออกจากระบบ</a><button class="primary btn save_button">บันทึกข้อมูล</button><button class="btn cancel_button">ยกเลิก</button><span class="error_message"></span></div></form></div></td></tr>');
+      var editing_row = $('<tr class="editing_row" rel="' + trObject.attr('id') + '"><td colspan="6"><div class="wrapper" style="display:none;"><div class="cover"><img src="' + thumbnail + '" /></div><form><div class="item"><label for="id_name">หัวข้อ</label><div class="input"><input type="text" name="name" value="' + title + '" /></div></div><div class="item"><label for="id_description">คำอธิบาย</label><div class="input"><textarea>' + description + '</textarea></div></div><div class="item"><label for="id_tags">แถบป้าย</label><div class="input"><ul id="edit_tags">' + tags + '</ul></div></div><div class="form_actions"><a href="#" class="danger delete_link">ลบไฟล์ออกจากระบบ</a><button class="btn-primary btn save_button">บันทึกข้อมูล</button><button class="btn cancel_button">ยกเลิก</button><span class="error_message"></span></div></form></div></td></tr>');
       editing_row.insertAfter($(this).closest('tr')).show().find('.wrapper').slideDown('fast');
 
       $('#edit_tags').tagit({tagSource: function(request, response) {
@@ -190,7 +190,7 @@ $(document).ready(function () {
       $('#' + file.id).remove();
       if(!$('.documents-upload-table tbody tr').length) $('.documents-upload-table').hide();
 
-      var uploaded_file = $('<tr id="' + responseObject.uid + '" class="uploaded_row"><td><input type="checkbox" checked="checked"/></td><td class="download"><a href="' + response.download_url + '" title="ดาวน์โหลดไฟล์">ดาวน์โหลดไฟล์</a></td><td class="name">' + file.name + '</td><td class="tag"><ul></ul></td><td>' + responseObject.uploaded + '</td><td class="row_actions"><input type="hidden" name="description" value=""/><input type="hidden" name="thumbnail" value="' + responseObject.thumbnail_url + '"/><button class="small btn edit_publication_button" data-toggle="button">แก้ไข</button></td></tr>');
+      var uploaded_file = $('<tr id="' + responseObject.uid + '" class="uploaded_row"><td><input type="checkbox" checked="checked"/></td><td class="download"><a href="' + responseObject.download_url + '" title="ดาวน์โหลดไฟล์">ดาวน์โหลดไฟล์</a></td><td class="name">' + responseObject.title + '</td><td class="tag"><ul></ul></td><td>' + responseObject.uploaded + '</td><td class="row_actions"><input type="hidden" name="description" value=""/><input type="hidden" name="thumbnail" value="' + responseObject.thumbnail_url + '"/><button class="small btn edit_publication_button" data-toggle="button">แก้ไข</button></td></tr>');
       uploaded_file.find('.edit_publication_button').button();
 
       increaseAllCount();
@@ -245,43 +245,33 @@ $(document).ready(function () {
 
   /* CHECKBOX ACTIONS
    *************************************/
+  $('#add_tag_modal .modal-footer button.btn-primary').on('click', function(e) {
+    var tag_name = $('#add_tag_modal .modal-body input[name="tag"]').val();
+    var publications = Array();
 
-  $('.add_tag_button').on('click', function(e) {
-    if($('#add_tag_modal').hasClass('uninitialized-modal')) {
-      $('#add_tag_modal').removeClass('uninitialized-modal').modal({backdrop:'static'});
+    $('.documents-table input[type="checkbox"]:checked').each(function(e) {
+      publications.push($(this).closest('tr').attr('id'));
+    });
 
-      $('#add_tag_modal .modal-footer button.primary').on('click', function(e) {
-        var tag_name = $('#add_tag_modal .modal-body input[name="tag"]').val();
-        var publications = Array();
-
-        $('.documents-table input[type="checkbox"]:checked').each(function(e) {
-          publications.push($(this).closest('tr').attr('id'));
-        });
-
-        if(tag_name) {
-          $.post('{% url ajax_add_publications_tag organization.slug %}', {tag:tag_name, publication:publications}, function(response) {
-            if(response.status == 'success') {
-              $('.documents-table input[type="checkbox"]:checked').each(function(e) {
-                $(this).closest('tr').find('.tag ul').append('<li>' + tag_name + '</li>')
-              });
-              $('#add_tag_modal').modal('hide');
-            
-            } else {
-              if(response.error == 'missing-parameter') {
-                $('#add_tag_modal .modal-header').after('<div class="modal-message">ข้อมูลไม่เพียงพอที่จะเพิ่มแถบป้าย</div>');
-              }
-            }
-          }, 'json');
+    if(tag_name) {
+      $.post('{% url ajax_add_publications_tag organization.slug %}', {tag:tag_name, publication:publications}, function(response) {
+        if(response.status == 'success') {
+          $('.documents-table input[type="checkbox"]:checked').each(function(e) {
+            $(this).closest('tr').find('.tag ul').append('<li>' + tag_name + '</li>')
+          });
+          $('#add_tag_modal').modal('hide');
+        
+        } else {
+          if(response.error == 'missing-parameter') {
+            $('#add_tag_modal .modal-header').after('<div class="modal-message">ข้อมูลไม่เพียงพอที่จะเพิ่มแถบป้าย</div>');
+          }
         }
-      });
-
-    } else {
-      $('#add_tag_modal').modal('show');
-      $('#add_tag_modal .modal-message').remove();
+      }, 'json');
     }
+  });
 
+  $('#add_tag_modal').on('show', function() {
     $('#add_tag_modal .modal-body input[name="tag"]').val('');
-    return false;
   });
 });
 </script>
@@ -315,7 +305,7 @@ $(document).ready(function () {
     <div class="checkbox_actions" {% if not publications %}style="display:none;"{% endif %}>
       <div class="inner">
         <span class="check"><input type="checkbox"/></span>
-        <a href="#" class="btn-small btn add_tag_button disabled"><i class="icon-tag"></i> เพิ่มแถบป้าย</a>
+        <a href="#add_tag_modal" class="btn-small btn add_tag_button disabled" data-toggle="modal"><i class="icon-tag"></i> เพิ่มแถบป้าย</a>
       </div>
     </div>
 
@@ -357,7 +347,7 @@ $(document).ready(function () {
   </div></div></div>
 </div></div>
 
-<div class="modal fade uninitialized-modal" id="add_tag_modal">
+<div class="modal fade hide" id="add_tag_modal">
   <div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>เพิ่มแถบป้าย</h3></div>
   <div class="modal-body">
     <form method="POST" action=".">

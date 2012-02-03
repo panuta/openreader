@@ -11,7 +11,7 @@ from document.models import Publication
 
 def upload_publication(request, uploading_file, organization):
     (file_name, file_ext) = split_filename(uploading_file.name)
-    publication = Publication.objects.create(organization=organization, title=uploading_file.name, original_file_name=file_name, file_ext=file_ext, uploaded_by=request.user)
+    publication = Publication.objects.create(organization=organization, title=file_name, original_file_name=file_name, file_ext=file_ext, uploaded_by=request.user)
 
     try:
         publication.uploaded_file.save('%s.%s' % (publication.uid, file_ext), uploading_file.file)

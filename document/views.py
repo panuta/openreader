@@ -228,8 +228,11 @@ def _persist_shelf_permissions(request, organization, shelf):
 def _extract_shelf_permissions(shelf):
     shelf_permissions = []
 
-    organization_shelf_permission = OrganizationShelfPermission.objects.get(shelf=shelf)
-    shelf_permissions.append('all-%d' % organization_shelf_permission.access_level)
+    try:
+        organization_shelf_permission = OrganizationShelfPermission.objects.get(shelf=shelf)
+        shelf_permissions.append('all-%d' % organization_shelf_permission.access_level)
+    except:
+        pass
 
     for shelf_permission in GroupShelfPermission.objects.filter(shelf=shelf):
         shelf_permissions.append('group-%d-%d' % (shelf_permission.group.id, shelf_permission.access_level))
