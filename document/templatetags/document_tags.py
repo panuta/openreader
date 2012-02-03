@@ -4,6 +4,7 @@ from django import template
 register = template.Library()
 
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.template import NodeList
 from django.template import loader
 
