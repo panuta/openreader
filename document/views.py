@@ -32,7 +32,7 @@ def view_organization_front(request, organization_slug):
 def view_documents(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
-    if not can(request.user, 'view', {'organization':organization}):
+    if not can(request.user, 'view', organization):
         raise Http403
     
     shelves = request.user.get_profile().get_viewable_shelves(organization)
@@ -44,7 +44,7 @@ def view_documents_by_shelf(request, organization_slug, shelf_id):
     organization = get_object_or_404(Organization, slug=organization_slug)
     shelf = get_object_or_404(OrganizationShelf, pk=shelf_id)
 
-    if shelf.organization.id != organization.id or not can(request.user, 'view', {'organization':organization}):
+    if shelf.organization.id != organization.id or not can(request.user, 'view', organization):
         raise Http403
     
     publications = Publication.objects.filter(organization=organization, shelves__in=[shelf]).order_by('-uploaded')
@@ -58,7 +58,7 @@ def upload_documents_to_shelf(request, organization_slug, shelf_id):
     organization = get_object_or_404(Organization, slug=organization_slug)
     shelf = get_object_or_404(OrganizationShelf, pk=shelf_id)
 
-    if shelf.organization.id != organization.id or not can(request.user, 'upload_shelf', {'organization':organization, 'shelf':shelf}):
+    if shelf.organization.id != organization.id or not can(request.user, 'upload_shelf', organization, {'shelf':shelf}):
         raise Http403
     
     if request.method == 'POST':
@@ -246,7 +246,7 @@ def _extract_shelf_permissions(shelf):
 def create_document_shelf(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
-    if not can(request.user, 'admin', {'organization':organization}):
+    if not can(request.user, 'manage_shelf', organization):
         raise Http403
     
     if request.method == 'POST':
@@ -277,7 +277,7 @@ def edit_document_shelf(request, organization_slug, shelf_id):
     organization = get_object_or_404(Organization, slug=organization_slug)
     shelf = get_object_or_404(OrganizationShelf, pk=shelf_id)
 
-    if shelf.organization.id != organization.id or not can(request.user, 'admin', {'organization':organization}):
+    if shelf.organization.id != organization.id or not can(request.user, 'manage_shelf', organization):
         raise Http403
     
     if request.method == 'POST':
@@ -306,7 +306,7 @@ def delete_document_shelf(request, organization_slug, shelf_id):
     organization = get_object_or_404(Organization, slug=organization_slug)
     shelf = get_object_or_404(OrganizationShelf, pk=shelf_id)
 
-    if shelf.organization.id != organization.id or not can(request.user, 'admin', {'organization':organization}):
+    if shelf.organization.id != organization.id or not can(request.user, 'manage_shelf', organization):
         raise Http403
     
     if request.method == 'POST':

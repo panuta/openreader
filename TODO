@@ -1,8 +1,7 @@
-- check validation for creating/editing shelf
 - replace file (update version)
+- add users from CSV file
 
 TODO - PHRASE 2
-- advanced pagination -> [prev] [1] [2] ... [5] [6] [[7]] [8] [9] ... [14] [15] [next]
 - revision
 - public publication (anyone can see)
 

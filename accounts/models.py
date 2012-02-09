@@ -28,9 +28,6 @@ class UserProfile(models.Model):
     class Meta:
         abstract = True
 
-    def can(self, action, object):
-        return can(self.user, action, object)
-
     def get_fullname(self):
         if not self.first_name or not self.last_name:
             if not self.user.first_name or not self.user.last_name:
@@ -38,30 +35,45 @@ class UserProfile(models.Model):
             return '%s %s' % (self.user.first_name, self.user.last_name)
         return '%s %s' % (self.first_name, self.last_name)
     
-    def check_permission(self, action, parameters):
+    def check_permission(self, action, organization, parameters=[]):
         try:
+            user_organization = UserOrganization.objects.get(user=self, organization=organization, is_active=True)
+
+        except UserOrganization.DoesNotExist:
+            return False
+
+        else:
+            if user_organization.is_admin:
+                return True
+            
             if action == 'view':
-                return UserOrganization.objects.filter(user=self, organization=parameters['organization']).exists()
+                return True
             
-            if action == 'edit':
+            try:
+                admin_permission = OrganizationAdminPermission.objects.get(code_name=action)
+            except OrganizationAdminPermission.DoesNotExist:
                 pass
-            
-            if action == 'admin':
-                return UserOrganization.objects.get(user=self, organization=parameters['organization']).is_admin
-            
-            return False
+            else:
+                if admin_permission in user_organization.admin_permissions.all():
+                    return True
         
-        except:
-            return False
+        return False
+
+# Admin Permissions
+class OrganizationAdminPermission(models.Model):
+    name = models.CharField(max_length=200)
+    code_name = models.CharField(max_length=200)
+
+    def __unicode__(self):
+        return self.name
 
 # Organization
 
 class Organization(models.Model):
     name = models.CharField(max_length=200)
     prefix = models.CharField(max_length=200, default='บริษัท')
-    slug = models.CharField(max_length=200, unique=True)
+    slug = models.CharField(max_length=200, unique=True, db_index=True)
     status = models.IntegerField(default=0)
-
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='organization_created_by')
     modified = models.DateTimeField(auto_now=True)
@@ -69,39 +81,6 @@ class Organization(models.Model):
 
     def __unicode__(self):
         return self.name
-    
-    def check_permission(self, user, action, parameters):
-        try:
-            if action == 'view':
-                return UserOrganization.objects.filter(organization=self, user=user).exists()
-            
-            if action == 'edit':
-                pass
-            
-            if action == 'manage':
-                return UserOrganization.objects.get(organization=self, user=user).is_admin
-            
-            return False
-        
-        except:
-            return False
-
-    def can_view(self, user):
-        return UserOrganization.objects.filter(user=user, organization=self).exists()
-
-    def can_edit(self, user):
-        try:
-            user_organization = UserOrganization.objects.get(organization=self, user=user)
-            return user_organization.role.code in ('organization_admin', 'organization_staff')
-        except UserOrganization.DoesNotExist:
-            return False
-
-    def can_manage(self, user):
-        try:
-            user_organization = UserOrganization.objects.get(organization=self, user=user)
-            return user_organization.role.admin_level > 0
-        except UserOrganization.DoesNotExist:
-            return False
 
 class OrganizationGroup(models.Model):
     organization = models.ForeignKey(Organization)
@@ -115,11 +94,12 @@ class UserOrganization(models.Model):
     user = models.ForeignKey(User)
     organization = models.ForeignKey(Organization)
     is_admin = models.BooleanField(default=False)
-    position = models.CharField(max_length=300)
     is_default = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
 
     groups = models.ManyToManyField(OrganizationGroup, through='UserGroup')
+    admin_permissions = models.ManyToManyField(OrganizationAdminPermission)
 
     def __unicode__(self):
         return '%s:%s' % (self.user.get_profile().get_fullname(), self.organization.name)
@@ -136,13 +116,14 @@ class UserGroup(models.Model):
 
 class UserInvitationManager(models.Manager):
 
-    def create_invitation(self, email, organization, is_admin, position, groups, created_by):
+    def create_invitation(self, email, organization, admin_permissions, groups, created_by):
         salt = sha_constructor(str(random.random())).hexdigest()[:5]
         if isinstance(email, unicode):
             email = email.encode('utf-8')
         invitation_key = sha_constructor(salt + email).hexdigest()
 
-        invitation = self.create(email=email, organization=organization, is_admin=is_admin, position=position, invitation_key=invitation_key, created_by=created_by)
+        invitation = self.create(email=email, organization=organization, invitation_key=invitation_key, created_by=created_by)
+        invitation.admin_permissions = admin_permissions
 
         for group in groups:
             UserOrganizationInvitationUserGroup.objects.create(invitation=invitation, group=group)
@@ -159,7 +140,9 @@ class UserInvitationManager(models.Manager):
             return None
     
     def claim_invitation(self, invitation, user, is_default=False):
-        user_organization = UserOrganization.objects.create(user=user, organization=invitation.organization, is_admin=invitation.is_admin, position=invitation.position, is_default=is_default)
+        # TODO
+        user_organization = UserOrganization.objects.create(user=user, organization=invitation.organization, is_default=is_default)
+        user_organization.admin_permissions = invitation.admin_permissions.all()
 
         for invitation_group in UserOrganizationInvitationUserGroup.objects.filter(invitation=invitation):
             UserGroup.objects.create(user_organization=user_organization, group=invitation_group.group)
@@ -172,13 +155,12 @@ class UserInvitationManager(models.Manager):
 class UserOrganizationInvitation(models.Model):
     email = models.CharField(max_length=200, null=True, blank=True)
     organization = models.ForeignKey(Organization)
-    is_admin = models.BooleanField()
-    position = models.CharField(max_length=300)
     invitation_key = models.CharField(max_length=40, unique=True)
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='user_invitation_created_by')
 
     groups = models.ManyToManyField(OrganizationGroup, through='UserOrganizationInvitationUserGroup')
+    admin_permissions = models.ManyToManyField(OrganizationAdminPermission)
 
     def __unicode__(self):
         return '%s:%s' % (self.email, self.organization.name)

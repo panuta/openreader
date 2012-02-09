@@ -1,6 +1,6 @@
 ROLE_CHOICES = (('organization_admin', 'Organization Admin'), ('organization_staff', 'Organization Staff'), ('organization_user', 'Organization User'))
 
-def can(user, action, parameters={}):
+def can(user, action, organization, parameters={}):
     if ',' in action:
         actions = action.split(',')
         use_AND = True
@@ -14,7 +14,7 @@ def can(user, action, parameters={}):
 
     permission_list = []
     for action_name in actions:
-        permission_list.append(user.get_profile().check_permission(action_name, parameters))
+        permission_list.append(user.get_profile().check_permission(action_name, organization, parameters))
     
     result = permission_list[0]
 

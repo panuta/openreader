@@ -40,7 +40,7 @@ class Publication(models.Model):
     uploaded = models.DateTimeField(auto_now_add=True)
     uploaded_by = models.ForeignKey(User, related_name='publication_uploaded_by')
     modified = models.DateTimeField(auto_now=True)
-    modified_by = models.ForeignKey(User, related_name='publication_modified_by', null=True, blank=True)
+    modified_by = models.ForeignKey(User, related_name='publication_modified_by', null=True)
 
     def __unicode__(self):
         return '%s' % (self.title)
@@ -58,6 +58,24 @@ class Publication(models.Model):
     
     def get_download_url(self):
         pass
+
+"""
+class PublicationRevision(models.Model):
+    uid = models.CharField(max_length=200, db_index=True)
+    title = models.CharField(max_length=500)
+    description = models.TextField(blank=True)
+    
+    uploaded_file = PrivateFileField(upload_to=publication_media_dir, condition=is_downloadable, max_length=500, null=True)
+    original_file_name = models.CharField(max_length=300)
+    file_ext = models.CharField(max_length=10)
+    has_thumbnail = models.BooleanField(default=False)
+
+    shelves = models.ManyToManyField('OrganizationShelf', through='PublicationShelf')
+    tags = models.ManyToManyField('OrganizationTag', through='PublicationTag')
+
+    modified = models.DateTimeField()
+    modified_by = models.ForeignKey(User, related_name='publication_revision_modified_by')
+"""
 
 # SHELF
 ############################################################
@@ -118,7 +136,7 @@ class PublicationTag(models.Model):
 
 class UserProfile(BaseUserProfile):
 
-    def check_permission(self, action, parameters):
+    def check_permission(self, action, organization, parameters=[]):
         try:
             if action == 'view_shelf':
                 return self.get_shelf_access(parameters['shelf']) >= SHELF_ACCESS['VIEW_ACCESS']
@@ -129,10 +147,13 @@ class UserProfile(BaseUserProfile):
         except:
             pass
         
-        return BaseUserProfile.check_permission(self, action, parameters)
+        return BaseUserProfile.check_permission(self, action, organization, parameters)
     
     def get_viewable_shelves(self, organization):
-        user_organization = UserOrganization.objects.get(user=self.user, organization=organization)
+        user_organization = UserOrganization.objects.get(user=self.user, organization=organization, is_active=True)
+
+        if not user_organization:
+            return SHELF_ACCESS['NO_ACCESS']
 
         if user_organization.is_admin:
             return OrganizationShelf.objects.filter(organization=organization).order_by('name')
@@ -145,7 +166,10 @@ class UserProfile(BaseUserProfile):
             return shelves
     
     def get_shelf_access(self, shelf):
-        user_organization = UserOrganization.objects.get(user=self.user, organization=shelf.organization)
+        user_organization = UserOrganization.objects.get(user=self.user, organization=shelf.organization, is_active=True)
+
+        if not user_organization:
+            return SHELF_ACCESS['NO_ACCESS']
 
         if user_organization.is_admin:
             return SHELF_ACCESS['PUBLISH_ACCESS']

@@ -10,9 +10,9 @@
 <script>
 {% if shelf %}
 function increaseAllCount(shelf_id) {
-  var count_num = $('.sidebar .shelf-all span').text().split(' ')[0].substring(1) * 1;
+  var count_num = $('.content-sidebar .shelf-all span').text().split(' ')[0].substring(1) * 1;
   count_num = count_num + 1;
-  $('.sidebar .shelf-all span').text('(' + count_num + ' ไฟล์)');
+  $('.content-sidebar .shelf-all span').text('(' + count_num + ' ไฟล์)');
 }
 
 function increaseShelfCount(shelf_id) {
@@ -42,13 +42,13 @@ $(document).ready(function () {
       trObject.prevAll().find('.edit_publication_button').removeClass('active');
       trObject.nextAll().find('.edit_publication_button').removeClass('active');
 
-      var title = trObject.find('td.name').text();
+      var title = trObject.find('td.file div.filename').text();
       var description = trObject.find('input[name="description"]').val();
       var thumbnail = trObject.find('input[name="thumbnail"]').val();
-      var tags = trObject.find('td.tag ul').html();
+      var tags = trObject.find('td.file div.tag ul').html();
       
       $('.editing_row').remove();
-      var editing_row = $('<tr class="editing_row" rel="' + trObject.attr('id') + '"><td colspan="6"><div class="wrapper" style="display:none;"><div class="cover"><img src="' + thumbnail + '" /></div><form><div class="item"><label for="id_name">หัวข้อ</label><div class="input"><input type="text" name="name" value="' + title + '" /></div></div><div class="item"><label for="id_description">คำอธิบาย</label><div class="input"><textarea>' + description + '</textarea></div></div><div class="item"><label for="id_tags">แถบป้าย</label><div class="input"><ul id="edit_tags">' + tags + '</ul></div></div><div class="form_actions"><a href="#" class="danger delete_link">ลบไฟล์ออกจากระบบ</a><button class="btn-primary btn save_button">บันทึกข้อมูล</button><button class="btn cancel_button">ยกเลิก</button><span class="error_message"></span></div></form></div></td></tr>');
+      var editing_row = $('<tr class="editing_row" rel="' + trObject.attr('id') + '"><td colspan="6"><div class="wrapper" style="display:none;"><div class="cover"><img src="' + thumbnail + '" /></div><!--<div class="original_filename"><em>test.pdf</em> [ <a href="#">เปลี่ยนไฟล์</a> ]</div>--><form><div class="item"><label for="id_name">หัวข้อ</label><div class="input"><input type="text" name="name" value="' + title + '" /></div></div><div class="item"><label for="id_description">คำอธิบาย</label><div class="input"><textarea>' + description + '</textarea></div></div><div class="item"><label for="id_tags">แถบป้าย</label><div class="input"><ul id="edit_tags">' + tags + '</ul></div></div><div class="form_actions"><a href="#" class="danger delete_link">ลบไฟล์ออกจากระบบ</a><button class="btn-primary btn save_button">บันทึกข้อมูล</button><button class="btn cancel_button">ยกเลิก</button><span class="error_message"></span></div></form></div></td></tr>');
       editing_row.insertAfter($(this).closest('tr')).show().find('.wrapper').slideDown('fast');
 
       $('#edit_tags').tagit({tagSource: function(request, response) {
@@ -72,9 +72,9 @@ $(document).ready(function () {
 
         $.post('{% url ajax_edit_publication organization.slug %}', {uid:trObject.attr('id'), title:title, description:description, tags:tags}, function(response) {
           if(response.status == 'success') {
-            trObject.find('td.name').text(title);
+            trObject.find('td.file div.filename').text(title);
             trObject.find('input[name="description"]').val(description);
-            trObject.find('td.tag ul').html(tag_html);
+            trObject.find('td.file div.tag ul').html(tag_html);
 
             trObject.css('backgroundColor', '#99cc99');
             trObject.animate({backgroundColor:"#FFFFFF"}, 1500);
@@ -167,7 +167,7 @@ $(document).ready(function () {
     $('.documents-upload-table').show();
 
     $.each(files, function(i, file) {
-      var new_row = $('<tr id="' + file.id + '"><td>' + file.name + '</td><td><div class="upload_progressbar"></div></td><td class="row_actions"><button class="small danger btn" >ยกเลิก</button></td></tr>');
+      var new_row = $('<tr id="' + file.id + '"><td>' + file.name + '</td><td><div class="upload_progressbar"></div></td><td class="row_actions"><button class="btn-small danger btn" >ยกเลิก</button></td></tr>');
       new_row.find('.upload_progressbar').progressBar({width:262, height:20, boxImage:'/static/libs/progressbar/images/progressbar.png', barImage:{0:'/static/libs/progressbar/images/progressbg.png', 30:'/static/libs/progressbar/images/progressbg.png', 70:'/static/libs/progressbar/images/progressbg.png'}});
       new_row.prependTo('.documents-upload-table tbody');
     });
@@ -190,7 +190,7 @@ $(document).ready(function () {
       $('#' + file.id).remove();
       if(!$('.documents-upload-table tbody tr').length) $('.documents-upload-table').hide();
 
-      var uploaded_file = $('<tr id="' + responseObject.uid + '" class="uploaded_row"><td><input type="checkbox" checked="checked"/></td><td class="download"><a href="' + responseObject.download_url + '" title="ดาวน์โหลดไฟล์">ดาวน์โหลดไฟล์</a></td><td class="name">' + responseObject.title + '</td><td class="tag"><ul></ul></td><td>' + responseObject.uploaded + '</td><td class="row_actions"><input type="hidden" name="description" value=""/><input type="hidden" name="thumbnail" value="' + responseObject.thumbnail_url + '"/><button class="small btn edit_publication_button" data-toggle="button">แก้ไข</button></td></tr>');
+      var uploaded_file = $('<tr id="' + responseObject.uid + '" class="uploaded_row"><td><input type="checkbox" checked="checked"/></td><td class="download"><a href="' + responseObject.download_url + '" title="ดาวน์โหลดไฟล์">ดาวน์โหลดไฟล์</a></td><td class="file"><div class="filename">' + responseObject.title + '</div><div class="uploaded">อัพโหลดเมื่อวันที่ ' + responseObject.uploaded + '</div><div class="tag"><ul></ul></div></td><td class="row_actions"><input type="hidden" name="description" value=""/><input type="hidden" name="thumbnail" value="' + responseObject.thumbnail_url + '"/><button class="btn-small btn edit_publication_button" data-toggle="button">แก้ไข</button></td></tr>');
       uploaded_file.find('.edit_publication_button').button();
 
       increaseAllCount();
@@ -207,7 +207,11 @@ $(document).ready(function () {
   });
 
   $('.documents-upload-table .cancel_button').live('click', function(e) {
-    // TODO Cancel upload
+    uploader.removeFile($(this).closest('tr').attr('id'));
+  });
+
+  uploader.bind('FileRemoved', function(up, file, response) {
+    $('#' + file.id).remove();
   });
   {% endif %}
 
@@ -273,6 +277,13 @@ $(document).ready(function () {
   $('#add_tag_modal').on('show', function() {
     $('#add_tag_modal .modal-body input[name="tag"]').val('');
   });
+
+  /*
+   **********/
+
+  $('.documents-table .download a').popover();
+
+
 });
 </script>
 {% endblock %}
@@ -287,8 +298,8 @@ $(document).ready(function () {
 
     {% if shelf %}
     <div class="page_actions">
-      {% can user 'upload_shelf' organization=organization shelf=shelf %}<button class="btn btn-primary upload_publication_button" data-toggle="button"><i class="icon-upload icon-white"></i> อัพโหลดไฟล์เข้าชั้นหนังสือ</button>{% endcan %}
-      {% can user 'admin' organization=organization %}<a href="{% url edit_document_shelf organization.slug shelf.id %}" class="btn edit_shelf_button"><i class="icon-edit"></i> แก้ไขชั้นหนังสือ</a>{% endcan %}
+      {% can user 'upload_shelf' organization shelf=shelf %}<button class="btn btn-primary upload_publication_button" data-toggle="button"><i class="icon-upload icon-white"></i> อัพโหลดไฟล์เข้าชั้นหนังสือ</button>{% endcan %}
+      {% can user 'manage_shelf' organization %}<a href="{% url edit_document_shelf organization.slug shelf.id %}" class="btn edit_shelf_button"><i class="icon-edit"></i> แก้ไขชั้นหนังสือ</a>{% endcan %}
     </div>
     {% endif %}
 
@@ -315,8 +326,6 @@ $(document).ready(function () {
           <th class="checkbox_column"></th>
           <th class="download_column"></th>
           <th>หัวข้อ</th>
-          <th><i class="icon-tag"></i> แถบป้าย</th>
-          <th class="datetime_column">อัพโหลดเมื่อ</th>
           <th class="edit_column"></th>
         </tr>
       </thead>
@@ -324,14 +333,16 @@ $(document).ready(function () {
         {% for publication in publications %}
         <tr id="{{publication.uid}}">
           <td><input type="checkbox" /></td>
-          <td class="download"><a href="{% url download_publication publication.uid %}" title="ดาวน์โหลดไฟล์">ดาวน์โหลดไฟล์</a></td>
-          <td class="name">{{publication.title}}</td>
-          <td class="tag">{% print_publication_tags publication %}</td>
-          <td>{{publication.uploaded|format_abbr_datetime}}</td>
+          <td class="download"><a href="{% url download_publication publication.uid %}" title="ดาวน์โหลดไฟล์ {{publication.file_ext|upper}}" data-content="ขนาด {{publication.uploaded_file.size|file_size}}" data-original-title="ดาวน์โหลดไฟล์">ดาวน์โหลดไฟล์</a></td>
+          <td class="file">
+            <div class="filename">{{publication.title}}</div>
+            <div class="uploaded">อัพโหลดเมื่อวันที่ {{publication.uploaded|format_abbr_datetime}}</div>
+            <div class="tag">{% print_publication_tags publication %}</div>
+          </td>
           <td class="row_actions">
             <input type="hidden" name="description" value="{{publication.description}}"/>
             <input type="hidden" name="thumbnail" value="{{publication.get_large_thumbnail}}"/>
-            <button class="small btn edit_publication_button" data-toggle="button">แก้ไข</button>
+            <button class="btn-small btn edit_publication_button" data-toggle="button">แก้ไข</button>
           </td>
         </tr>
         {% endfor %}

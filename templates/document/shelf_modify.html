@@ -112,8 +112,8 @@ $(document).ready(function () {
   // Individual Shelf Permission
   $('#add-individual-permission').on('afterShow', function(e) {
     $(this).find('input').attr('checked', false);
-    $('#add-individual-permission .select_individual .as-selection-item').remove();
-    $('#add-individual-permission .select_individual .as-values').val('');
+    $('#add-individual-permission .select_individual select option').attr('selected', false);
+    $('#add-individual-permission .select_individual select').trigger("liszt:updated");
 
   }).find('.add_button').on('click', function(e) {
     e.preventDefault();
@@ -126,8 +126,8 @@ $(document).ready(function () {
       permission_text = 'ดูไฟล์ได้อย่างเดียว';
     }
 
-    $('#add-individual-permission .as-selection-item').each(function() {
-      _append_shelf_permission('ผู้ใช้ <em>' + $(this).data('user_name') + '</em> สามารถ' + permission_text, 'user-' + $(this).data('user_id') + '-' + permission_value);
+    $('#add-individual-permission .select_individual select option:selected').each(function() {
+      _append_shelf_permission('ผู้ใช้ <em>' + $(this).text() + '</em> สามารถ' + permission_text, 'user-' + $(this).val() + '-' + permission_value);
     });
 
     $('#add-individual-permission').slideUp('fast');
@@ -135,25 +135,17 @@ $(document).ready(function () {
   });
 
   $('#add-individual-permission input[type="radio"]').on('click', function(e) {
-    if($('#add-individual-permission .select_individual .as-values').val() && $('#add-individual-permission input[name="individual-shelf-permission"]:checked').length) {
+    if($('#add-individual-permission .select_individual select option:selected').length && $('#add-individual-permission input[name="individual-shelf-permission"]:checked').length) {
       $('#add-individual-permission .add_button').attr('disabled', false);
     }
   });
 
-  $('#add-individual-permission .select_individual input').autoSuggest('{% url ajax_query_users organization.slug %}', {
-    startText:"พิมพ์ชื่อผู้ใช้", emptyText:"ไม่พบผู้ใช้", selectedItemProp:'name', searchObjProps:'name',
-    selectionAdded:function(elem, data) {
-      elem.data('user_name', data['name']).data('user_id', data['value']);
+  $('#add-individual-permission .select_individual select').chosen().change(function(e) {
 
-      if($('#add-individual-permission input[name="individual-shelf-permission"]:checked').length) {
-        $('#add-individual-permission .add_button').attr('disabled', false);
-      }
-    },
-    selectionRemoved:function(elem) {
-      if($('#add-individual-permission .select_individual .as-values').val() == '' || $('#add-individual-permission input[name="individual-shelf-permission"]:checked').length == 0) {
-        $('#add-individual-permission .add_button').attr('disabled', true);
-      }
-      elem.fadeTo("fast", 0, function(){ elem.remove(); });
+    if($(this).find('option:selected').length && $('#add-individual-permission input[name="individual-shelf-permission"]:checked').length) {
+      $('#add-individual-permission .add_button').attr('disabled', false);
+    } else {
+      $('#add-individual-permission .add_button').attr('disabled', true);
     }
   });
 })
@@ -208,7 +200,7 @@ $(document).ready(function () {
           </div>
 
           <div class="permission_panel" id="add-individual-permission">
-            <div class="select_individual"><input type="text" /></div>
+            <div class="select_individual"><select multiple="multiple" style="width:600px;" data-placeholder="เลือกผู้ใช้">{% generate_user_select_options organization %}</select></div>
             <div class="head">ผู้ใช้สามารถ</div>
             <ul><li><label><input type="radio" name="individual-shelf-permission" value="2"/> อัพโหลดไฟล์และแก้ไขไฟล์ได้</label></li><li><label><input type="radio" name="individual-shelf-permission" value="1"/> ดูไฟล์ได้อย่างเดียว</label></li></ul>
             <div class="permission_actions"><button class="btn add_button"><i class="icon-plus"></i> เพิ่มการเข้าถึง</button><button class="btn cancel_button">ยกเลิก</button></div>

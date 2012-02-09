@@ -11,7 +11,7 @@ from django.template import loader
 from common import utilities
 from common.permissions import can
 
-from accounts.models import UserOrganization, OrganizationGroup
+from accounts.models import UserOrganization, OrganizationGroup, UserOrganizationInvitation
 from document.models import Publication
 
 # DATE TIME #################################################################
@@ -32,14 +32,31 @@ def format_date(datetime):
 def format_abbr_date(datetime):
     return utilities.format_abbr_date(datetime)
 
+# FILTERS #################################################################
+
+@register.filter(name='file_size')
+def humanize_file_size(size_in_byte):
+    try:
+        size_in_byte = int(size_in_byte)
+        if size_in_byte > 1000000:
+            return '%.0f เมกะไบต์' % round(size_in_byte/1000000)
+        elif size_in_byte > 1000:
+            return '%.0f กิโลไบต์' % round(size_in_byte/1000)
+        else:
+            return '%d ไบต์' % size_in_byte
+
+    except:
+        return u'ไม่สามารถหาขนาดได้'
+
 # PERMISSION #################################################################
 
 class CanNode(template.Node):
-    def __init__(self, nodelist_true, nodelist_false, user, actions, parameters):
+    def __init__(self, nodelist_true, nodelist_false, user, actions, organization, parameters):
         self.nodelist_true = nodelist_true
         self.nodelist_false = nodelist_false
         self.user = template.Variable(user)
         self.actions = actions.strip(' \"\'')
+        self.organization = template.Variable(organization)
 
         self.parameters = {}
         for key in parameters.keys():
@@ -48,12 +65,13 @@ class CanNode(template.Node):
     def render(self, context):
         user = self.user.resolve(context)
         actions = self.actions
+        organization = self.organization.resolve(context)
 
         parameters = {}
         for key in self.parameters.keys():
             parameters[key] = self.parameters[key].resolve(context)
         
-        if can(user, actions, parameters):
+        if can(user, actions, organization, parameters):
             output = self.nodelist_true.render(context)
             return output
         else:
@@ -63,11 +81,11 @@ class CanNode(template.Node):
 @register.tag(name="can")
 def do_can(parser, token):
     bits = token.split_contents()
-    if len(bits) < 3:
+    if len(bits) < 4:
         raise TemplateSyntaxError('can tag takes user, action name and base object as a required argument')
     
     parameters = {}
-    remaining_bits = bits[3:]
+    remaining_bits = bits[4:]
     while remaining_bits:
         option = remaining_bits.pop(0)
 
@@ -85,7 +103,7 @@ def do_can(parser, token):
     else:
         nodelist_false = NodeList()
     
-    return CanNode(nodelist_true, nodelist_false, bits[1], bits[2], parameters)
+    return CanNode(nodelist_true, nodelist_false, bits[1], bits[2], bits[3], parameters)
 
 # HTML GENERATOR #################################################################
 
@@ -127,12 +145,30 @@ def genetate_publication_category_multiple_checkbox(existing_categories):
 # INPUT GENERATOR ################################################################################
 
 @register.simple_tag
+def generate_user_select_options(organization):
+    options = []
+    for user_organization in UserOrganization.objects.filter(organization=organization).order_by('user__userprofile__first_name'):
+        options.append('<option value="%d">%s</option>' % (user_organization.user.id, user_organization.user.get_profile().get_fullname()))
+    
+    return ''.join(options)
+
+@register.simple_tag
 def generate_group_select_options(organization):
     options = ['<option></option>']
     for group in OrganizationGroup.objects.filter(organization=organization).order_by('name'):
         options.append('<option value="%d">%s</option>' % (group.id, group.name))
     
     return ''.join(options)
+
+# ORGANIZATION MANAGEMENT ################################################################################
+
+@register.simple_tag
+def print_users_count(organization):
+    return UserOrganization.objects.filter(organization=organization).count()
+
+@register.simple_tag
+def print_user_invitation_count(organization):
+    return UserOrganizationInvitation.objects.filter(organization=organization).count()
 
 
 # MANAGEMENT ################################################################################

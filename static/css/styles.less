@@ -58,10 +58,10 @@ body {
         a {
             float: left;
             display: block;
-            padding: 8px 30px 12px 0px;
+            padding: 8px 30px 12px 8px;
             color: #ffffff;
             font-size: 20px;
-            font-weight: 200;
+            font-weight:normal;
             line-height: 1;
         }
 
@@ -71,13 +71,24 @@ body {
     }
 
     li a {
-        color:#CCC !important;
-        text-decoration:underline !important;
+        color:#EEE !important;
+        font-size:1.1em;
+        padding:12px 15px 8px !important;
+        margin-right:10px;
     }
 
     li.active a {
         color:#FFF !important;
         background-color:#272e34 !important;
+    }
+
+    li a:hover {
+        background-color:#272e34 !important;
+    }
+
+    a.logout {
+        font-size:1em !important;
+        color:#CCC !important;
     }
 
     .dropdown-menu {
@@ -91,18 +102,10 @@ body {
     }
 
     .accounts {
-        line-height: 19px;
-        padding: 10px 0px 11px;
-
-        &:hover {
-            background-color:#272e34 !important;
-        }
+        padding: 12px 0px 8px;
 
         a {
-            font-weight:normal;
             display:inline;
-            color:#DDD !important;
-            text-decoration:none !important;
         }
     }
 }
@@ -323,6 +326,12 @@ body {
 
 /* Form */
 
+button, a {
+    i {
+        vertical-align:-2px !important;
+    }
+}
+
 form {
     padding:0px 20px 10px;
 
@@ -347,8 +356,11 @@ form {
     }
 
     .form-actions {
+        margin-top:30px;
+
         button, a {
             margin-right:15px;
+            vertical-align:middle;
         }
 
         a {
@@ -405,11 +417,13 @@ form {
 
         label {
             color:#444;
+            display:inline;
         }
 
         input {
             margin-right:4px;
             display:inline;
+            vertical-align:middle;
         }
 
         .errorlist {
@@ -561,10 +575,20 @@ table {
             background-color:@success-light-background;
         }
 
+        .filename {
+            font-weight:bold;
+            margin-bottom:5px;
+        }
+
+        .uploaded {
+            color:#777;
+            font-size:0.95em;
+            margin-bottom:5px;
+        }
+
         .tag {
             li {
-                background-color:#4c6c99;
-                color:#FFF;
+                background-color:#e2e8ce;
                 font-size:0.9em;
                 display: inline-block;
                 margin-right:10px;
@@ -585,6 +609,21 @@ table {
                     float:left;
                     width:200px;
                     height:250px;
+                }
+
+                .original_filename {
+                    margin:0px 0px 20px 230px;
+
+                    em {
+                        font-size:1.2em;
+                        font-weight:bold;
+                        font-style:normal;
+                        margin-right:10px;
+                    }
+
+                    a {
+                        .content_link;
+                    }
                 }
 
                 form {
@@ -617,6 +656,7 @@ table {
                     a.danger {
                         float:right;
                         margin-top:6px;
+                        text-decoration:underline;
                     }
 
                     .error_message {
@@ -702,7 +742,7 @@ table {
 
         .add_permissions {
             color:#333;
-            margin:20px 0px 0px 3px;
+            margin:20px 0px 0px 20px;
 
             a {
                 margin-left:10px;
@@ -752,6 +792,10 @@ table {
             .select_individual {
                 margin-bottom:15px;
 
+                select {
+                    width:500px;
+                }
+
                 .as-selections {
                     margin:7px 0px 15px;
                 }
@@ -796,7 +840,7 @@ table {
     }
 }
 
-.page-accounts-manage {
+.account_manage_page {
     .statistics {
         ul {
             margin-top:10px;
@@ -809,14 +853,27 @@ table {
             }
         }
     }
-
-
 }
 
 
 
 /* *************** UI *************** */
 
+.textboxlist {
+    input {
+        box-shadow:none !important;
+    }
+
+    input[disabled] {
+      background-color: #FFF;
+      border-color: #FFF;
+      cursor: text;
+    }
+
+    .textboxlist-autocomplete-suggest {
+        width:1px;
+    }
+}
 
 
 .pagination_bar {

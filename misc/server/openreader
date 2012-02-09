@@ -1,0 +1,97 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          OpenReader Django EC2 server
+# Required-Start:    networking
+# Required-Stop:     networking
+# Default-Start:  3 5
+# Default-Stop:   0 1 2 6
+# Short-Description: OpenReader Django server management script
+# Description:       OpenReader Django server management script
+### END INIT INFO
+
+########## Website ##########
+PROJECT_NAME=openreader
+WEBSITE_ROOT=/web/openreader/
+
+########## UWSGI Config ##########
+UWSGI_BIN=/web/openreader/bin/uwsgi
+UWSGI_INIFILE=/web/openreader/conf/uwsgi_openreader.ini
+
+########## Nginx Config ##########
+NGINX_BIN=/usr/local/nginx/sbin/nginx
+NGINX_CONFIGFILE=/web/openreader/conf/nginx/nginx.conf
+
+############### No additional configuration below ###############
+
+start() {
+        if [ "`pidof uwsgi`" = "" ]; then
+                echo "Starting uwsgi server"
+                $UWSGI_BIN --ini $UWSGI_INIFILE
+        else
+                echo "uwsgi server is already running"
+        fi
+        
+        
+        if [ "`pidof nginx`" = "" ]; then
+                echo "Starting nginx server"
+                $NGINX_BIN -c $NGINX_CONFIGFILE
+        else
+                echo "nginx server is already running"
+        fi
+}
+
+stop() {
+        if [ "`pidof uwsgi`" = "" ]; then
+                echo "uwsgi server is already stop"
+        else
+                echo "Stoping uwsgi server"
+                kill -INT `pidof uwsgi`
+        fi
+        
+        
+        if [ "`pidof nginx`" = "" ]; then
+                echo "nginx server is already stop"
+        else
+                echo "Stoping nginx server"
+                kill `pidof nginx`
+        fi
+}
+
+reload_uwsgi() {
+        if [ "`pidof uwsgi`" = "" ]; then
+                echo "uwsgi server is not running"
+        else
+                echo "Sending signal to uwsgi server to reload"
+                kill -HUP `pidof uwsgi`
+        fi
+}
+
+reload_nginx() {
+        echo "Reloading Nginx Configuration"
+        kill -HUP `pidof nginx`
+}
+
+# See how we were called.
+case "$1" in
+        start)
+                start
+                ;;
+        stop)
+                stop
+                ;;
+        restart)
+                stop
+                start
+                ;;
+        reload_uwsgi)
+                reload
+                ;;
+        reload_nginx)
+                reload_nginx
+                ;;
+        *)
+        echo $"Usage: $prog {start|stop|restart|reload_uwsgi|reload_nginx}"
+        exit 1
+esac
+
+exit 0

@@ -3,6 +3,22 @@
 {% block organization_manage_head_title %} - แก้ไขข้อมูลทีมงาน{% endblock %}
 {% block organization_manage_sidebar %}{% include 'accounts/manage/snippets/organization_sidebar.html' with active_manage_menu='user' %}{% endblock %}
 
+{% block html_head %}
+{{block.super}}
+<script>
+$(document).ready(function () {
+  $("#id_groups").chosen();
+  
+  $('#remove-user-modal button[type="submit"]').on('click', function(e) {
+    $.post('{% url ajax_remove_organization_user user_organization.id %}', {}, function(response) {
+      window.location = response.redirect_url;
+    }, 'json');
+    return false;
+  });
+});
+</script>
+{% endblock %}
+
 {% block organization_manage_content %}
 <ul class="breadcrumb">
   <li><a href="{% url view_organization_users organization.slug %}">บัญชีผู้ใช้ระบบ</a> <span class="divider">/</span></li>
@@ -15,11 +31,13 @@
   {% csrf_token %}
   {{form.non_field_errors}}
 
-  <div class="item"><label for="id_position">ชื่อตำแหน่ง</label><div class="input">{{form.position}}{{form.position.errors}}</div></div>
-  <div class="item"><label for="id_is_admin">สิทธิ์การจัดการ</label><div class="input"><label class="checkbox">{{form.is_admin}} ผู้ใช้สามารถจัดการระบบ เช่น บัญชีผู้ใช้ ชั้นหนังสือ และสิทธิ์การใช้งาน</label>{{form.is_admin.errors}}</div></div>
+  <div class="item">
+    <label for="id_is_admin">สิทธิ์การจัดการระบบ</label>
+    <div class="input row-inputs">{{form.admin_permissions}}{{form.admin_permissions.errors}}</div>
+  </div>
   <div class="item">
     <label for="id_groups">กลุ่มผู้ใช้</label>
-    <div class="input row-inputs">{{form.groups}}{{form.groups.errors}}</div>
+    <div class="input">{{form.groups}}{{form.groups.errors}}</div>
   </div>
 
   <div class="form-actions">
@@ -28,7 +46,23 @@
   </div>
 </form>
 
+{% if user.id != user_organization.user.id %}
 <div class="delete-panel">
-  <a href="{% url remove_organization_user user_organization.id %}" class="danger">ถอดผู้ใช้ออกจาก{{organization.prefix}}</a>
+  <a href="#remove-user-modal" class="danger" data-toggle="modal">ถอดผู้ใช้ออกจาก{{organization.prefix}}</a>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block organization_manage_modal %}
+<div class="modal hide fade" id="remove-user-modal">
+  <div class="modal-header">
+    <a class="close" data-dismiss="modal">×</a>
+    <h3>ถอดผู้ใช้ออกจากบริษัท</h3>
+  </div>
+  <div class="modal-footer">
+    <button type="submit" class="btn btn-danger">ยืนยันถอดผู้ใช้</button>
+    <button class="btn" data-dismiss="modal">ยกเลิก</button>
+  </div>
 </div>
 {% endblock %}

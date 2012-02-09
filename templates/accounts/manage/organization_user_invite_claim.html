@@ -3,32 +3,35 @@
 {% block head_title %}ตอบรับเข้าร่วมทีม{% endblock %}
 
 {% block body_single %}
-<h1>ตอบรับเข้าร่วมทีม</h1>
+<div class="outer-container span6 offset3">
+  <div class="inner-container">
+    <h1>ตอบรับเข้าร่วมทีม</h1>
 
-  {% if logout_first %}
-    <p>ชื่อบัญชีไม่ตรงกัน กรุณาออกจากระบบก่อน</p>
-    <div class="center"><a href="{% url auth_logout %}?next={% url claim_user_invitation invitation.invitation_key %}" class="btn danger">ออกจากระบบ</a></div>
-  {% endif %}
+    {% if logout_first %}
+      <p>ชื่อบัญชีไม่ตรงกัน กรุณาออกจากระบบก่อน</p>
+      <div class="center"><a href="{% url auth_logout %}?next={% url claim_user_invitation invitation.invitation_key %}" class="btn danger">ออกจากระบบ</a></div>
+    {% endif %}
 
-  {% if login_first %}
-    {% include 'snippets/login_form.html' with form=form next=login_first %}
-  {% endif %}
+    {% if login_first %}
+      {% include 'snippets/login_form.html' with form=form next=login_first %}
+    {% endif %}
 
-  {% if first_time %}
-    <form method="POST" action="." class="form-stacked">
-      {% csrf_token %}
-      {{form.non_field_errors}}
+    {% if first_time %}
+      <form method="POST" action=".">
+        {% csrf_token %}
+        {{form.non_field_errors}}
 
-      <div class="clearfix"><label for="id_first_name">ชื่อ</label><div class="input">{{form.first_name}}{{form.first_name.errors}}</div></div>
-      <div class="clearfix"><label for="id_last_name">นามสกุล</label><div class="input">{{form.last_name}}{{form.last_name.errors}}</div></div>
+        <div class="item"><label for="id_first_name">ชื่อ</label><div class="input">{{form.first_name}}{{form.first_name.errors}}</div></div>
+        <div class="item"><label for="id_last_name">นามสกุล</label><div class="input">{{form.last_name}}{{form.last_name.errors}}</div></div>
 
-      <div class="clearfix"><label for="id_password1">รหัสผ่าน</label><div class="input">{{form.password1}}{{form.password1.errors}}</div></div>
-      <div class="clearfix"><label for="id_password2">กรอกรหัสผ่านอีกครั้ง</label><div class="input">{{form.password2}}{{form.password2.errors}}</div></div>
+        <div class="item"><label for="id_password1">รหัสผ่าน</label><div class="input">{{form.password1}}{{form.password1.errors}}</div></div>
+        <div class="item"><label for="id_password2">กรอกรหัสผ่านอีกครั้ง</label><div class="input">{{form.password2}}{{form.password2.errors}}</div></div>
 
-      <div class="form-actions">
-        <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> ตกลงและเข้าสู่ระบบ</button>
-      </div>
-   </form>
-  {% endif %}
-
+        <div class="form_actions">
+          <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> ตกลงและเข้าสู่ระบบ</button>
+        </div>
+     </form>
+    {% endif %}
+  </div>
+</div>
 {% endblock %}

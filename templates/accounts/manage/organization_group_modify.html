@@ -4,6 +4,26 @@
 {% block organization_manage_head_title %} - {% if not role %}เพิ่มกลุ่มผู้ใช้{% else %}แก้ไขกลุ่มผู้ใช้{% endif %}{% endblock %}
 {% block organization_manage_sidebar %}{% include 'accounts/manage/snippets/organization_sidebar.html' with active_manage_menu='group' %}{% endblock %}
 
+{% block html_head %}
+{{block.super}}
+
+<script>
+$(document).ready(function () {
+  $("#id_members").chosen();
+  
+  {% if group %}
+  $('#remove-group-modal button[type="submit"]').on('click', function(e) {
+    $.post('{% url ajax_remove_organization_group group.id %}', {}, function(response) {
+      window.location = response.redirect_url;
+    }, 'json');
+    return false;
+  });
+  {% endif %}
+});
+</script>
+
+{% endblock %}
+
 {% block organization_manage_content %}
 <ul class="breadcrumb">
   <li><a href="{% url view_organization_groups organization.slug %}">กลุ่มผู้ใช้</a> <span class="divider">/</span></li>
@@ -21,7 +41,7 @@
 
   <div class="item">
     <label>สมาชิกกลุ่ม</label>
-    <div class="input row-inputs">{{form.members}}{{form.members.errors}}</div></div>
+    <div class="input">{{form.members}}{{form.members.errors}}</div></div>
 
   <div class="form-actions">
     <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> {% if not group %}เพิ่มกลุ่มผู้ใช้{% else %}แก้ไขกลุ่มผู้ใช้{% endif %}</button>
@@ -31,7 +51,20 @@
 
 {% if group %}
 <div class="delete-panel">
-  <a href="{% url remove_organization_group group.id %}" class="danger">ลบกลุ่มผู้ใช้</a>
+  <a href="#remove-group-modal" class="danger" data-toggle="modal">ลบกลุ่มผู้ใช้</a>
 </div>
 {% endif %}
+{% endblock %}
+
+{% block organization_manage_modal %}
+<div class="modal hide fade" id="remove-group-modal">
+  <div class="modal-header">
+    <a class="close" data-dismiss="modal">×</a>
+    <h3>ลบกลุ่มผู้ใช้</h3>
+  </div>
+  <div class="modal-footer">
+    <button type="submit" class="btn btn-danger">ยืนยันลบกลุ่มผู้ใช้</button>
+    <button class="btn" data-dismiss="modal">ยกเลิก</button>
+  </div>
+</div>
 {% endblock %}

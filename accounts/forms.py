@@ -7,16 +7,26 @@ from django.utils.translation import ugettext_lazy as _
 from common.forms import StrippedCharField
 from common.permissions import ROLE_CHOICES
 
-from accounts.models import OrganizationGroup, UserOrganizationInvitation, UserOrganization
+from accounts.models import OrganizationGroup, UserOrganizationInvitation, UserOrganization, OrganizationAdminPermission
 
 class UserOrganizationMultipleChoiceField(forms.ModelMultipleChoiceField):
     def __init__(self, *args, **kwargs):
         kwargs['queryset'] = UserOrganization.objects.all()
-        kwargs['widget'] = forms.CheckboxSelectMultiple()
+        # kwargs['widget'] = forms.CheckboxSelectMultiple()
+        kwargs['widget'] = forms.SelectMultiple(attrs={'data-placeholder':'เลือกกลุ่มผู้ใช้', 'style':'width:500px;'}) # Use for 'Chosen' jQuery plugin
         forms.ModelMultipleChoiceField.__init__(self, *args, **kwargs)
 
     def label_from_instance(self, obj):
-        return '%s (%s)' % (obj.user.get_profile().get_fullname(), obj.position)
+        return obj.user.get_profile().get_fullname()
+
+class OrganizationGroupMultipleChoiceField(forms.ModelMultipleChoiceField):
+    def __init__(self, *args, **kwargs):
+        kwargs['queryset'] = OrganizationGroup.objects.all()
+        kwargs['widget'] = forms.SelectMultiple(attrs={'data-placeholder':'เลือกกลุ่มผู้ใช้', 'style':'width:500px;'}) # Use for 'Chosen' jQuery plugin
+        forms.ModelMultipleChoiceField.__init__(self, *args, **kwargs)
+
+    def label_from_instance(self, obj):
+        return obj.name
 
 class EmailAuthenticationForm(forms.Form):
     """
@@ -70,14 +80,10 @@ class UserProfileForm(forms.Form):
 
 # ORGANIZATION MANAGEMENT
 
-class OrganizationProfileForm(forms.Form):
-    name = StrippedCharField(max_length=200)
-
 class InviteOrganizationUserForm(forms.Form):
     email = forms.EmailField(widget=forms.TextInput(attrs={'class':'span6'}))
-    position = forms.CharField(max_length=300, widget=forms.TextInput(attrs={'class':'span6'}))
-    is_admin = forms.BooleanField(required=False, label='admin role?')
-    groups = forms.ModelMultipleChoiceField(queryset=OrganizationGroup.objects.all(), widget=forms.CheckboxSelectMultiple())
+    admin_permissions = forms.ModelMultipleChoiceField(required=False, queryset=OrganizationAdminPermission.objects.all(), widget=forms.CheckboxSelectMultiple())
+    groups = OrganizationGroupMultipleChoiceField()
 
     def __init__(self, organization, *args, **kwargs):
         forms.Form.__init__(self, *args, **kwargs)
@@ -97,9 +103,8 @@ class InviteOrganizationUserForm(forms.Form):
         return email
 
 class UpdateOrganizationUserInviteForm(forms.Form):
-    position = forms.CharField(max_length=300, widget=forms.TextInput(attrs={'class':'span6'}))
-    is_admin = forms.BooleanField(required=False, label='admin role?')
-    groups = forms.ModelMultipleChoiceField(queryset=OrganizationGroup.objects.all(), widget=forms.CheckboxSelectMultiple())
+    admin_permissions = forms.ModelMultipleChoiceField(required=False, queryset=OrganizationAdminPermission.objects.all(), widget=forms.CheckboxSelectMultiple())
+    groups = OrganizationGroupMultipleChoiceField()
 
     def __init__(self, organization, *args, **kwargs):
         forms.Form.__init__(self, *args, **kwargs)
@@ -121,9 +126,8 @@ class ClaimOrganizationUserForm(forms.Form):
         return password2
 
 class EditOrganizationUserForm(forms.Form):
-    position = forms.CharField(max_length=300, widget=forms.TextInput(attrs={'class':'span6'}))
-    is_admin = forms.BooleanField(required=False, label='admin role?')
-    groups = forms.ModelMultipleChoiceField(queryset=OrganizationGroup.objects.all(), widget=forms.CheckboxSelectMultiple())
+    admin_permissions = forms.ModelMultipleChoiceField(required=False, queryset=OrganizationAdminPermission.objects.all(), widget=forms.CheckboxSelectMultiple())
+    groups = OrganizationGroupMultipleChoiceField()
 
     def __init__(self, organization, *args, **kwargs):
         forms.Form.__init__(self, *args, **kwargs)
@@ -139,5 +143,3 @@ class OrganizationGroupForm(forms.Form):
     def __init__(self, organization, *args, **kwargs):
         super(OrganizationGroupForm, self).__init__(*args, **kwargs)
         self.fields['members'].queryset = UserOrganization.objects.filter(organization=organization).order_by('user__userprofile__first_name')
-        
-
