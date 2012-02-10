@@ -6,7 +6,7 @@ Carefully follow these steps
 Step 1 - Setup Amazon AWS account
 ------------------------------------------
 
-- Setup EC2 instance from "ami-c0c98c92" (Ubuntu 10.04 64bit)
+- Setup EC2 instance from image __ami-c0c98c92__ (Ubuntu 10.04 64bit)
 
 Step 2 - Fix locale problem
 ------------------------------------------
@@ -33,6 +33,8 @@ Add the following at the end of file
     deb http://ap-southeast-1.ec2.archive.ubuntu.com/ubuntu/ lucid-updates multiverse
     deb-src http://ap-southeast-1.ec2.archive.ubuntu.com/ubuntu/ lucid-updates multiverse
 
+Note: multiverse is for Amazon EC2 API Tools package
+
 Then
 
     $ sudo apt-get update
@@ -44,30 +46,28 @@ Step 4 - Install necessary packages
 1. Install basic packages
 
     ```
-    $ sudo apt-get install build-essential python2.6-dev libjpeg-dev zlib1g-dev libxml2-dev libpcre3-dev
+    $ sudo apt-get install build-essential python2.6-dev python-setuptools libjpeg-dev zlib1g-dev libxml2-dev libpcre3-dev git-core
     ```
 
     Note:
-    * libjpeg-dev and zlib1g-dev is for PIL
-    * libxml2-dev is for uwsgi
-    * libpcre3-dev is for nginx http rewrite module
+    * libjpeg-dev and zlib1g-dev is for Python Imaging Library
+    * libxml2-dev is for uWSGI
+    * libpcre3-dev is for nginx
 
 2. Install Django from https://www.djangoproject.com/download/
 
-3. Install python libraries
-
     ```
-    $ sudo apt-get install python-setuptools
-    ```
+    $ sudo python setup.py install
+    ````
 
-4. Install django libraries
+3. Install django libraries
 
     ```
     https://github.com/ericflo/django-pagination
     https://github.com/django-debug-toolbar/django-debug-toolbar
     ```
 
-5. Install PIL (http://www.pythonware.com/products/pil/)
+4. Install PIL from http://www.pythonware.com/products/pil/
 
     ```
     $ sudo python setup.py build
@@ -77,15 +77,21 @@ Step 4 - Install necessary packages
 Step 5 - Install EC2 API Tools
 ------------------------------------------
 
-1. Create x.509 and private key from https://aws-portal.amazon.com/gp/aws/securityCredentials X.509 Certificates tab
+1. Create X.509 certificate and private key
 
-2. Copy file px-xxx.pem and cert-xxx.pem to EC2 server
+    1. Go to https://aws-portal.amazon.com/gp/aws/securityCredentials
+    2. Under __Access Credentials__ select tab __X.509 Certificates__
+    3. Create a new certificate and download file
+
+2. Copy file __px-xxxxxx.pem__ and __cert-xxxxxx.pem__ to EC2 server
 
 3. Install package
 
     ```
     $ sudo apt-get install ec2-api-tools
     ```
+
+    Note: Don't forget to add multiverse to sources.list before install this package
 
 4. Add the following line to $HOME/.bashrc
 
@@ -96,6 +102,11 @@ Step 5 - Install EC2 API Tools
     export EC2_CERT=$HOME/<where your certificate is>/cert-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.pem
     export JAVA_HOME=/usr/lib/jvm/java-6-openjdk/
     ```
+    
+    Note:
+    * __your keypair name__ is your keypair name in https://console.aws.amazon.com/ec2/home?region=ap-southeast-1#s=KeyPairs
+    * __your ec2 region__ in this case is __ap-southeast-1__
+    * __EC2_PRIVATE_KEY__ and __EC2_CERT__ is a location of private key and certificate that you have downloaded from AWS console and uploaded to this EC2 instance
 
 Step 5 - Setup project folders
 ------------------------------------------
@@ -111,27 +122,15 @@ $ sudo mkdir source www run conf bin logs
 Step 6 - Setup git and download source code from GitHub
 ------------------------------------------
 
-1. Install Git
+1. Create a key for GitHub
 
     ```
-    $ sudo apt-get install git-core
+    $ sudo ssh-keygen -t rsa -C "openreader@ec2"
     ```
 
-2. Setup key
+2. Add content of __$HOME/.ssh/id_rsa.pub__ to GitHub website (https://github.com/panuta/openreader/admin/keys)
 
-    ```
-    $ ssh-keygen -t rsa -C "openreader@ec2"
-    ```
-
-3. Add content of id_rsa.pub to GitHub website (https://github.com/panuta/openreader/admin/keys)
-
-4. In case you created the key using other username, copy folder .ssh to /root
-
-    ```
-    $ sudo cp -R ~/.ssh /root
-    ```
-
-5. Download source code from GitHub
+3. Clone OpenReader source code from GitHub
 
     ```
     $ cd /web/openreader/source
@@ -141,7 +140,7 @@ Step 6 - Setup git and download source code from GitHub
 Step 8 - Setup Postgresql database
 ------------------------------------------
 
-1. Install Postgresql
+1. Install Postgresql (Postgresql version for Ubuntu 10.04 is 8.4)
 
     ```
     $ sudo apt-get install postgresql python-psycopg2
@@ -168,13 +167,13 @@ Step 8 - Setup Postgresql database
     $ sudo vim pg_hba.conf
     ```
 
-    Add this line
+    Then add this line
 
     ```
     local openreader openreader  md5
     ```
 
-    Then
+    Reload Postgresql server
 
     ```
     $ sudo -u postgres /etc/init.d/postgresql-8.4 reload
@@ -185,19 +184,22 @@ Step 9 - Setup web server
 
 1. Download nginx and uWSGI
 
-    ```
-    http://nginx.org/en/download.html
-    http://projects.unbit.it/uwsgi/wiki/WikiStart#Getit
-    ```
+    - nginx http://nginx.org/en/download.html
+    - uWSGI http://projects.unbit.it/uwsgi/wiki/WikiStart#Getit
 
-2. Build uWSGI
+2. Extract uWSGI and build
 
     ```
     $ sudo python uwsgiconfig.py --build
+    ```
+    
+    Then copy uWSGI binary file to project folder
+    
+    ```
     $ sudo cp uwsgi /web/openreader/bin/
     ```
 
-3. Install nginx
+3. Extract and install nginx
 
     ```
     $ sudo ./configure --conf-path=/web/openreader/conf/nginx/nginx.conf
@@ -205,7 +207,7 @@ Step 9 - Setup web server
     $ sudo make install
     ```
 
-4. Enable port 80 access
+4. Enable port 80 access for EC2 instance
 
     ```
     $ ec2-authorize default -p 80
@@ -214,11 +216,31 @@ Step 9 - Setup web server
 Step 10 - Run server
 ------------------------------------------
 
-1. Copy uWSGI ini file to /web/openreader/conf/
+1. Copy or replace server configuration files from OpenReader source __misc__ folder
 
-2. Copy nginx conf file to /web/openreader/conf/nginx/
+    ```
+    $ sudo cp /web/openreader/source/openreader/misc/uwsgi_openreader.ini /web/openreader/conf/
+    $ sudo cp /web/openreader/source/openreader/misc/nginx.conf /web/openreader/conf/nginx/
+    ```
 
-3. 
+2. Create an Elastic IP and attached to this EC2 instance (https://console.aws.amazon.com/ec2/home?region=ap-southeast-1&#s=Addresses)
+
+3. Create openreader init script
+
+    1. Copy openreader from OpenReader source __misc__ folder to __/etc/init.d/__
+    2. Execute
+
+    ```
+    TODO
+    ```
+
+4. Edit django settings file
+
+    TODO
+
+5. Set folder permission
+
+    TODO
 
 Resources
 ==========================================
