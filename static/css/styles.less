@@ -2,6 +2,9 @@
 
 @success-light-background: #c9edc5;
 
+@errorText: #b94a48;
+@errorBackground: #f2dede;
+
 /* DEFAULT
 ==================================================================================================== */
 
@@ -504,9 +507,31 @@ table {
         }
     }
 
-    .select_files_button {
+    #select_files_button {
         width:160px;
         text-align:center;
+        overflow: hidden;
+        position: relative;
+        cursor:pointer;
+
+        input {
+            -moz-border-bottom-colors: none;
+            -moz-border-image: none;
+            -moz-border-left-colors: none;
+            -moz-border-right-colors: none;
+            -moz-border-top-colors: none;
+            -moz-transform: translate(-400px, 0pt) scale(4);
+            border-color: transparent;
+            border-style: solid;
+            border-width: 0 200px 100px 200px;
+            cursor: pointer;
+            direction: ltr;
+            margin: 0;
+            opacity: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
     }
 
     .checkbox_actions {
@@ -534,6 +559,16 @@ table {
     }
 
     .documents-upload-table {
+        .error_row {
+            background-color:@errorBackground;
+
+            .error_message {
+                color:@errorText;
+                margin-top:5px;
+                font-weight:bold;
+            }
+        }
+
         .progress_column {
             width:320px;
         }

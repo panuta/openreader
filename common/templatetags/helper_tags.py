@@ -36,17 +36,7 @@ def format_abbr_date(datetime):
 
 @register.filter(name='file_size')
 def humanize_file_size(size_in_byte):
-    try:
-        size_in_byte = int(size_in_byte)
-        if size_in_byte > 1000000:
-            return '%.0f เมกะไบต์' % round(size_in_byte/1000000)
-        elif size_in_byte > 1000:
-            return '%.0f กิโลไบต์' % round(size_in_byte/1000)
-        else:
-            return '%d ไบต์' % size_in_byte
-
-    except:
-        return u'ไม่สามารถหาขนาดได้'
+    return utilities.humanize_file_size(size_in_byte)
 
 # PERMISSION #################################################################
 

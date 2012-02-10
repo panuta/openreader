@@ -16,7 +16,7 @@ from httpauth import logged_in_or_basicauth
 
 from common.permissions import can
 from common.shortcuts import response_json, response_json_success, response_json_error
-from common.utilities import format_abbr_datetime
+from common.utilities import format_abbr_datetime, humanize_file_size
 
 from accounts.models import Organization, UserOrganization, OrganizationGroup
 
@@ -55,14 +55,20 @@ def view_documents_by_shelf(request, organization_slug, shelf_id):
 
 @login_required
 def upload_documents_to_shelf(request, organization_slug, shelf_id):
-    organization = get_object_or_404(Organization, slug=organization_slug)
-    shelf = get_object_or_404(OrganizationShelf, pk=shelf_id)
-
-    if shelf.organization.id != organization.id or not can(request.user, 'upload_shelf', organization, {'shelf':shelf}):
-        raise Http403
-    
     if request.method == 'POST':
-        file = request.FILES[u'file']
+        organization = get_object_or_404(Organization, slug=organization_slug)
+        shelf = get_object_or_404(OrganizationShelf, pk=shelf_id)
+
+        if shelf.organization.id != organization.id or not can(request.user, 'upload_shelf', organization, {'shelf':shelf}):
+            return response_json_error('access-denied')
+        
+        if request.FILES == None:
+            return response_json_error('file-missing')
+        
+        file = request.FILES[u'files[]']
+
+        if file.size > settings.MAX_PUBLICATION_FILE_SIZE:
+            return response_json_error('file-size-exceed')
 
         if not file:
             return response_json_error('file-missing')
@@ -75,14 +81,18 @@ def upload_documents_to_shelf(request, organization_slug, shelf_id):
         return response_json_success({
             'uid': str(publication.uid),
             'title': publication.title,
-            'size': uploading_file.file.size,
+            'file_ext':publication.file_ext,
+            'file_size_text': humanize_file_size(uploading_file.file.size),
             'shelf':shelf.id if shelf else '',
             'uploaded':format_abbr_datetime(publication.uploaded),
             'thumbnail_url':publication.get_large_thumbnail(),
             'download_url': reverse('download_publication', args=[publication.uid])
         })
     
-    return render(request, 'document/documents_upload.html', {'organization':organization, 'shelf':shelf, 'shelf_type':'shelf'})
+        return render(request, 'document/documents_upload.html', {'organization':organization, 'shelf':shelf, 'shelf_type':'shelf'})
+
+    else:
+        raise Http404
 
 # DOWNLOAD DOCUMENT
 ######################################################################################################################################################

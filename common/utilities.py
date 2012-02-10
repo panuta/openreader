@@ -40,3 +40,16 @@ def split_filename(filename):
 
 def generate_random_username():
     return base64.urlsafe_b64encode(os.urandom(10))
+
+def humanize_file_size(size_in_byte):
+    try:
+        size_in_byte = int(size_in_byte)
+        if size_in_byte > 1000000:
+            return '%.2f เมกะไบต์' % (size_in_byte/1000000.0)
+        elif size_in_byte > 1000:
+            return '%.2f กิโลไบต์' % (size_in_byte/1000.0)
+        else:
+            return '%d ไบต์' % size_in_byte
+
+    except:
+        return u'ไม่สามารถหาขนาดได้'

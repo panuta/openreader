@@ -122,7 +122,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.static',
     'django.contrib.messages.context_processors.messages',
     'django.core.context_processors.request',
-    )
+    'context.constants',
+)
 
 FILE_UPLOAD_HANDLERS = ('handlers.UploadProgressCachedHandler', ) + global_settings.FILE_UPLOAD_HANDLERS
 
@@ -203,6 +204,8 @@ PAGINATION_DEFAULT_PAGINATION = 50
 OPENREADER_LOGGER = 'openreader'
 
 PUBLICATION_ROOT = MEDIA_ROOT + 'publication/'
+MAX_PUBLICATION_FILE_SIZE = 300000000 # 300mb
+MAX_PUBLICATION_FILE_SIZE_TEXT = '300 เมกะไบต์'
 
 EMAIL_FOR_USER_PUBLISHER_INVITATION = 'noreply@' + WEBSITE_HOST
 

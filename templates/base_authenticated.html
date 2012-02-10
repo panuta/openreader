@@ -6,15 +6,18 @@
 {% block html_head %}
 {{block.super}}
 <script type="text/javascript" src="{{STATIC_URL}}libs/jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}libs/jqueryui/jquery-ui-1.8.17.custom.min.js"></script> <!-- For TagIt and jQuery.Upload -->
 
 <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}libs/bootstrap/css/bootstrap.css">
 <script type="text/javascript" src="{{STATIC_URL}}libs/bootstrap/js/bootstrap.min.js"></script>
 
 <script type="text/javascript" src="{{STATIC_URL}}libs/progressbar/jquery.progressbar.js"></script>
 
-<script type="text/javascript" src="{{STATIC_URL}}libs/plupload/plupload.full.js"></script>
+<!--<script type="text/javascript" src="{{STATIC_URL}}libs/plupload/plupload.full.js"></script>-->
+<!--<script src="{{STATIC_URL}}libs/jquery.upload/js/vendor/jquery.ui.widget.js"></script>-->
+<script src="{{STATIC_URL}}libs/jquery.upload/js/jquery.iframe-transport.js"></script>
+<script src="{{STATIC_URL}}libs/jquery.upload/js/jquery.fileupload.js"></script>
 
-<script type="text/javascript" src="{{STATIC_URL}}libs/jqueryui/jquery-ui-1.8.17.custom.min.js"></script>
 <script type="text/javascript" src="{{STATIC_URL}}libs/jquery.color.js"></script>
 <script type="text/javascript" src="{{STATIC_URL}}libs/tagit/tagit.js"></script>
 <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}libs/tagit/tagit-simple-grey.css">
