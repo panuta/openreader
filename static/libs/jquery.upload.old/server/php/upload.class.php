@@ -1,6 +1,6 @@
 <?php
 /*
- * jQuery File Upload Plugin PHP Class 5.7
+ * jQuery File Upload Plugin PHP Class 5.6
  * https://github.com/blueimp/jQuery-File-Upload
  *
  * Copyright 2010, Sebastian Tschan
@@ -12,7 +12,7 @@
 
 class UploadHandler
 {
-    protected $options;
+    private $options;
     
     function __construct($options=null) {
         $this->options = array(
@@ -20,9 +20,6 @@ class UploadHandler
             'upload_dir' => dirname($_SERVER['SCRIPT_FILENAME']).'/files/',
             'upload_url' => $this->getFullUrl().'/files/',
             'param_name' => 'files',
-            // Set the following option to 'POST', if your server does not support
-            // DELETE requests. This is a parameter sent to the client:
-            'delete_type' => 'DELETE',
             // The php.ini settings upload_max_filesize and post_max_size
             // take precedence over the following max_file_size setting:
             'max_file_size' => null,
@@ -58,7 +55,7 @@ class UploadHandler
         }
     }
 
-    protected function getFullUrl() {
+    function getFullUrl() {
       	return
         		(isset($_SERVER['HTTPS']) ? 'https://' : 'http://').
         		(isset($_SERVER['REMOTE_USER']) ? $_SERVER['REMOTE_USER'].'@' : '').
@@ -68,16 +65,7 @@ class UploadHandler
         		substr($_SERVER['SCRIPT_NAME'],0, strrpos($_SERVER['SCRIPT_NAME'], '/'));
     }
     
-    protected function set_file_delete_url($file) {
-        $file->delete_url = $this->options['script_url']
-            .'?file='.rawurlencode($file->name);
-        $file->delete_type = $this->options['delete_type'];
-        if ($file->delete_type !== 'DELETE') {
-            $file->delete_url .= '&_method=DELETE';
-        }
-    }
-    
-    protected function get_file_object($file_name) {
+    private function get_file_object($file_name) {
         $file_path = $this->options['upload_dir'].$file_name;
         if (is_file($file_path) && $file_name[0] !== '.') {
             $file = new stdClass();
@@ -90,20 +78,22 @@ class UploadHandler
                         .rawurlencode($file->name);
                 }
             }
-            $this->set_file_delete_url($file);
+            $file->delete_url = $this->options['script_url']
+                .'?file='.rawurlencode($file->name);
+            $file->delete_type = 'DELETE';
             return $file;
         }
         return null;
     }
     
-    protected function get_file_objects() {
+    private function get_file_objects() {
         return array_values(array_filter(array_map(
             array($this, 'get_file_object'),
             scandir($this->options['upload_dir'])
         )));
     }
 
-    protected function create_scaled_image($file_name, $options) {
+    private function create_scaled_image($file_name, $options) {
         $file_path = $this->options['upload_dir'].$file_name;
         $new_file_path = $options['upload_dir'].$file_name;
         list($img_width, $img_height) = @getimagesize($file_path);
@@ -156,7 +146,7 @@ class UploadHandler
         return $success;
     }
     
-    protected function has_error($uploaded_file, $file, $error) {
+    private function has_error($uploaded_file, $file, $error) {
         if ($error) {
             return $error;
         }
@@ -186,7 +176,7 @@ class UploadHandler
         return $error;
     }
     
-    protected function trim_file_name($name, $type) {
+    private function trim_file_name($name, $type) {
         // Remove path information and dots around the filename, to prevent uploading
         // into different directories or replacing hidden system files.
         // Also remove control characters and spaces (\x00..\x20) around the filename:
@@ -199,7 +189,7 @@ class UploadHandler
         return $file_name;
     }
 
-    protected function orient_image($file_path) {
+    private function orient_image($file_path) {
       	$exif = exif_read_data($file_path);
       	$orientation = intval(@$exif['Orientation']);
       	if (!in_array($orientation, array(3, 6, 8))) { 
@@ -225,7 +215,7 @@ class UploadHandler
       	return $success;
     }
     
-    protected function handle_file_upload($uploaded_file, $name, $size, $type, $error) {
+    private function handle_file_upload($uploaded_file, $name, $size, $type, $error) {
         $file = new stdClass();
         $file->name = $this->trim_file_name($name, $type);
         $file->size = intval($size);
@@ -272,7 +262,9 @@ class UploadHandler
                 $file->error = 'abort';
             }
             $file->size = $file_size;
-            $this->set_file_delete_url($file);
+            $file->delete_url = $this->options['script_url']
+                .'?file='.rawurlencode($file->name);
+            $file->delete_type = 'DELETE';
         } else {
             $file->error = $error;
         }

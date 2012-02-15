@@ -1,6 +1,6 @@
 <?php
 /*
- * jQuery File Upload Plugin PHP Example 5.7
+ * jQuery File Upload Plugin PHP Example 5.6
  * https://github.com/blueimp/jQuery-File-Upload
  *
  * Copyright 2010, Sebastian Tschan
@@ -17,7 +17,7 @@ require('upload.class.php');
 $upload_handler = new UploadHandler();
 
 header('Pragma: no-cache');
-header('Cache-Control: no-store, no-cache, must-revalidate');
+header('Cache-Control: private, no-cache');
 header('Content-Disposition: inline; filename="files.json"');
 header('X-Content-Type-Options: nosniff');
 header('Access-Control-Allow-Origin: *');
@@ -32,11 +32,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
         $upload_handler->get();
         break;
     case 'POST':
-        if (isset($_REQUEST['_method']) && $_REQUEST['_method'] === 'DELETE') {
-            $upload_handler->delete();
-        } else {
-            $upload_handler->post();
-        }
+        $upload_handler->post();
         break;
     case 'DELETE':
         $upload_handler->delete();
