@@ -30,6 +30,7 @@
 
 <script>
 var var_organization_id = '{{organization.id}}';
+$('#message_modal').modal();
 </script>
 {% endblock %}
 
@@ -53,5 +54,14 @@ var var_organization_id = '{{organization.id}}';
 <div class="authenticated-container">
   {% if messages %}{% for message in messages %}<div class="alert alert-{% if message.tags %}{{message.tags}}{% endif %}"><p>{{message}}</p></div>{% endfor %}{% endif %}
   {% block body_authenticated %}{% endblock %}
+</div>
+
+<div class="modal hide fade" style="display:none;" id="message_modal">
+  <div class="modal-body">
+    <p></p>
+  </div>
+  <div class="modal-footer">
+    <a href="#" class="btn" data-dismiss="modal">ปิด</a>
+  </div>
 </div>
 {% endblock %}

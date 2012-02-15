@@ -17,6 +17,7 @@ urlpatterns = patterns('document.views',
 
     # Document
     url(r'^download/(?P<publication_uid>[a-zA-Z0-9\-]+)/$', 'download_publication', name='download_publication'),
+    url(r'^replace/(?P<publication_uid>[a-zA-Z0-9\-]+)/$', 'replace_publication', name='replace_publication'),
 
 
 )

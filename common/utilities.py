@@ -1,5 +1,7 @@
 # -*- encoding: utf-8 -*-
+
 import os, base64
+import random
 
 from datetime import date
 
@@ -38,8 +40,24 @@ def split_filename(filename):
     
     return (name, ext)
 
+def split_filepath(path):
+    (head, tail) = os.path.split(path)
+    (root, ext) = os.path.splitext(tail)
+
+    if ext and ext[0] == '.':
+        ext = ext[1:]
+    
+    return (head, root, ext)
+
 def generate_random_username():
     return base64.urlsafe_b64encode(os.urandom(10))
+
+RANDOM_STRING = 'qwertyuiopasdfghjklzxcvbnm1234567890'
+def generate_random_string(string_length):
+    str = []
+    for i in range(0, string_length):
+        str.append(random.choice(RANDOM_STRING))
+    return ''.join(str)
 
 def humanize_file_size(size_in_byte):
     try:

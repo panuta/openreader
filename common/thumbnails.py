@@ -3,7 +3,7 @@ import os
 from django.conf import settings
 from django.utils.importlib import import_module
 
-from common.utilities import split_filename
+from common.utilities import split_filename, split_filepath
 
 NO_THUMBNAIL_URL = settings.STATIC_URL + 'images/no_thumbnail.jpg'
 
@@ -36,34 +36,30 @@ def get_generator(file_type):
     
     return None
 
-def get_thumbnail_root(file):
-    (path, filename) = os.path.split(file.path)
-    return path + '/thumbnails/'
-
 def get_thumbnail_url(publication, size):
     if publication.has_thumbnail:
-        (path, filename) = os.path.split(publication.uploaded_file.path)
-        (file_name, file_ext) = split_filename(filename)
-        return '%spublication/%d/thumbnails/%s.thumbnail.%s.jpg' % (settings.MEDIA_URL, publication.organization.id, file_name, size)
+        (file_path, file_name, file_ext) = split_filepath(publication.uploaded_file.name)
+        return '%spublication/%d%s%s.thumbnail.%s.jpg' % (settings.MEDIA_URL, publication.organization.id, settings.THUMBNAIL_PATH, file_name, size)
     else:
+        """
         if settings.THUMBNAIL_REGENERATE:
             (file_name, file_ext) = split_filename(publication.uploaded_file.name)
             generator = get_generator(file_ext)
             if generator:
-                generated = generator.get_thumbnails(publication.uploaded_file.file)
+                generated = generator.generate_thumbnails(publication.uploaded_file.file)
                 publication.has_thumbnail = generated
                 publication.save()
                 return '%spublication/%d/thumbnails/%s.thumbnail.%s.jpg' % (settings.MEDIA_URL, publication.organization.id, file_name, size)
+        """
                 
         return NO_THUMBNAIL_URL
 
 def delete_thumbnails(file): # file -> models.FieldFile
-    thumbnail_path = get_thumbnail_root(file)
-    (file_name, file_ext) = split_filename(file.name)
+    (file_path, file_name, file_ext) = split_filepath(file.name)
 
     for thumbnail_size in settings.THUMBNAIL_SIZES:
         try:
-            os.remove('%s/%s.thumbnail.%s.jpg' % (thumbnail_path, file_name, thumbnail_size[0]))
+            os.remove('%s/%s%s.thumbnail.%s.jpg' % (file_path, settings.THUMBNAIL_PATH, file_name, thumbnail_size[0]))
         except:
             # TODO: Log error
             import sys

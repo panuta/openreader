@@ -48,7 +48,7 @@ $(document).ready(function () {
       var tags = trObject.find('td.file div.tag ul').html();
       
       $('.editing_row').remove();
-      var editing_row = $('<tr class="editing_row"><td colspan="6"><div class="wrapper" style="display:none;"><div class="cover"><img src="' + thumbnail + '" /></div><!--<div class="original_filename"><em>test.pdf</em> [ <a href="#">เปลี่ยนไฟล์</a> ]</div>--><form><div class="item"><label for="id_name">หัวข้อ</label><div class="input"><input type="text" name="name" value="' + title + '" /></div></div><div class="item"><label for="id_description">คำอธิบาย</label><div class="input"><textarea>' + description + '</textarea></div></div><div class="item"><label for="id_tags">แถบป้าย</label><div class="input"><ul id="edit_tags">' + tags + '</ul></div></div><div class="form_actions"><a href="#delete_confirmation_modal" class="danger delete_link" data-toggle="modal">ลบไฟล์ออกจากระบบ</a><button class="btn-primary btn save_button">บันทึกข้อมูล</button><button class="btn cancel_button">ยกเลิก</button><span class="error_message"></span></div></form></div></td></tr>');
+      var editing_row = $('<tr class="editing_row"><td colspan="6"><div class="wrapper" style="display:none;"><div class="cover"><img src="' + thumbnail + '" /></div><!--<div class="original_filename"><em>test.pdf</em> [ <a href="#">เปลี่ยนไฟล์</a> ]</div>--><form><div class="item"><label for="id_name">หัวข้อ</label><div class="input"><input type="text" name="name" value="' + title + '" /></div></div><div class="item"><label for="id_description">คำอธิบาย</label><div class="input"><textarea>' + description + '</textarea></div></div><div class="item"><label for="id_tags">แถบป้าย</label><div class="input"><ul id="edit_tags">' + tags + '</ul></div></div><div class="form_actions"><div class="right_actions"><input type="file" class="replace_file_input"/><a href="#" class="link replace_link">เปลี่ยนไฟล์ใหม่</a> | <a href="#delete_confirmation_modal" class="danger delete_link" data-toggle="modal">ลบไฟล์</a></div><button class="btn-primary btn save_button">บันทึกข้อมูล</button><button class="btn cancel_button">ยกเลิก</button><span class="error_message"></span></div></form></div></td></tr>');
       editing_row.data('uid', trObject.attr('id'));
       editing_row.insertAfter($(this).closest('tr')).show().find('.wrapper').slideDown('fast');
 
@@ -58,6 +58,84 @@ $(document).ready(function () {
         }, response);
 
       }, triggerKeys: ['enter', 'comma', 'tab']});
+
+      editing_row.find('.replace_link').on('click', function(e) {
+        $(this).closest('div').find('input').click();
+        return false;
+      });
+
+      
+      editing_row.find('.replace_file_input').fileupload({
+        dataType: 'json',
+        url: '/replace/' + trObject.attr('id') + '/',
+        add: function (e, data) {
+          var file = data.files[0];
+
+          if(file.size > {{MAX_PUBLICATION_FILE_SIZE}}) {
+            $('#message_modal').modal('show').find('.modal-body p').text('ไฟล์มีขนาดใหญ่เกินกำหนด (สูงสุดที่ {{MAX_PUBLICATION_FILE_SIZE_TEXT}})');
+
+          } else {
+            trObject.find('.uploaded').hide().after('<div class="upload_progressbar"></div>');
+            trObject.find('.upload_progressbar').progressBar({width:262, height:20, boxImage:'/static/libs/progressbar/images/progressbar.png', barImage:{0:'/static/libs/progressbar/images/progressbg.png', 30:'/static/libs/progressbar/images/progressbg.png', 70:'/static/libs/progressbar/images/progressbg.png'}});
+
+            trObject.data('data', data);
+            data.context = trObject;
+
+            data.submit();
+
+            editing_row.remove();
+            trObject.find('.edit_publication_button').removeClass('active').hide();
+            trObject.find('.row_actions').append('<button class="btn btn-danger cancel_button">ยกเลิก</button>');
+
+            trObject.find('.cancel_button').on('click', function(e) {
+              var context = $(this).closest('tr');
+              context.data('data').jqXHR.abort();
+            });
+          }
+        },
+        progress: function (e, data) {
+          var progress = parseInt(data.loaded / data.total * 100, 10);
+          data.context.find('.upload_progressbar').progressBar(progress);
+        },
+        done: function (e, data) {
+          var file = data.files[0];
+          responseObject = data.result;
+
+          if(responseObject.status == 'success') {
+            data.context.find('.uploaded').html('อัพโหลดเมื่อวันที่ ' + responseObject.uploaded + ' (เปลี่ยนไฟล์เมื่อวันที่ ' + responseObject.replaced + ')').show();
+            data.context.attr('id', responseObject.uid);
+            data.context.find('.download a')
+              .attr('href', responseObject.download_url)
+              .attr('data-original-title', 'ดาวน์โหลดไฟล์ ' + responseObject.file_ext.toUpperCase())
+              .attr('title', 'ดาวน์โหลดไฟล์ ' + responseObject.file_ext.toUpperCase())
+              .attr('data-content', 'ขนาดไฟล์ ' + responseObject.file_size_text);
+            data.context.find('input[name="thumbnail"]').val(responseObject.thumbnail_url);
+
+          } else {
+            var error_message = 'เกิดข้อผิดพลาด ไม่สามารถอัพโหลดไฟล์ได้';
+
+            if(responseObject.error == 'file-missing') error_message = 'ไม่สามารถอ่านไฟล์ที่ต้องการอัพโหลดได้';
+            if(responseObject.error == 'file-size-exceed') error_message = 'ไฟล์มีขนาดใหญ่เกินกำหนด';
+            if(responseObject.error == 'access-denied') error_message = 'ผู้ใช้ไม่สามารถอัพโหลดไฟล์ในชั้นหนังสือนี้ได้';
+
+            data.context.find('.uploaded').after('<div class="error_message">' + error_message + '</div>');
+          }
+
+          data.context.find('.upload_progressbar').remove();
+          data.context.find('.cancel_button').remove();
+          data.context.find('.edit_publication_button').show();
+
+        },
+        fail: function (e, data) {
+          if (data.errorThrown == 'abort') {
+            data.context.find('.upload_progressbar').remove();
+            data.context.find('.uploaded').show();
+
+          } else {
+            data.context.find('.uploaded').after('<div class="error_message">เกิดข้อผิดพลาด ไม่สามารถอัพโหลดไฟล์ได้</div>');
+          }
+        }
+      });
 
       editing_row.find('.form_actions .save_button').on('click', function(e) {
         var title = $('.editing_row input[name="name"]').val();
@@ -109,7 +187,7 @@ $(document).ready(function () {
     } else {
       $('.editing_row .wrapper').slideUp('fast', function() {
         $(this).closest('tr').remove();
-      })
+      });
     }
     return false;
   });
@@ -187,7 +265,7 @@ $(document).ready(function () {
             $('.documents-upload-table').hide();
           }
 
-          var uploaded_row = $('<tr id="' + responseObject.uid + '" class="uploaded_row"><td><input type="checkbox" checked="checked"/></td><td class="download"><a href="' + responseObject.download_url + '" title="ดาวน์โหลดไฟล์ ' + responseObject.file_ext.toUpperCase() + '" data-content="ขนาดไฟล์ ' + responseObject.file_size_text + '" data-original-title="ดาวน์โหลดไฟล์">ดาวน์โหลดไฟล์</a></td><td class="file"><div class="filename">' + responseObject.title + '</div><div class="uploaded">อัพโหลดเมื่อวันที่ ' + responseObject.uploaded + '</div><div class="tag"><ul></ul></div></td><td class="row_actions"><input type="hidden" name="description" value=""/><input type="hidden" name="thumbnail" value="' + responseObject.thumbnail_url + '"/><button class="btn-small btn edit_publication_button" data-toggle="button">แก้ไข</button></td></tr>');
+          var uploaded_row = $('<tr id="' + responseObject.uid + '" class="uploaded_row"><td class="row_checkbox"><input type="checkbox" checked="checked"/></td><td class="download"><a href="' + responseObject.download_url + '" title="ดาวน์โหลดไฟล์ ' + responseObject.file_ext.toUpperCase() + '" data-content="ขนาดไฟล์ ' + responseObject.file_size_text + '">ดาวน์โหลดไฟล์</a></td><td class="file"><div class="filename">' + responseObject.title + '</div><div class="uploaded">อัพโหลดเมื่อวันที่ ' + responseObject.uploaded + '</div><div class="tag"><ul></ul></div></td><td class="row_actions"><input type="hidden" name="description" value=""/><input type="hidden" name="thumbnail" value="' + responseObject.thumbnail_url + '"/><button class="btn-small btn edit_publication_button" data-toggle="button">แก้ไข</button></td></tr>');
           uploaded_row.find('.edit_publication_button').button();
           uploaded_row.find('.download a').popover();
 
@@ -266,6 +344,13 @@ $(document).ready(function () {
       $('.checkbox_actions').removeClass('checkbox_actions_selected').find('input[type="checkbox"]').attr('checked', false);
       $('.checkbox_actions a').addClass('disabled');
     }
+
+    var row_num = $('.documents-table tr').length;
+    if(row_num == checkbox_num) {
+      $('.checkbox_actions input[type="checkbox"]').attr('checked', true);
+    } else {
+      $('.checkbox_actions input[type="checkbox"]').attr('checked', false);
+    }
   });
 
   /* CHECKBOX ACTIONS
@@ -297,6 +382,37 @@ $(document).ready(function () {
 
   $('#add_tag_modal').on('show', function() {
     $('#add_tag_modal .modal-body input[name="tag"]').val('');
+  });
+
+  $('#delete_files_confirmation_modal .modal-footer button.btn-danger').on('click', function(e) {
+    var publications = new Array();
+
+    $('.documents-table input[type="checkbox"]:checked').each(function(e) {
+      publications.push($(this).closest('tr').attr('id'));
+    });
+    
+    $.post('{% url ajax_delete_publication organization.slug %}', {uid:publications}, function(response) {
+      $('#delete_files_confirmation_modal').modal('hide');
+
+      if(response.status == 'success') {
+        $('.documents-table input[type="checkbox"]:checked').each(function(e) {
+          $(this).closest('tr').remove();
+        });
+
+        $('.checkbox_actions input[type="checkbox"]').attr('checked', false);
+        $('.checkbox_actions').removeClass('checkbox_actions_selected').find('a').addClass('disabled');
+
+      
+      } else {
+        if(response.error == 'invalid-publication') {
+          $('#message_modal').modal('show').find('.modal-body p').text('ไม่พบไฟล์ที่ต้องการลบในระบบ');
+        }
+      }
+    }, 'json');
+  });
+
+  $('#delete_files_confirmation_modal').on('show', function() {
+    $('#delete_files_confirmation_modal .modal-footer span').text($('.documents-table input[type="checkbox"]:checked').length);
   });
 
   /*
@@ -341,23 +457,16 @@ $(document).ready(function () {
       <div class="inner">
         <span class="check"><input type="checkbox"/></span>
         <a href="#add_tag_modal" class="btn-small btn add_tag_button disabled" data-toggle="modal"><i class="icon-tag"></i> เพิ่มแถบป้าย</a>
+        <a href="#delete_files_confirmation_modal" class="btn-small btn disabled" data-toggle="modal"><i class="icon-trash"></i> ลบไฟล์</a>
       </div>
     </div>
 
     <table class="table documents-table" {% if not publications %}style="display:none;"{% endif %}>
-      <thead>
-        <tr>
-          <th class="checkbox_column"></th>
-          <th class="download_column"></th>
-          <th>หัวข้อ</th>
-          <th class="edit_column"></th>
-        </tr>
-      </thead>
       <tbody>
         {% for publication in publications %}
         <tr id="{{publication.uid}}">
-          <td><input type="checkbox" /></td>
-          <td class="download"><a href="{% url download_publication publication.uid %}" title="ดาวน์โหลดไฟล์ {{publication.file_ext|upper}}" data-content="ขนาดไฟล์ {{publication.uploaded_file.size|file_size}}" data-original-title="ดาวน์โหลดไฟล์">ดาวน์โหลดไฟล์</a></td>
+          <td class="row_checkbox"><input type="checkbox" /></td>
+          <td class="download"><a href="{% url download_publication publication.uid %}" title="ดาวน์โหลดไฟล์ {{publication.file_ext|upper}}" data-content="ขนาดไฟล์ {{publication.uploaded_file.size|file_size}}">ดาวน์โหลดไฟล์</a></td>
           <td class="file">
             <div class="filename">{{publication.title}}</div>
             <div class="uploaded">อัพโหลดเมื่อวันที่ {{publication.uploaded|format_abbr_datetime}}</div>
@@ -401,6 +510,14 @@ $(document).ready(function () {
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal">ยกเลิก</button>
     <button class="btn btn-danger" type="submit">ยืนยันการลบไฟล์</button>
+  </div>
+</div>
+
+<div class="modal fade hide" id="delete_files_confirmation_modal">
+  <div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>ยืนยันการลบไฟล์</h3></div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal">ยกเลิก</button>
+    <button class="btn btn-danger" type="submit">ยืนยันการลบไฟล์ <span></span> ไฟล์</button>
   </div>
 </div>
 

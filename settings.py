@@ -211,6 +211,9 @@ EMAIL_FOR_USER_PUBLISHER_INVITATION = 'noreply@' + WEBSITE_HOST
 
 # Thumbnail
 
+THUMBNAIL_PATH = '/thumbnails/'
+THUMBNAIL_TEMP_ROOT = MEDIA_ROOT + 'thumbnails_temp/'
+
 THUMBNAIL_GENERATORS = (
     'thumbnail_generators.ImageThumbnailGenerator',
     'thumbnail_generators.PDFThumbnailGenerator',

@@ -41,6 +41,8 @@ class Publication(models.Model):
     uploaded_by = models.ForeignKey(User, related_name='publication_uploaded_by')
     modified = models.DateTimeField(auto_now=True)
     modified_by = models.ForeignKey(User, related_name='publication_modified_by', null=True)
+    replaced = models.DateTimeField(null=True)
+    replaced_by = models.ForeignKey(User, related_name='publication_replaced_by', null=True)
 
     def __unicode__(self):
         return '%s' % (self.title)

@@ -5,6 +5,8 @@ TODO - PHRASE 2
 - revision
 - public publication (anyone can see)
 
+
+
 ########## 3rd Library + Resources ##########
 https://github.com/dcramer/django-sentry
 https://github.com/dcramer/nexus
@@ -31,6 +33,14 @@ http://blog.prashanthellina.com/2008/02/03/create-pdf-thumbnails-using-imagemagi
 
 Online PDF
 http://www.flipsnack.com/
+
+########## Document Thumbnails ##########
+
+- Use OpenOffice headless to convert document or create thumbnail
+- FFmpeg
+http://blog.prashanthellina.com/2008/03/29/creating-video-thumbnails-using-ffmpeg/
+
+
 
 ########## Security Scheme ##########
 

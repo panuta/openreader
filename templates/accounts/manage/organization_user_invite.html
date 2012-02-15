@@ -8,19 +8,6 @@
 <script>
 $(document).ready(function () {
   $("#id_groups").chosen();
-  /*
-  var t5 = new $.TextboxList('#tag_input', {
-    unique:true, plugins: {
-      autocomplete: {
-        minLength: 1,
-        queryRemote: true,
-        remote: {url: '{% url ajax_query_groups organization.slug %}'}
-      }
-    }
-  });
-*/
-
-
 });
 </script>
 {% endblock %}
@@ -47,8 +34,6 @@ $(document).ready(function () {
     <label for="id_groups">กลุ่มผู้ใช้</label>
     <div class="input">{{form.groups}}{{form.groups.errors}}</div>
   </div>
-
-  <!-- <input id="tag_input" value="Test1,Test2"/> -->
 
   <div class="form-actions">
     <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> บันทึกข้อมูล</button>

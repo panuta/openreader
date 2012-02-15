@@ -19,9 +19,10 @@ from common.shortcuts import response_json, response_json_success, response_json
 from common.utilities import format_abbr_datetime, humanize_file_size
 
 from accounts.models import Organization, UserOrganization, OrganizationGroup
+from document import functions as document_functions
 
 from forms import *
-from functions import *
+#from functions import *
 from models import *
 
 @login_required
@@ -74,8 +75,7 @@ def upload_documents_to_shelf(request, organization_slug, shelf_id):
             return response_json_error('file-missing')
         
         uploading_file = UploadedFile(file)
-
-        publication = upload_publication(request, uploading_file, organization)
+        publication = document_functions.upload_publication(request, uploading_file, organization)
         PublicationShelf.objects.create(publication=publication, shelf=shelf, created_by=request.user)
 
         return response_json_success({
@@ -88,13 +88,11 @@ def upload_documents_to_shelf(request, organization_slug, shelf_id):
             'thumbnail_url':publication.get_large_thumbnail(),
             'download_url': reverse('download_publication', args=[publication.uid])
         })
-    
-        return render(request, 'document/documents_upload.html', {'organization':organization, 'shelf':shelf, 'shelf_type':'shelf'})
 
     else:
         raise Http404
 
-# DOWNLOAD DOCUMENT
+# PUBLICATION
 ######################################################################################################################################################
 
 @logged_in_or_basicauth()
@@ -110,6 +108,41 @@ def download_publication(request, publication_uid):
         raise Http403
     
     return private_files_get_file(request, 'document', 'Publication', 'uploaded_file', str(publication.id), '%s.%s' % (publication.original_file_name, publication.file_ext))
+
+@login_required
+def replace_publication(request, publication_uid):
+    if request.method == 'POST':
+        publication = get_object_or_404(Publication, uid=publication_uid)
+
+        if request.FILES == None:
+            return response_json_error('file-missing')
+        
+        file = request.FILES[u'files[]']
+
+        if file.size > settings.MAX_PUBLICATION_FILE_SIZE:
+            return response_json_error('file-size-exceed')
+
+        if not file:
+            return response_json_error('file-missing')
+        
+        uploading_file = UploadedFile(file)
+        publication = document_functions.replace_publication(request, uploading_file, publication)
+
+        if publication:
+            return response_json_success({
+                'uid': str(publication.uid),
+                'file_ext':publication.file_ext,
+                'file_size_text': humanize_file_size(uploading_file.file.size),
+                'uploaded':format_abbr_datetime(publication.uploaded),
+                'replaced':format_abbr_datetime(publication.replaced),
+                'thumbnail_url':publication.get_large_thumbnail(),
+                'download_url': reverse('download_publication', args=[publication.uid])
+            })
+        else:
+            return response_json_error('')
+
+    else:
+        raise Http404
 
 # EDIT DOCUMENT
 ######################################################################################################################################################
@@ -158,13 +191,27 @@ def ajax_delete_publication(request, organization_slug):
 
     if request.method == 'POST':
         publication_uid = request.POST.get('uid')
-
-        try:
-            publication = Publication.objects.get(uid=publication_uid)
-        except Publication.DoesNotExist:
+        
+        if publication_uid:
+            publication_uids = [publication_uid]
+        else:
+            publication_uids = request.POST.getlist('uid[]')
+        
+            if not publication_uids:
+                raise Http404
+        
+        print publication_uids
+        publications = []
+        for publication_uid in publication_uids:
+            try:
+                publications.append(Publication.objects.get(uid=publication_uid))
+            except Publication.DoesNotExist:
+                pass
+        
+        if not publications:
             return response_json_error('invalid-publication')
         
-        delete_publication(publication)
+        document_functions.delete_publications(publications)
 
         return response_json_success()
 
