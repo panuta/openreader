@@ -43,7 +43,8 @@ def replace_publication(request, uploading_file, publication):
         return None
     
     # Create thumbnails
-    delete_thumbnails(publication.uploaded_file)
+    if publication.has_thumbnail:
+        delete_thumbnails(publication.uploaded_file)
     generator = get_generator(file_ext)
     if generator:
         generated = generator.generate_thumbnails(publication.uploaded_file.file)
@@ -60,8 +61,12 @@ def replace_publication(request, uploading_file, publication):
 
     return publication
 
+def download_publication(publication):
+    pass
+
 def delete_publication(publication):
-    delete_thumbnails(publication.uploaded_file)
+    if publication.has_thumbnail:
+        delete_thumbnails(publication.uploaded_file)
     publication.uploaded_file.delete()
     publication.delete()
 
