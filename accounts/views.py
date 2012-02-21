@@ -8,13 +8,11 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
-from django.forms.util import ErrorList
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_GET, require_POST
 from django.utils import simplejson
-from django.utils.translation import ugettext_lazy as _
-
-from http import Http403
+#from django.utils.translation import ugettext_lazy as _
 
 from common.shortcuts import response_json_success
 from common.utilities import generate_random_username
@@ -28,6 +26,7 @@ def auth_login(request):
     from django.contrib.auth.views import login
     return login(request, authentication_form=EmailAuthenticationForm)
 
+@require_GET
 @login_required
 def view_user_home(request):
     if request.user.is_superuser:
@@ -41,12 +40,13 @@ def view_user_home(request):
     
     return redirect('view_organization_front', organization_slug=user_organization.organization.slug)
 
+@require_GET
+@login_required
 def view_user_welcome(request):
-    if UserOrganization.objects.filter(user=request.user).count() != 0:
+    if UserOrganization.objects.filter(user=request.user, is_active=True).count() != 0:
         raise Http404
     
-    welcome_contact_email = settings.WELCOME_CONTACT_EMAIL
-    return render(request, 'accounts/user_welcome.html', {'welcome_contact_email':welcome_contact_email})
+    return render(request, 'accounts/user_welcome.html', {})
 
 @login_required
 def view_my_profile(request):
@@ -65,6 +65,7 @@ def view_my_profile(request):
 
     return render(request, 'accounts/my_profile.html', {'form':form})
 
+@require_GET
 @login_required
 def view_my_account(request):
     return render(request, 'accounts/my_account.html', {})
@@ -85,12 +86,13 @@ def change_my_account_password(request):
 
 # ORGANIZATION ##############################################################################################################
 
+@require_GET
 @login_required
 def view_organization_profile(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
-    if not can(request.user, 'view', organization):
-        raise Http403
+    if not can(request.user, 'view_organization', organization):
+        raise Http404
 
     statistics = {
         'publication_count': Publication.objects.filter(organization=organization).count(),
@@ -101,18 +103,24 @@ def view_organization_profile(request, organization_slug):
 
 # Organization Users
 
+@require_GET
 @login_required
 def view_organization_users(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
+
+    if not can(request.user, 'view_organization', organization):
+        raise Http404
+    
     organization_users = UserOrganization.objects.filter(organization=organization, is_active=True).order_by('user__userprofile__first_name', 'user__userprofile__last_name')
     return render(request, 'accounts/manage/organization_users.html', {'organization':organization, 'organization_users':organization_users})
 
+@require_GET
 @login_required
 def view_organization_invited_users(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
     if not can(request.user, 'manage_user', organization):
-        raise Http403
+        raise Http404
 
     invited_users = UserOrganizationInvitation.objects.filter(organization=organization)
     return render(request, 'accounts/manage/organization_users_invited.html', {'organization':organization, 'invited_users':invited_users})
@@ -122,7 +130,7 @@ def invite_organization_user(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
     if not can(request.user, 'manage_user', organization):
-        raise Http403
+        raise Http404
 
     if request.method == 'POST':
         form = InviteOrganizationUserForm(organization, request.POST)
@@ -148,7 +156,7 @@ def edit_user_invitation(request, invitation_id):
     organization = invitation.organization
 
     if not can(request.user, 'manage_user', organization):
-        raise Http403
+        raise Http404
 
     if request.method == 'POST':
         form = UpdateOrganizationUserInviteForm(organization, request.POST)
@@ -167,39 +175,34 @@ def edit_user_invitation(request, invitation_id):
 
     return render(request, 'accounts/manage/organization_user_invite_edit.html', {'organization':organization, 'invitation':invitation, 'form':form})
 
+@require_POST
 @login_required
 def ajax_resend_user_invitation(request, invitation_id):
-    if request.method == 'POST':
-        invitation = get_object_or_404(UserOrganizationInvitation, pk=invitation_id)
-        organization = invitation.organization
 
-        if not can(request.user, 'manage_user', organization):
-            raise Http403
-        
-        invitation.send_invitation_email()
-        
-        messages.success(request, u'ส่งคำขอถึงผู้ใช้เรียบร้อย')
-        return response_json_success({'redirect_url':reverse('view_organization_invited_users', args=[organization.slug])})
+    invitation = get_object_or_404(UserOrganizationInvitation, pk=invitation_id)
+    organization = invitation.organization
 
-    else:
+    if not can(request.user, 'manage_user', organization):
         raise Http404
+    
+    invitation.send_invitation_email()
+    
+    messages.success(request, u'ส่งคำขอถึงผู้ใช้เรียบร้อย')
+    return response_json_success({'redirect_url':reverse('view_organization_invited_users', args=[organization.slug])})
 
+@require_POST
 @login_required
 def ajax_cancel_user_invitation(request, invitation_id):
-    if request.method == 'POST':
-        invitation = get_object_or_404(UserOrganizationInvitation, pk=invitation_id)
-        organization = invitation.organization
+    invitation = get_object_or_404(UserOrganizationInvitation, pk=invitation_id)
+    organization = invitation.organization
 
-        if not can(request.user, 'manage_user', organization):
-            raise Http403
-    
-        invitation.delete()
-
-        messages.success(request, u'เพิกถอนคำขอเรียบร้อย')
-        return response_json_success({'redirect_url':reverse('view_organization_invited_users', args=[organization.slug])})
-
-    else:
+    if not can(request.user, 'manage_user', organization):
         raise Http404
+
+    invitation.delete()
+
+    messages.success(request, u'เพิกถอนคำขอเรียบร้อย')
+    return response_json_success({'redirect_url':reverse('view_organization_invited_users', args=[organization.slug])})
 
 def claim_user_invitation(request, invitation_key):
     """
@@ -227,9 +230,7 @@ def claim_user_invitation(request, invitation_key):
             user.username = user.id
             user.save()
 
-            app_label, model_name = settings.AUTH_PROFILE_MODULE.split('.')
-            model = models.get_model(app_label, model_name)
-            user_profile = model._default_manager.create(user=user, email=invitation.email, first_name=first_name, last_name=last_name, web_access=True)
+            UserProfile.objects.create(user=user, email=invitation.email, first_name=first_name, last_name=last_name, web_access=True)
 
             UserOrganizationInvitation.objects.claim_invitation(invitation, user, True)
             
@@ -306,29 +307,32 @@ def edit_organization_user(request, organization_user_id):
 
     return render(request, 'accounts/manage/organization_user_edit.html', {'organization':organization, 'user_organization':user_organization, 'form':form})
 
+@require_POST
 @login_required
 def ajax_remove_organization_user(request, organization_user_id):
-    if request.method == 'POST':
-        user_organization = get_object_or_404(UserOrganization, pk=organization_user_id)
-        organization = user_organization.organization
 
-        if not can(request.user, 'manage_user', organization):
-            raise Http403
-    
-        user_organization.is_active = False
-        user_organization.save()
+    user_organization = get_object_or_404(UserOrganization, pk=organization_user_id)
+    organization = user_organization.organization
 
-        messages.success(request, u'ถอดผู้ใช้ออกจากบริษัทเรียบร้อย')
-        return response_json_success({'redirect_url':reverse('view_organization_users', args=[organization.slug])})
-    
-    else:
+    if not can(request.user, 'manage_user', organization):
         raise Http404
+
+    user_organization.is_active = False
+    user_organization.save()
+
+    messages.success(request, u'ถอดผู้ใช้ออกจากบริษัทเรียบร้อย')
+    return response_json_success({'redirect_url':reverse('view_organization_users', args=[organization.slug])})
 
 # Organization Groups
 
+@require_GET
 @login_required
 def view_organization_groups(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
+
+    if not can(request.user, 'view_organization', organization):
+        raise Http404
+    
     organization_groups = OrganizationGroup.objects.filter(organization=organization).order_by('name')
 
     for group in organization_groups:
@@ -341,7 +345,7 @@ def add_organization_group(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
     if not can(request.user, 'manage_group', organization):
-        raise Http403
+        raise Http404
 
     if request.method == 'POST':
         form = OrganizationGroupForm(organization, request.POST)
@@ -368,7 +372,7 @@ def edit_organization_group(request, organization_group_id):
     organization = group.organization
 
     if not can(request.user, 'manage_group', organization):
-        raise Http403
+        raise Http404
 
     if request.method == 'POST':
         form = OrganizationGroupForm(organization, request.POST)
@@ -403,56 +407,31 @@ def edit_organization_group(request, organization_group_id):
     
     return render(request, 'accounts/manage/organization_group_modify.html', {'organization':organization, 'group':group, 'form':form})
 
+@require_POST
 @login_required
 def ajax_remove_organization_group(request, organization_group_id):
-    if request.method == 'POST':
-        group = get_object_or_404(OrganizationGroup, pk=organization_group_id)
-        organization = group.organization
-
-        if not can(request.user, 'manage_group', organization):
-            raise Http403
-    
-        UserGroup.objects.filter(group=group).delete()
-        group.delete()
-
-        messages.success(request, u'ลบกลุ่มผู้ใช้เรียบร้อย')
-        return response_json_success({'redirect_url':reverse('view_organization_groups', args=[organization.slug])})
-    
-    else:
-        raise Http404
-
-"""
-@login_required
-def remove_organization_group(request, organization_group_id):
     group = get_object_or_404(OrganizationGroup, pk=organization_group_id)
     organization = group.organization
 
     if not can(request.user, 'manage_group', organization):
-        raise Http403
+        raise Http404
 
-    group.user_counter = UserGroup.objects.filter(group=group).count()
+    UserGroup.objects.filter(group=group).delete()
+    group.delete()
 
-    if request.method == 'POST':
-        if 'submit-delete' in request.POST:
-            UserGroup.objects.filter(group=group).delete()
-            group.delete()
-
-            messages.success(request, u'ลบกลุ่มผู้ใช้เรียบร้อย')
-        
-        return redirect('view_organization_groups', organization_slug=organization.slug)
-    
-    return render(request, 'accounts/manage/organization_group_remove.html', {'organization':organization, 'group':group})
-"""
+    messages.success(request, u'ลบกลุ่มผู้ใช้เรียบร้อย')
+    return response_json_success({'redirect_url':reverse('view_organization_groups', args=[organization.slug])})
 
 # AJAX SERVICES
 ############################################################################################################################################
 
+@require_GET
 @login_required
 def ajax_query_users(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
-    if not can(request.user, 'view', organization):
-        raise Http403
+    if not can(request.user, 'view_organization', organization):
+        raise Http404
     
     query_string = request.GET.get('q')
     
@@ -462,19 +441,19 @@ def ajax_query_users(request, organization_slug):
         app_label, model_name = settings.AUTH_PROFILE_MODULE.split('.')
         model = models.get_model(app_label, model_name)
         for user_profile in model._default_manager.filter(user__userorganization__organization=organization).filter(Q(first_name__icontains=query_string) | Q(last_name__icontains=query_string)):
-            #result.append({'userid':str(user_profile.user.id), 'name':user_profile.get_fullname(), 'value':user_profile.get_fullname()})
             result.append({'name':user_profile.get_fullname(), 'value':str(user_profile.user.id)})
         
         return HttpResponse(simplejson.dumps(result))
     
     raise Http404
 
+@require_GET
 @login_required
 def ajax_query_groups(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
-    if not can(request.user, 'view', organization):
-        raise Http403
+    if not can(request.user, 'view_organization', organization):
+        raise Http404
     
     result = []
     organization_groups = OrganizationGroup.objects.filter(organization=organization).order_by('name')
@@ -482,6 +461,3 @@ def ajax_query_groups(request, organization_slug):
         result.append([organization_group.id, organization_group.name])
     
     return HttpResponse(simplejson.dumps(result))
-    
-
-

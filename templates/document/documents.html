@@ -53,7 +53,7 @@ $(document).ready(function () {
       editing_row.insertAfter($(this).closest('tr')).show().find('.wrapper').slideDown('fast');
 
       $('#edit_tags').tagit({tagSource: function(request, response) {
-        $.getJSON('{% url ajax_query_document_tags organization.slug %}', {
+        $.getJSON('{% url ajax_query_publication_tags organization.slug %}', {
           term: extractLast(request.term)
         }, response);
 
@@ -224,7 +224,7 @@ $(document).ready(function () {
   $('#fileupload').fileupload({
       dataType: 'json',
       dropZone: $('#upload_dropzone'),
-      url: '{% url upload_documents_to_shelf organization.slug shelf.id %}',
+      url: '{% url upload_publication organization.slug shelf.id %}',
       limitConcurrentUploads: 5,
 
       add: function (e, data) {
@@ -374,7 +374,10 @@ $(document).ready(function () {
         } else {
           if(response.error == 'missing-parameter') {
             $('#add_tag_modal .modal-header').after('<div class="modal-message">ข้อมูลไม่เพียงพอที่จะเพิ่มแถบป้าย</div>');
+          } else if(response.error == 'invalid-publication') {
+            $('#add_tag_modal .modal-header').after('<div class="modal-message">ไม่พบไฟล์ที่ต้องการเพิ่มแถบป้ายในระบบ</div>');
           }
+
         }
       }, 'json');
     }

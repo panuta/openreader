@@ -10,9 +10,9 @@
 {"pk": 3, "model": "auth.user", "fields": {"username": "3", "is_active": true, "is_superuser": false, "is_staff": true, "last_login": "2011-12-01 16:43:51", "groups": [], "user_permissions": [], "password": "sha1$0286b$eb6f8978b020def24a1ebe92b8695f2c03616199", "email": "staff@openreader.com", "date_joined": "2011-12-01 16:43:51"}}, 
 
 
-{"pk": 1, "model": "document.userprofile", "fields": {"web_access": false, "email":"system@openreader.com", "first_name": "System", "last_name": "Openreader", "is_first_time": true, "user": 1}},
-{"pk": 2, "model": "document.userprofile", "fields": {"web_access": true, "email":"admin@openreader.com", "first_name": "Admin", "last_name": "Openreader", "is_first_time": true, "user": 2}}, 
-{"pk": 3, "model": "document.userprofile", "fields": {"web_access": true, "email":"staff@openreader.com", "first_name": "Staff", "last_name": "Openreader", "is_first_time": true, "user": 3}}, 
+{"pk": 1, "model": "accounts.userprofile", "fields": {"web_access": false, "email":"system@openreader.com", "first_name": "System", "last_name": "Openreader", "is_first_time": true, "user": 1}},
+{"pk": 2, "model": "accounts.userprofile", "fields": {"web_access": true, "email":"admin@openreader.com", "first_name": "Admin", "last_name": "Openreader", "is_first_time": true, "user": 2}}, 
+{"pk": 3, "model": "accounts.userprofile", "fields": {"web_access": true, "email":"staff@openreader.com", "first_name": "Staff", "last_name": "Openreader", "is_first_time": true, "user": 3}}, 
 
 
 {"pk": 1, "model": "accounts.organization", "fields": {"status": 0, "modified_by": 2, "name": "Opendream", "slug":"opendream", "prefix":"บริษัท", "created_by": 2}},
@@ -30,65 +30,14 @@
 {"pk": 2, "model": "accounts.usergroup", "fields": {"user_organization": 2, "group": 2}},
 
 
+{"pk": 1, "model": "document.organizationdownloadserver", "fields": {"organization": 1, "server_type": "nginx", "priority":1, "server_address":"172.16.204.129", "prefix":"/download", "key":"IAMSECRET"}},
+{"pk": 2, "model": "document.organizationdownloadserver", "fields": {"organization": 1, "server_type": "s3", "priority":10, "server_address":"localhost"}},
+{"pk": 3, "model": "document.organizationdownloadserver", "fields": {"organization": 1, "server_type": "intranet", "priority":99, "server_address":"localhost"}},
+{"pk": 4, "model": "document.organizationdownloadserver", "fields": {"organization": 1, "server_type": "xsendfile", "priority":5, "server_address":"localhost"}},
+
 
 {"pk": 4, "model": "auth.user", "fields": {"username": "4", "last_login": "2011-12-01 16:43:51", "password": "sha1$01585$302a20e1e2d0a73652b63b57df52bd793472244b", "email": "user4@example.com", "date_joined": "2011-12-01 16:43:51"}},
-{"pk": 4, "model": "document.userprofile", "fields": {"email":"user4@example.com", "first_name": "User4", "last_name": "Last", "user": 4}},
-{"pk": 4, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "user": 4, "is_admin":true}},
-{"pk": 4, "model": "accounts.usergroup", "fields": {"user_organization": 4, "group": 2}},
+{"pk": 4, "model": "accounts.userprofile", "fields": {"email":"user4@example.com", "first_name": "User4", "last_name": "Last", "user": 4}}
 
-{"pk": 5, "model": "auth.user", "fields": {"username": "5", "last_login": "2011-12-01 16:43:51", "password": "sha1$01585$302a20e1e2d0a73652b63b57df52bd793472244b", "email": "user5@example.com", "date_joined": "2011-12-01 16:43:51"}},
-{"pk": 5, "model": "document.userprofile", "fields": {"email":"user5@example.com", "first_name": "User5", "last_name": "Last", "user": 5}},
-{"pk": 5, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "user": 5, "is_admin":true}},
-{"pk": 5, "model": "accounts.usergroup", "fields": {"user_organization": 5, "group": 2}},
-
-{"pk": 6, "model": "auth.user", "fields": {"username": "6", "last_login": "2011-12-01 16:43:51", "password": "sha1$01585$302a20e1e2d0a73652b63b57df52bd793472244b", "email": "user6@example.com", "date_joined": "2011-12-01 16:43:51"}},
-{"pk": 6, "model": "document.userprofile", "fields": {"email":"user6@example.com", "first_name": "User6", "last_name": "Last", "user": 6}},
-{"pk": 6, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "user": 6, "is_admin":true}},
-{"pk": 6, "model": "accounts.usergroup", "fields": {"user_organization": 6, "group": 2}},
-
-{"pk": 7, "model": "auth.user", "fields": {"username": "7", "last_login": "2011-12-01 16:43:51", "password": "sha1$01585$302a20e1e2d0a73652b63b57df52bd793472244b", "email": "user7@example.com", "date_joined": "2011-12-01 16:43:51"}},
-{"pk": 7, "model": "document.userprofile", "fields": {"email":"user7@example.com", "first_name": "User7", "last_name": "Last", "user": 7}},
-{"pk": 7, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "user": 7, "is_admin":true}},
-{"pk": 7, "model": "accounts.usergroup", "fields": {"user_organization": 7, "group": 2}},
-
-{"pk": 8, "model": "auth.user", "fields": {"username": "8", "last_login": "2011-12-01 16:43:51", "password": "sha1$01585$302a20e1e2d0a73652b63b57df52bd793472244b", "email": "user8@example.com", "date_joined": "2011-12-01 16:43:51"}},
-{"pk": 8, "model": "document.userprofile", "fields": {"email":"user8@example.com", "first_name": "User8", "last_name": "Last", "user": 8}},
-{"pk": 8, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "user": 8, "is_admin":true}},
-{"pk": 8, "model": "accounts.usergroup", "fields": {"user_organization": 8, "group": 2}},
-
-{"pk": 9, "model": "auth.user", "fields": {"username": "9", "last_login": "2011-12-01 16:43:51", "password": "sha1$01585$302a20e1e2d0a73652b63b57df52bd793472244b", "email": "user9@example.com", "date_joined": "2011-12-01 16:43:51"}},
-{"pk": 9, "model": "document.userprofile", "fields": {"email":"user9@example.com", "first_name": "User9", "last_name": "Last", "user": 9}},
-{"pk": 9, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "user": 9, "is_admin":true}},
-{"pk": 9, "model": "accounts.usergroup", "fields": {"user_organization": 9, "group": 2}},
-
-{"pk": 10, "model": "auth.user", "fields": {"username": "10", "last_login": "2011-12-01 16:43:51", "password": "sha1$01585$302a20e1e2d0a73652b63b57df52bd793472244b", "email": "user4@example.com", "date_joined": "2011-12-01 16:43:51"}},
-{"pk": 10, "model": "document.userprofile", "fields": {"email":"user10@example.com", "first_name": "User10", "last_name": "Last", "user": 10}},
-{"pk": 10, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "user": 10, "is_admin":true}},
-{"pk": 10, "model": "accounts.usergroup", "fields": {"user_organization": 10, "group": 2}},
-
-{"pk": 11, "model": "auth.user", "fields": {"username": "11", "last_login": "2011-12-01 16:43:51", "password": "sha1$01585$302a20e1e2d0a73652b63b57df52bd793472244b", "email": "user5@example.com", "date_joined": "2011-12-01 16:43:51"}},
-{"pk": 11, "model": "document.userprofile", "fields": {"email":"user11@example.com", "first_name": "User11", "last_name": "Last", "user": 11}},
-{"pk": 11, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "user": 11, "is_admin":true}},
-{"pk": 11, "model": "accounts.usergroup", "fields": {"user_organization": 11, "group": 2}},
-
-{"pk": 12, "model": "auth.user", "fields": {"username": "12", "last_login": "2011-12-01 16:43:51", "password": "sha1$01585$302a20e1e2d0a73652b63b57df52bd793472244b", "email": "user6@example.com", "date_joined": "2011-12-01 16:43:51"}},
-{"pk": 12, "model": "document.userprofile", "fields": {"email":"user12@example.com", "first_name": "User12", "last_name": "Last", "user": 12}},
-{"pk": 12, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "user": 12, "is_admin":true}},
-{"pk": 12, "model": "accounts.usergroup", "fields": {"user_organization": 12, "group": 2}},
-
-{"pk": 13, "model": "auth.user", "fields": {"username": "13", "last_login": "2011-12-01 16:43:51", "password": "sha1$01585$302a20e1e2d0a73652b63b57df52bd793472244b", "email": "user7@example.com", "date_joined": "2011-12-01 16:43:51"}},
-{"pk": 13, "model": "document.userprofile", "fields": {"email":"user13@example.com", "first_name": "User13", "last_name": "Last", "user": 13}},
-{"pk": 13, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "user": 13, "is_admin":true}},
-{"pk": 13, "model": "accounts.usergroup", "fields": {"user_organization": 13, "group": 2}},
-
-{"pk": 14, "model": "auth.user", "fields": {"username": "14", "last_login": "2011-12-01 16:43:51", "password": "sha1$01585$302a20e1e2d0a73652b63b57df52bd793472244b", "email": "user8@example.com", "date_joined": "2011-12-01 16:43:51"}},
-{"pk": 14, "model": "document.userprofile", "fields": {"email":"user14@example.com", "first_name": "User14", "last_name": "Last", "user": 14}},
-{"pk": 14, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "user": 14, "is_admin":true}},
-{"pk": 14, "model": "accounts.usergroup", "fields": {"user_organization": 14, "group": 2}},
-
-{"pk": 15, "model": "auth.user", "fields": {"username": "15", "last_login": "2011-12-01 16:43:51", "password": "sha1$01585$302a20e1e2d0a73652b63b57df52bd793472244b", "email": "user9@example.com", "date_joined": "2011-12-01 16:43:51"}},
-{"pk": 15, "model": "document.userprofile", "fields": {"email":"user15@example.com", "first_name": "User15", "last_name": "Last", "user": 15}},
-{"pk": 15, "model": "accounts.userorganization", "fields": {"is_default": true, "organization": 1, "user": 15, "is_admin":true}},
-{"pk": 15, "model": "accounts.usergroup", "fields": {"user_organization": 15, "group": 2}}
 
 ]

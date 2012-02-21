@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 import os
-base_path = os.path.dirname(__file__)
+base_path = os.path.abspath(os.path.dirname(__file__))
 
 from django.conf import global_settings
 
@@ -13,9 +13,6 @@ ADMINS = (
 )
 
 MANAGERS = ADMINS
-
-# Contact address in welcome page (For user who has no publisher record)
-WELCOME_CONTACT_EMAIL = 'welcome@openreader.com'
 
 DATABASES = {
     'default': {
@@ -29,7 +26,7 @@ DATABASES = {
 }
 
 WEBSITE_NAME = 'OpenReader'
-WEBSITE_DOMAIN = 'http://127.0.0.1:8000/'
+WEBSITE_DOMAIN = 'http://127.0.0.1:8000'
 WEBSITE_HOST = '127.0.0.1:8000' # Use for system email address
 
 TIME_ZONE = 'Asia/Bangkok'
@@ -40,8 +37,8 @@ SITE_ID = 1
 USE_I18N = True
 USE_L10N = True
 
-MEDIA_ROOT = os.path.join(base_path, 'media/')
-MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(base_path, 'media')
+MEDIA_URL = '/media'
 
 # DEFAULT_FILE_STORAGE = 'mystorages.backends.sftpstorage.SFTPStorage'
 
@@ -67,7 +64,7 @@ CACHES = {
     }
 }
 
-AUTH_PROFILE_MODULE = 'document.UserProfile'
+AUTH_PROFILE_MODULE = 'accounts.UserProfile'
 LOGIN_REDIRECT_URL = '/'
 
 AUTHENTICATION_BACKENDS = (
@@ -203,22 +200,21 @@ PAGINATION_DEFAULT_PAGINATION = 50
 ########## Open Reader Settings ##########
 OPENREADER_LOGGER = 'openreader'
 
-PUBLICATION_ROOT = MEDIA_ROOT + 'publication/'
+PUBLICATION_PREFIX = '/publication'
+PUBLICATION_ROOT = MEDIA_ROOT + PUBLICATION_PREFIX
+
 MAX_PUBLICATION_FILE_SIZE = 300000000 # 300mb
 MAX_PUBLICATION_FILE_SIZE_TEXT = '300 เมกะไบต์'
 
 EMAIL_FOR_USER_PUBLISHER_INVITATION = 'noreply@' + WEBSITE_HOST
 
+# Publication Download
+
+DOWNLOAD_LINK_EXPIRE_IN = 180 # Minutes
+
 # Thumbnail
-
-THUMBNAIL_PATH = '/thumbnails/'
-THUMBNAIL_TEMP_ROOT = MEDIA_ROOT + 'thumbnails_temp/'
-
-THUMBNAIL_GENERATORS = (
-    'thumbnail_generators.ImageThumbnailGenerator',
-    'thumbnail_generators.PDFThumbnailGenerator',
-    'thumbnail_generators.VideoThumbnailGenerator',
-)
+THUMBNAIL_TEMP_ROOT = MEDIA_ROOT + '/thumbnails_temp' # Use when generating thumbnails
+THUMBNAIL_PREFIX_PATH = '/thumbnails'
 
 THUMBNAIL_SIZES = (
     ('small', (70, 85)),

@@ -8,7 +8,7 @@
 <h2>กลุ่มผู้ใช้</h2>
 
 {% can user 'manage_group' organization %}
-  <div class="page_actions"><a href="{% url add_organization_group organization.slug %}" class="btn"><i class="icon-plus"></i> เพิ่มกลุ่มผู้ใช้</a></div>
+  <div class="page_actions"><a href="{% url add_organization_group organization.slug %}" class="btn btn-primary"><i class="icon-plus icon-white"></i> เพิ่มกลุ่มผู้ใช้</a></div>
 {% endcan %}
 
 {% autopaginate organization_groups 50 %}

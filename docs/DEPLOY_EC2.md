@@ -74,6 +74,8 @@ Step 4 - Install necessary packages
     $ sudo python setup.py install --optimize=1
     ```
 
+5. Install MuPDF from http://www.mupdf.com/
+
 Step 5 - Install EC2 API Tools
 ------------------------------------------
 
@@ -219,8 +221,8 @@ Step 10 - Run server
 1. Copy or replace server configuration files from OpenReader source __misc__ folder
 
     ```
-    $ sudo cp /web/openreader/source/openreader/misc/uwsgi_openreader.ini /web/openreader/conf/
-    $ sudo cp /web/openreader/source/openreader/misc/nginx.conf /web/openreader/conf/nginx/
+    $ sudo cp /web/openreader/source/openreader/misc/server/uwsgi_openreader.ini /web/openreader/conf/
+    $ sudo cp /web/openreader/source/openreader/misc/server/nginx.conf /web/openreader/conf/nginx/
     ```
 
 2. Create an Elastic IP and attached to this EC2 instance (https://console.aws.amazon.com/ec2/home?region=ap-southeast-1&#s=Addresses)

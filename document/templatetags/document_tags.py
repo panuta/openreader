@@ -15,6 +15,8 @@ from common.permissions import can
 from accounts.models import OrganizationGroup
 from document.models import SHELF_ACCESS, Publication, OrganizationShelf
 
+from document.permissions import get_viewable_shelves
+
 @register.simple_tag
 def print_publication_tags(publication):
     tag_names = []
@@ -28,7 +30,7 @@ def print_publication_tags(publication):
 @register.simple_tag
 def generate_shelf_list(user, organization, active_shelf=None): # DONE
     shelf_html = []
-    for shelf in user.get_profile().get_viewable_shelves(organization):
+    for shelf in get_viewable_shelves(user, organization):
         active_html = ' active' if active_shelf and active_shelf.id == shelf.id else ''
         shelficon = ' %s' % shelf.icon if shelf.icon else settings.DEFAULT_SHELF_ICON
         count = Publication.objects.filter(shelves__in=[shelf]).count()
@@ -38,7 +40,7 @@ def generate_shelf_list(user, organization, active_shelf=None): # DONE
 
 @register.simple_tag
 def print_all_publication_count(user, organization): # DONE
-    shelves = user.get_profile().get_viewable_shelves(organization)
+    shelves = get_viewable_shelves(user, organization)
     return Publication.objects.filter(shelves__in=shelves).order_by('-uploaded_by').count()
 
 @register.simple_tag

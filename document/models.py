@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+import os
 import uuid
 
 from django.conf import settings
@@ -12,6 +13,8 @@ from common.thumbnails import get_thumbnail_url
 from accounts.models import UserProfile as BaseUserProfile
 from accounts.models import UserOrganization, UserGroup
 
+from perms import SHELF_ACCESS
+
 # PUBLICATION
 ############################################################
 
@@ -19,7 +22,7 @@ def is_downloadable(request, instance):
     return True
 
 def publication_media_dir(instance, filename):
-    return '%s%s/%s' % (settings.PUBLICATION_ROOT, instance.organization.id, filename)
+    return '%s/%s/%s' % (settings.PUBLICATION_ROOT, instance.organization.id, filename)
 
 class Publication(models.Model):
     organization = models.ForeignKey('accounts.Organization')
@@ -58,8 +61,11 @@ class Publication(models.Model):
     def get_small_thumbnail(self):
         return get_thumbnail_url(self, 'small')
     
-    def get_download_url(self):
-        pass
+    def get_rel_path(self): # return -> /[org id]
+        return '%s/%d' % (settings.PUBLICATION_PREFIX, self.organization.id)
+    
+    def get_download_rel_path(self): # return -> /[org id]/[uid].[file-ext]
+        return self.uploaded_file.path.replace(settings.PUBLICATION_ROOT, '')
 
 """
 class PublicationRevision(models.Model):
@@ -100,8 +106,6 @@ class PublicationShelf(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='publication_shelf_created_by')
 
-SHELF_ACCESS = {'NO_ACCESS':0, 'VIEW_ACCESS':1, 'PUBLISH_ACCESS':2}
-
 class OrganizationShelfPermission(models.Model):
     shelf = models.OneToOneField(OrganizationShelf)
     access_level = models.IntegerField(default=SHELF_ACCESS['NO_ACCESS'])
@@ -133,73 +137,14 @@ class PublicationTag(models.Model):
     publication = models.ForeignKey(Publication)
     tag = models.ForeignKey(OrganizationTag)
 
-# USER PROFILE
+# DOWNLOAD SERVER
 ############################################################
 
-class UserProfile(BaseUserProfile):
-
-    def check_permission(self, action, organization, parameters=[]):
-        try:
-            if action == 'view_shelf':
-                return self.get_shelf_access(parameters['shelf']) >= SHELF_ACCESS['VIEW_ACCESS']
-            
-            if action == 'upload_shelf':
-                return self.get_shelf_access(parameters['shelf']) == SHELF_ACCESS['PUBLISH_ACCESS']
-            
-        except:
-            pass
-        
-        return BaseUserProfile.check_permission(self, action, organization, parameters)
-    
-    def get_viewable_shelves(self, organization):
-        user_organization = UserOrganization.objects.get(user=self.user, organization=organization, is_active=True)
-
-        if not user_organization:
-            return SHELF_ACCESS['NO_ACCESS']
-
-        if user_organization.is_admin:
-            return OrganizationShelf.objects.filter(organization=organization).order_by('name')
-        else:
-            shelves = []
-            for shelf in OrganizationShelf.objects.filter(organization=organization).order_by('name'):
-                if self.get_shelf_access(shelf) >= SHELF_ACCESS['VIEW_ACCESS']:
-                    shelves.append(shelf)
-        
-            return shelves
-    
-    def get_shelf_access(self, shelf):
-        user_organization = UserOrganization.objects.get(user=self.user, organization=shelf.organization, is_active=True)
-
-        if not user_organization:
-            return SHELF_ACCESS['NO_ACCESS']
-
-        if user_organization.is_admin:
-            return SHELF_ACCESS['PUBLISH_ACCESS']
-
-        max_access_level = SHELF_ACCESS['NO_ACCESS']
-
-        try:
-            access_level = OrganizationShelfPermission.objects.get(shelf=shelf).access_level
-            max_access_level = access_level if max_access_level < access_level else max_access_level
-        except OrganizationShelfPermission.DoesNotExist:
-            pass
-        
-        if max_access_level == SHELF_ACCESS['PUBLISH_ACCESS']: return SHELF_ACCESS['PUBLISH_ACCESS'] # No need to query further
-
-        for user_group in UserGroup.objects.filter(user_organization=user_organization):
-            try:
-                access_level = GroupShelfPermission.objects.get(shelf=shelf, group=user_group.group).access_level
-                max_access_level = access_level if max_access_level < access_level else max_access_level
-            except GroupShelfPermission.DoesNotExist:
-                pass
-        
-        if max_access_level == SHELF_ACCESS['PUBLISH_ACCESS']: return SHELF_ACCESS['PUBLISH_ACCESS'] # No need to query further
-
-        try:
-            access_level = UserShelfPermission.objects.get(shelf=shelf, user=self.user).access_level
-            max_access_level = access_level if max_access_level < access_level else max_access_level
-        except UserShelfPermission.DoesNotExist:
-            pass
-        
-        return max_access_level
+class OrganizationDownloadServer(models.Model):
+    organization = models.ForeignKey('accounts.Organization')
+    priority = models.IntegerField(default=0) # Higher value has higher priority
+    server_type = models.CharField(max_length=200)
+    server_address = models.CharField(max_length=300)
+    prefix = models.CharField(max_length=300, blank=True, null=True) # e.g. '/openreader' (remove trailing slash)
+    key = models.CharField(max_length=300, blank=True, null=True)
 

@@ -7,7 +7,10 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.core import serializers
 from django.forms.models import model_to_dict
 from django.core.urlresolvers import reverse
+from django.views.decorators.http import require_GET
 
+from common.fileservers import generate_download_url
+from common.permissions import can
 
 from api.models import *
 from accounts.models import UserOrganization
@@ -49,6 +52,7 @@ def request_access(request):
 
 @logged_in_or_basicauth()
 def list_publication(request):
+    print request
     #http://admin%40openreader.com:panuta@localhost:8000/api/list/publication/?organization=opendream
     if _has_required_parameters(request, ['organization']):
         result = {}
@@ -117,5 +121,39 @@ def get_user_organization(request):
         data = model_to_dict(item.organization)
         result['organizations'].append(data)
     
-    
     return HttpResponse(simplejson.dumps(result))
+
+
+
+
+
+from django.utils.importlib import import_module
+
+def _extract_user(request):
+    if request.user.is_authenticated():
+        return request.user
+    else:
+        try:
+            auth = request.META['HTTP_AUTHORIZATION'].split(' ')
+            email, password = base64.b64decode(auth[1]).split(':')
+            return UserProfile.get_instance_from_email(email).user
+        except:
+            return None
+
+@require_GET
+@logged_in_or_basicauth()
+def request_download_publication(request, publication_uid):
+    publication = get_object_or_404(Publication, uid=publication_uid)
+    user = _extract_user(request)
+
+    if not can(user, 'view_publication', publication.organization, {'publication':publication}):
+        raise Http403
+    
+    server_urls = []
+    for server in OrganizationDownloadServer.objects.filter(organization=publication.organization).order_by('-priority'):
+        download_url = generate_download_url(server, publication)
+        if download_url:
+            server_urls.append(download_url)
+    
+    return HttpResponse(simplejson.dumps(server_urls))
+

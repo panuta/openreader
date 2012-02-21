@@ -25,9 +25,6 @@ class UserProfile(models.Model):
     def __unicode__(self):
         return '%s %s' % (self.first_name, self.last_name)
     
-    class Meta:
-        abstract = True
-
     def get_fullname(self):
         if not self.first_name or not self.last_name:
             if not self.user.first_name or not self.user.last_name:
@@ -35,29 +32,14 @@ class UserProfile(models.Model):
             return '%s %s' % (self.user.first_name, self.user.last_name)
         return '%s %s' % (self.first_name, self.last_name)
     
-    def check_permission(self, action, organization, parameters=[]):
+    def get_instance_from_email(email):
+        app_label, model_name = settings.AUTH_PROFILE_MODULE.split('.')
+        model = models.get_model(app_label, model_name)
+
         try:
-            user_organization = UserOrganization.objects.get(user=self, organization=organization, is_active=True)
-
-        except UserOrganization.DoesNotExist:
-            return False
-
-        else:
-            if user_organization.is_admin:
-                return True
-            
-            if action == 'view':
-                return True
-            
-            try:
-                admin_permission = OrganizationAdminPermission.objects.get(code_name=action)
-            except OrganizationAdminPermission.DoesNotExist:
-                pass
-            else:
-                if admin_permission in user_organization.admin_permissions.all():
-                    return True
-        
-        return False
+            return model._default_manager.get(email=email)
+        except:
+            return None
 
 # Admin Permissions
 class OrganizationAdminPermission(models.Model):
@@ -140,7 +122,6 @@ class UserInvitationManager(models.Manager):
             return None
     
     def claim_invitation(self, invitation, user, is_default=False):
-        # TODO
         user_organization = UserOrganization.objects.create(user=user, organization=invitation.organization, is_default=is_default)
         user_organization.admin_permissions = invitation.admin_permissions.all()
 

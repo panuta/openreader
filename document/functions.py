@@ -4,7 +4,8 @@ import uuid
 
 from django.conf import settings
 
-from common.thumbnails import get_generator, delete_thumbnails
+#from common.thumbnails import get_generator, delete_thumbnails
+from common.thumbnails import generate_thumbnails, delete_thumbnails
 from common.utilities import split_filepath
 
 logger = logging.getLogger(settings.OPENREADER_LOGGER)
@@ -22,13 +23,7 @@ def upload_publication(request, uploading_file, organization):
         return None
 
     # Create thumbnails
-    generator = get_generator(file_ext)
-    if generator:
-        generated = generator.generate_thumbnails(publication.uploaded_file.file)
-        publication.has_thumbnail = generated
-    else:
-        publication.has_thumbnail = False
-    
+    publication.has_thumbnail = generate_thumbnails(publication)
     publication.save()
     
     return publication
@@ -44,13 +39,10 @@ def replace_publication(request, uploading_file, publication):
     
     # Create thumbnails
     if publication.has_thumbnail:
-        delete_thumbnails(publication.uploaded_file)
-    generator = get_generator(file_ext)
-    if generator:
-        generated = generator.generate_thumbnails(publication.uploaded_file.file)
-        publication.has_thumbnail = generated
-    else:
-        publication.has_thumbnail = False
+        delete_thumbnails(publication)
+    
+    publication.has_thumbnail = generate_thumbnails(publication)
+    publication.save()
     
     # Change file details
     publication.original_file_name = file_name
@@ -66,7 +58,8 @@ def download_publication(publication):
 
 def delete_publication(publication):
     if publication.has_thumbnail:
-        delete_thumbnails(publication.uploaded_file)
+        delete_thumbnails(publication)
+    
     publication.uploaded_file.delete()
     publication.delete()
 

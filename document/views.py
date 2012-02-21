@@ -7,9 +7,8 @@ from django.core.files.uploadedfile import UploadedFile
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseServerError, Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_GET, require_POST
 from django.utils import simplejson
-
-from http import Http403
 
 from private_files.views import get_file as private_files_get_file
 from httpauth import logged_in_or_basicauth
@@ -22,82 +21,83 @@ from accounts.models import Organization, UserOrganization, OrganizationGroup
 from document import functions as document_functions
 
 from forms import *
-#from functions import *
 from models import *
+from permissions import *
 
 @login_required
 def view_organization_front(request, organization_slug):
     return redirect('view_documents', organization_slug=organization_slug)
 
+@require_GET
 @login_required
 def view_documents(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
-    if not can(request.user, 'view', organization):
-        raise Http403
+    if not can(request.user, 'view_organization', organization):
+        raise Http404
     
-    shelves = request.user.get_profile().get_viewable_shelves(organization)
+    shelves = get_viewable_shelves(request.user, organization)
     publications = Publication.objects.filter(shelves__in=shelves).order_by('-uploaded')
     return render(request, 'document/documents.html', {'organization':organization, 'publications':publications, 'shelf':None, 'shelf_type':'all'})
 
+@require_GET
 @login_required
 def view_documents_by_shelf(request, organization_slug, shelf_id):
     organization = get_object_or_404(Organization, slug=organization_slug)
     shelf = get_object_or_404(OrganizationShelf, pk=shelf_id)
 
-    if shelf.organization.id != organization.id or not can(request.user, 'view', organization):
-        raise Http403
-    
+    if shelf.organization.id != organization.id or not can(request.user, 'view_shelf', organization, {'shelf':shelf}):
+        raise Http404
+
     publications = Publication.objects.filter(organization=organization, shelves__in=[shelf]).order_by('-uploaded')
     return render(request, 'document/documents.html', {'organization':organization, 'publications':publications, 'shelf':shelf, 'shelf_type':'shelf'})
-
-# UPLOAD DOCUMENT
-######################################################################################################################################################
-
-@login_required
-def upload_documents_to_shelf(request, organization_slug, shelf_id):
-    if request.method == 'POST':
-        organization = get_object_or_404(Organization, slug=organization_slug)
-        shelf = get_object_or_404(OrganizationShelf, pk=shelf_id)
-
-        if shelf.organization.id != organization.id or not can(request.user, 'upload_shelf', organization, {'shelf':shelf}):
-            return response_json_error('access-denied')
-        
-        if request.FILES == None:
-            return response_json_error('file-missing')
-        
-        file = request.FILES[u'files[]']
-
-        if file.size > settings.MAX_PUBLICATION_FILE_SIZE:
-            return response_json_error('file-size-exceed')
-
-        if not file:
-            return response_json_error('file-missing')
-        
-        uploading_file = UploadedFile(file)
-        publication = document_functions.upload_publication(request, uploading_file, organization)
-        PublicationShelf.objects.create(publication=publication, shelf=shelf, created_by=request.user)
-
-        return response_json_success({
-            'uid': str(publication.uid),
-            'title': publication.title,
-            'file_ext':publication.file_ext,
-            'file_size_text': humanize_file_size(uploading_file.file.size),
-            'shelf':shelf.id if shelf else '',
-            'uploaded':format_abbr_datetime(publication.uploaded),
-            'thumbnail_url':publication.get_large_thumbnail(),
-            'download_url': reverse('download_publication', args=[publication.uid])
-        })
-
-    else:
-        raise Http404
 
 # PUBLICATION
 ######################################################################################################################################################
 
-@logged_in_or_basicauth()
+@require_POST
+@login_required
+def upload_publication(request, organization_slug, shelf_id):
+
+    organization = get_object_or_404(Organization, slug=organization_slug)
+    shelf = get_object_or_404(OrganizationShelf, pk=shelf_id)
+
+    if shelf.organization.id != organization.id or not can(request.user, 'upload_shelf', organization, {'shelf':shelf}):
+        raise Http404
+
+    if request.FILES == None:
+        return response_json_error('file-missing')
+    
+    file = request.FILES[u'files[]']
+
+    if file.size > settings.MAX_PUBLICATION_FILE_SIZE:
+        return response_json_error('file-size-exceed')
+
+    if not file:
+        return response_json_error('file-missing')
+    
+    uploading_file = UploadedFile(file)
+    publication = document_functions.upload_publication(request, uploading_file, organization)
+    PublicationShelf.objects.create(publication=publication, shelf=shelf, created_by=request.user)
+
+    return response_json_success({
+        'uid': str(publication.uid),
+        'title': publication.title,
+        'file_ext':publication.file_ext,
+        'file_size_text': humanize_file_size(uploading_file.file.size),
+        'shelf':shelf.id if shelf else '',
+        'uploaded':format_abbr_datetime(publication.uploaded),
+        'thumbnail_url':publication.get_large_thumbnail(),
+        'download_url': reverse('download_publication', args=[publication.uid])
+    })
+
+@require_GET
+@login_required
 def download_publication(request, publication_uid):
     publication = get_object_or_404(Publication, uid=publication_uid)
+
+    if not can(request.user, 'view_publication', organization, {'publication':publication}):
+        raise Http404
 
     can_download = False
     for shelf in publication.shelves.all():
@@ -105,152 +105,159 @@ def download_publication(request, publication_uid):
             can_download = True
 
     if not can_download:
-        raise Http403
+        raise Http404
     
     return private_files_get_file(request, 'document', 'Publication', 'uploaded_file', str(publication.id), '%s.%s' % (publication.original_file_name, publication.file_ext))
 
+@require_POST
 @login_required
 def replace_publication(request, publication_uid):
-    if request.method == 'POST':
-        publication = get_object_or_404(Publication, uid=publication_uid)
 
-        if request.FILES == None:
-            return response_json_error('file-missing')
-        
-        file = request.FILES[u'files[]']
+    publication = get_object_or_404(Publication, uid=publication_uid)
 
-        if file.size > settings.MAX_PUBLICATION_FILE_SIZE:
-            return response_json_error('file-size-exceed')
-
-        if not file:
-            return response_json_error('file-missing')
-        
-        uploading_file = UploadedFile(file)
-        publication = document_functions.replace_publication(request, uploading_file, publication)
-
-        if publication:
-            return response_json_success({
-                'uid': str(publication.uid),
-                'file_ext':publication.file_ext,
-                'file_size_text': humanize_file_size(uploading_file.file.size),
-                'uploaded':format_abbr_datetime(publication.uploaded),
-                'replaced':format_abbr_datetime(publication.replaced),
-                'thumbnail_url':publication.get_large_thumbnail(),
-                'download_url': reverse('download_publication', args=[publication.uid])
-            })
-        else:
-            return response_json_error('')
-
-    else:
+    if not can(request.user, 'edit_publication', organization, {'publication':publication}):
         raise Http404
 
-# EDIT DOCUMENT
-######################################################################################################################################################
+    if request.FILES == None:
+        return response_json_error('file-missing')
+    
+    file = request.FILES[u'files[]']
 
+    if file.size > settings.MAX_PUBLICATION_FILE_SIZE:
+        return response_json_error('file-size-exceed')
+
+    if not file:
+        return response_json_error('file-missing')
+    
+    uploading_file = UploadedFile(file)
+    publication = document_functions.replace_publication(request, uploading_file, publication)
+
+    if publication:
+        return response_json_success({
+            'uid': str(publication.uid),
+            'file_ext':publication.file_ext,
+            'file_size_text': humanize_file_size(uploading_file.file.size),
+            'uploaded':format_abbr_datetime(publication.uploaded),
+            'replaced':format_abbr_datetime(publication.replaced),
+            'thumbnail_url':publication.get_large_thumbnail(),
+            'download_url': reverse('download_publication', args=[publication.uid])
+        })
+    else:
+        return response_json_error('')
+
+@require_POST
 @login_required
 def ajax_edit_publication(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
-    if request.method == 'POST':
-        publication_uid = request.POST.get('uid')
-        title = request.POST.get('title')
-        description = request.POST.get('description')
-        tag_names = request.POST.getlist('tags[]')
+    publication_uid = request.POST.get('uid')
+    title = request.POST.get('title')
+    description = request.POST.get('description')
+    tag_names = request.POST.getlist('tags[]')
 
-        try:
-            publication = Publication.objects.get(uid=publication_uid)
-        except Publication.DoesNotExist:
-            return response_json_error('invalid-publication')
-        
-        if not title:
-            return response_json_error('missing-parameter')
-        
-        publication.title = title
-        publication.description = description
-        publication.save()
-
-        PublicationTag.objects.filter(publication=publication).delete()
-
-        for tag_name in tag_names:
-            if tag_name:
-                try:
-                    tag = OrganizationTag.objects.get(organization=organization, tag_name=tag_name)
-                except OrganizationTag.DoesNotExist:
-                    tag = OrganizationTag.objects.create(organization=organization, tag_name=tag_name)
-                
-                PublicationTag.objects.create(publication=publication, tag=tag)
-        
-        return response_json_success()
-
-    else:
+    try:
+        publication = Publication.objects.get(uid=publication_uid)
+    except Publication.DoesNotExist:
+        return response_json_error('invalid-publication')
+    
+    if not can(request.user, 'edit_publication', organization, {'publication':publication}):
         raise Http404
+    
+    if not title:
+        return response_json_error('missing-parameter')
+    
+    publication.title = title
+    publication.description = description
+    publication.save()
 
-@login_required
-def ajax_delete_publication(request, organization_slug):
-    organization = get_object_or_404(Organization, slug=organization_slug)
+    PublicationTag.objects.filter(publication=publication).delete()
 
-    if request.method == 'POST':
-        publication_uid = request.POST.get('uid')
-        
-        if publication_uid:
-            publication_uids = [publication_uid]
-        else:
-            publication_uids = request.POST.getlist('uid[]')
-        
-            if not publication_uids:
-                raise Http404
-        
-        print publication_uids
-        publications = []
-        for publication_uid in publication_uids:
-            try:
-                publications.append(Publication.objects.get(uid=publication_uid))
-            except Publication.DoesNotExist:
-                pass
-        
-        if not publications:
-            return response_json_error('invalid-publication')
-        
-        document_functions.delete_publications(publications)
-
-        return response_json_success()
-
-    else:
-        raise Http404
-
-@login_required
-def ajax_add_publications_tag(request, organization_slug):
-    organization = get_object_or_404(Organization, slug=organization_slug)
-
-    if request.method == 'POST':
-        publication_uids = request.POST.getlist('publication[]')
-        tag_name = request.POST.get('tag')
-
+    for tag_name in tag_names:
         if tag_name:
             try:
                 tag = OrganizationTag.objects.get(organization=organization, tag_name=tag_name)
             except OrganizationTag.DoesNotExist:
                 tag = OrganizationTag.objects.create(organization=organization, tag_name=tag_name)
+            
+            PublicationTag.objects.create(publication=publication, tag=tag)
+    
+    return response_json_success()
 
-            for publication_uid in publication_uids:
-                try:
-                    publication = Publication.objects.get(uid=publication_uid)
-                except Publication.DoesNotExist:
-                    continue
-                
+@require_POST
+@login_required
+def ajax_delete_publication(request, organization_slug):
+    organization = get_object_or_404(Organization, slug=organization_slug)
+    publication_uid = request.POST.get('uid')
+    
+    if publication_uid:
+        publication_uids = [publication_uid]
+    else:
+        publication_uids = request.POST.getlist('uid[]')
+    
+        if not publication_uids:
+            raise Http404
+    
+    publications = []
+    for publication_uid in publication_uids:
+        try:
+            publication = Publication.objects.get(uid=publication_uid)
+        except Publication.DoesNotExist:
+            continue
+        
+        if can(request.user, 'edit_publication', organization, {'publication':publication}):
+            publications.append(publication)
+    
+    if not publications:
+        return response_json_error('invalid-publication')
+    
+    document_functions.delete_publications(publications)
+
+    return response_json_success()
+
+@require_POST
+@login_required
+def ajax_add_publications_tag(request, organization_slug):
+    organization = get_object_or_404(Organization, slug=organization_slug)
+
+    publication_uids = request.POST.getlist('publication[]')
+    tag_name = request.POST.get('tag')
+
+    if tag_name:
+        publications = []
+        for publication_uid in publication_uids:
+            try:
+                publication = Publication.objects.get(uid=publication_uid)
+            except Publication.DoesNotExist:
+                continue
+            
+            if can(request.user, 'edit_publication', organization, {'publication':publication}):
+                publications.append(publication)
+        
+        if publications:
+            try:
+                tag = OrganizationTag.objects.get(organization=organization, tag_name=tag_name)
+            except OrganizationTag.DoesNotExist:
+                tag = OrganizationTag.objects.create(organization=organization, tag_name=tag_name)
+            
+            for publication in publications:
                 PublicationTag.objects.get_or_create(publication=publication, tag=tag)
             
             return response_json_success()
+
         else:
-            return response_json_error('missing-parameter')
-
+            return response_json_error('invalid-publication')
+        
     else:
-        raise Http404
+        return response_json_error('missing-parameter')
 
+@require_GET
 @login_required
-def ajax_query_document_tags(request, organization_slug):
+def ajax_query_publication_tags(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
     term = request.GET.get('term')
+
+    if not can(request.user, 'view_organization', organization):
+        raise Http404
 
     tags = OrganizationTag.objects.filter(organization=organization, tag_name__icontains=term)
 
@@ -304,7 +311,7 @@ def create_document_shelf(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
     if not can(request.user, 'manage_shelf', organization):
-        raise Http403
+        raise Http404
     
     if request.method == 'POST':
         form = OrganizationShelfForm(request.POST)
@@ -335,8 +342,8 @@ def edit_document_shelf(request, organization_slug, shelf_id):
     shelf = get_object_or_404(OrganizationShelf, pk=shelf_id)
 
     if shelf.organization.id != organization.id or not can(request.user, 'manage_shelf', organization):
-        raise Http403
-    
+        raise Http404
+
     if request.method == 'POST':
         form = OrganizationShelfForm(request.POST)
         if form.is_valid():
@@ -364,7 +371,7 @@ def delete_document_shelf(request, organization_slug, shelf_id):
     shelf = get_object_or_404(OrganizationShelf, pk=shelf_id)
 
     if shelf.organization.id != organization.id or not can(request.user, 'manage_shelf', organization):
-        raise Http403
+        raise Http404
     
     if request.method == 'POST':
         if 'submit-delete' in request.POST:
@@ -392,4 +399,3 @@ def delete_document_shelf(request, organization_slug, shelf_id):
     
     shelf_documents_count = Publication.objects.filter(shelves__in=[shelf]).count()
     return render(request, 'document/shelf_delete.html', {'organization':organization, 'shelf_documents_count':shelf_documents_count, 'shelf':shelf, 'shelf_type':'delete'})
-
