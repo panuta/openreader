@@ -1,11 +1,11 @@
 # -*- encoding: utf-8 -*-
 
 import os
-base_path = os.path.abspath(os.path.dirname(__file__))
+base_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), os.path.pardir) 
 
 from django.conf import global_settings
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -27,7 +27,6 @@ DATABASES = {
 
 WEBSITE_NAME = 'OpenReader'
 WEBSITE_DOMAIN = 'http://127.0.0.1:8000'
-WEBSITE_HOST = '127.0.0.1:8000' # Use for system email address
 
 TIME_ZONE = 'Asia/Bangkok'
 LANGUAGE_CODE = 'th'
@@ -73,17 +72,6 @@ AUTHENTICATION_BACKENDS = (
     #'django.contrib.auth.backends.ModelBackend',
 )
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-# EMAIL_USE_TLS = True
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_HOST_USER = 'username@gmail.com'
-# EMAIL_HOST_PASSWORD = 'password'
-# EMAIL_PORT = 587
-
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = '*r3geszk-gvq8cl==g1_o^2ivx&wx6vuz*osszca2mtivv=u*@'
-
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
@@ -92,7 +80,6 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    'middleware.AJAXSimpleExceptionResponse',
     'http.Http403Middleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
@@ -136,7 +123,6 @@ INSTALLED_APPS = (
     'private_files',
     'storages',
     'pagination',
-    'debug_toolbar',
 
     'accounts',
     'api',
@@ -145,45 +131,11 @@ INSTALLED_APPS = (
     'management',
 )
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': True,
-    'formatters': {
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-        },
-        'simple': {
-            'format': '%(levelname)s %(message)s'
-        },
-    },
-    'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': '/tmp/openreader.log',
-            'formatter': 'verbose'
-        }
-    },
-    'loggers': {
-        'openreader': {
-            'handlers': ['file'],
-            'level': 'DEBUG'
-        },
-    }
-}
-
-INTERNAL_IPS = ('127.0.0.1',)
-DEBUG_TOOLBAR_CONFIG = {'INTERCEPT_REDIRECTS':False}
+OPENREADER_LOGGER = 'openreader'
 
 ########## Django Private Files ##########
 
 FILE_PROTECTION_METHOD = 'basic'
-
-########## Django Storages ##########
-
-SFTP_STORAGE_HOST = '172.16.204.129'
-SFTP_STORAGE_ROOT = '/web/sites/openreader/files/'
-SFTP_STORAGE_PARAMS = {'username':'root', 'password':'panuta'}
 
 ########## Django Compressor ##########
 COMPRESS_ENABLED = True
@@ -198,15 +150,12 @@ COMPRESS_PRECOMPILERS = (
 PAGINATION_DEFAULT_PAGINATION = 50
 
 ########## Open Reader Settings ##########
-OPENREADER_LOGGER = 'openreader'
 
 PUBLICATION_PREFIX = '/publication'
 PUBLICATION_ROOT = MEDIA_ROOT + PUBLICATION_PREFIX
 
 MAX_PUBLICATION_FILE_SIZE = 300000000 # 300mb
 MAX_PUBLICATION_FILE_SIZE_TEXT = '300 เมกะไบต์'
-
-EMAIL_FOR_USER_PUBLISHER_INVITATION = 'noreply@' + WEBSITE_HOST
 
 # Publication Download
 

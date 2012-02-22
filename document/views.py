@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 import datetime
+import logging
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -24,6 +25,8 @@ from document import functions as document_functions
 from forms import *
 from models import *
 from permissions import *
+
+logger = logging.getLogger(settings.OPENREADER_LOGGER)
 
 @login_required
 def view_organization_front(request, organization_slug):
@@ -78,18 +81,22 @@ def upload_publication(request, organization_slug, shelf_id):
     
     uploading_file = UploadedFile(file)
     publication = document_functions.upload_publication(request, uploading_file, organization)
-    PublicationShelf.objects.create(publication=publication, shelf=shelf, created_by=request.user)
 
-    return response_json_success({
-        'uid': str(publication.uid),
-        'title': publication.title,
-        'file_ext':publication.file_ext,
-        'file_size_text': humanize_file_size(uploading_file.file.size),
-        'shelf':shelf.id if shelf else '',
-        'uploaded':format_abbr_datetime(publication.uploaded),
-        'thumbnail_url':publication.get_large_thumbnail(),
-        'download_url': reverse('download_publication', args=[publication.uid])
-    })
+    if publication:
+        PublicationShelf.objects.create(publication=publication, shelf=shelf, created_by=request.user)
+
+        return response_json_success({
+            'uid': str(publication.uid),
+            'title': publication.title,
+            'file_ext':publication.file_ext,
+            'file_size_text': humanize_file_size(uploading_file.file.size),
+            'shelf':shelf.id if shelf else '',
+            'uploaded':format_abbr_datetime(publication.uploaded),
+            'thumbnail_url':publication.get_large_thumbnail(),
+            'download_url': reverse('download_publication', args=[publication.uid])
+        })
+    else:
+        return response_json_error('upload-failed')
 
 @require_GET
 @login_required
@@ -123,14 +130,11 @@ def replace_publication(request, publication_uid):
     uploading_file = UploadedFile(file)
     publication = document_functions.replace_publication(request, uploading_file, publication)
 
-    publication.replaced = datetime.datetime.now()
-
     if publication:
         return response_json_success({
             'uid': str(publication.uid),
             'file_ext':publication.file_ext,
             'file_size_text': humanize_file_size(uploading_file.file.size),
-            #'file_size_text': '30GB',
             'uploaded':format_abbr_datetime(publication.uploaded),
             'replaced':format_abbr_datetime(publication.replaced),
             'thumbnail_url':publication.get_large_thumbnail(),

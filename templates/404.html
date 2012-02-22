@@ -1,7 +1,12 @@
-{% extends 'base.html' %}
+{% extends 'base_single.html' %}
 
-{% block head_title %}Page Not Found{% endblock %}
+{% block head_title %}ไม่พบหน้าที่ต้องการ{% endblock %}
 
-{% block body_main %}
-404 : Page Not Found
+{% block body_single %}
+<div class="outer-container span6 offset3">
+  <div class="inner-container">
+    <h1>ไม่พบหน้าที่ต้องการ</h1>
+    <p><a href="/" class="btn">กลับไปหน้าแรก</a></p>
+  </div>
+</div>
 {% endblock %}

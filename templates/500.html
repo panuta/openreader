@@ -1,7 +1,25 @@
-{% extends 'base.html' %}
-
-{% block head_title %}Internal Server Error{% endblock %}
-
-{% block body_main %}
-500 : Internal Server Error
-{% endblock %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <title>Open Reader | ระบบเกิดข้อผิดพลาด</title>
+  <meta charset="utf-8">
+  <meta name="keywords" content="{% block meta_keywords %}{% endblock %}" />
+  <script type="text/javascript" src="{{STATIC_URL}}libs/jquery-1.7.1.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}libs/bootstrap/css/bootstrap.css">
+  <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/styles.single.css">
+</head>
+<body>
+  <div class="container single-container">
+    <div class="logo"><a href="/">OpenReader</a></div>
+    <div class="row">
+      <div class="outer-container span6 offset3">
+        <div class="inner-container">
+          <h1>ระบบเกิดข้อผิดพลาด</h1>
+          <p><a href="/" class="btn">กลับไปหน้าแรก</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

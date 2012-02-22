@@ -110,6 +110,7 @@ function initializeDocumentsPage(shelf_id) {
           if(responseObject.error == 'file-missing') error_message = 'ไม่สามารถอ่านไฟล์ที่ต้องการอัพโหลดได้';
           if(responseObject.error == 'file-size-exceed') error_message = 'ไฟล์มีขนาดใหญ่เกินกำหนด';
           if(responseObject.error == 'access-denied') error_message = 'ผู้ใช้ไม่สามารถอัพโหลดไฟล์ในชั้นหนังสือนี้ได้';
+          if(responseObject.error == 'upload-failed') error_message = 'ไม่สามารถบันทึกไฟล์ที่อัพโหลดได้';
 
           data.context.addClass('error_row').find('td:first').append('<div class="error_message">' + error_message + '</div>');
           data.context.find('.cancel_button').removeClass('cancel_button').addClass('delete_button');

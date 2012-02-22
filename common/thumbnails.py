@@ -1,5 +1,4 @@
-import os
-import subprocess
+import subprocess, sys, traceback, os, logging
 import Image
 
 from django.conf import settings
@@ -8,6 +7,8 @@ from django.utils.importlib import import_module
 from common.utilities import split_filepath
 
 NO_THUMBNAIL_URL = settings.STATIC_URL + 'images/no_thumbnail.jpg'
+
+logger = logging.getLogger(settings.OPENREADER_LOGGER)
 
 def generate_thumbnails(publication):
     if publication.file_ext in ('jpg', 'jpeg', 'png', 'gif'):
@@ -31,8 +32,7 @@ def delete_thumbnails(publication):
         try:
             os.remove('%s%s/%s.%s.jpg' % (file_path, settings.THUMBNAIL_PREFIX_PATH, file_name, thumbnail_size[0]))
         except:
-            # TODO LOG
-            pass
+            logger.error(traceback.format_exc(sys.exc_info()[2]))
 
 # Thumbnail Generators
 ##############################################################################################################
@@ -58,7 +58,7 @@ def _generate_image_thumbnail(publication):
         return True
 
     except:
-        # TODO LOG
+        logger.error(traceback.format_exc(sys.exc_info()[2]))
         return False
 
 def _generate_pdf_thumbnail(publication):
@@ -89,11 +89,12 @@ def _generate_pdf_thumbnail(publication):
         try:
             os.remove(temp_file)
         except:
-            pass
+            logger.error(traceback.format_exc(sys.exc_info()[2]))
         
         return True
 
     except:
+        logger.error(traceback.format_exc(sys.exc_info()[2]))
         return False
 
 """
