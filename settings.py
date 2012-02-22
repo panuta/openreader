@@ -225,7 +225,7 @@ THUMBNAIL_SIZES = (
 THUMBNAIL_REGENERATE = True
 
 # Shelf Icons
-DEFAULT_SHELF_ICON = 'basic2-092'
-SHELF_ICONS = ['basic1-006','basic1-041','basic1-060','basic1-107','basic1-122','basic1-129','basic2-001','basic2-092','basic2-143','basic2-182','basic2-196','basic2-215','basic2-241','basic2-253','basic2-256']
+DEFAULT_SHELF_ICON = 'basic1-006'
+SHELF_ICONS = ['basic1-006', 'basic1-041', 'basic1-049', 'basic1-052', 'basic1-054', 'basic1-106', 'basic1-129', 'basic2-001', 'basic2-011', 'basic2-018', 'basic2-057', 'basic2-092', 'basic2-096', 'basic2-102', 'basic2-106', 'basic2-114', 'basic2-117', 'basic2-142', 'basic2-197', 'basic2-238', 'basic2-253', 'basic2-256', 'basic2-258', 'basic2-267', 'basic2-268']
 
 #######################################################

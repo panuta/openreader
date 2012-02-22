@@ -29,7 +29,7 @@ def delete_thumbnails(publication):
 
     for thumbnail_size in settings.THUMBNAIL_SIZES:
         try:
-            os.remove('%s/%s%s.%s.jpg' % (file_path, settings.THUMBNAIL_PREFIX_PATH, file_name, thumbnail_size[0]))
+            os.remove('%s%s/%s.%s.jpg' % (file_path, settings.THUMBNAIL_PREFIX_PATH, file_name, thumbnail_size[0]))
         except:
             # TODO LOG
             pass

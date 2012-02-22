@@ -46,7 +46,7 @@ def get_viewable_shelves(user, organization):
 
     shelves = []
     for shelf in OrganizationShelf.objects.filter(organization=organization).order_by('name'):
-        if get_shelf_access(shelf) >= SHELF_ACCESS['VIEW_ACCESS']:
+        if get_shelf_access(user, shelf) >= SHELF_ACCESS['VIEW_ACCESS']:
             shelves.append(shelf)
 
     return shelves

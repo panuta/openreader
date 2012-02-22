@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+import datetime
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -58,7 +59,6 @@ def view_documents_by_shelf(request, organization_slug, shelf_id):
 @require_POST
 @login_required
 def upload_publication(request, organization_slug, shelf_id):
-
     organization = get_object_or_404(Organization, slug=organization_slug)
     shelf = get_object_or_404(OrganizationShelf, pk=shelf_id)
 
@@ -96,15 +96,7 @@ def upload_publication(request, organization_slug, shelf_id):
 def download_publication(request, publication_uid):
     publication = get_object_or_404(Publication, uid=publication_uid)
 
-    if not can(request.user, 'view_publication', organization, {'publication':publication}):
-        raise Http404
-
-    can_download = False
-    for shelf in publication.shelves.all():
-        if request.user.get_profile().get_shelf_access(shelf) >= SHELF_ACCESS['VIEW_ACCESS']:
-            can_download = True
-
-    if not can_download:
+    if not can(request.user, 'view_publication', publication.organization, {'publication':publication}):
         raise Http404
     
     return private_files_get_file(request, 'document', 'Publication', 'uploaded_file', str(publication.id), '%s.%s' % (publication.original_file_name, publication.file_ext))
@@ -112,10 +104,9 @@ def download_publication(request, publication_uid):
 @require_POST
 @login_required
 def replace_publication(request, publication_uid):
-
     publication = get_object_or_404(Publication, uid=publication_uid)
 
-    if not can(request.user, 'edit_publication', organization, {'publication':publication}):
+    if not can(request.user, 'edit_publication', publication.organization, {'publication':publication}):
         raise Http404
 
     if request.FILES == None:
@@ -132,11 +123,14 @@ def replace_publication(request, publication_uid):
     uploading_file = UploadedFile(file)
     publication = document_functions.replace_publication(request, uploading_file, publication)
 
+    publication.replaced = datetime.datetime.now()
+
     if publication:
         return response_json_success({
             'uid': str(publication.uid),
             'file_ext':publication.file_ext,
             'file_size_text': humanize_file_size(uploading_file.file.size),
+            #'file_size_text': '30GB',
             'uploaded':format_abbr_datetime(publication.uploaded),
             'replaced':format_abbr_datetime(publication.replaced),
             'thumbnail_url':publication.get_large_thumbnail(),

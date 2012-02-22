@@ -29,18 +29,20 @@ def upload_publication(request, uploading_file, organization):
     return publication
 
 def replace_publication(request, uploading_file, publication):
+    if publication.has_thumbnail:
+        delete_thumbnails(publication)
+    
     (file_path, file_name, file_ext) = split_filepath(uploading_file.name)
     
     try:
         publication.uploaded_file.delete()
         publication.uploaded_file.save('%s.%s' % (uuid.uuid4(), file_ext), uploading_file.file)
     except:
+        import sys
+        print sys.exc_info()
         return None
     
     # Create thumbnails
-    if publication.has_thumbnail:
-        delete_thumbnails(publication)
-    
     publication.has_thumbnail = generate_thumbnails(publication)
     publication.save()
     
