@@ -11,7 +11,7 @@ NO_THUMBNAIL_URL = settings.STATIC_URL + 'images/no_thumbnail.jpg'
 logger = logging.getLogger(settings.OPENREADER_LOGGER)
 
 def generate_thumbnails(publication):
-    if publication.file_ext in ('jpg', 'jpeg', 'png', 'gif'):
+    if publication.file_ext in ('jpg', 'jpeg', 'png', 'gif', 'psd'):
         return _generate_image_thumbnail(publication)
     elif publication.file_ext == 'pdf':
         return _generate_pdf_thumbnail(publication)
@@ -58,7 +58,7 @@ def _generate_image_thumbnail(publication):
         return True
 
     except:
-        logger.error(traceback.format_exc(sys.exc_info()[2]))
+        logger.error('Publication Thumbnail [%s] - %s' % (publication.uid, traceback.format_exc(sys.exc_info()[2])))
         return False
 
 def _generate_pdf_thumbnail(publication):
@@ -94,7 +94,7 @@ def _generate_pdf_thumbnail(publication):
         return True
 
     except:
-        logger.error(traceback.format_exc(sys.exc_info()[2]))
+        logger.error('Publication Thumbnail [%s] - %s' % (publication.uid, traceback.format_exc(sys.exc_info()[2])))
         return False
 
 """

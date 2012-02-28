@@ -6,6 +6,10 @@ TODO - PHRASE 2
 - public publication (anyone can see)
 
 
+$ redis-server
+$ python manage.py celeryd -l info
+
+
 
 IAMSECRET/download/protected.txt1333256400
 /download/protected.txt?st=xStmYQFAtCGrdqJekBqXGg&e=1333256400

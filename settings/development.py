@@ -56,6 +56,7 @@ INSTALLED_APPS = (
     'storages',
     'pagination',
     'debug_toolbar',
+    'djcelery',
 
     'accounts',
     'api',

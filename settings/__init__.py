@@ -89,7 +89,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.RemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'pagination.middleware.PaginationMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 ROOT_URLCONF = 'urls'
@@ -123,6 +122,7 @@ INSTALLED_APPS = (
     'private_files',
     'storages',
     'pagination',
+    'djcelery',
 
     'accounts',
     'api',
@@ -132,6 +132,26 @@ INSTALLED_APPS = (
 )
 
 OPENREADER_LOGGER = 'openreader'
+
+########## Django Debug Toolbar ##########
+
+INTERNAL_IPS = ('127.0.0.1',)
+
+########## Django Celery ##########
+
+import djcelery
+djcelery.setup_loader()
+
+BROKER_URL = "redis://localhost:6379/0"
+
+BROKER_HOST = "localhost"
+BROKER_PORT = 5672
+BROKER_USER = "guest"
+BROKER_PASSWORD = "guest"
+BROKER_VHOST = "/"
+
+BROKER_TRANSPORT = 'redis'
+
 
 ########## Django Private Files ##########
 

@@ -105,12 +105,10 @@ function initializeDocumentsPage(shelf_id) {
           $('.checkbox_actions').addClass('checkbox_actions_selected').find('a').removeClass('disabled');
 
         } else {
-          var error_message = 'เกิดข้อผิดพลาด ไม่สามารถอัพโหลดไฟล์ได้';
+          var error_message = 'ไม่สามารถบันทึกไฟล์ที่อัพโหลดได้';
 
-          if(responseObject.error == 'file-missing') error_message = 'ไม่สามารถอ่านไฟล์ที่ต้องการอัพโหลดได้';
           if(responseObject.error == 'file-size-exceed') error_message = 'ไฟล์มีขนาดใหญ่เกินกำหนด';
           if(responseObject.error == 'access-denied') error_message = 'ผู้ใช้ไม่สามารถอัพโหลดไฟล์ในชั้นหนังสือนี้ได้';
-          if(responseObject.error == 'upload-failed') error_message = 'ไม่สามารถบันทึกไฟล์ที่อัพโหลดได้';
 
           data.context.addClass('error_row').find('td:first').append('<div class="error_message">' + error_message + '</div>');
           data.context.find('.cancel_button').removeClass('cancel_button').addClass('delete_button');
@@ -281,6 +279,8 @@ function initializeDocumentsPage(shelf_id) {
       var file = data.files[0];
       responseObject = data.result;
 
+      data.rowObject.find('.error_message').remove();
+
       if(responseObject.status == 'success') {
         data.rowObject.find('.uploaded').html('อัพโหลดเมื่อวันที่ ' + responseObject.uploaded + ' (เปลี่ยนไฟล์เมื่อวันที่ ' + responseObject.replaced + ')').show();
         data.rowObject.attr('id', responseObject.uid);
@@ -292,9 +292,8 @@ function initializeDocumentsPage(shelf_id) {
         data.rowObject.find('input[name="thumbnail"]').val(responseObject.thumbnail_url);
 
       } else {
-        var error_message = 'เกิดข้อผิดพลาด ไม่สามารถอัพโหลดไฟล์ได้';
+        var error_message = 'ไม่สามารถบันทึกไฟล์ที่อัพโหลดได้';
 
-        if(responseObject.error == 'file-missing') error_message = 'ไม่สามารถอ่านไฟล์ที่ต้องการอัพโหลดได้';
         if(responseObject.error == 'file-size-exceed') error_message = 'ไฟล์มีขนาดใหญ่เกินกำหนด';
         if(responseObject.error == 'access-denied') error_message = 'ผู้ใช้ไม่สามารถอัพโหลดไฟล์ในชั้นหนังสือนี้ได้';
 

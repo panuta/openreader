@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import UploadedFile
 from django.core.urlresolvers import reverse
+from django.db import transaction
 from django.http import HttpResponse, HttpResponseServerError, Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_GET, require_POST
@@ -25,6 +26,7 @@ from document import functions as document_functions
 from forms import *
 from models import *
 from permissions import *
+from tasks import prepare_publication
 
 logger = logging.getLogger(settings.OPENREADER_LOGGER)
 
@@ -59,6 +61,7 @@ def view_documents_by_shelf(request, organization_slug, shelf_id):
 # PUBLICATION
 ######################################################################################################################################################
 
+@transaction.commit_manually
 @require_POST
 @login_required
 def upload_publication(request, organization_slug, shelf_id):
@@ -68,22 +71,25 @@ def upload_publication(request, organization_slug, shelf_id):
     if shelf.organization.id != organization.id or not can(request.user, 'upload_shelf', organization, {'shelf':shelf}):
         raise Http404
 
-    if request.FILES == None:
-        return response_json_error('file-missing')
-    
-    file = request.FILES[u'files[]']
+    try:
+        file = request.FILES[u'files[]']
 
-    if file.size > settings.MAX_PUBLICATION_FILE_SIZE:
-        return response_json_error('file-size-exceed')
+        if file.size > settings.MAX_PUBLICATION_FILE_SIZE:
+            return response_json_error('file-size-exceed')
 
-    if not file:
-        return response_json_error('file-missing')
-    
-    uploading_file = UploadedFile(file)
-    publication = document_functions.upload_publication(request, uploading_file, organization)
+        uploading_file = UploadedFile(file)
+        publication = document_functions.upload_publication(request, uploading_file, organization, shelf)
 
-    if publication:
-        PublicationShelf.objects.create(publication=publication, shelf=shelf, created_by=request.user)
+        if not publication:
+            transaction.rollback()
+            return response_json_error()
+
+        transaction.commit() # Need to commit before create task
+
+        try:
+            prepare_publication.delay(publication.uid)
+        except:
+            logger.crirical(traceback.format_exc(sys.exc_info()[2]))
 
         return response_json_success({
             'uid': str(publication.uid),
@@ -95,8 +101,10 @@ def upload_publication(request, organization_slug, shelf_id):
             'thumbnail_url':publication.get_large_thumbnail(),
             'download_url': reverse('download_publication', args=[publication.uid])
         })
-    else:
-        return response_json_error('upload-failed')
+
+    except:
+        transaction.rollback()
+        return response_json_error()
 
 @require_GET
 @login_required
@@ -108,6 +116,7 @@ def download_publication(request, publication_uid):
     
     return private_files_get_file(request, 'document', 'Publication', 'uploaded_file', str(publication.id), '%s.%s' % (publication.original_file_name, publication.file_ext))
 
+@transaction.commit_manually
 @require_POST
 @login_required
 def replace_publication(request, publication_uid):
@@ -116,21 +125,22 @@ def replace_publication(request, publication_uid):
     if not can(request.user, 'edit_publication', publication.organization, {'publication':publication}):
         raise Http404
 
-    if request.FILES == None:
-        return response_json_error('file-missing')
-    
-    file = request.FILES[u'files[]']
+    try:
+        file = request.FILES[u'files[]']
 
-    if file.size > settings.MAX_PUBLICATION_FILE_SIZE:
-        return response_json_error('file-size-exceed')
+        if file.size > settings.MAX_PUBLICATION_FILE_SIZE:
+            return response_json_error('file-size-exceed')
 
-    if not file:
-        return response_json_error('file-missing')
-    
-    uploading_file = UploadedFile(file)
-    publication = document_functions.replace_publication(request, uploading_file, publication)
+        uploading_file = UploadedFile(file)
+        publication = document_functions.replace_publication(request, uploading_file, publication)
 
-    if publication:
+        if not publication:
+            transaction.rollback()
+            return response_json_error()
+
+        transaction.commit()
+        prepare_publication.delay(publication.uid)
+
         return response_json_success({
             'uid': str(publication.uid),
             'file_ext':publication.file_ext,
@@ -140,8 +150,10 @@ def replace_publication(request, publication_uid):
             'thumbnail_url':publication.get_large_thumbnail(),
             'download_url': reverse('download_publication', args=[publication.uid])
         })
-    else:
-        return response_json_error('')
+
+    except:
+        transaction.rollback()
+        return response_json_error()
 
 @require_POST
 @login_required

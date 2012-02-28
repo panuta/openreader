@@ -35,6 +35,8 @@ class Publication(models.Model):
     #uploaded_file = models.FileField(upload_to='/web/sites/openreader/files/', max_length=500, null=True)
     original_file_name = models.CharField(max_length=300)
     file_ext = models.CharField(max_length=10)
+
+    is_processing = models.BooleanField(default=True)
     has_thumbnail = models.BooleanField(default=False)
 
     shelves = models.ManyToManyField('OrganizationShelf', through='PublicationShelf')

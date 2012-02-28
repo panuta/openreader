@@ -69,7 +69,7 @@ $(document).ready(function () {
           <td class="download"><a href="{% url download_publication publication.uid %}" title="ดาวน์โหลดไฟล์ {{publication.file_ext|upper}}" data-content="ขนาดไฟล์ {{publication.uploaded_file.size|file_size}}">ดาวน์โหลดไฟล์</a></td>
           <td class="file">
             <div class="filename">{{publication.title}}</div>
-            <div class="uploaded">อัพโหลดเมื่อวันที่ {{publication.uploaded|format_abbr_datetime}}</div>
+            <div class="uploaded">อัพโหลดเมื่อวันที่ {{publication.uploaded|format_abbr_datetime}} {% if publication.is_processing %} <span class="processing">กำลังประมวลผล</span>{% endif %}</div>
             <div class="tag">{% print_publication_tags publication %}</div>
           </td>
           <td class="row_actions">
