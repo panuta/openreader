@@ -69,7 +69,7 @@ LOGIN_REDIRECT_URL = '/'
 AUTHENTICATION_BACKENDS = (
     'backends.EmailAuthenticationBackend',
     'django.contrib.auth.backends.RemoteUserBackend',
-    #'django.contrib.auth.backends.ModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
 )
 
 # List of callables that know how to import templates from various sources.
@@ -182,7 +182,13 @@ MAX_PUBLICATION_FILE_SIZE_TEXT = '300 เมกะไบต์'
 DOWNLOAD_LINK_EXPIRE_IN = 180 # Minutes
 
 # Thumbnail
+THUMBNAIL_ROOT = PUBLICATION_ROOT + '/thumbnails'
 THUMBNAIL_TEMP_ROOT = MEDIA_ROOT + '/thumbnails_temp' # Use when generating thumbnails
+
+THUMBNAIL_URL = '/thumbnails'
+
+
+
 THUMBNAIL_PREFIX_PATH = '/thumbnails'
 
 THUMBNAIL_SIZES = (

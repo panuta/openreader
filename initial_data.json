@@ -5,7 +5,7 @@
 {"pk": 3, "model": "accounts.organizationadminpermission", "fields": {"name": "การจัดการชั้นหนังสือ (สร้าง แก้ไข และลบชั้นหนังสือ)", "code_name": "manage_shelf"}},
 
 
-{"pk": 1, "model": "auth.user", "fields": {"username": "1", "is_active": true, "is_superuser": true, "is_staff": true, "last_login": "2011-12-01 16:43:51", "groups": [], "user_permissions": [], "password": "sha1$01585$302a20e1e2d0a73652b63b57df52bd793472244b", "email": "system@openreader.com", "date_joined": "2011-12-01 16:43:51"}}, 
+{"pk": 1, "model": "auth.user", "fields": {"username": "system", "is_active": true, "is_superuser": true, "is_staff": true, "last_login": "2011-12-01 16:43:51", "groups": [], "user_permissions": [], "password": "sha1$b0f03$15fb4bd73eaca528c1e5e698a999cc3e0a20f7f1", "email": "system@openreader.com", "date_joined": "2011-12-01 16:43:51"}}, 
 {"pk": 2, "model": "auth.user", "fields": {"username": "2", "is_active": true, "is_superuser": false, "is_staff": true, "last_login": "2011-12-01 16:43:51", "groups": [], "user_permissions": [], "password": "sha1$b0f03$15fb4bd73eaca528c1e5e698a999cc3e0a20f7f1", "email": "admin@openreader.com", "date_joined": "2011-12-01 16:43:51"}}, 
 {"pk": 3, "model": "auth.user", "fields": {"username": "3", "is_active": true, "is_superuser": false, "is_staff": true, "last_login": "2011-12-01 16:43:51", "groups": [], "user_permissions": [], "password": "sha1$0286b$eb6f8978b020def24a1ebe92b8695f2c03616199", "email": "staff@openreader.com", "date_joined": "2011-12-01 16:43:51"}}, 
 

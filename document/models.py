@@ -60,6 +60,9 @@ class Publication(models.Model):
     
     def get_small_thumbnail(self):
         return get_thumbnail_url(self, 'small')
+
+    def get_parent_folder(self):
+        return '/%s' % self.organization.id
     
     def get_rel_path(self): # return -> /[org id]
         return '%s/%d' % (settings.PUBLICATION_PREFIX, self.organization.id)

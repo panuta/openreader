@@ -1,6 +1,8 @@
 from settings import *
 #Alter or add production specific variables
 
+DEBUG = True
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',

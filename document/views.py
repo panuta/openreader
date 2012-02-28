@@ -41,7 +41,7 @@ def view_documents(request, organization_slug):
 
     if not can(request.user, 'view_organization', organization):
         raise Http404
-    
+
     shelves = get_viewable_shelves(request.user, organization)
     publications = Publication.objects.filter(shelves__in=shelves).order_by('-uploaded')
     return render(request, 'document/documents.html', {'organization':organization, 'publications':publications, 'shelf':None, 'shelf_type':'all'})

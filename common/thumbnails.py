@@ -20,17 +20,16 @@ def generate_thumbnails(publication):
 
 def get_thumbnail_url(publication, size):
     if publication.has_thumbnail:
-        (file_path, file_name, file_ext) = split_filepath(publication.uploaded_file.name)
-        return '%s%s%s/%s.%s.jpg' % (settings.MEDIA_URL, publication.get_rel_path(), settings.THUMBNAIL_PREFIX_PATH, publication.uid, size)
+        return '%s%s/%s.%s.jpg' % (settings.THUMBNAIL_URL, publication.get_parent_folder(), publication.uid, size)
+        #(file_path, file_name, file_ext) = split_filepath(publication.uploaded_file.name)
+        #return '%s%s%s/%s.%s.jpg' % (settings.MEDIA_URL, publication.get_rel_path(), settings.THUMBNAIL_PREFIX_PATH, publication.uid, size)
     else:
         return NO_THUMBNAIL_URL
 
 def delete_thumbnails(publication):
-    (file_path, file_name, file_ext) = split_filepath(publication.uploaded_file.path)
-
     for thumbnail_size in settings.THUMBNAIL_SIZES:
         try:
-            os.remove('%s%s/%s.%s.jpg' % (file_path, settings.THUMBNAIL_PREFIX_PATH, file_name, thumbnail_size[0]))
+            os.remove('%s%s/%s.%s.jpg' % (settings.THUMBNAIL_ROOT, publication.get_parent_folder(), file_name, thumbnail_size[0]))
         except:
             logger.error(traceback.format_exc(sys.exc_info()[2]))
 
@@ -44,7 +43,7 @@ def _generate_image_thumbnail(publication):
             im = im.convert('RGB')
         
         (file_path, file_name, file_ext) = split_filepath(publication.uploaded_file.path)
-        thumbnail_path = '%s%s/' % (file_path, settings.THUMBNAIL_PREFIX_PATH)
+        thumbnail_path = '%s%s/' % (settings.THUMBNAIL_ROOT, publication.get_parent_folder())
 
         if not os.path.exists(thumbnail_path):
             os.makedirs(thumbnail_path)
@@ -75,7 +74,7 @@ def _generate_pdf_thumbnail(publication):
         if im.mode != 'RGB':
             im = im.convert('RGB')
 
-        thumbnail_path = '%s%s/' % (file_path, settings.THUMBNAIL_PREFIX_PATH)
+        thumbnail_path = '%s%s/' % (settings.THUMBNAIL_ROOT, publication.get_parent_folder())
 
         if not os.path.exists(thumbnail_path):
             os.makedirs(thumbnail_path)
