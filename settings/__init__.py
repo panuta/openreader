@@ -184,12 +184,7 @@ DOWNLOAD_LINK_EXPIRE_IN = 180 # Minutes
 # Thumbnail
 THUMBNAIL_ROOT = PUBLICATION_ROOT + '/thumbnails'
 THUMBNAIL_TEMP_ROOT = MEDIA_ROOT + '/thumbnails_temp' # Use when generating thumbnails
-
 THUMBNAIL_URL = '/thumbnails'
-
-
-
-THUMBNAIL_PREFIX_PATH = '/thumbnails'
 
 THUMBNAIL_SIZES = (
     ('small', (70, 85)),

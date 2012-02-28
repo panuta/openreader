@@ -6,7 +6,8 @@ from django.utils.importlib import import_module
 
 from common.utilities import split_filepath
 
-NO_THUMBNAIL_URL = settings.STATIC_URL + 'images/no_thumbnail.jpg'
+NO_THUMBNAIL_URL = settings.STATIC_URL + 'images/thumbnail_none.jpg'
+PROCESSING_THUMBNAIL_URL = settings.STATIC_URL + 'images/thumbnail_processing.jpg'
 
 logger = logging.getLogger(settings.OPENREADER_LOGGER)
 
@@ -21,10 +22,11 @@ def generate_thumbnails(publication):
 def get_thumbnail_url(publication, size):
     if publication.has_thumbnail:
         return '%s%s/%s.%s.jpg' % (settings.THUMBNAIL_URL, publication.get_parent_folder(), publication.uid, size)
-        #(file_path, file_name, file_ext) = split_filepath(publication.uploaded_file.name)
-        #return '%s%s%s/%s.%s.jpg' % (settings.MEDIA_URL, publication.get_rel_path(), settings.THUMBNAIL_PREFIX_PATH, publication.uid, size)
     else:
-        return NO_THUMBNAIL_URL
+        if publication.is_processing:
+            return PROCESSING_THUMBNAIL_URL
+        else:
+            return NO_THUMBNAIL_URL
 
 def delete_thumbnails(publication):
     for thumbnail_size in settings.THUMBNAIL_SIZES:
