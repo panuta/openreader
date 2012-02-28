@@ -33,8 +33,6 @@ def get_publication_access(user, publication):
 # Organization Shelf
 ############################################################################################
 
-SHELF_ACCESS = {'NO_ACCESS':0, 'VIEW_ACCESS':1, 'PUBLISH_ACCESS':2}
-
 def get_viewable_shelves(user, organization):
     try:
         user_organization = UserOrganization.objects.get(user=user, organization=organization, is_active=True)

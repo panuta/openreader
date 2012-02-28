@@ -13,8 +13,6 @@ from common.thumbnails import get_thumbnail_url
 from accounts.models import UserProfile as BaseUserProfile
 from accounts.models import UserOrganization, UserGroup
 
-from permissions import SHELF_ACCESS
-
 # PUBLICATION
 ############################################################
 
@@ -89,6 +87,7 @@ class PublicationRevision(models.Model):
 
 # SHELF
 ############################################################
+SHELF_ACCESS = {'NO_ACCESS':0, 'VIEW_ACCESS':1, 'PUBLISH_ACCESS':2}
 
 class OrganizationShelf(models.Model):
     organization = models.ForeignKey('accounts.Organization')
