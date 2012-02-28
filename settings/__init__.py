@@ -43,7 +43,7 @@ MEDIA_URL = '/media'
 
 STATIC_ROOT = os.path.join(base_path, 'sitestatic/')
 STATIC_URL = '/static/'
-ADMIN_MEDIA_PREFIX = '/static/admin/'
+ADMIN_MEDIA_PREFIX = '/static-admin/'
 
 STATICFILES_DIRS = (
     os.path.join(base_path, 'static'),
