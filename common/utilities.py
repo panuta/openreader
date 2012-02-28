@@ -49,6 +49,15 @@ def split_filepath(path):
     
     return (head, root, ext)
 
+def extract_parameters(parameters):
+    param_list = parameters.split('&')
+    parameters = {}
+    for param in param_list:
+        key, value = param.split('=')
+        parameters[key] = value
+
+    return parameters
+
 def generate_random_username():
     return base64.urlsafe_b64encode(os.urandom(10))
 

@@ -2,6 +2,11 @@ from time import time
 
 from django.conf import settings
 
+from common.utilities import extract_parameters
+
+# Generate download URL
+# ############################################################################################################################################
+
 def generate_download_url(server, publication):
 
     if server.server_type == 'nginx':
@@ -59,3 +64,51 @@ def _generate_xsendfile_download_url(server, publication):
     # TODO
 
     return ''
+
+# Upload to server
+# ############################################################################################################################################
+
+def upload_to_server(server, publication):
+
+    if server.server_type == 'nginx':
+        return _upload_to_nginx_server(server, publication)
+
+    elif server.server_type == 's3':
+        return _upload_to_s3_server(server, publication)
+
+    elif server.server_type == 'intranet':
+        return _upload_to_intranet_server(server, publication)
+
+    elif server.server_type == 'xsendfile':
+        return _upload_to_xsendfile_server(server, publication)
+    
+    return None
+
+from django.db import models
+class PublicationOnSFTP(models.Model):
+    upload_file = models.FileField(storage=sftp_storage, upload_to='/web/openreader/www/')
+
+
+def _upload_to_nginx_server(server, publication):
+    parameters = extract_parameters(server.parameters)
+
+    if parameter.get('location') == 'remote':
+        # Upload via SFTP
+
+        from storages.backends.sftpstorage import SFTPStorage
+
+        model = PublicationOnSFTP()
+        model.upload_to = publication.uploaded_file
+        model.upload_to.save()
+
+    elif parameter.get('location') == 'remote':
+        pass
+
+def _upload_to_s3_server(server, publication):
+    pass
+
+def _upload_to_intranet_server(server, publication):
+    pass
+
+def _upload_to_xsendfile_server(server, publication):
+    pass

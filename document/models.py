@@ -90,6 +90,7 @@ class PublicationRevision(models.Model):
 
 # SHELF
 ############################################################
+
 SHELF_ACCESS = {'NO_ACCESS':0, 'VIEW_ACCESS':1, 'PUBLISH_ACCESS':2}
 
 class OrganizationShelf(models.Model):
@@ -149,6 +150,7 @@ class OrganizationDownloadServer(models.Model):
     priority = models.IntegerField(default=0) # Higher value has higher priority
     server_type = models.CharField(max_length=200)
     server_address = models.CharField(max_length=300)
-    prefix = models.CharField(max_length=300, blank=True, null=True) # e.g. '/openreader' (remove trailing slash)
-    key = models.CharField(max_length=300, blank=True, null=True)
+    parameters = models.CharField(max_length=2000)
+    # prefix = models.CharField(max_length=300, blank=True, null=True) # e.g. '/openreader' (remove trailing slash)
+    # key = models.CharField(max_length=300, blank=True, null=True)
 

@@ -16,9 +16,10 @@ def prepare_publication(publication_uid):
     try:
         publication = Publication.objects.get(uid=publication_uid)
     except:
-        logger.crirical(traceback.format_exc(sys.exc_info()[2]))
+        logger.critical(traceback.format_exc(sys.exc_info()[2]))
         return None
 
+    # Generate thumbnails
     try:
         if publication.has_thumbnail:
             delete_thumbnails(publication)
@@ -28,9 +29,14 @@ def prepare_publication(publication_uid):
         publication.has_thumbnail = False
         logger.error(traceback.format_exc(sys.exc_info()[2]))
     
-    # TODO Upload to file servers
+    # Upload publication
+    from common.fileservers import upload_to_server
+
+    for server in OrganizationDownloadServer.objects.filter(organization=publication.organization).order_by('-priority'):
+        upload_to_server(server, publication)
 
     publication.is_processing = False
     publication.save()
 
     return publication_uid
+

@@ -89,7 +89,7 @@ def upload_publication(request, organization_slug, shelf_id):
         try:
             prepare_publication.delay(publication.uid)
         except:
-            logger.crirical(traceback.format_exc(sys.exc_info()[2]))
+            logger.critical(traceback.format_exc(sys.exc_info()[2]))
 
         return response_json_success({
             'uid': str(publication.uid),

@@ -30,7 +30,7 @@
 {"pk": 2, "model": "accounts.usergroup", "fields": {"user_organization": 2, "group": 2}},
 
 
-{"pk": 1, "model": "document.organizationdownloadserver", "fields": {"organization": 1, "server_type": "nginx", "priority":1, "server_address":"172.16.204.129", "prefix":"/download", "key":"IAMSECRET"}},
+{"pk": 1, "model": "document.organizationdownloadserver", "fields": {"organization": 1, "server_type": "nginx", "priority":1, "server_address":"172.16.204.129"}},
 {"pk": 2, "model": "document.organizationdownloadserver", "fields": {"organization": 1, "server_type": "s3", "priority":10, "server_address":"localhost"}},
 {"pk": 3, "model": "document.organizationdownloadserver", "fields": {"organization": 1, "server_type": "intranet", "priority":99, "server_address":"localhost"}},
 {"pk": 4, "model": "document.organizationdownloadserver", "fields": {"organization": 1, "server_type": "xsendfile", "priority":5, "server_address":"localhost"}},

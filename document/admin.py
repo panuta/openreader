@@ -25,6 +25,9 @@ class OrganizationTagAdmin(admin.ModelAdmin):
 class PublicationTagAdmin(admin.ModelAdmin):
     pass
 
+class OrganizationDownloadServerAdmin(admin.ModelAdmin):
+    pass
+
 admin.site.register(Publication, PublicationAdmin)
 admin.site.register(OrganizationShelf, OrganizationShelfAdmin)
 admin.site.register(PublicationShelf, PublicationShelfAdmin)
@@ -33,3 +36,4 @@ admin.site.register(GroupShelfPermission, GroupShelfPermissionAdmin)
 admin.site.register(UserShelfPermission, UserShelfPermissionAdmin)
 admin.site.register(OrganizationTag, OrganizationTagAdmin)
 admin.site.register(PublicationTag, PublicationTagAdmin)
+admin.site.register(OrganizationDownloadServer, OrganizationDownloadServerAdmin)
