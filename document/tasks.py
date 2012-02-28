@@ -1,4 +1,4 @@
-from celery.decorators import task
+from celery.task import task
 
 @task(name='tasks.prepare_publication')
 def prepare_publication(publication_uid):

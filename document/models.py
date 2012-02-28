@@ -13,7 +13,7 @@ from common.thumbnails import get_thumbnail_url
 from accounts.models import UserProfile as BaseUserProfile
 from accounts.models import UserOrganization, UserGroup
 
-from perms import SHELF_ACCESS
+from permissions import SHELF_ACCESS
 
 # PUBLICATION
 ############################################################

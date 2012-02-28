@@ -17,8 +17,8 @@ Celery on OSX for Development
     3. Copy excutable files
 
         ```
-        sudo cp redis-server /usr/local/bin/
-        sudo cp redis-cli /usr/local/bin/
+        sudo cp src/redis-server /usr/local/bin/
+        sudo cp src/redis-cli /usr/local/bin/
         ```
 
 2. Install Celery package with Django and Redis support from http://pypi.python.org/pypi/django-celery-with-redis/
