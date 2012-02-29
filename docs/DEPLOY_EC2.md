@@ -204,7 +204,7 @@ Step 9 - Setup web server
 3. Extract and install nginx
 
     ```
-    $ sudo ./configure --conf-path=/web/openreader/conf/nginx/nginx.conf
+    $ sudo ./configure --conf-path=/web/openreader/conf/nginx/nginx.conf --with-http_secure_link_module
     $ sudo make
     $ sudo make install
     ```

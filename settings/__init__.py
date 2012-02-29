@@ -120,7 +120,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'private_files',
-    'storages',
+    
     'pagination',
     'djcelery',
 

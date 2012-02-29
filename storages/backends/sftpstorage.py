@@ -1,3 +1,7 @@
+# Modified by Panu Tangchalermkul
+# To accept host name, parameters and root path when initializing instance
+
+
 # SFTP storage backend for Django.
 # Author: Brent Tubbs <brent.tubbs@gmail.com>
 # License: MIT
@@ -61,14 +65,14 @@ except ImportError:
 
 class SFTPStorage(Storage):
 
-    def __init__(self):
-        self._host = settings.SFTP_STORAGE_HOST
+    def __init__(self, host, root_path, parameters={}):
+        self._host = host
 
         # if present, settings.SFTP_STORAGE_PARAMS should be a dict with params
         # matching the keyword arguments to paramiko.SSHClient().connect().  So
         # you can put username/password there.  Or you can omit all that if
         # you're using keys.
-        self._params = getattr(settings, 'SFTP_STORAGE_PARAMS', {})
+        self._params = parameters
         self._interactive = getattr(settings, 'SFTP_STORAGE_INTERACTIVE',
                                     False)
         self._file_mode = getattr(settings, 'SFTP_STORAGE_FILE_MODE', None)
@@ -77,7 +81,7 @@ class SFTPStorage(Storage):
         self._uid = getattr(settings, 'SFTP_STORAGE_UID', None)
         self._gid = getattr(settings, 'SFTP_STORAGE_GID', None)
 
-        self._root_path = settings.SFTP_STORAGE_ROOT
+        self._root_path = root_path
 
         # for now it's all posix paths.  Maybe someday we'll support figuring
         # out if the remote host is windows.

@@ -30,10 +30,9 @@
 {"pk": 2, "model": "accounts.usergroup", "fields": {"user_organization": 2, "group": 2}},
 
 
-{"pk": 1, "model": "document.organizationdownloadserver", "fields": {"organization": 1, "server_type": "nginx", "priority":1, "server_address":"172.16.204.129"}},
-{"pk": 2, "model": "document.organizationdownloadserver", "fields": {"organization": 1, "server_type": "s3", "priority":10, "server_address":"localhost"}},
-{"pk": 3, "model": "document.organizationdownloadserver", "fields": {"organization": 1, "server_type": "intranet", "priority":99, "server_address":"localhost"}},
-{"pk": 4, "model": "document.organizationdownloadserver", "fields": {"organization": 1, "server_type": "xsendfile", "priority":5, "server_address":"localhost"}},
+{"pk": 1, "model": "document.organizationdownloadserver", "fields": {"organization": 1, "server_type": "nginx", "priority":1, "server_address":"172.16.204.129", "parameters":"secret=SECRETKEY&prefix=/download"}},
+
+{"pk": 1, "model": "document.organizationuploadserver", "fields": {"organization": 1, "server_type": "sftp", "server_address":"172.16.204.129", "parameters":"root_path=/web/openreader/publication&username=root&password=panuta"}},
 
 
 {"pk": 4, "model": "auth.user", "fields": {"username": "4", "last_login": "2011-12-01 16:43:51", "password": "sha1$01585$302a20e1e2d0a73652b63b57df52bd793472244b", "email": "user4@example.com", "date_joined": "2011-12-01 16:43:51"}},

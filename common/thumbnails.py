@@ -59,7 +59,7 @@ def _generate_image_thumbnail(publication):
         return True
 
     except:
-        logger.error('Publication Thumbnail [%s] - %s' % (publication.uid, traceback.format_exc(sys.exc_info()[2])))
+        logger.error('Generating image thumbnail [%s] - %s' % (publication.uid, traceback.format_exc(sys.exc_info()[2])))
         return False
 
 def _generate_pdf_thumbnail(publication):
@@ -95,24 +95,5 @@ def _generate_pdf_thumbnail(publication):
         return True
 
     except:
-        logger.error('Publication Thumbnail [%s] - %s' % (publication.uid, traceback.format_exc(sys.exc_info()[2])))
+        logger.error('Generating PDF thumbnail [%s] - %s' % (publication.uid, traceback.format_exc(sys.exc_info()[2])))
         return False
-
-"""
-def get_thumbnail_url(publication, size):
-    if publication.has_thumbnail:
-        (file_path, file_name, file_ext) = split_filepath(publication.uploaded_file.name)
-        return '%spublication/%d%s%s.thumbnail.%s.jpg' % (settings.MEDIA_URL, publication.organization.id, settings.THUMBNAIL_PATH, file_name, size)
-    else:
-        #if settings.THUMBNAIL_REGENERATE:
-        #    (file_name, file_ext) = split_filename(publication.uploaded_file.name)
-        #    generator = get_generator(file_ext)
-        #    if generator:
-        #        generated = generator.generate_thumbnails(publication.uploaded_file.file)
-        #        publication.has_thumbnail = generated
-        #        publication.save()
-        #        return '%spublication/%d/thumbnails/%s.thumbnail.%s.jpg' % (settings.MEDIA_URL, publication.organization.id, file_name, size)
-        
-        return NO_THUMBNAIL_URL
-
-"""

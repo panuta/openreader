@@ -30,7 +30,6 @@ class Publication(models.Model):
     description = models.TextField(blank=True)
     
     uploaded_file = PrivateFileField(upload_to=publication_media_dir, condition=is_downloadable, max_length=500, null=True)
-    #uploaded_file = models.FileField(upload_to='/web/sites/openreader/files/', max_length=500, null=True)
     original_file_name = models.CharField(max_length=300)
     file_ext = models.CharField(max_length=10)
 
@@ -65,10 +64,13 @@ class Publication(models.Model):
         return '/%s' % self.organization.id
     
     def get_rel_path(self): # return -> /[org id]
-        return '%s/%d' % (settings.PUBLICATION_PREFIX, self.organization.id)
+        return '/%d' % (settings.PUBLICATION_PREFIX, self.organization.id)
     
     def get_download_rel_path(self): # return -> /[org id]/[uid].[file-ext]
-        return self.uploaded_file.path.replace(settings.PUBLICATION_ROOT, '')
+        if self.file_ext:
+            return '%s/%s.%s' % (self.get_parent_folder(), self.uid, self.file_ext)
+        else:
+            return '%s/%s' % (self.get_parent_folder(), self.uid)
 
 """
 class PublicationRevision(models.Model):
@@ -142,15 +144,18 @@ class PublicationTag(models.Model):
     publication = models.ForeignKey(Publication)
     tag = models.ForeignKey(OrganizationTag)
 
-# DOWNLOAD SERVER
+# ORGANIZATION SERVER
 ############################################################
 
 class OrganizationDownloadServer(models.Model):
     organization = models.ForeignKey('accounts.Organization')
     priority = models.IntegerField(default=0) # Higher value has higher priority
-    server_type = models.CharField(max_length=200)
+    server_type = models.CharField(max_length=200) # nginx, s3, intranet, xsendfile
     server_address = models.CharField(max_length=300)
     parameters = models.CharField(max_length=2000)
-    # prefix = models.CharField(max_length=300, blank=True, null=True) # e.g. '/openreader' (remove trailing slash)
-    # key = models.CharField(max_length=300, blank=True, null=True)
 
+class OrganizationUploadServer(models.Model):
+    organization = models.ForeignKey('accounts.Organization')
+    server_type = models.CharField(max_length=200) # sftp, s3
+    server_address = models.CharField(max_length=300)
+    parameters = models.CharField(max_length=2000)

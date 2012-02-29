@@ -27,17 +27,19 @@ def _generate_nginx_download_url(server, publication):
     """
     Serve file using nginx's HttpSecureLinkModule
     """
-    path = publication.get_download_rel_path()
+    parameters = extract_parameters(server.parameters)
+
+    path = parameters.get('prefix') + publication.get_download_rel_path()
     expire_timestamp = int(time()) + settings.DOWNLOAD_LINK_EXPIRE_IN * 60
 
-    import md5, base64
-    m = md5.new()
-    m.update('%s/%s%s' % (server.key, path, expire_timestamp))
+    import hashlib, base64
+    m = hashlib.md5()
+    m.update('%s%s%s' % (parameters.get('secret'), path, expire_timestamp))
     hash = base64.urlsafe_b64encode(m.digest())
     hash = hash.replace('=', '')
     hash = hash.replace('+', '-')
     hash = hash.replace('/', '_')
-    return 'http://%s%s%s?st=%s&e=%s' % (server.server_address, server.prefix, path, hash, expire_timestamp)
+    return 'http://%s%s?st=%s&e=%s' % (server.server_address, path, hash, expire_timestamp)
 
 def _generate_s3_download_url(server, publication):
     """
@@ -70,45 +72,22 @@ def _generate_xsendfile_download_url(server, publication):
 
 def upload_to_server(server, publication):
 
-    if server.server_type == 'nginx':
-        return _upload_to_nginx_server(server, publication)
+    if server.server_type == 'sftp':
+        return _upload_to_sftp_server(server, publication)
 
     elif server.server_type == 's3':
         return _upload_to_s3_server(server, publication)
 
-    elif server.server_type == 'intranet':
-        return _upload_to_intranet_server(server, publication)
+    return False
 
-    elif server.server_type == 'xsendfile':
-        return _upload_to_xsendfile_server(server, publication)
-    
-    return None
-
-from django.db import models
-class PublicationOnSFTP(models.Model):
-    upload_file = models.FileField(storage=sftp_storage, upload_to='/web/openreader/www/')
-
-
-def _upload_to_nginx_server(server, publication):
+def _upload_to_sftp_server(server, publication):
     parameters = extract_parameters(server.parameters)
+    
+    from storages.backends.sftpstorage import SFTPStorage
+    root_path = '%s%s' % (parameters.pop('root_path'), publication.get_parent_folder())
+    SFTPStorage(server.server_address, root_path, parameters).save('%s.%s' % (publication.uid, publication.file_ext), publication.uploaded_file)
 
-    if parameter.get('location') == 'remote':
-        # Upload via SFTP
-
-        from storages.backends.sftpstorage import SFTPStorage
-
-        model = PublicationOnSFTP()
-        model.upload_to = publication.uploaded_file
-        model.upload_to.save()
-
-    elif parameter.get('location') == 'remote':
-        pass
+    return True
 
 def _upload_to_s3_server(server, publication):
-    pass
-
-def _upload_to_intranet_server(server, publication):
-    pass
-
-def _upload_to_xsendfile_server(server, publication):
     pass

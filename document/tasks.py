@@ -1,5 +1,4 @@
-import logging
-import sys
+import logging, sys, traceback
 
 from celery.task import task
 
@@ -20,6 +19,7 @@ def prepare_publication(publication_uid):
         return None
 
     # Generate thumbnails
+
     try:
         if publication.has_thumbnail:
             delete_thumbnails(publication)
@@ -30,10 +30,15 @@ def prepare_publication(publication_uid):
         logger.error(traceback.format_exc(sys.exc_info()[2]))
     
     # Upload publication
+    
     from common.fileservers import upload_to_server
+    from document.models import OrganizationUploadServer
 
-    for server in OrganizationDownloadServer.objects.filter(organization=publication.organization).order_by('-priority'):
-        upload_to_server(server, publication)
+    for server in OrganizationUploadServer.objects.filter(organization=publication.organization):
+        try:
+            upload_to_server(server, publication)
+        except:
+            logger.error(traceback.format_exc(sys.exc_info()[2]))
 
     publication.is_processing = False
     publication.save()
