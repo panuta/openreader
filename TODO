@@ -1,8 +1,8 @@
 TODO
-- Revision -- Create a revision for publication
-- Browser Compatibility -- Check compatibility between IE, Firefox, Chrome, Safari and Opera
-- Import Users -- Import users from CSV file
-- Redesign APIs -- Improve authentication, protected publication thumbnails, improve performance
+- Revision for publication
+- Browser compatibility
+- Import users from CSV file
+- Redesign APIs (Improve authentication, protected publication thumbnails, improve performance)
 - Upload/Download publication from Amazon S3 and Cloud Front
 
 OpenReader for Publisher
