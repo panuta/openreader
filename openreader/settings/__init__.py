@@ -1,11 +1,11 @@
 # -*- encoding: utf-8 -*-
 
 import os
-base_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), os.path.pardir) 
+base_path = os.path.join(os.path.join(os.path.abspath(os.path.dirname(__file__)), os.path.pardir), os.path.pardir)
 
 from django.conf import global_settings
 
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -67,7 +67,7 @@ AUTH_PROFILE_MODULE = 'accounts.UserProfile'
 LOGIN_REDIRECT_URL = '/'
 
 AUTHENTICATION_BACKENDS = (
-    'backends.EmailAuthenticationBackend',
+    'openreader.backends.EmailAuthenticationBackend',
     'django.contrib.auth.backends.RemoteUserBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
@@ -80,18 +80,22 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    'http.Http403Middleware',
+    'openreader.http.Http403Middleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.RemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.contrib.auth.middleware.RemoteUserMiddleware',
+
     'pagination.middleware.PaginationMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
-ROOT_URLCONF = 'urls'
+ROOT_URLCONF = 'openreader.urls'
+
+WSGI_APPLICATION = 'openreader.wsgi.application'
 
 TEMPLATE_DIRS = (
     os.path.join(base_path, 'templates'),
@@ -105,7 +109,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.static',
     'django.contrib.messages.context_processors.messages',
     'django.core.context_processors.request',
-    'context.constants',
+    'openreader.context.constants',
 )
 
 FILE_UPLOAD_HANDLERS = ('handlers.UploadProgressCachedHandler', ) + global_settings.FILE_UPLOAD_HANDLERS
@@ -123,6 +127,7 @@ INSTALLED_APPS = (
     
     'pagination',
     'djcelery',
+    'debug_toolbar',
 
     'accounts',
     'api',
@@ -136,6 +141,9 @@ OPENREADER_LOGGER = 'openreader'
 ########## Django Debug Toolbar ##########
 
 INTERNAL_IPS = ('127.0.0.1',)
+DEBUG_TOOLBAR_CONFIG = {
+    'INTERCEPT_REDIRECTS': False,
+}
 
 ########## Django Celery ##########
 

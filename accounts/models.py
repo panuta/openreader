@@ -24,7 +24,7 @@ class UserProfile(models.Model):
 
     def __unicode__(self):
         return '%s %s' % (self.first_name, self.last_name)
-    
+
     def get_fullname(self):
         if not self.first_name or not self.last_name:
             if not self.user.first_name or not self.user.last_name:
