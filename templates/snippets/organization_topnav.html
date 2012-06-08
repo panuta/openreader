@@ -2,5 +2,6 @@
 <h1><a href="/">{{organization.name}}</a></h1>
 <ul class="nav">
   <li{% if active_menu == "document" %} class="active"{% endif %}><a href="{% url view_documents organization.slug %}"><i class="icon-file icon-white"></i> ไฟล์เอกสาร</a></li>
-  <li{% if active_menu == "management" %} class="active"{% endif %}><a href="{% url view_organization_profile organization.slug %}"><i class="icon-cog icon-white"></i> ข้อมูลระบบ</a></li>
+  <li{% if active_menu == "user" %} class="active"{% endif %}><a href="{% url view_organization_users organization.slug %}"><i class="icon-user icon-white"></i> การจัดการผู้ใช้</a></li>
+  <li{% if active_menu == "organization" %} class="active"{% endif %}><a href="{% url view_organization_profile organization.slug %}"><i class="icon-cog icon-white"></i> ข้อมูลบริษัท</a></li>
 </ul>

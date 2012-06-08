@@ -1,18 +1,20 @@
-{% extends 'accounts/manage/organization_base.html' %}
+{% extends 'base_authenticated.html' %}
 {% load helper_tags %}
 
-{% block organization_manage_head_title %}{% endblock %}
-{% block organization_manage_sidebar %}{% include 'accounts/manage/snippets/organization_sidebar.html' with active_manage_menu='profile' %}{% endblock %}
+{% block topnav %}{% include 'snippets/organization_topnav.html' with active_menu='organization' %}{% endblock %}
 
-{% block organization_manage_content %}
-<h2>ข้อมูลบริษัท {{organization.name}}</h2>
-
-<div class="statistics">
-  <h3>สถิติการใช้งาน</h3>
-  <h4>ไฟล์เอกสาร</h4>
-  <ul>
-    <li>จำนวนไฟล์ <strong>{{statistics.publication_count}} ไฟล์</strong></li>
-    <li>จำนวนชั้นหนังสือ <strong>{{statistics.shelf_count}} ชั้น</strong></li>
-  </ul>
-</div>
+{% block body_authenticated %}
+<div class="container-fluid organization_profile_page"><div class="row-fluid">
+    <div class="content"><div class="inner-content">
+        <h2>ข้อมูล{{ organization.prefix }} {{ organization.name }}</h2>
+        <div class="statistics">
+            <h3>สถิติการใช้งาน</h3>
+            <h4>ไฟล์เอกสาร</h4>
+            <ul>
+                <li>จำนวนไฟล์ <strong>{{ statistics.publication_count }} ไฟล์</strong></li>
+                <li>จำนวนชั้นหนังสือ <strong>{{ statistics.shelf_count }} ชั้น</strong></li>
+            </ul>
+        </div>
+    </div></div>
+</div></div>
 {% endblock %}
