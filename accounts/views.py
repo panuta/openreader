@@ -12,7 +12,6 @@ from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_GET, require_POST
 from django.utils import simplejson
-#from django.utils.translation import ugettext_lazy as _
 
 from common.shortcuts import response_json_success
 from common.utilities import generate_random_username
@@ -43,7 +42,7 @@ def view_user_home(request):
 @require_GET
 @login_required
 def view_user_welcome(request):
-    if UserOrganization.objects.filter(user=request.user, is_active=True).count() != 0:
+    if not UserOrganization.objects.filter(user=request.user, is_active=True).count():
         raise Http404
     
     return render(request, 'accounts/user_welcome.html', {})

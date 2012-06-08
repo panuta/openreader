@@ -32,7 +32,7 @@
     {% for organization_user in organization_users %}
     <tr>
       <td>{{organization_user.user.get_profile.get_fullname}}</td>
-      <td>{{organization_user.user.get_profile.email}}</td>
+      <td>{{organization_user.user.email}}</td>
       {% can user 'manage_user' organization %}<td class="row_actions"><a href="{% url edit_organization_user organization_user.id %}" class="btn btn-small">แก้ไข</a></td>{% endcan %}
     </tr>
     {% endfor %}

@@ -5,15 +5,16 @@
 {"pk": 3, "model": "accounts.organizationadminpermission", "fields": {"name": "การจัดการชั้นหนังสือ (สร้าง แก้ไข และลบชั้นหนังสือ)", "code_name": "manage_shelf"}},
 
 
-{"pk": 1, "model": "auth.user", "fields": {"username": "system", "is_active": true, "is_superuser": true, "is_staff": true, "last_login": "2011-12-01 16:43:51", "groups": [], "user_permissions": [], "password": "sha1$b0f03$15fb4bd73eaca528c1e5e698a999cc3e0a20f7f1", "email": "system@openreader.com", "date_joined": "2011-12-01 16:43:51"}}, 
-{"pk": 2, "model": "auth.user", "fields": {"username": "2", "is_active": true, "is_superuser": false, "is_staff": true, "last_login": "2011-12-01 16:43:51", "groups": [], "user_permissions": [], "password": "sha1$b0f03$15fb4bd73eaca528c1e5e698a999cc3e0a20f7f1", "email": "admin@openreader.com", "date_joined": "2011-12-01 16:43:51"}}, 
-{"pk": 3, "model": "auth.user", "fields": {"username": "3", "is_active": true, "is_superuser": false, "is_staff": true, "last_login": "2011-12-01 16:43:51", "groups": [], "user_permissions": [], "password": "sha1$0286b$eb6f8978b020def24a1ebe92b8695f2c03616199", "email": "staff@openreader.com", "date_joined": "2011-12-01 16:43:51"}}, 
+{"pk": 1, "model": "auth.user", "fields": {"username": "system", "email": "system@openreader.com", "is_active": true, "is_superuser": true, "is_staff": true, "last_login": "2011-12-01 16:43:51", "groups": [], "user_permissions": [], "password": "pbkdf2_sha256$10000$KnKQnW8UwRGT$M6im7byfvTcA38ABP3WS5245FbSGt+3Sn7CGKzSYtTc=", "date_joined": "2011-12-01 16:43:51"}},
+{"pk": 2, "model": "auth.user", "fields": {"username": "admin", "email": "admin@openreader.com", "is_active": true, "is_superuser": false, "is_staff": true, "last_login": "2011-12-01 16:43:51", "groups": [], "user_permissions": [], "password": "pbkdf2_sha256$10000$KnKQnW8UwRGT$M6im7byfvTcA38ABP3WS5245FbSGt+3Sn7CGKzSYtTc=", "date_joined": "2011-12-01 16:43:51"}},
+{"pk": 3, "model": "auth.user", "fields": {"username": "staff", "email": "staff@openreader.com", "is_active": true, "is_superuser": false, "is_staff": true, "last_login": "2011-12-01 16:43:51", "groups": [], "user_permissions": [], "password": "pbkdf2_sha256$10000$KnKQnW8UwRGT$M6im7byfvTcA38ABP3WS5245FbSGt+3Sn7CGKzSYtTc=", "date_joined": "2011-12-01 16:43:51"}},
+{"pk": 4, "model": "auth.user", "fields": {"username": "user", "email": "user@openreader.com", "is_active": true, "is_superuser": false, "is_staff": false, "last_login": "2011-12-01 16:43:51", "groups": [], "user_permissions": [], "password": "pbkdf2_sha256$10000$KnKQnW8UwRGT$M6im7byfvTcA38ABP3WS5245FbSGt+3Sn7CGKzSYtTc=", "date_joined": "2011-12-01 16:43:51"}},
 
 
-{"pk": 1, "model": "accounts.userprofile", "fields": {"web_access": false, "email":"system@openreader.com", "first_name": "System", "last_name": "Openreader", "is_first_time": true, "user": 1}},
-{"pk": 2, "model": "accounts.userprofile", "fields": {"web_access": true, "email":"admin@openreader.com", "first_name": "Admin", "last_name": "Openreader", "is_first_time": true, "user": 2}}, 
-{"pk": 3, "model": "accounts.userprofile", "fields": {"web_access": true, "email":"staff@openreader.com", "first_name": "Staff", "last_name": "Openreader", "is_first_time": true, "user": 3}}, 
-
+{"pk": 1, "model": "accounts.userprofile", "fields": {"web_access": true, "first_name": "System", "last_name": "Openreader", "is_first_time": true, "user": 1}},
+{"pk": 2, "model": "accounts.userprofile", "fields": {"web_access": true, "first_name": "Admin", "last_name": "Openreader", "is_first_time": true, "user": 2}},
+{"pk": 3, "model": "accounts.userprofile", "fields": {"web_access": true, "first_name": "Staff", "last_name": "Openreader", "is_first_time": true, "user": 3}},
+{"pk": 4, "model": "accounts.userprofile", "fields": {"web_access": false, "first_name": "User", "last_name": "Openreader", "is_first_time": true, "user": 4}},
 
 {"pk": 1, "model": "accounts.organization", "fields": {"status": 0, "modified_by": 2, "name": "Opendream", "slug":"opendream", "prefix":"บริษัท", "created_by": 2, "created": "2012-01-01 00:00:00", "modified": "2012-01-01 00:00:00"}},
 
@@ -32,11 +33,6 @@
 
 {"pk": 1, "model": "document.organizationdownloadserver", "fields": {"organization": 1, "server_type": "nginx", "priority":1, "server_address":"172.16.204.129", "parameters":"secret=SECRETKEY&prefix=/download"}},
 
-{"pk": 1, "model": "document.organizationuploadserver", "fields": {"organization": 1, "server_type": "sftp", "server_address":"172.16.204.129", "parameters":"root_path=/web/openreader/publication&username=root&password=panuta"}},
-
-
-{"pk": 4, "model": "auth.user", "fields": {"username": "4", "last_login": "2011-12-01 16:43:51", "password": "sha1$01585$302a20e1e2d0a73652b63b57df52bd793472244b", "email": "user4@example.com", "date_joined": "2011-12-01 16:43:51"}},
-{"pk": 4, "model": "accounts.userprofile", "fields": {"email":"user4@example.com", "first_name": "User4", "last_name": "Last", "user": 4}}
-
+{"pk": 1, "model": "document.organizationuploadserver", "fields": {"organization": 1, "server_type": "sftp", "server_address":"172.16.204.129", "parameters":"root_path=/web/openreader/publication&username=root&password=panuta"}}
 
 ]

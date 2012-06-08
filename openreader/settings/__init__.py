@@ -112,7 +112,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'openreader.context.constants',
 )
 
-FILE_UPLOAD_HANDLERS = ('handlers.UploadProgressCachedHandler', ) + global_settings.FILE_UPLOAD_HANDLERS
+FILE_UPLOAD_HANDLERS = ('openreader.handlers.UploadProgressCachedHandler', ) + global_settings.FILE_UPLOAD_HANDLERS
 
 INSTALLED_APPS = (
     'django.contrib.admin',

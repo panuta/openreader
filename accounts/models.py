@@ -16,7 +16,6 @@ SHA1_RE = re.compile('^[a-f0-9]{40}$')
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
-    email = models.CharField(max_length=254) # use this field as username to login
     first_name = models.CharField(max_length=100) # first_name and last_name in contrib.auth.User is too short
     last_name = models.CharField(max_length=100)
     web_access = models.BooleanField(default=True)
@@ -26,10 +25,6 @@ class UserProfile(models.Model):
         return '%s %s' % (self.first_name, self.last_name)
 
     def get_fullname(self):
-        if not self.first_name or not self.last_name:
-            if not self.user.first_name or not self.user.last_name:
-                return self.user.email
-            return '%s %s' % (self.user.first_name, self.user.last_name)
         return '%s %s' % (self.first_name, self.last_name)
     
     def get_instance_from_email(email):
