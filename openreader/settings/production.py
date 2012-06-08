@@ -1,7 +1,15 @@
-from settings import *
-#Alter or add production specific variables
+# -*- encoding: utf-8 -*-
 
-DEBUG = True
+from openreader.settings import *
+
+DEBUG = False
+TEMPLATE_DEBUG = DEBUG
+
+ADMINS = (
+    ('Panu Tangchalermkul', 'panuta@gmail.com'),
+)
+
+MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
@@ -13,6 +21,8 @@ DATABASES = {
         'PORT': '',
     }
 }
+
+WEBSITE_DOMAIN = 'http://127.0.0.1:8000'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_DOMAIN_NAME = 'localhost'
@@ -27,6 +37,39 @@ EMAIL_FOR_USER_PUBLISHER_INVITATION = 'noreply@' + EMAIL_DOMAIN_NAME
 
 SECRET_KEY = '*r3geszk-gvq8cl==g1_o^2ivx&wx6vuz*osszca2mtivv=u*@'
 
+MIDDLEWARE_CLASSES = (
+    'openreader.middleware.AJAXSimpleExceptionResponse',
+    'openreader.http.Http403Middleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.transaction.TransactionMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.RemoteUserMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'pagination.middleware.PaginationMiddleware',
+)
+
+INSTALLED_APPS = (
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.sites',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+
+    'pagination',
+    'private_files',
+    'djcelery',
+
+    'accounts',
+    'api',
+    'common',
+    'document',
+    'management',
+)
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -38,7 +81,7 @@ LOGGING = {
     'handlers': {
         'file': {
             'class': 'logging.FileHandler',
-            'filename': '/web/openreader/logs/openreader.log',
+            'filename': MEDIA_ROOT + '/openreader.log',
             'formatter':'default'
         }
     },

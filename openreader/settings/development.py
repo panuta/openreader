@@ -1,7 +1,15 @@
-from settings import *
-#Alter or add development specific variables
+# -*- encoding: utf-8 -*-
+
+from openreader.settings import *
 
 DEBUG = True
+TEMPLATE_DEBUG = DEBUG
+
+ADMINS = (
+    ('Panu Tangchalermkul', 'panuta@gmail.com'),
+)
+
+MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
@@ -21,17 +29,11 @@ EMAIL_DOMAIN_NAME = 'localhost'
 
 EMAIL_FOR_USER_PUBLISHER_INVITATION = 'noreply@' + EMAIL_DOMAIN_NAME
 
-# EMAIL_USE_TLS = True
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_HOST_USER = 'username@gmail.com'
-# EMAIL_HOST_PASSWORD = 'password'
-# EMAIL_PORT = 587
-
-SECRET_KEY = 'THIS IS A SECRET KEY' # Real secret key is in production.py
+SECRET_KEY = 'THIS IS A SECRET KEY'
 
 MIDDLEWARE_CLASSES = (
-    'middleware.AJAXSimpleExceptionResponse',
-    'http.Http403Middleware',
+    'openreader.middleware.AJAXSimpleExceptionResponse',
+    'openreader.http.Http403Middleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -39,6 +41,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.RemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+
     'pagination.middleware.PaginationMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
@@ -76,7 +79,7 @@ LOGGING = {
     'handlers': {
         'file': {
             'class': 'logging.FileHandler',
-            'filename': MEDIA_ROOT + '/logs/openreader.log',
+            'filename': MEDIA_ROOT + '/openreader.log',
             'formatter':'default'
         }
     },

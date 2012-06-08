@@ -5,28 +5,7 @@ base_path = os.path.join(os.path.join(os.path.abspath(os.path.dirname(__file__))
 
 from django.conf import global_settings
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
-
-ADMINS = (
-    ('Panu Tangchalermkul', 'panuta@gmail.com'),
-)
-
-MANAGERS = ADMINS
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'openreader',
-        'USER': 'openreader',
-        'PASSWORD': 'openreader',
-        'HOST': '',
-        'PORT': '',
-    }
-}
-
 WEBSITE_NAME = 'OpenReader'
-WEBSITE_DOMAIN = 'http://127.0.0.1:8000'
 
 TIME_ZONE = 'Asia/Bangkok'
 LANGUAGE_CODE = 'th'
@@ -35,15 +14,13 @@ SITE_ID = 1
 
 USE_I18N = True
 USE_L10N = True
+USE_TZ = True
 
-MEDIA_ROOT = os.path.join(base_path, 'media')
-MEDIA_URL = '/media'
-
-# DEFAULT_FILE_STORAGE = 'mystorages.backends.sftpstorage.SFTPStorage'
+MEDIA_ROOT = os.path.join(base_path, 'media/')
+MEDIA_URL = '/media/'
 
 STATIC_ROOT = os.path.join(base_path, 'sitestatic/')
 STATIC_URL = '/static/'
-ADMIN_MEDIA_PREFIX = '/static-admin/'
 
 STATICFILES_DIRS = (
     os.path.join(base_path, 'static'),
@@ -53,7 +30,6 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
-    'compressor.finders.CompressorFinder',
 )
 
 CACHES = {
@@ -72,6 +48,8 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
+FILE_UPLOAD_HANDLERS = ('openreader.handlers.UploadProgressCachedHandler', ) + global_settings.FILE_UPLOAD_HANDLERS
+
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
@@ -79,22 +57,7 @@ TEMPLATE_LOADERS = (
 #     'django.template.loaders.eggs.Loader',
 )
 
-MIDDLEWARE_CLASSES = (
-    'openreader.http.Http403Middleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.transaction.TransactionMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.contrib.auth.middleware.RemoteUserMiddleware',
-
-    'pagination.middleware.PaginationMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-)
-
 ROOT_URLCONF = 'openreader.urls'
-
 WSGI_APPLICATION = 'openreader.wsgi.application'
 
 TEMPLATE_DIRS = (
@@ -111,8 +74,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'openreader.context.constants',
 )
-
-FILE_UPLOAD_HANDLERS = ('openreader.handlers.UploadProgressCachedHandler', ) + global_settings.FILE_UPLOAD_HANDLERS
 
 INSTALLED_APPS = (
     'django.contrib.admin',
@@ -164,14 +125,6 @@ BROKER_TRANSPORT = 'redis'
 ########## Django Private Files ##########
 
 FILE_PROTECTION_METHOD = 'basic'
-
-########## Django Compressor ##########
-COMPRESS_ENABLED = True
-
-COMPRESS_PRECOMPILERS = (
-    ('text/less', os.path.join(base_path, 'misc/less/lessc') + ' {infile} {outfile}'),
-    # ('text/less', 'lessc {infile} {outfile}'),
-)
 
 ########## Django Pagination ##########
 
