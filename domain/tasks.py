@@ -10,7 +10,7 @@ logger = logging.getLogger(settings.OPENREADER_LOGGER)
 def prepare_publication(publication_uid):
 
     from common.thumbnails import generate_thumbnails, delete_thumbnails
-    from document.models import Publication
+    from domain.models import Publication
 
     try:
         publication = Publication.objects.get(uid=publication_uid)
@@ -32,7 +32,7 @@ def prepare_publication(publication_uid):
     # Upload publication
     
     from common.fileservers import upload_to_server
-    from document.models import OrganizationUploadServer
+    from domain.models import OrganizationUploadServer
 
     for server in OrganizationUploadServer.objects.filter(organization=publication.organization):
         try:

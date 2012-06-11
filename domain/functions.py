@@ -5,7 +5,7 @@ from django.conf import settings
 from common.thumbnails import generate_thumbnails, delete_thumbnails
 from common.utilities import split_filepath
 
-from document.models import Publication, PublicationShelf
+from domain.models import Publication, PublicationShelf
 
 from tasks import *
 

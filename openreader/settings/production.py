@@ -64,9 +64,11 @@ INSTALLED_APPS = (
     'djcelery',
 
     'accounts',
+    'domain',
+    'presentation',
+
     'api',
     'common',
-    'document',
     'management',
 )
 

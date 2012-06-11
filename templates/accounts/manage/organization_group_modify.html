@@ -1,5 +1,5 @@
 {% extends 'accounts/manage/organization_base.html' %}
-{% load document_tags %}
+{% load presentation_tags %}
 
 {% block organization_manage_head_title %} - {% if not role %}เพิ่มกลุ่มผู้ใช้{% else %}แก้ไขกลุ่มผู้ใช้{% endif %}{% endblock %}
 {% block organization_manage_sidebar %}{% include 'accounts/manage/snippets/organization_sidebar.html' with active_manage_menu='group' %}{% endblock %}

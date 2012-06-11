@@ -1,12 +1,10 @@
 # -*- encoding: utf-8 -*-
 
-import datetime
-
 from django.conf import settings
 from django.contrib.sites.models import Site
 
 def after_syncdb(sender, **kwargs):
-    
+
     """
     PRODUCTION CODE
     """

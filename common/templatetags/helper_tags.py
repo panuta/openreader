@@ -1,6 +1,8 @@
 # -*- encoding: utf-8 -*-
 
 from django import template
+from django.template.base import TemplateSyntaxError
+
 register = template.Library()
 
 from django.contrib.auth.models import User
@@ -9,10 +11,10 @@ from django.template import NodeList
 from django.template import loader
 
 from common import utilities
-from common.permissions import can
+from accounts.permissions import get_backend as get_permission_backend
 
-from accounts.models import UserOrganization, OrganizationGroup, UserOrganizationInvitation
-from document.models import Publication
+from domain.models import UserOrganization, OrganizationGroup, UserOrganizationInvitation
+from domain.models import Publication
 
 # DATE TIME #################################################################
 
@@ -41,11 +43,11 @@ def humanize_file_size(size_in_byte):
 # PERMISSION #################################################################
 
 class CanNode(template.Node):
-    def __init__(self, nodelist_true, nodelist_false, user, actions, organization, parameters):
+    def __init__(self, nodelist_true, nodelist_false, user, action, organization, parameters):
         self.nodelist_true = nodelist_true
         self.nodelist_false = nodelist_false
         self.user = template.Variable(user)
-        self.actions = actions.strip(' \"\'')
+        self.action = action.strip(' \"\'')
         self.organization = template.Variable(organization)
 
         self.parameters = {}
@@ -54,14 +56,14 @@ class CanNode(template.Node):
     
     def render(self, context):
         user = self.user.resolve(context)
-        actions = self.actions
+        action = self.action
         organization = self.organization.resolve(context)
 
         parameters = {}
         for key in self.parameters.keys():
             parameters[key] = self.parameters[key].resolve(context)
-        
-        if can(user, actions, organization, parameters):
+
+        if getattr(get_permission_backend(context['request']), action)(user, organization, parameters):
             output = self.nodelist_true.render(context)
             return output
         else:

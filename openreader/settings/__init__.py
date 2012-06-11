@@ -39,7 +39,7 @@ CACHES = {
     }
 }
 
-AUTH_PROFILE_MODULE = 'accounts.UserProfile'
+AUTH_PROFILE_MODULE = 'domain.UserProfile'
 LOGIN_REDIRECT_URL = '/'
 
 AUTHENTICATION_BACKENDS = (
@@ -91,9 +91,11 @@ INSTALLED_APPS = (
     'debug_toolbar',
 
     'accounts',
+    'domain',
+    'presentation',
+
     'api',
     'common',
-    'document',
     'management',
 )
 

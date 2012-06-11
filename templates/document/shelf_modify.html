@@ -1,5 +1,5 @@
 {% extends 'base_authenticated.html' %}
-{% load helper_tags document_tags %}
+{% load helper_tags presentation_tags %}
 
 {% block head_title %}{% if not shelf %}สร้างชั้นหนังสือใหม่{% else %}แก้ไขชั้นหนังสือ{% endif %}{% endblock %}
 {% block topnav %}{% include 'snippets/organization_topnav.html' with active_menu='document' %}{% endblock %}

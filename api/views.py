@@ -13,8 +13,7 @@ from common.fileservers import generate_download_url
 from common.permissions import can
 
 from api.models import *
-from accounts.models import UserOrganization
-from document.models import *
+from domain.models import UserOrganization
 
 from httpauth import logged_in_or_basicauth
 

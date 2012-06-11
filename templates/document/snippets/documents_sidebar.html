@@ -1,4 +1,4 @@
-{% load helper_tags document_tags %}
+{% load helper_tags presentation_tags %}
 <div class="span3 content-sidebar">
   <ul>
     <li class="shelf-all{% if shelf_type == 'all' %} active{% endif %}"><a href="{% url view_documents organization.slug %}">ไฟล์ทั้งหมด <span>({% print_all_publication_count user organization %} ไฟล์)</span></a></li>
@@ -7,6 +7,6 @@
   <div class="head">ชั้นหนังสือ</div>
   <ul>
     {% generate_shelf_list user organization shelf %}
-    {% can user 'manage_shelf' organization %}<li class="add{% if shelf_type == 'create' %} active{% endif %}"><a href="{% url create_document_shelf organization.slug %}">สร้างชั้นหนังสือใหม่</a></li>{% endcan %}
+    {% can user 'can_manage_shelf' organization %}<li class="add{% if shelf_type == 'create' %} active{% endif %}"><a href="{% url create_document_shelf organization.slug %}">สร้างชั้นหนังสือใหม่</a></li>{% endcan %}
   </ul>
 </div>

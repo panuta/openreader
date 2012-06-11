@@ -7,7 +7,7 @@
 {% block organization_manage_content %}
 <h2>กลุ่มผู้ใช้</h2>
 
-{% can user 'manage_group' organization %}
+{% can user 'can_manage_group' organization %}
   <div class="page_actions"><a href="{% url add_organization_group organization.slug %}" class="btn btn-primary"><i class="icon-plus icon-white"></i> เพิ่มกลุ่มผู้ใช้</a></div>
 {% endcan %}
 
@@ -18,7 +18,7 @@
       <th>ชื่อกลุ่มผู้ใช้</th>
       <th>จำนวนผู้ใช้</th>
       <th>คำอธิบาย</th>
-      {% can user 'manage_group' organization %}<th class="edit_column"></th>{% endcan %}
+      {% can user 'can_manage_group' organization %}<th class="edit_column"></th>{% endcan %}
     </tr>
   </thead>
   <tbody>
@@ -27,7 +27,7 @@
       <td>{{group.name}}</td>
       <td>{{group.user_counter}} คน</td>
       <td>{% if group.description %}{{group.description}}{% else %}-{% endif %}</td>
-      {% can user 'manage_group' organization %}<td class="row_actions"><a href="{% url edit_organization_group group.id %}" class="btn-small btn"><i class="icon edit"></i> แก้ไข</a></td>{% endcan %}
+      {% can user 'can_manage_group' organization %}<td class="row_actions"><a href="{% url edit_organization_group group.id %}" class="btn-small btn"><i class="icon edit"></i> แก้ไข</a></td>{% endcan %}
     </tr>
     {% endfor %}
   </tbody>

@@ -2,11 +2,10 @@
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
-from django.http import HttpResponse, Http404
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 
-from accounts.models import User, Organization, UserOrganization, UserOrganizationInvitation
+from domain.models import User, Organization, UserOrganization, UserOrganizationInvitation
 
 from forms import *
 

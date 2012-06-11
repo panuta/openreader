@@ -1,11 +1,10 @@
 # -*- encoding: utf-8 -*-
 
 from django import forms
-from django.utils.translation import ugettext_lazy as _
 
 from common.forms import StrippedCharField
 
-from accounts.models import Organization
+from domain.models import Organization
 
 class CreateOrganizationForm(forms.Form):
     organization_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'span6'}))

@@ -1,5 +1,5 @@
 {% extends 'base_authenticated.html' %}
-{% load helper_tags pagination_tags document_tags %}
+{% load helper_tags pagination_tags presentation_tags %}
 
 {% block head_title %}ไฟล์เอกสาร{% endblock %}
 {% block topnav %}{% include 'snippets/organization_topnav.html' with active_menu='document' %}{% endblock %}
@@ -35,8 +35,8 @@ $(document).ready(function () {
 
     {% if shelf %}
     <div class="page_actions">
-      {% can user 'upload_shelf' organization shelf=shelf %}<button class="btn btn-primary upload_publication_button" data-toggle="button"><i class="icon-upload icon-white"></i> อัพโหลดไฟล์เข้าชั้นหนังสือ</button>{% endcan %}
-      {% can user 'manage_shelf' organization %}<a href="{% url edit_document_shelf organization.slug shelf.id %}" class="btn edit_shelf_button"><i class="icon-edit"></i> แก้ไขชั้นหนังสือ</a>{% endcan %}
+      {% can user 'can_upload_shelf' organization shelf=shelf %}<button class="btn btn-primary upload_publication_button" data-toggle="button"><i class="icon-upload icon-white"></i> อัพโหลดไฟล์เข้าชั้นหนังสือ</button>{% endcan %}
+      {% can user 'can_manage_shelf' organization %}<a href="{% url edit_document_shelf organization.slug shelf.id %}" class="btn edit_shelf_button"><i class="icon-edit"></i> แก้ไขชั้นหนังสือ</a>{% endcan %}
     </div>
     {% endif %}
 
