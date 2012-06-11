@@ -107,7 +107,7 @@ def view_organization_profile(request, organization_slug):
 def view_organization_users(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
-    if not can(request.user, 'view_organization', organization):
+    if not can(request.user, 'manage_user', organization):
         raise Http404
     
     organization_users = UserOrganization.objects.filter(organization=organization, is_active=True).order_by('user__userprofile__first_name', 'user__userprofile__last_name')

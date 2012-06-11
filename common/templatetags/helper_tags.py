@@ -153,8 +153,12 @@ def generate_group_select_options(organization):
 # ORGANIZATION MANAGEMENT ################################################################################
 
 @register.simple_tag
-def print_users_count(organization):
+def print_user_count(organization):
     return UserOrganization.objects.filter(organization=organization).count()
+
+@register.simple_tag
+def print_user_group_count(organization):
+    return OrganizationGroup.objects.filter(organization=organization).count()
 
 @register.simple_tag
 def print_user_invitation_count(organization):
