@@ -1,7 +1,7 @@
 from domain.models import UserOrganization, OrganizationAdminPermission, OrganizationShelf, GroupShelfPermission, UserGroup, UserShelfPermission, OrganizationShelfPermission
-from domain.models import SHELF_ACCESS
 
 ROLE_CHOICES = (('organization_admin', 'Organization Admin'), ('organization_staff', 'Organization Staff'), ('organization_user', 'Organization User'))
+SHELF_ACCESS = {'NO_ACCESS':0, 'VIEW_ACCESS':1, 'PUBLISH_ACCESS':2}
 
 def get_backend(request):
     cached_backend = request.session.get('perm_backend', None)

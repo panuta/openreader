@@ -1,0 +1,36 @@
+{% extends 'base_authenticated.html' %}
+{% load helper_tags presentation_tags %}
+
+{% block head_title %}รายชื่อและกลุ่มผู้ใช้{% endblock %}
+{% block topnav %}{% include 'snippets/organization_topnav.html' with active_menu='user' %}{% endblock %}
+
+{% block extra_head %}
+<script>
+    $(document).ready(function () {
+        $('a[data-toggle="tab"]').on('show', function (e) {
+            window.location.hash = $(this).attr('href');
+        });
+
+        $('a[href="' + window.location.hash + '"]').tab('show');
+    });
+</script>
+{% endblock %}
+
+{% block body_authenticated %}
+<div class="container-fluid organization_users_page"><div class="row-fluid">
+    <div class="content"><div class="inner-content">
+        <h2>รายชื่อและกลุ่มผู้ใช้</h2>
+
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#users" data-toggle="tab">รายชื่อผู้ใช้ ({% print_user_count organization %})</a></li>
+            <li><a href="#groups" data-toggle="tab">กลุ่มผู้ใช้ ({% print_user_group_count organization %})</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane active" id="users">{% include 'organization/organization_users.html' %}</div>
+            <div class="tab-pane" id="groups">{% include 'organization/organization_groups.html' %}</div>
+        </div>
+
+    </div></div>
+</div></div>
+{% endblock %}

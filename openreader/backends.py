@@ -23,3 +23,25 @@ class EmailAuthenticationBackend(ModelBackend):
                     if user.get_profile().web_access:
                         return user
         return None
+
+class InvitationAuthenticationBackend(object):
+    def authenticate(self, invitation_key=None):
+        from domain.models import UserOrganizationInvitation
+
+        try:
+            invitation = UserOrganizationInvitation.objects.get(invitation_key=invitation_key)
+        except UserOrganizationInvitation.DoesNotExist:
+            return None
+
+        try:
+            user = User.objects.get(email=invitation.email)
+        except User.DoesNotExist:
+            return None
+
+        return user
+
+    def get_user(self, user_id):
+        try:
+            return User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return None

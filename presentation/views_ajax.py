@@ -16,67 +16,76 @@ from common.shortcuts import response_json_success, response_json_error
 from accounts.permissions import get_backend as get_permission_backend
 
 from domain import functions as domain_functions
-from domain.models import OrganizationTag, PublicationTag, Publication, Organization, UserGroup
+from domain.models import OrganizationTag, PublicationTag, Publication, Organization, UserGroup, UserOrganizationInvitation, OrganizationGroup, UserOrganization
 
 @require_POST
 @login_required
 def ajax_resend_user_invitation(request, invitation_id):
+    if request.is_ajax():
+        invitation = get_object_or_404(UserOrganizationInvitation, pk=invitation_id)
+        organization = invitation.organization
 
-    invitation = get_object_or_404(UserOrganizationInvitation, pk=invitation_id)
-    organization = invitation.organization
+        if not get_permission_backend(request).can_manage_user(request.user, organization):
+            raise Http404
 
-    if not get_permission_backend(request).can_manage_user(request.user, organization):
+        if invitation.send_invitation_email():
+            return response_json_success()
+        else:
+            return response_json_error('send-invitation-failed')
+    else:
         raise Http404
-
-    invitation.send_invitation_email()
-
-    messages.success(request, u'ส่งคำขอถึงผู้ใช้เรียบร้อย')
-    return response_json_success({'redirect_url':reverse('view_organization_invited_users', args=[organization.slug])})
 
 @require_POST
 @login_required
 def ajax_cancel_user_invitation(request, invitation_id):
-    invitation = get_object_or_404(UserOrganizationInvitation, pk=invitation_id)
-    organization = invitation.organization
+    if request.is_ajax():
+        invitation = get_object_or_404(UserOrganizationInvitation, pk=invitation_id)
+        organization = invitation.organization
 
-    if not get_permission_backend(request).can_manage_user(request.user, organization):
+        if not get_permission_backend(request).can_manage_user(request.user, organization):
+            raise Http404
+
+        invitation.delete()
+
+        return response_json_success({'redirect_url':reverse('view_organization_invited_users', args=[organization.slug])})
+    else:
         raise Http404
-
-    invitation.delete()
-
-    messages.success(request, u'เพิกถอนคำขอเรียบร้อย')
-    return response_json_success({'redirect_url':reverse('view_organization_invited_users', args=[organization.slug])})
 
 @require_POST
 @login_required
 def ajax_remove_organization_user(request, organization_user_id):
+    if request.is_ajax():
+        user_organization = get_object_or_404(UserOrganization, pk=organization_user_id)
+        organization = user_organization.organization
 
-    user_organization = get_object_or_404(UserOrganization, pk=organization_user_id)
-    organization = user_organization.organization
+        if not get_permission_backend(request).can_manage_user(request.user, organization):
+            raise Http404
 
-    if not get_permission_backend(request).can_manage_user(request.user, organization):
+        user_organization.is_active = False
+        user_organization.save()
+
+        messages.success(request, u'ถอดผู้ใช้ออกจากบริษัทเรียบร้อย')
+        return response_json_success({'redirect_url':reverse('view_organization_users', args=[organization.slug])})
+    else:
         raise Http404
-
-    user_organization.is_active = False
-    user_organization.save()
-
-    messages.success(request, u'ถอดผู้ใช้ออกจากบริษัทเรียบร้อย')
-    return response_json_success({'redirect_url':reverse('view_organization_users', args=[organization.slug])})
 
 @require_POST
 @login_required
 def ajax_remove_organization_group(request, organization_group_id):
-    group = get_object_or_404(OrganizationGroup, pk=organization_group_id)
-    organization = group.organization
+    if request.is_ajax():
+        group = get_object_or_404(OrganizationGroup, pk=organization_group_id)
+        organization = group.organization
 
-    if not get_permission_backend(request).can_manage_group(request.user, organization):
+        if not get_permission_backend(request).can_manage_group(request.user, organization):
+            raise Http404
+
+        UserGroup.objects.filter(group=group).delete()
+        group.delete()
+
+        messages.success(request, u'ลบกลุ่มผู้ใช้เรียบร้อย')
+        return response_json_success({'redirect_url':reverse('view_organization_groups', args=[organization.slug])})
+    else:
         raise Http404
-
-    UserGroup.objects.filter(group=group).delete()
-    group.delete()
-
-    messages.success(request, u'ลบกลุ่มผู้ใช้เรียบร้อย')
-    return response_json_success({'redirect_url':reverse('view_organization_groups', args=[organization.slug])})
 
 @require_GET
 @login_required

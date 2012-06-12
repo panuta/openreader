@@ -44,6 +44,7 @@ LOGIN_REDIRECT_URL = '/'
 
 AUTHENTICATION_BACKENDS = (
     'openreader.backends.EmailAuthenticationBackend',
+    'openreader.backends.InvitationAuthenticationBackend',
     'django.contrib.auth.backends.RemoteUserBackend',
     'django.contrib.auth.backends.ModelBackend',
 )

@@ -1,0 +1,70 @@
+{% extends 'base_authenticated.html' %}
+{% load presentation_tags %}
+
+{% block head_title %}แก้ไขกลุ่มผู้ใช้{% endblock %}
+{% block topnav %}{% include 'snippets/organization_topnav.html' with active_menu='user' %}{% endblock %}
+
+{% block extra_head %}
+<script>
+$(document).ready(function () {
+  {% if group %}
+  $('#remove-group-modal button[type="submit"]').on('click', function(e) {
+    $.post('{% url ajax_remove_organization_group group.id %}', {}, function(response) {
+      window.location = response.redirect_url;
+    }, 'json');
+    return false;
+  });
+  {% endif %}
+});
+</script>
+{% endblock %}
+
+{% block body_authenticated %}
+<div class="container-fluid organization_users_page"><div class="row-fluid">
+    <div class="content"><div class="inner-content">
+        <ul class="breadcrumb">
+            <li><a href="{% url view_organization_groups organization.slug %}">รายชื่อและกลุ่มผู้ใช้</a> <span class="divider">/</span></li>
+            <li class="active">{% if not group %}เพิ่มกลุ่มผู้ใช้{% else %}แก้ไขกลุ่มผู้ใช้{% endif %}</li>
+        </ul>
+
+        <h2>{% if not group %}เพิ่มกลุ่มผู้ใช้{% else %}แก้ไขกลุ่มผู้ใช้{% endif %}</h2>
+
+        <form method="POST" action=".">
+            {% csrf_token %}
+            {{form.non_field_errors}}
+
+            <div class="control-group">
+                <label class="control-label" for="id_name">ชื่อกลุ่มผู้ใช้</label>
+                <div class="controls">{{form.name}}{{form.name.errors}}</div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="id_description">คำอธิบาย</label>
+                <div class="controls">{{form.description}}{{form.description.errors}}</div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> {% if not group %}เพิ่มกลุ่มผู้ใช้{% else %}แก้ไขกลุ่มผู้ใช้{% endif %}</button>
+                <button type="reset" class="btn">ล้างข้อมูล</button>
+            </div>
+        </form>
+
+        {% if group %}
+            <div class="delete-panel">
+                <a href="#remove-group-modal" class="danger" data-toggle="modal">ลบกลุ่มผู้ใช้</a>
+            </div>
+        {% endif %}
+    </div></div>
+</div></div>
+
+<div class="modal hide fade" id="remove-group-modal">
+  <div class="modal-header">
+    <a class="close" data-dismiss="modal">×</a>
+    <h3>ลบกลุ่มผู้ใช้</h3>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal">ยกเลิก</button>
+    <button type="submit" class="btn btn-danger">ยืนยันลบกลุ่มผู้ใช้</button>
+  </div>
+</div>
+{% endblock %}

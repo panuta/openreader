@@ -1,0 +1,51 @@
+{% extends 'base_authenticated.html' %}
+
+{% block head_title %}เพิ่มผู้ใช้ระบบ{% endblock %}
+{% block topnav %}{% include 'snippets/organization_topnav.html' with active_menu='user' %}{% endblock %}
+
+{% block html_head %}
+{{block.super}}
+<script>
+$(document).ready(function () {
+  $("#id_groups").chosen();
+});
+</script>
+{% endblock %}
+
+{% block body_authenticated %}
+<div class="container-fluid organization_users_page"><div class="row-fluid">
+    <div class="content"><div class="inner-content">
+        <ul class="breadcrumb">
+            <li><a href="{% url view_organization_users organization.slug %}">รายชื่อและกลุ่มผู้ใช้</a> <span class="divider">/</span></li>
+            <li class="active">เพิ่มผู้ใช้ระบบ</li>
+        </ul>
+
+        <h2>เพิ่มผู้ใช้ระบบ</h2>
+
+        <form method="POST" action=".">
+            {% csrf_token %}
+            {{form.non_field_errors}}
+
+            <div class="control-group">
+                <label class="control-label" for="id_email">อีเมลผู้ใช้</label>
+                <div class="controls">{{form.email}}{{form.email.errors}}</div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="id_groups">กลุ่มผู้ใช้</label>
+                <div class="controls">{{form.groups}}{{form.groups.errors}}</div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">สิทธิ์การจัดการระบบ</label>
+                <div class="controls row-controls">{{form.admin_permissions}}{{form.admin_permissions.errors}}</div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> บันทึกข้อมูล</button>
+                <button type="reset" class="btn">ล้างข้อมูล</button>
+            </div>
+        </form>
+    </div></div>
+</div></div>
+{% endblock %}

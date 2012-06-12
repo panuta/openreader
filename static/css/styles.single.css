@@ -1,1 +1,452 @@
-body{background:url(/static/images/bg.png)}.single-container .outer-container{padding:1px;border:1px solid #EEE;background-color:#DDD}.single-container .outer-container .inner-container{border:1px solid #BBB;padding:15px;background-color:#FFF}.logo{font-size:3em;font-weight:bold;color:#777;text-align:center;margin:80px 0 40px}.logo a:link,.logo a:visited,.logo a:active{color:#555;text-decoration:none}.logo a:hover{text-decoration:underline}h1{color:#444;font-size:1.7em;padding-bottom:10px;border-bottom:1px solid #CCC;text-align:center;margin-bottom:25px}form{padding:0 20px}form .item{margin-bottom:15px}form label{color:#11717a;font-weight:normal;font-size:1.1em;margin-bottom:5px}form .input input{width:350px}form .form_actions button{margin-right:15px}form .form_actions a:link,form .form_actions a:active,form .form_actions a:visited{text-decoration:underline;color:#08c}form .form_actions a:hover{background-color:#08c!important;color:#FFF!important;text-shadow:none}form .form_actions .login_button{width:120px}form .errorlist{margin:0 0 20px}form .errorlist li{list-style:none;color:#C30}p{line-height:28px;font-size:1.1em;text-align:center}p a.link:link,p a.link:active,p a.link:visited{text-decoration:underline;color:#08c}p a.link:hover{background-color:#08c!important;color:#FFF!important;text-shadow:none}p.headline{font-size:1.2em}
+/* DEFAULT
+==================================================================================================== */
+ul {
+  margin: 0px;
+  padding: 0px;
+}
+li {
+  list-style: none;
+}
+a.btn:visited {
+  color: #333333;
+}
+.clear {
+  clear: both;
+}
+a.danger {
+  color: #C30;
+}
+a.danger:hover {
+  background-color: #C30;
+  color: #FFF;
+}
+.nav-tabs a {
+  outline: none;
+}
+.chzn-container {
+  margin-bottom: 10px;
+}
+/* PAGE
+==================================================================================================== */
+body {
+  background: url(/static/images/bg.png);
+}
+.navbar {
+  height: 50px;
+  position: relative;
+}
+.navbar .navbar-inner {
+  background: url(/static/images/bg-topbar.png);
+  padding-top: 5px;
+}
+.navbar .navbar-inner .container {
+  margin: 0px;
+  width: auto;
+}
+.navbar h1 {
+  margin-left: 10px;
+}
+.navbar h1 a {
+  float: left;
+  display: block;
+  padding: 8px 30px 12px 8px;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: normal;
+  line-height: 1;
+}
+.navbar h1 span {
+  color: #CCC;
+}
+.navbar li a {
+  color: #EEE !important;
+  font-size: 1.1em;
+  padding: 12px 15px 8px !important;
+  margin-right: 10px;
+}
+.navbar li.active a {
+  color: #FFF !important;
+  background-color: #272e34 !important;
+}
+.navbar li a:hover {
+  background-color: #272e34 !important;
+}
+.navbar a.logout {
+  font-size: 1em !important;
+  color: #CCC !important;
+}
+.navbar .dropdown-menu {
+  background-color: #555 !important;
+}
+.navbar .dropdown-menu a {
+  color: #FFF !important;
+  text-decoration: none !important;
+  outline: 0;
+}
+.navbar .accounts {
+  padding: 12px 0px 8px;
+}
+.navbar .accounts a {
+  display: inline;
+}
+.authenticated-container {
+  margin-top: 20px;
+}
+.container-fluid .content {
+  padding: 1px;
+  border: 1px solid #EEE;
+  background-color: #DDD;
+}
+.container-fluid .content .inner-content {
+  border: 1px solid #BBB;
+  padding: 15px;
+  background-color: #FFF;
+}
+.container-fluid h2 {
+  margin-bottom: 20px;
+  padding-bottom: 7px;
+  border-bottom: 3px double #BBB;
+  font-size: 1.8em;
+}
+.container-fluid h2 span {
+  color: #666;
+  margin-right: 8px;
+}
+.container-fluid h3 {
+  margin: 20px 0px 15px;
+  line-height: 1;
+  font-size: 1.4em;
+  color: #11717a;
+  font-weight: normal;
+}
+.container-fluid h3 span {
+  color: #666;
+  font-size: 0.9em;
+}
+.container-fluid .breadcrumb {
+  margin-bottom: 10px;
+}
+.container-fluid .breadcrumb a:link,
+.container-fluid .breadcrumb a:active,
+.container-fluid .breadcrumb a:visited {
+  text-decoration: underline;
+  color: #0088cc;
+}
+.container-fluid .breadcrumb a:hover {
+  background-color: #0088cc !important;
+  color: #FFF !important;
+  text-shadow: none;
+}
+.container-fluid .page_actions {
+  margin-bottom: 25px;
+}
+.container-fluid .page_actions a,
+.container-fluid .page_actions button {
+  margin-right: 15px;
+  vertical-align: top;
+}
+.container-fluid .page_actions a.btn-primary {
+  color: #FFF;
+}
+.container-fluid .page_actions a.btn-primary:visited,
+.container-fluid .page_actions a.btn-primary:active {
+  color: #FFF;
+}
+/* COMPONENT
+==================================================================================================== */
+/* No Information */
+.no_information {
+  font-size: 1.1em;
+  background-color: #F5F5F5;
+  padding: 10px;
+}
+/* Modal */
+.modal .modal-header {
+  padding: 10px 15px;
+}
+.modal h3 em {
+  color: #369;
+  font-style: normal;
+}
+.modal .modal-error {
+  background-color: #e56068;
+  color: #FFF;
+  padding: 8px 15px;
+}
+.modal .modal-error i {
+  vertical-align: -2px;
+}
+.modal .modal-message {
+  padding: 10px 15px;
+  background-color: #C30;
+  color: #FFF;
+  border-bottom: 1px solid #EEE;
+}
+.modal .modal-footer button {
+  margin-left: 15px;
+}
+#message_modal p {
+  margin-top: 20px;
+  font-size: 1.1em;
+}
+/* Alert */
+.alert {
+  margin: 0px 20px 15px;
+}
+.alert p {
+  font-size: 1.1em;
+  padding: 5px 45px;
+  vertical-align: middle;
+  margin: 0px;
+}
+.alert-success p {
+  background: url(../images/messages/success.png) 5px 50% no-repeat;
+}
+.alert-warning p {
+  background: url(../images/messages/warning.png) 5px 50% no-repeat;
+}
+.alert-error p {
+  background: url(../images/messages/error.png) 5px 50% no-repeat;
+}
+/* Form */
+button i,
+a i {
+  vertical-align: -2px !important;
+}
+form .control-group {
+  padding: 0px 0px 10px 20px;
+}
+form .control-group label.control-label {
+  color: #333;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+form .control-group .row-controls li {
+  margin: 0px 0px 7px 10px;
+}
+form .control-group .row-controls li label {
+  color: #444;
+  display: inline;
+  font-size: 1.1em;
+  vertical-align: middle;
+}
+form .control-group .row-controls li input {
+  margin-right: 4px;
+  display: inline;
+  vertical-align: middle;
+}
+form .control-group .fixed-controls {
+  font-size: 1.1em;
+  font-style: italic;
+  line-height: 18px;
+}
+form .controls .input-normal {
+  width: 350px;
+}
+form .controls .input-large {
+  width: 500px;
+}
+form label.checkbox {
+  color: #444;
+  margin-bottom: 7px;
+}
+form .form-actions {
+  margin-top: 30px;
+}
+form .form-actions button,
+form .form-actions a {
+  margin-right: 15px;
+  vertical-align: middle;
+}
+form .form-actions a:link,
+form .form-actions a:active,
+form .form-actions a:visited {
+  text-decoration: underline;
+  color: #0088cc;
+}
+form .form-actions a:hover {
+  background-color: #0088cc !important;
+  color: #FFF !important;
+  text-shadow: none;
+}
+form .form-actions a.danger {
+  color: #C30;
+}
+form .form-actions a.danger:hover {
+  background-color: #C30;
+  color: #FFF;
+}
+form ul.errorlist li {
+  color: #c30;
+}
+form .fixed-value {
+  font-size: 1.1em;
+  line-height: 21px;
+}
+form .input label.checkbox {
+  display: inline;
+  margin-left: 0px;
+  padding-left: 0px;
+}
+form .radio input[type="radio"],
+form .checkbox input[type="checkbox"] {
+  float: none;
+  margin-left: 0px;
+  display: inline;
+  margin-right: 7px;
+}
+form .row-inputs li {
+  margin: 0px 0px 7px 0px;
+  line-height: 25px;
+}
+form .row-inputs label {
+  color: #444;
+  display: inline;
+}
+form .row-inputs input {
+  margin-right: 4px;
+  display: inline;
+  vertical-align: middle;
+}
+form .row-inputs .errorlist {
+  margin-bottom: 20px;
+}
+table th.edit_column {
+  width: 70px;
+}
+table th.datetime_column {
+  width: 170px;
+}
+table th.checkbox_column {
+  width: 10px;
+}
+table td.row_actions {
+  text-align: center;
+}
+table td.row_actions a.link:link,
+table td.row_actions a.link:active,
+table td.row_actions a.link:visited {
+  text-decoration: underline;
+  color: #0088cc;
+}
+table td.row_actions a.link:hover {
+  background-color: #0088cc !important;
+  color: #FFF !important;
+  text-shadow: none;
+}
+table tr.checked td {
+  background-color: #FFD !important;
+}
+.delete-panel {
+  border: 1px dashed #CCC;
+  padding: 15px 15px 15px 45px;
+  margin-bottom: 20px;
+  background: url(/static/images/icons/danger_icon.png) 15px 50% no-repeat;
+}
+.delete-panel a.danger:link,
+.delete-panel a.danger:active,
+.delete-panel a.danger:visited {
+  text-decoration: underline;
+  color: #666;
+}
+.delete-panel a.danger:hover {
+  background-color: #C30;
+  color: #FFF;
+  text-shadow: none;
+}
+body {
+  background: url(/static/images/bg.png);
+}
+.single-container .outer-container {
+  padding: 1px;
+  border: 1px solid #EEE;
+  background-color: #DDD;
+}
+.single-container .outer-container .inner-container {
+  border: 1px solid #BBB;
+  padding: 15px;
+  background-color: #FFF;
+}
+.logo {
+  font-size: 3em;
+  font-weight: bold;
+  color: #777;
+  text-align: center;
+  margin: 80px 0px 40px;
+}
+.logo a:link,
+.logo a:visited,
+.logo a:active {
+  color: #555;
+  text-decoration: none;
+}
+.logo a:hover {
+  text-decoration: underline;
+}
+h1 {
+  color: #444;
+  font-size: 1.7em;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #CCC;
+  text-align: center;
+  margin-bottom: 25px;
+}
+form {
+  padding: 0px 20px;
+}
+form .item {
+  margin-bottom: 15px;
+}
+form label {
+  color: #11717a;
+  font-weight: normal;
+  font-size: 1.1em;
+  margin-bottom: 5px;
+}
+form .input input {
+  width: 350px;
+}
+form .form_actions button {
+  margin-right: 15px;
+}
+form .form_actions a:link,
+form .form_actions a:active,
+form .form_actions a:visited {
+  text-decoration: underline;
+  color: #0088cc;
+}
+form .form_actions a:hover {
+  background-color: #0088cc !important;
+  color: #FFF !important;
+  text-shadow: none;
+}
+form .form_actions .login_button {
+  width: 120px;
+}
+form .errorlist {
+  margin: 0px 0px 20px;
+}
+form .errorlist li {
+  list-style: none;
+  color: #C30;
+}
+p {
+  line-height: 28px;
+  font-size: 1.1em;
+  text-align: center;
+}
+p a.link:link,
+p a.link:active,
+p a.link:visited {
+  text-decoration: underline;
+  color: #0088cc;
+}
+p a.link:hover {
+  background-color: #0088cc !important;
+  color: #FFF !important;
+  text-shadow: none;
+}
+p.headline {
+  font-size: 1.2em;
+}

@@ -33,6 +33,9 @@ var var_organization_id = '{{organization.id}}';
 var var_organization_slug = '{{organization.slug}}';
 $('#message_modal').modal();
 </script>
+
+{% block extra_head %}{% endblock %}
+
 {% endblock %}
 
 {% block body %}
@@ -65,4 +68,11 @@ $('#message_modal').modal();
     <a href="#" class="btn" data-dismiss="modal">ปิด</a>
   </div>
 </div>
+
+<script type="text/javascript">
+$('.modal').on('show', function() {
+    console.log('remove error');
+    $(this).find('.modal-error').remove();
+});
+</script>
 {% endblock %}

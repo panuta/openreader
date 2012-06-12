@@ -1,0 +1,34 @@
+{% load helper_tags pagination_tags presentation_tags %}
+
+<div class="page_actions">
+    <a href="{% url invite_organization_user organization.slug %}" class="btn"><i class="icon-user"></i> เพิ่มผู้ใช้ระบบ</a>
+    <!--<a href="{% url invite_organization_user organization.slug %}" class="btn"><i class="icon-file"></i> เพิ่มผู้ใช้จากไฟล์ CSV</a>-->
+</div>
+
+{% return_user_invitation_count organization as invited_user_count %}
+
+{% if invited_user_count %}
+    <div class="user_invitations"><a href="{% url view_organization_invited_users organization.slug %}">มีผู้ใช้ {{ invited_user_count }} คนยังไม่ตอบรับคำขอเพิ่มผู้ใช้</a></div>
+{% endif %}
+
+{% autopaginate organization_users 50 %}
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th class="edit_column"></th>
+        <th>ชื่อ</th>
+        <th>อีเมล</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for organization_user in organization_users %}
+        <tr>
+            <td class="row_actions"><a href="{% url edit_organization_user organization_user.id %}" class="btn btn-small">แก้ไข</a></td>
+            <td>{{organization_user.user.get_profile.get_fullname}}</td>
+            <td>{{organization_user.user.email}}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% paginate %}

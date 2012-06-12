@@ -27,7 +27,7 @@ WEBSITE_DOMAIN = 'http://127.0.0.1:8000'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_DOMAIN_NAME = 'localhost'
 
-EMAIL_FOR_USER_PUBLISHER_INVITATION = 'noreply@' + EMAIL_DOMAIN_NAME
+EMAIL_ADDRESS_NO_REPLY = 'noreply@' + EMAIL_DOMAIN_NAME
 
 SECRET_KEY = 'THIS IS A SECRET KEY'
 

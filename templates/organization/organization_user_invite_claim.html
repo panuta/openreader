@@ -5,16 +5,12 @@
 {% block body_single %}
 <div class="outer-container span6 offset3">
   <div class="inner-container">
-    <h1>ตอบรับเข้าร่วมทีม</h1>
+    <h1>ตอบรับเข้าสู่ระบบ</h1>
 
     {% if logout_first %}
-      <p class="headline">บัญชีที่ใช้อยู่ขณะนี้ไม่ตรงกันกับคำขอ กรุณาออกจากระบบก่อน</p>
+      <p class="headline">บัญชีที่เข้าสู่ระบบในขณะนี้ไม่ตรงกับบัญชีที่ตอบรับเข้าสู่ระบบ<br/>กรุณาออกจากระบบก่อน</p>
       <p><a href="{% url auth_logout %}?next={% url claim_user_invitation invitation.invitation_key %}" class="btn btn-danger">ออกจากระบบ</a></p>
       <p>หรือ <a href="/" class="link">กลับไปหน้าหลัก</a></p>
-    {% endif %}
-
-    {% if login_first %}
-      {% include 'snippets/login_form.html' with form=form next=login_first %}
     {% endif %}
 
     {% if first_time %}

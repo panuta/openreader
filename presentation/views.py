@@ -14,12 +14,10 @@ from django.db import transaction
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_GET, require_POST
-from accounts.forms import EmailAuthenticationForm
 
 from private_files.views import get_file as private_files_get_file
 
 from common.shortcuts import response_json_success, response_json_error
-from common.utilities import generate_random_username
 from common.utilities import format_abbr_datetime, humanize_file_size
 
 from domain import functions as domain_functions
@@ -35,9 +33,10 @@ logger = logging.getLogger(settings.OPENREADER_LOGGER)
 @login_required
 def view_my_profile(request):
     if request.method == 'POST':
-        form = UserProfileForm(request.POST)
+        form = UserProfileForm(request.user, request.POST)
         if form.is_valid():
             user_profile = request.user.get_profile()
+            user_profile.email = form.cleaned_data['email']
             user_profile.first_name = form.cleaned_data['first_name']
             user_profile.last_name = form.cleaned_data['last_name']
             user_profile.save()
@@ -45,14 +44,13 @@ def view_my_profile(request):
             messages.success(request, u'แก้ไขข้อมูลส่วนตัวเรียบร้อย')
             return redirect('view_my_profile')
     else:
-        form = UserProfileForm(initial=request.user.get_profile().__dict__)
+        form = UserProfileForm(request.user, initial={
+            'email': request.user.email,
+            'first_name': request.user.get_profile().first_name,
+            'last_name': request.user.get_profile().last_name,
+        })
 
     return render(request, 'accounts/my_profile.html', {'form':form})
-
-@require_GET
-@login_required
-def view_my_account(request):
-    return render(request, 'accounts/my_account.html', {})
 
 @login_required
 def change_my_account_password(request):
@@ -61,7 +59,7 @@ def change_my_account_password(request):
         if form.is_valid():
             form.save()
             messages.success(request, u'เปลี่ยนรหัสผ่านเรียบร้อย')
-            return redirect('view_my_account')
+            return redirect('view_my_profile')
 
     else:
         form = PasswordChangeForm(user=request.user)
@@ -88,21 +86,23 @@ def view_organization_profile(request, organization_slug):
         'shelf_count': OrganizationShelf.objects.filter(organization=organization).count()
     }
 
-    return render(request, 'accounts/manage/organization_profile.html', {'organization':organization, 'statistics':statistics})
+    return render(request, 'organization/organization_profile.html', {'organization':organization, 'statistics':statistics})
 
 # Organization Users
 # ----------------------------------------------------------------------------------------------------------------------
 
 @require_GET
 @login_required
-def view_organization_users(request, organization_slug):
+def view_organization_users_groups(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
     if not get_permission_backend(request).can_manage_user(request.user, organization):
         raise Http404
 
     organization_users = UserOrganization.objects.filter(organization=organization, is_active=True).order_by('user__userprofile__first_name', 'user__userprofile__last_name')
-    return render(request, 'accounts/manage/organization_users.html', {'organization':organization, 'organization_users':organization_users})
+    organization_groups = OrganizationGroup.objects.filter(organization=organization).order_by('name')
+
+    return render(request, 'organization/organization_manage_users_groups.html', {'organization':organization, 'organization_users':organization_users, 'organization_groups':organization_groups})
 
 # User Invitation
 
@@ -115,7 +115,7 @@ def view_organization_invited_users(request, organization_slug):
         raise Http404
 
     invited_users = UserOrganizationInvitation.objects.filter(organization=organization)
-    return render(request, 'accounts/manage/organization_users_invited.html', {'organization':organization, 'invited_users':invited_users})
+    return render(request, 'organization/organization_users_invited.html', {'organization':organization, 'invited_users':invited_users})
 
 @login_required
 def invite_organization_user(request, organization_slug):
@@ -128,19 +128,20 @@ def invite_organization_user(request, organization_slug):
         form = InviteOrganizationUserForm(organization, request.POST)
         if form.is_valid():
             email = form.cleaned_data['email']
-            admin_permissions = form.cleaned_data['admin_permissions']
             groups = form.cleaned_data['groups']
+            admin_permissions = form.cleaned_data['admin_permissions']
 
             invitation = UserOrganizationInvitation.objects.create_invitation(email, organization, admin_permissions, groups, request.user)
             invitation.send_invitation_email()
 
             messages.success(request, u'ส่งคำขอเพิ่มผู้ใช้เรียบร้อย รอผู้ใช้ยืนยันคำขอ')
-            return redirect('view_organization_invited_users', organization_slug=organization.slug)
+            return redirect('view_organization_users', organization_slug=organization.slug)
 
     else:
         form = InviteOrganizationUserForm(organization)
 
-    return render(request, 'accounts/manage/organization_user_invite.html', {'organization':organization, 'form':form})
+    return render(request, 'organization/organization_user_invite.html', {'organization':organization, 'form':form})
+
 
 @login_required
 def edit_user_invitation(request, invitation_id):
@@ -151,35 +152,49 @@ def edit_user_invitation(request, invitation_id):
         raise Http404
 
     if request.method == 'POST':
-        form = UpdateOrganizationUserInviteForm(organization, request.POST)
+        form = EditOrganizationUserInviteForm(organization, request.POST)
         if form.is_valid():
             invitation.admin_permissions = form.cleaned_data['admin_permissions']
-
-            invitation.groups.clear()
-            for group in form.cleaned_data['groups']:
-                UserOrganizationInvitationUserGroup.objects.create(invitation=invitation, group=group)
+            invitation.groups = form.cleaned_data['groups']
 
             messages.success(request, u'แก้ไขข้อมูลคำขอเรียบร้อยแล้ว')
             return redirect('view_organization_invited_users', organization_slug=organization.slug)
 
     else:
-        form = UpdateOrganizationUserInviteForm(organization, initial={'admin_permissions':invitation.admin_permissions.all(), 'groups':invitation.groups.all()})
+        form = EditOrganizationUserInviteForm(organization, initial={'admin_permissions':invitation.admin_permissions.all(), 'groups':invitation.groups.all()})
 
-    return render(request, 'accounts/manage/organization_user_invite_edit.html', {'organization':organization, 'invitation':invitation, 'form':form})
+    return render(request, 'organization/organization_user_invite_edit.html', {'organization':organization, 'invitation':invitation, 'form':form})
+
 
 def claim_user_invitation(request, invitation_key):
     """
-    1. have account, is authenticated, invitation user is matched -> redirect to front page
-    2. have account, is authenticated, invitation user is not matched -> ask user to logout
-    3. have account, is not authenticated -> ask user to login, redirect to front page after login
-    4. don't have account -> fill information, authenticate and redirect to front page after submit
+    - Authenticated with different account -> Ask user to logout
+    - Found invitation's email in system -> Log user in automatically and claim invitation
+    - No invitation's email in system -> User submit registration form
     """
 
-    invitation = UserOrganizationInvitation.objects.validate_invitation(invitation_key)
+    invitation = get_object_or_404(UserOrganizationInvitation, invitation_key=invitation_key)
 
-    if not invitation:
-        raise Http404
+    try:
+        registered_user = User.objects.get(email=invitation.email)
+    except User.DoesNotExist:
+        registered_user = None
 
+    # Show logout notice if user is authenticated with different account
+    if request.user.is_authenticated() and (not registered_user or (registered_user and registered_user.id != request.user.id)):
+        return render(request, 'organization/organization_user_invite_claim.html', {'invitation':invitation, 'logout_first':True})
+
+    # Log user in automatically if invited user is already registered
+    if registered_user:
+        if not request.user.is_authenticated():
+            user = authenticate(invitation_key=invitation.invitation_key)
+            login(request, user)
+
+        UserOrganizationInvitation.objects.claim_invitation(invitation, registered_user)
+        messages.success(request, u'คุณได้เข้าร่วมเป็นส่วนหนึ่งของ%s %s เรียบร้อยแล้ว' % (invitation.organization.prefix, invitation.organization.name))
+        return redirect('view_organization_front', organization_slug=invitation.organization.slug)
+
+    # Require user to submit registration form
     if request.method == 'POST':
         form = ClaimOrganizationUserForm(request.POST)
         if form.is_valid():
@@ -187,47 +202,21 @@ def claim_user_invitation(request, invitation_key):
             last_name = form.cleaned_data['last_name']
             password1 = form.cleaned_data['password1']
 
-            invitation = UserOrganizationInvitation.objects.validate_invitation(invitation_key)
-
-            user = User.objects.create_user(generate_random_username(), '', password1)
-            user.username = user.id
-            user.save()
-
-            UserProfile.objects.create(user=user, email=invitation.email, first_name=first_name, last_name=last_name, web_access=True)
-
-            UserOrganizationInvitation.objects.claim_invitation(invitation, user, True)
+            user_profile = UserProfile.objects.create_user_profile(invitation.email, first_name, last_name, password1)
+            UserOrganizationInvitation.objects.claim_invitation(invitation, user_profile.user, True)
 
             # Automatically log user in
             user = authenticate(email=invitation.email, password=password1)
             login(request, user)
 
+            messages.success(request, u'คุณได้เข้าร่วมเป็นส่วนหนึ่งของ%s %s เรียบร้อยแล้ว' % (invitation.organization.prefix, invitation.organization.name))
             return redirect('view_organization_front', organization_slug=invitation.organization.slug)
 
     else:
-        existing_users = User.objects.filter(email=invitation.email)
-
-        if existing_users:
-            user = existing_users[0]
-        else:
-            user = None
-
-        if request.user.is_authenticated():
-            if user and request.user.id == user.id:
-                UserOrganizationInvitation.objects.claim_invitation(invitation, user)
-
-                messages.success(request, u'คุณได้เข้าร่วมเป็นส่วนหนึ่งของ%s %s เรียบร้อยแล้ว' % (invitation.organization.prefix, invitation.organization.name))
-                return redirect('view_organization_front', organization_slug=invitation.organization.slug)
-
-            return render(request, 'accounts/manage/organization_user_invite_claim.html', {'invitation':invitation, 'logout_first':True})
-
-        else:
-            if user:
-                form = EmailAuthenticationForm()
-                return render(request, 'accounts/manage/organization_user_invite_claim.html', {'invitation':invitation, 'form':form, 'login_first':reverse('claim_user_invitation', args=[invitation_key])})
-
         form = ClaimOrganizationUserForm()
 
-    return render(request, 'accounts/manage/organization_user_invite_claim.html', {'invitation':invitation, 'form':form, 'first_time':True})
+    return render(request, 'organization/organization_user_invite_claim.html', {'invitation':invitation, 'form':form, 'first_time':True})
+
 
 @login_required
 def edit_organization_user(request, organization_user_id):
@@ -238,8 +227,11 @@ def edit_organization_user(request, organization_user_id):
         raise Http404
 
     if request.method == 'POST':
-        form = EditOrganizationUserForm(organization, request.POST)
+        form = EditOrganizationUserForm(user_organization, request.POST)
         if form.is_valid():
+            user_organization.user.email = form.cleaned_data['email']
+
+
             user_organization.admin_permissions.clear()
             for admin_permission in form.cleaned_data['admin_permissions']: user_organization.admin_permissions.add(admin_permission)
 
@@ -266,27 +258,18 @@ def edit_organization_user(request, organization_user_id):
             return redirect('view_organization_users', organization_slug=organization.slug)
 
     else:
-        form = EditOrganizationUserForm(organization, initial={'admin_permissions':user_organization.admin_permissions.all(), 'groups':user_organization.groups.all()})
+        form = EditOrganizationUserForm(user_organization, initial={
+            'email':user_organization.user.email,
+            'first_name':user_organization.user.get_profile().first_name,
+            'last_name':user_organization.user.get_profile().last_name,
+            'admin_permissions':user_organization.admin_permissions.all(),
+            'groups':user_organization.groups.all()}
+        )
 
-    return render(request, 'accounts/manage/organization_user_edit.html', {'organization':organization, 'user_organization':user_organization, 'form':form})
+    return render(request, 'organization/organization_user_edit.html', {'organization':organization, 'user_organization':user_organization, 'form':form})
 
 # Organization Groups
 # ----------------------------------------------------------------------------------------------------------------------
-
-@require_GET
-@login_required
-def view_organization_groups(request, organization_slug):
-    organization = get_object_or_404(Organization, slug=organization_slug)
-
-    if not get_permission_backend(request).can_view_organization(request.user, organization):
-        raise Http404
-
-    organization_groups = OrganizationGroup.objects.filter(organization=organization).order_by('name')
-
-    for group in organization_groups:
-        group.user_counter = UserGroup.objects.filter(group=group).count()
-
-    return render(request, 'accounts/manage/organization_groups.html', {'organization':organization, 'organization_groups':organization_groups})
 
 @login_required
 def add_organization_group(request, organization_slug):
@@ -296,23 +279,20 @@ def add_organization_group(request, organization_slug):
         raise Http404
 
     if request.method == 'POST':
-        form = OrganizationGroupForm(organization, request.POST)
+        form = OrganizationGroupForm(request.POST)
         if form.is_valid():
             name = form.cleaned_data['name']
             description = form.cleaned_data['description']
 
-            group = OrganizationGroup.objects.create(organization=organization, name=name, description=description)
-
-            for member in form.cleaned_data['members']:
-                UserGroup.objects.create(group=group, user_organization=member)
+            OrganizationGroup.objects.create(organization=organization, name=name, description=description)
 
             messages.success(request, u'เพิ่มกลุ่มผู้ใช้เรียบร้อย')
             return redirect('view_organization_groups', organization_slug=organization.slug)
 
     else:
-        form = OrganizationGroupForm(organization)
+        form = OrganizationGroupForm()
 
-    return render(request, 'accounts/manage/organization_group_modify.html', {'organization':organization, 'form':form})
+    return render(request, 'organization/organization_group_modify.html', {'organization':organization, 'form':form})
 
 @login_required
 def edit_organization_group(request, organization_group_id):
@@ -323,37 +303,19 @@ def edit_organization_group(request, organization_group_id):
         raise Http404
 
     if request.method == 'POST':
-        form = OrganizationGroupForm(organization, request.POST)
+        form = OrganizationGroupForm(request.POST)
         if form.is_valid():
             group.name = form.cleaned_data['name']
             group.description = form.cleaned_data['description']
             group.save()
 
-            new_members = set(form.cleaned_data['members'])
-
-            old_members = set()
-            for member in UserGroup.objects.filter(group=group):
-                old_members.add(member.user_organization)
-
-            creating_members = new_members.difference(old_members)
-            removing_members = old_members.difference(new_members)
-
-            for member in creating_members:
-                UserGroup.objects.create(group=group, user_organization=member)
-
-            UserGroup.objects.filter(group=group, user_organization__in=removing_members).delete()
-
             messages.success(request, u'แก้ไขกลุ่มผู้ใช้เรียบร้อย')
             return redirect('view_organization_groups', organization_slug=organization.slug)
 
     else:
-        members = []
-        for member in UserGroup.objects.filter(group=group):
-            members.append(member.user_organization)
+        form = OrganizationGroupForm(initial={'name':group.name, 'description':group.description})
 
-        form = OrganizationGroupForm(organization, initial={'name':group.name, 'description':group.description, 'members':members})
-
-    return render(request, 'accounts/manage/organization_group_modify.html', {'organization':organization, 'group':group, 'form':form})
+    return render(request, 'organization/organization_group_modify.html', {'organization':organization, 'group':group, 'form':form})
 
 # Publication
 ########################################################################################################################

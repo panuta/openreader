@@ -24,6 +24,28 @@ $.ajaxSetup({
    } 
 });
 
+/*
+ Alert functions
+ */
+
+function _showAlertBar(message, alert_class, auto_hide) {
+    var alertbar = $('<div class="alert hide alert-' + alert_class + '"><p>' + message + '</p></div>');
+    if(auto_hide) {
+        alertbar.prependTo('.authenticated-container').slideDown('fast').delay(2000).slideUp('fast');
+    } else {
+        alertbar.prependTo('.authenticated-container').slideDown('fast');
+    }
+}
+
+/*
+ Modal functions
+ */
+
+function _addModalErrorMessage(modal_id, message) {
+    $('#' + modal_id + ' .modal-error').remove();
+    $('#' + modal_id + ' .modal-header').after('<div class="modal-error"><i class="icon-exclamation-sign icon-white"></i> ' + message + '</div>');
+}
+
 /* DOCUMENTS PAGE
 ********************************************************/
 

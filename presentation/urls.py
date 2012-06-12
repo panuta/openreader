@@ -1,29 +1,31 @@
 from django.conf.urls import patterns, url
+from django.views.generic.base import RedirectView
 
 urlpatterns = patterns('presentation.views',
 
     # USER ACCOUNT #####################################################################################################
 
     url(r'^my/$', 'view_my_profile', name='view_my_profile'),
-    url(r'^my/account/$', 'view_my_account', name='view_my_account'),
     url(r'^my/account/change_password/$', 'change_my_account_password', name='change_my_account_password'),
 
     # Manage Organization
 
     url(r'^org/(?P<organization_slug>\w+)/profile/$', 'view_organization_profile', name='view_organization_profile'),
 
-    url(r'^org/(?P<organization_slug>\w+)/manage/users/$', 'view_organization_users', name='view_organization_users'),
-    url(r'^org/(?P<organization_slug>\w+)/manage/users/invited/$', 'view_organization_invited_users', name='view_organization_invited_users'),
-
-    url(r'^org/(?P<organization_slug>\w+)/manage/users/invite/$', 'invite_organization_user', name='invite_organization_user'),
-
-    url(r'^invitation/(?P<invitation_id>\d+)/edit/$', 'edit_user_invitation', name='edit_user_invitation'),
-    url(r'^invitation/(?P<invitation_key>\w+)/$', 'claim_user_invitation', name='claim_user_invitation'),
+    url(r'^org/(?P<organization_slug>\w+)/manage/users-groups/$', 'view_organization_users_groups', name='view_organization_users_groups'),
+    url(r'^org/(?P<organization_slug>\w+)/manage/users-groups/#usres', RedirectView.as_view(), name='view_organization_users'),
+    url(r'^org/(?P<organization_slug>\w+)/manage/users-groups/#groups$', RedirectView.as_view(), name='view_organization_groups'),
 
     url(r'^user/(?P<organization_user_id>\d+)/edit/$', 'edit_organization_user', name='edit_organization_user'),
 
-    url(r'^org/(?P<organization_slug>\w+)/manage/groups/$', 'view_organization_groups', name='view_organization_groups'),
-    url(r'^org/(?P<organization_slug>\w+)/manage/groups/add/$', 'add_organization_group', name='add_organization_group'),
+    # User Invitation
+    url(r'^org/(?P<organization_slug>\w+)/manage/users/invited/$', 'view_organization_invited_users', name='view_organization_invited_users'),
+    url(r'^org/(?P<organization_slug>\w+)/manage/users/invite/$', 'invite_organization_user', name='invite_organization_user'),
+    url(r'^invitation/(?P<invitation_id>\d+)/edit/$', 'edit_user_invitation', name='edit_user_invitation'),
+    url(r'^invitation/(?P<invitation_key>\w+)/$', 'claim_user_invitation', name='claim_user_invitation'),
+
+    # Group
+    url(r'^org/(?P<organization_slug>\w+)/manage/group/add/$', 'add_organization_group', name='add_organization_group'),
     url(r'^group/(?P<organization_group_id>\d+)/edit/$', 'edit_organization_group', name='edit_organization_group'),
 
     # DOCUMENT #########################################################################################################

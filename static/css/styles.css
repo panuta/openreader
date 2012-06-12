@@ -20,7 +20,13 @@ a.danger:hover {
   background-color: #C30;
   color: #FFF;
 }
-/* PAGE ELEMENTS
+.nav-tabs a {
+  outline: none;
+}
+.chzn-container {
+  margin-bottom: 10px;
+}
+/* PAGE
 ==================================================================================================== */
 body {
   background: url(/static/images/bg.png);
@@ -146,6 +152,8 @@ body {
 .container-fluid .page_actions a.btn-primary:active {
   color: #FFF;
 }
+/* COMPONENT
+==================================================================================================== */
 /* No Information */
 .no_information {
   font-size: 1.1em;
@@ -159,6 +167,14 @@ body {
 .modal h3 em {
   color: #369;
   font-style: normal;
+}
+.modal .modal-error {
+  background-color: #e56068;
+  color: #FFF;
+  padding: 8px 15px;
+}
+.modal .modal-error i {
+  vertical-align: -2px;
 }
 .modal .modal-message {
   padding: 10px 15px;
@@ -191,6 +207,153 @@ body {
 }
 .alert-error p {
   background: url(../images/messages/error.png) 5px 50% no-repeat;
+}
+/* Form */
+button i,
+a i {
+  vertical-align: -2px !important;
+}
+form .control-group {
+  padding: 0px 0px 10px 20px;
+}
+form .control-group label.control-label {
+  color: #333;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+form .control-group .row-controls li {
+  margin: 0px 0px 7px 10px;
+}
+form .control-group .row-controls li label {
+  color: #444;
+  display: inline;
+  font-size: 1.1em;
+  vertical-align: middle;
+}
+form .control-group .row-controls li input {
+  margin-right: 4px;
+  display: inline;
+  vertical-align: middle;
+}
+form .control-group .fixed-controls {
+  font-size: 1.1em;
+  font-style: italic;
+  line-height: 18px;
+}
+form .controls .input-normal {
+  width: 350px;
+}
+form .controls .input-large {
+  width: 500px;
+}
+form label.checkbox {
+  color: #444;
+  margin-bottom: 7px;
+}
+form .form-actions {
+  margin-top: 30px;
+}
+form .form-actions button,
+form .form-actions a {
+  margin-right: 15px;
+  vertical-align: middle;
+}
+form .form-actions a:link,
+form .form-actions a:active,
+form .form-actions a:visited {
+  text-decoration: underline;
+  color: #0088cc;
+}
+form .form-actions a:hover {
+  background-color: #0088cc !important;
+  color: #FFF !important;
+  text-shadow: none;
+}
+form .form-actions a.danger {
+  color: #C30;
+}
+form .form-actions a.danger:hover {
+  background-color: #C30;
+  color: #FFF;
+}
+form ul.errorlist li {
+  color: #c30;
+}
+form .fixed-value {
+  font-size: 1.1em;
+  line-height: 21px;
+}
+form .input label.checkbox {
+  display: inline;
+  margin-left: 0px;
+  padding-left: 0px;
+}
+form .radio input[type="radio"],
+form .checkbox input[type="checkbox"] {
+  float: none;
+  margin-left: 0px;
+  display: inline;
+  margin-right: 7px;
+}
+form .row-inputs li {
+  margin: 0px 0px 7px 0px;
+  line-height: 25px;
+}
+form .row-inputs label {
+  color: #444;
+  display: inline;
+}
+form .row-inputs input {
+  margin-right: 4px;
+  display: inline;
+  vertical-align: middle;
+}
+form .row-inputs .errorlist {
+  margin-bottom: 20px;
+}
+table th.edit_column {
+  width: 70px;
+}
+table th.datetime_column {
+  width: 170px;
+}
+table th.checkbox_column {
+  width: 10px;
+}
+table td.row_actions {
+  text-align: center;
+}
+table td.row_actions a.link:link,
+table td.row_actions a.link:active,
+table td.row_actions a.link:visited {
+  text-decoration: underline;
+  color: #0088cc;
+}
+table td.row_actions a.link:hover {
+  background-color: #0088cc !important;
+  color: #FFF !important;
+  text-shadow: none;
+}
+table tr.checked td {
+  background-color: #FFD !important;
+}
+.delete-panel {
+  border: 1px dashed #CCC;
+  padding: 15px 15px 15px 45px;
+  margin-bottom: 20px;
+  background: url(/static/images/icons/danger_icon.png) 15px 50% no-repeat;
+}
+.delete-panel a.danger:link,
+.delete-panel a.danger:active,
+.delete-panel a.danger:visited {
+  text-decoration: underline;
+  color: #666;
+}
+.delete-panel a.danger:hover {
+  background-color: #C30;
+  color: #FFF;
+  text-shadow: none;
 }
 /* Sidebar */
 .content-sidebar .buttons {
@@ -328,137 +491,6 @@ body {
 }
 .shelf.basic2-268 {
   background: url(/static/images/shelficons/16/basic2-268.png) 10px 50% transparent no-repeat;
-}
-/* Form */
-button i,
-a i {
-  vertical-align: -2px !important;
-}
-form {
-  padding: 0px 20px 10px;
-}
-form .item {
-  margin-bottom: 20px;
-}
-form label {
-  color: #11717a;
-  font-weight: normal;
-  font-size: 1.1em;
-  margin-bottom: 3px;
-}
-form label.checkbox {
-  color: #444;
-  margin-bottom: 7px;
-}
-form .form-actions {
-  margin-top: 30px;
-}
-form .form-actions button,
-form .form-actions a {
-  margin-right: 15px;
-  vertical-align: middle;
-}
-form .form-actions a:link,
-form .form-actions a:active,
-form .form-actions a:visited {
-  text-decoration: underline;
-  color: #0088cc;
-}
-form .form-actions a:hover {
-  background-color: #0088cc !important;
-  color: #FFF !important;
-  text-shadow: none;
-}
-form .form-actions a.danger {
-  color: #C30;
-}
-form .form-actions a.danger:hover {
-  background-color: #C30;
-  color: #FFF;
-}
-form .help-block {
-  margin-top: 5px;
-}
-form ul.errorlist {
-  margin-top: 5px;
-}
-form ul.errorlist li {
-  color: #c30;
-}
-form .fixed-value {
-  font-size: 1.1em;
-  line-height: 21px;
-}
-form .input label.checkbox {
-  display: inline;
-  margin-left: 0px;
-  padding-left: 0px;
-}
-form .radio input[type="radio"],
-form .checkbox input[type="checkbox"] {
-  float: none;
-  margin-left: 0px;
-  display: inline;
-  margin-right: 7px;
-}
-form .row-inputs li {
-  margin: 0px 0px 7px 0px;
-  line-height: 25px;
-}
-form .row-inputs label {
-  color: #444;
-  display: inline;
-}
-form .row-inputs input {
-  margin-right: 4px;
-  display: inline;
-  vertical-align: middle;
-}
-form .row-inputs .errorlist {
-  margin-bottom: 20px;
-}
-table th.edit_column {
-  width: 70px;
-}
-table th.datetime_column {
-  width: 170px;
-}
-table th.checkbox_column {
-  width: 10px;
-}
-table td.row_actions {
-  text-align: center;
-}
-table td.row_actions a.link:link,
-table td.row_actions a.link:active,
-table td.row_actions a.link:visited {
-  text-decoration: underline;
-  color: #0088cc;
-}
-table td.row_actions a.link:hover {
-  background-color: #0088cc !important;
-  color: #FFF !important;
-  text-shadow: none;
-}
-table tr.checked td {
-  background-color: #FFD !important;
-}
-.delete-panel {
-  border: 1px dashed #CCC;
-  padding: 15px 15px 15px 45px;
-  margin-bottom: 20px;
-  background: url(/static/images/icons/danger_icon.png) 15px 50% no-repeat;
-}
-.delete-panel a.danger:link,
-.delete-panel a.danger:active,
-.delete-panel a.danger:visited {
-  text-decoration: underline;
-  color: #666;
-}
-.delete-panel a.danger:hover {
-  background-color: #C30;
-  color: #FFF;
-  text-shadow: none;
 }
 /* PAGES
 ==================================================================================================== */
@@ -814,14 +846,35 @@ table tr.checked td {
 #shelf_icons_modal .modal-body li a:hover {
   background-color: #89bdd4;
 }
-.account_manage_page .statistics ul {
+.organization_profile_page .statistics ul {
   margin-top: 10px;
 }
-.account_manage_page .statistics ul li {
+.organization_profile_page .statistics ul li {
   list-style: disc;
   font-size: 1.1em;
   color: #555;
   margin: 0px 0px 6px 20px;
+}
+.organization_users_page .user_invitations {
+  background-color: #FCF8E3;
+  border: 1px solid #dcd08f;
+  border-radius: 5px;
+  padding: 10px 15px;
+  margin-bottom: 20px;
+}
+.organization_users_page .user_invitations a {
+  color: #444 !important;
+}
+.organization_users_page .user_invitations a:link,
+.organization_users_page .user_invitations a:active,
+.organization_users_page .user_invitations a:visited {
+  text-decoration: underline;
+  color: #0088cc;
+}
+.organization_users_page .user_invitations a:hover {
+  background-color: #0088cc !important;
+  color: #FFF !important;
+  text-shadow: none;
 }
 /* *************** UI *************** */
 .textboxlist input {

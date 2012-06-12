@@ -2,12 +2,10 @@ import datetime, logging, sys, traceback, uuid
 
 from django.conf import settings
 
-from common.thumbnails import generate_thumbnails, delete_thumbnails
+from common.thumbnails import delete_thumbnails
 from common.utilities import split_filepath
 
 from domain.models import Publication, PublicationShelf
-
-from tasks import *
 
 logger = logging.getLogger(settings.OPENREADER_LOGGER)
 

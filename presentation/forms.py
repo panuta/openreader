@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 from django import forms
+from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
 from common.forms import StrippedCharField
@@ -8,17 +9,6 @@ from common.forms import StrippedCharField
 from domain.models import OrganizationGroup, UserOrganizationInvitation, UserOrganization, OrganizationAdminPermission, OrganizationShelf
 
 # USER ACCOUNT #########################################################################################################
-
-class UserOrganizationMultipleChoiceField(forms.ModelMultipleChoiceField):
-    def __init__(self, *args, **kwargs):
-        kwargs['queryset'] = UserOrganization.objects.all()
-        # kwargs['widget'] = forms.CheckboxSelectMultiple()
-        kwargs['widget'] = forms.SelectMultiple(attrs={'data-placeholder':'เลือกกลุ่มผู้ใช้', 'style':'width:500px;'}) # Use for 'Chosen' jQuery plugin
-        forms.ModelMultipleChoiceField.__init__(self, *args, **kwargs)
-
-    def label_from_instance(self, obj):
-        return obj.user.get_profile().get_fullname()
-
 
 class OrganizationGroupMultipleChoiceField(forms.ModelMultipleChoiceField):
     def __init__(self, *args, **kwargs):
@@ -31,16 +21,30 @@ class OrganizationGroupMultipleChoiceField(forms.ModelMultipleChoiceField):
 
 
 class UserProfileForm(forms.Form):
-    first_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'span9'}))
-    last_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'span9'}))
+    email = forms.EmailField(widget=forms.TextInput(attrs={'class':'input-normal'}))
+    first_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'input-normal'}))
+    last_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'input-normal'}))
+
+    def __init__(self, user, *args, **kwargs):
+        forms.Form.__init__(self, *args, **kwargs)
+
+        self.user = user
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email', '')
+
+        if User.objects.filter(email=email).exclude(id=self.user.id).exists():
+            raise forms.ValidationError(u'มีผู้ใช้คนอื่นใช้อีเมลนี้แล้ว')
+
+        return email
 
 
 # ORGANIZATION MANAGEMENT
 
 class InviteOrganizationUserForm(forms.Form):
-    email = forms.EmailField(widget=forms.TextInput(attrs={'class':'span6'}))
+    email = forms.EmailField(widget=forms.TextInput(attrs={'class':'input-normal'}))
     admin_permissions = forms.ModelMultipleChoiceField(required=False, queryset=OrganizationAdminPermission.objects.all(), widget=forms.CheckboxSelectMultiple())
-    groups = OrganizationGroupMultipleChoiceField()
+    groups = OrganizationGroupMultipleChoiceField(required=False)
 
     def __init__(self, organization, *args, **kwargs):
         forms.Form.__init__(self, *args, **kwargs)
@@ -60,9 +64,9 @@ class InviteOrganizationUserForm(forms.Form):
         return email
 
 
-class UpdateOrganizationUserInviteForm(forms.Form):
+class EditOrganizationUserInviteForm(forms.Form):
     admin_permissions = forms.ModelMultipleChoiceField(required=False, queryset=OrganizationAdminPermission.objects.all(), widget=forms.CheckboxSelectMultiple())
-    groups = OrganizationGroupMultipleChoiceField()
+    groups = OrganizationGroupMultipleChoiceField(required=False)
 
     def __init__(self, organization, *args, **kwargs):
         forms.Form.__init__(self, *args, **kwargs)
@@ -72,8 +76,8 @@ class UpdateOrganizationUserInviteForm(forms.Form):
 
 
 class ClaimOrganizationUserForm(forms.Form):
-    first_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'span9'}))
-    last_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'span9'}))
+    first_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'input-normal'}))
+    last_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'input-normal'}))
     password1 = forms.CharField(widget=forms.PasswordInput())
     password2 = forms.CharField(widget=forms.PasswordInput())
 
@@ -86,24 +90,30 @@ class ClaimOrganizationUserForm(forms.Form):
 
 
 class EditOrganizationUserForm(forms.Form):
+    email = forms.EmailField(widget=forms.TextInput(attrs={'class':'input-normal'}))
+    first_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'input-normal'}))
+    last_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'input-normal'}))
+    groups = OrganizationGroupMultipleChoiceField(required=False)
     admin_permissions = forms.ModelMultipleChoiceField(required=False, queryset=OrganizationAdminPermission.objects.all(), widget=forms.CheckboxSelectMultiple())
-    groups = OrganizationGroupMultipleChoiceField()
 
-    def __init__(self, organization, *args, **kwargs):
+    def __init__(self, user_organization, *args, **kwargs):
         forms.Form.__init__(self, *args, **kwargs)
 
-        self.organization = organization
-        self.fields['groups'].queryset = OrganizationGroup.objects.filter(organization=organization).order_by('name')
+        self.user_organization = user_organization
+        self.fields['groups'].queryset = OrganizationGroup.objects.filter(organization=user_organization.organization).order_by('name')
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email', '')
+
+        if User.objects.filter(email=email).exclude(id=self.user_organization.user.id).exists():
+            raise forms.ValidationError(u'มีผู้ใช้คนอื่นใช้อีเมลนี้แล้ว')
+
+        return email
 
 
 class OrganizationGroupForm(forms.Form):
-    name = StrippedCharField(max_length=100, widget=forms.TextInput(attrs={'class':'span9'}))
-    description = StrippedCharField(required=False, max_length=500, widget=forms.Textarea(attrs={'class':'span9', 'rows':'3'}))
-    members = UserOrganizationMultipleChoiceField(required=False)
-
-    def __init__(self, organization, *args, **kwargs):
-        super(OrganizationGroupForm, self).__init__(*args, **kwargs)
-        self.fields['members'].queryset = UserOrganization.objects.filter(organization=organization).order_by('user__userprofile__first_name')
+    name = StrippedCharField(max_length=100, widget=forms.TextInput(attrs={'class':'input-normal'}))
+    description = StrippedCharField(required=False, max_length=500, widget=forms.Textarea(attrs={'class':'input-large', 'rows':'3'}))
 
 
 # DOCUMENT #############################################################################################################
@@ -117,7 +127,7 @@ class OrganizationShelfMultipleChoiceField(forms.ModelMultipleChoiceField):
         return '%s' % (obj.name)
 
 class OrganizationShelfForm(forms.Form):
-    name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'span9'}))
+    name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'input-normal'}))
     auto_sync = forms.BooleanField(required=False)
     shelf_icon = forms.CharField(max_length=100)
     permission = forms.CharField()

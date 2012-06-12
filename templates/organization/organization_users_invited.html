@@ -1,0 +1,44 @@
+{% extends 'base_authenticated.html' %}
+{% load helper_tags pagination_tags %}
+
+{% block head_title %}คำขอเพิ่มผู้ใช้{% endblock %}
+{% block topnav %}{% include 'snippets/organization_topnav.html' with active_menu='user' %}{% endblock %}
+
+{% block body_authenticated %}
+<div class="container-fluid organization_users_page"><div class="row-fluid">
+    <div class="content"><div class="inner-content">
+        <ul class="breadcrumb">
+            <li><a href="{% url view_organization_users organization.slug %}">รายชื่อและกลุ่มผู้ใช้</a> <span class="divider">/</span></li>
+            <li class="active">คำขอเพิ่มผู้ใช้</li>
+        </ul>
+
+        <h2>คำขอเพิ่มผู้ใช้</h2>
+
+        {% if invited_users %}
+            {% autopaginate invited_users 50 %}
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>อีเมล</th>
+                    <th>ส่งเมื่อวันที่</th>
+                    <th class="edit_column"></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for invitation in invited_users %}
+                    <tr>
+                        <td>{{invitation.email}}</td>
+                        <td>{{invitation.created|format_abbr_datetime}}</td>
+                        <td class="row_actions"><a href="{% url edit_user_invitation invitation.id %}" class="btn btn-small">แก้ไข</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% paginate %}
+        {% else %}
+            <div class="no_information">ไม่มีคำขอเพิ่มผู้ใช้</div>
+        {% endif %}
+
+    </div></div>
+</div></div>
+{% endblock %}

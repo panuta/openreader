@@ -1,18 +1,8 @@
 {% extends 'base_authenticated.html' %}
 
-{% block head_title %}หน้าผู้ใช้ - {% block my_account_head_title %}{% endblock %}{% endblock %}
 {% block topnav %}
-<h1><a href="{% url view_my_profile %}"><span>ข้อมูลผู้ใช้</span> {{user.get_profile.get_fullname}}</a></h1>
-<ul class="nav">
-  <li><a href="{% url view_user_home %}">กลับไปหน้าหลัก &rsaquo;&rsaquo;</a></li>
-</ul>
-{% endblock %}
-
-{% block body_authenticated %}
-<div class="container-fluid documents_page"><div class="row-fluid">
-  <div class="span3 content-sidebar"><ul>{% block my_account_sidebar %}{% endblock %}</ul></div>
-  <div class="span9"><div class="content"><div class="inner-content">
-  {% block my_account_content %}{% endblock %}
-  </div></div></div>
-</div></div>
+    <h1><a href="{% url view_my_profile %}">ข้อมูลผู้ใช้</a></h1>
+    <ul class="nav">
+        <li><a href="{% url view_user_home %}">กลับไปหน้าหลัก &rsaquo;&rsaquo;</a></li>
+    </ul>
 {% endblock %}

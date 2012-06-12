@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
-import random
 import re
+import shortuuid
 import uuid
 
 from django.conf import settings
@@ -9,7 +9,7 @@ from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.db import models
 from django.template.loader import render_to_string
-from django.utils.hashcompat import sha_constructor
+from django.utils.crypto import salted_hmac
 
 from private_files import PrivateFileField
 
@@ -20,6 +20,29 @@ SHA1_RE = re.compile('^[a-f0-9]{40}$')
 # USER ACCOUNT
 ##############################################################################################################
 
+class UserProfileManager(models.Manager):
+
+    def create_user_profile(self, email, first_name, last_name, password, web_access=True, update_if_exists=False):
+        try:
+            user = User.objects.get(email=email)
+            user_profile = user.get_profile()
+
+            if update_if_exists:
+                user.email = email
+                user.set_password(password)
+                user.save()
+
+                user_profile.first_name = first_name
+                user_profile.last_name = last_name
+                user_profile.save()
+
+        except User.DoesNotExist:
+            user = User.objects.create_user(shortuuid.uuid(), email, password)
+            user_profile = UserProfile.objects.create(user=user, first_name=first_name, last_name=last_name, web_access=web_access)
+
+        return user_profile
+
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     first_name = models.CharField(max_length=100) # first_name and last_name in contrib.auth.User is too short
@@ -29,6 +52,8 @@ class UserProfile(models.Model):
 
     def __unicode__(self):
         return '%s %s' % (self.first_name, self.last_name)
+
+    objects = UserProfileManager()
 
     def get_fullname(self):
         return '%s %s' % (self.first_name, self.last_name)
@@ -58,9 +83,9 @@ class Organization(models.Model):
     slug = models.CharField(max_length=200, unique=True, db_index=True)
     status = models.IntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, related_name='organization_created_by')
+    created_by = models.ForeignKey(User, related_name='created_organizations')
     modified = models.DateTimeField(auto_now=True)
-    modified_by = models.ForeignKey(User, related_name='organization_modified_by', null=True, blank=True)
+    modified_by = models.ForeignKey(User, related_name='modified_organizations', null=True, blank=True)
 
     def __unicode__(self):
         return self.name
@@ -72,6 +97,9 @@ class OrganizationGroup(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def get_user_count(self):
+        return UserGroup.objects.filter(group=self).count()
 
 class UserOrganization(models.Model):
     user = models.ForeignKey(User)
@@ -100,48 +128,37 @@ class UserGroup(models.Model):
 class UserInvitationManager(models.Manager):
 
     def create_invitation(self, email, organization, admin_permissions, groups, created_by):
-        salt = sha_constructor(str(random.random())).hexdigest()[:5]
-        if isinstance(email, unicode):
-            email = email.encode('utf-8')
-        invitation_key = sha_constructor(salt + email).hexdigest()
+        key_salt = 'domain.models.UserInvitationManager'
+        email = email.encode('utf-8')
+        invitation_key = salted_hmac(key_salt, email).hexdigest()
 
         invitation = self.create(email=email, organization=organization, invitation_key=invitation_key, created_by=created_by)
         invitation.admin_permissions = admin_permissions
-
-        for group in groups:
-            UserOrganizationInvitationUserGroup.objects.create(invitation=invitation, group=group)
+        invitation.groups = groups
 
         return invitation
 
-    def validate_invitation(self, invitation_key):
-        if SHA1_RE.search(invitation_key):
-            try:
-                return self.get(invitation_key=invitation_key)
-            except UserOrganizationInvitation.DoesNotExist:
-                return None
-        else:
-            return None
-
     def claim_invitation(self, invitation, user, is_default=False):
-        user_organization = UserOrganization.objects.create(user=user, organization=invitation.organization, is_default=is_default)
-        user_organization.admin_permissions = invitation.admin_permissions.all()
+        try:
+            UserOrganization.objects.get(user=user)
+        except UserOrganization.DoesNotExist:
+            user_organization = UserOrganization.objects.create(user=user, organization=invitation.organization, is_default=is_default)
+            user_organization.admin_permissions = invitation.admin_permissions.all()
 
-        for invitation_group in UserOrganizationInvitationUserGroup.objects.filter(invitation=invitation):
-            UserGroup.objects.create(user_organization=user_organization, group=invitation_group.group)
+            for group in invitation.groups.all():
+                UserGroup.objects.create(user_organization=user_organization, group=group)
 
-        UserOrganizationInvitationUserGroup.objects.filter(invitation=invitation).delete()
         invitation.delete()
-
         return user_organization
 
 class UserOrganizationInvitation(models.Model):
-    email = models.CharField(max_length=200, null=True, blank=True)
+    email = models.CharField(max_length=100)
     organization = models.ForeignKey(Organization)
     invitation_key = models.CharField(max_length=40, unique=True)
     created = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, related_name='user_invitation_created_by')
+    created_by = models.ForeignKey(User, related_name='created_invitations')
 
-    groups = models.ManyToManyField(OrganizationGroup, through='UserOrganizationInvitationUserGroup')
+    groups = models.ManyToManyField(OrganizationGroup)
     admin_permissions = models.ManyToManyField(OrganizationAdminPermission)
 
     def __unicode__(self):
@@ -149,17 +166,18 @@ class UserOrganizationInvitation(models.Model):
 
     objects = UserInvitationManager()
 
-    def send_invitation_email(self, is_created_organization=False):
+    def send_invitation_email(self):
         try:
-            send_mail('%s want to invite you to join their team' % self.organization.name, render_to_string('accounts/manage/emails/user_organization_invitation.html', {'invitation':self }), settings.EMAIL_FOR_USER_PUBLISHER_INVITATION, [self.email], fail_silently=False)
+            send_mail('You were invited to join %s account in %s' % (self.organization.name, settings.WEBSITE_NAME), render_to_string('organization/emails/user_organization_invitation.html', {'invitation':self }), settings.EMAIL_ADDRESS_NO_REPLY, [self.email], fail_silently=False)
             return True
         except:
             return False
 
+"""
 class UserOrganizationInvitationUserGroup(models.Model):
     invitation = models.ForeignKey(UserOrganizationInvitation)
     group = models.ForeignKey(OrganizationGroup)
-
+"""
 # DOCUMENT
 ##############################################################################################################
 
@@ -176,7 +194,7 @@ class Publication(models.Model):
     title = models.CharField(max_length=500)
     description = models.TextField(blank=True)
 
-    uploaded_file = PrivateFileField(upload_to=publication_media_dir, condition=is_downloadable, max_length=500, null=True)
+    uploaded_file = PrivateFileField(upload_to=publication_media_dir, condition=is_downloadable, max_length=500)
     original_file_name = models.CharField(max_length=300)
     file_ext = models.CharField(max_length=10)
 
@@ -187,11 +205,11 @@ class Publication(models.Model):
     tags = models.ManyToManyField('OrganizationTag', through='PublicationTag')
 
     uploaded = models.DateTimeField(auto_now_add=True)
-    uploaded_by = models.ForeignKey(User, related_name='publication_uploaded_by')
+    uploaded_by = models.ForeignKey(User, related_name='uploaded_publications')
     modified = models.DateTimeField(auto_now=True)
-    modified_by = models.ForeignKey(User, related_name='publication_modified_by', null=True)
-    replaced = models.DateTimeField(null=True)
-    replaced_by = models.ForeignKey(User, related_name='publication_replaced_by', null=True)
+    modified_by = models.ForeignKey(User, related_name='modified_publications', null=True, blank=True)
+    replaced = models.DateTimeField(null=True, blank=True)
+    replaced_by = models.ForeignKey(User, related_name='replaced_publications', null=True, blank=True)
 
     def __unicode__(self):
         return '%s' % (self.title)
@@ -248,7 +266,7 @@ class OrganizationShelf(models.Model):
     icon = models.CharField(max_length=100)
     auto_sync = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, related_name='organization_shelf_created_by')
+    created_by = models.ForeignKey(User, related_name='created_organization_shelves')
 
     def __unicode__(self):
         return self.name
@@ -257,27 +275,27 @@ class PublicationShelf(models.Model):
     publication = models.ForeignKey(Publication)
     shelf = models.ForeignKey(OrganizationShelf)
     created = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, related_name='publication_shelf_created_by')
+    created_by = models.ForeignKey(User, related_name='created_publication_shelves')
 
 class OrganizationShelfPermission(models.Model):
     shelf = models.OneToOneField(OrganizationShelf)
     access_level = models.IntegerField(default=SHELF_ACCESS['NO_ACCESS'])
     created = models.DateTimeField(auto_now=True)
-    created_by = models.ForeignKey(User, related_name='organization_shelf_permission_created_by')
+    created_by = models.ForeignKey(User, related_name='created_organization_shelf_permissions')
 
 class GroupShelfPermission(models.Model):
     group = models.ForeignKey(OrganizationGroup)
     shelf = models.ForeignKey(OrganizationShelf)
     access_level = models.IntegerField(default=SHELF_ACCESS['NO_ACCESS'])
     created = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, related_name='group_shelf_permission_created_by')
+    created_by = models.ForeignKey(User, related_name='created_group_shelf_permissions')
 
 class UserShelfPermission(models.Model):
     user = models.ForeignKey(User)
     shelf = models.ForeignKey(OrganizationShelf)
     access_level = models.IntegerField(default=SHELF_ACCESS['NO_ACCESS'])
     created = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, related_name='user_shelf_permission_created_by')
+    created_by = models.ForeignKey(User, related_name='created_user_shelf_permissions')
 
 # TAG
 

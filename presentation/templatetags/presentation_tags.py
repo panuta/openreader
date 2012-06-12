@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 
 register = template.Library()
 
-from domain.models import Publication, OrganizationGroup
+from domain.models import Publication, OrganizationGroup, UserOrganization, UserOrganizationInvitation
 
 from accounts.permissions import get_backend as get_permission_backend
 
@@ -64,3 +64,17 @@ def generate_shelf_icons():
         li_html.append('<li><a href="#" rel="%s"><img src="%simages/shelficons/24/%s.png" /></a></li>' % (icon, settings.STATIC_URL, icon))
 
     return ''.join(li_html)
+
+# User Management
+
+@register.simple_tag
+def print_user_count(organization):
+    return UserOrganization.objects.filter(organization=organization).count()
+
+@register.simple_tag
+def print_user_group_count(organization):
+    return OrganizationGroup.objects.filter(organization=organization).count()
+
+@register.assignment_tag
+def return_user_invitation_count(organization):
+    return UserOrganizationInvitation.objects.filter(organization=organization).count()

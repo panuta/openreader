@@ -32,7 +32,7 @@ def view_user_home(request):
 @require_GET
 @login_required
 def view_user_welcome(request):
-    if not UserOrganization.objects.filter(user=request.user, is_active=True).count():
-        raise Http404
+    if UserOrganization.objects.filter(user=request.user, is_active=True).count():
+        return redirect('view_user_home')
     
     return render(request, 'accounts/user_welcome.html', {})

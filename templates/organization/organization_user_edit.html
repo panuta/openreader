@@ -1,0 +1,85 @@
+{% extends 'base_authenticated.html' %}
+
+{% block head_title %}แก้ไขข้อมูลผู้ใช้{% endblock %}
+{% block topnav %}{% include 'snippets/organization_topnav.html' with active_menu='user' %}{% endblock %}
+
+{% block extra_head %}
+<script>
+$(document).ready(function () {
+  $("#id_groups").chosen();
+  
+  $('#remove-user-modal button[type="submit"]').on('click', function(e) {
+    $.post('{% url ajax_remove_organization_user user_organization.id %}', {}, function(response) {
+      window.location = response.redirect_url;
+    }, 'json');
+    return false;
+  });
+});
+</script>
+{% endblock %}
+
+{% block body_authenticated %}
+<div class="container-fluid organization_users_page"><div class="row-fluid">
+    <div class="content"><div class="inner-content">
+        <ul class="breadcrumb">
+            <li><a href="{% url view_organization_users organization.slug %}">รายชื่อและกลุ่มผู้ใช้</a> <span class="divider">/</span></li>
+            <li class="active">แก้ไขข้อมูลผู้ใช้</li>
+        </ul>
+
+        <h2>แก้ไขข้อมูลผู้ใช้ <span>{{ user_organization.user.email }}</span></h2>
+
+        <form method="POST" action=".">
+            {% csrf_token %}
+            {{form.non_field_errors}}
+
+            <div class="control-group">
+                <label class="control-label" for="id_email">อีเมลผู้ใช้</label>
+                <div class="controls">{{form.email}}{{form.email.errors}}</div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="id_first_name">ชื่อ</label>
+                <div class="controls">{{form.first_name}}{{form.first_name.errors}}</div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="id_last_name">นามสกุล</label>
+                <div class="controls">{{form.last_name}}{{form.last_name.errors}}</div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="id_groups">กลุ่มผู้ใช้</label>
+                <div class="controls">{{form.groups}}{{form.groups.errors}}</div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="id_is_admin">สิทธิ์การจัดการระบบ</label>
+                <div class="controls row-controls">{{form.admin_permissions}}{{form.admin_permissions.errors}}</div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> บันทึกข้อมูล</button>
+                <button type="reset" class="btn">ล้างข้อมูล</button>
+            </div>
+        </form>
+
+        {% if user.id != user_organization.user.id %}
+            <div class="delete-panel">
+                <a href="#remove-user-modal" class="danger" data-toggle="modal">ถอดผู้ใช้ออกจาก{{organization.prefix}}</a>
+            </div>
+        {% endif %}
+
+    </div></div>
+</div></div>
+
+<div class="modal hide" id="remove-user-modal">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>ถอดผู้ใช้ออกจากบริษัท</h3>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal">ยกเลิก</button>
+        <button type="submit" class="btn btn-danger">ยืนยันถอดผู้ใช้</button>
+    </div>
+</div>
+{% endblock %}
