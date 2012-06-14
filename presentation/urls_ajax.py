@@ -15,6 +15,10 @@ urlpatterns = patterns('presentation.views_ajax',
 
     # DOCUMENT #########################################################################################################
 
+    url(r'^org/(?P<organization_slug>\w+)/documents/upload/$', 'upload_publication', name='upload_publication'),
+
+    url(r'^ajax/publication/(?P<publication_uid>[a-zA-Z0-9\-]+)/query/$', 'ajax_query_publication', name='ajax_query_publication'),
+
     url(r'^ajax/(?P<organization_slug>\w+)/publication/tag/add/$', 'ajax_add_publications_tag', name='ajax_add_publications_tag'),
     url(r'^ajax/(?P<organization_slug>\w+)/publication/edit/$', 'ajax_edit_publication', name='ajax_edit_publication'),
     url(r'^ajax/(?P<organization_slug>\w+)/publication/delete/$', 'ajax_delete_publication', name='ajax_delete_publication'),

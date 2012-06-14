@@ -126,6 +126,7 @@ class OrganizationShelfMultipleChoiceField(forms.ModelMultipleChoiceField):
     def label_from_instance(self, obj):
         return '%s' % (obj.name)
 
+
 class OrganizationShelfForm(forms.Form):
     name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'input-normal'}))
     auto_sync = forms.BooleanField(required=False)

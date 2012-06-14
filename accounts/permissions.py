@@ -12,6 +12,7 @@ def get_backend(request):
 
     return cached_backend
 
+
 class DefaultUserPermissionBackend(object):
 
     @staticmethod
@@ -105,6 +106,23 @@ class DefaultUserPermissionBackend(object):
         shelves = []
         for shelf in OrganizationShelf.objects.filter(organization=organization).order_by('name'):
             if DefaultUserPermissionBackend.get_shelf_access(user, shelf) >= SHELF_ACCESS['VIEW_ACCESS']:
+                shelves.append(shelf)
+
+        return shelves
+
+    @staticmethod
+    def get_uploadable_shelves(user, organization):
+        try:
+            user_organization = UserOrganization.objects.get(user=user, organization=organization, is_active=True)
+        except UserOrganization.DoesNotExist:
+            return []
+
+        if user_organization.is_admin:
+            return OrganizationShelf.objects.filter(organization=organization).order_by('name')
+
+        shelves = []
+        for shelf in OrganizationShelf.objects.filter(organization=organization).order_by('name'):
+            if DefaultUserPermissionBackend.get_shelf_access(user, shelf) >= SHELF_ACCESS['PUBLISH_ACCESS']:
                 shelves.append(shelf)
 
         return shelves

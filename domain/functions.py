@@ -24,6 +24,7 @@ def upload_publication(request, uploading_file, organization, shelf):
 
     return publication
 
+
 def replace_publication(request, uploading_file, publication):
     (file_path, file_name, file_ext) = split_filepath(uploading_file.name)
     new_uid = uuid.uuid4()
@@ -45,12 +46,14 @@ def replace_publication(request, uploading_file, publication):
 
     return publication
 
+
 def delete_publication(publication):
     if publication.has_thumbnail:
         delete_thumbnails(publication)
-    
+
     publication.uploaded_file.delete()
     publication.delete()
+
 
 def delete_publications(publications):
     for publication in publications:

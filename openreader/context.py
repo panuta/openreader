@@ -6,6 +6,7 @@ def constants(request):
     """
 
     return {
+        'settings': settings,
         'MAX_PUBLICATION_FILE_SIZE':settings.MAX_PUBLICATION_FILE_SIZE,
         'MAX_PUBLICATION_FILE_SIZE_TEXT':settings.MAX_PUBLICATION_FILE_SIZE_TEXT,
     }

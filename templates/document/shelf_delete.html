@@ -5,32 +5,30 @@
 {% block topnav %}{% include 'snippets/organization_topnav.html' with active_menu='document' %}{% endblock %}
 
 {% block body_authenticated %}
-<div class="fluid-container sidebar-left page-shelf-modify">
-  {% include 'document/snippets/documents_sidebar.html' %}
+<div class="container-fluid modify_shelf_page"><div class="row-fluid">
+    <div class="content"><div class="inner-content">
+        <ul class="breadcrumb">
+            <li><a href="{% url view_documents organization.slug %}">ชั้นหนังสือทั้งหมด</a> <span class="divider">/</span></li>
+            <li><a href="{% url view_documents_by_shelf organization.slug shelf.id %}">ชั้นหนังสือ {{shelf.name}}</a> <span class="divider">/</span></li>
+            <li class="active">ลบชั้นหนังสือ</li>
+        </ul>
 
-  <div class="fluid-content"><div class="inner-content">
-    <ul class="breadcrumb">
-      <li><a href="{% url view_documents_by_shelf organization.slug shelf.id %}">ชั้นหนังสือ {{shelf.name}}</a> <span class="divider">/</span></li>
-      <li class="active">ลบชั้นหนังสือ</li>
-    </ul>
-    <h2>ลบชั้นหนังสือ</h2>
-    
-    <form method="POST" action=".">
-      {% csrf_token %}
-      {{form.non_field_errors}}
+        <form method="POST" action=".">
+            {% csrf_token %}
+            {{form.non_field_errors}}
 
-      {% if shelf_documents_count %}
-      <div class="delete_documents">
-        <input type="checkbox" name="delete_documents" id="id_delete_documents" /><label for="id_delete_documents">ลบไฟล์ทั้งหมดที่อยู่ในชั้น {{shelf.name}} ({{shelf_documents_count}} ไฟล์)</label>
-      </div>
-      {% endif %}
+            {% if shelf_documents_count %}
+                <div class="delete_documents">
+                    <input type="checkbox" name="delete_documents" id="id_delete_documents" /><label for="id_delete_documents">ลบไฟล์ทั้งหมดที่อยู่ในชั้น {{shelf.name}} ({{shelf_documents_count}} ไฟล์)</label>
+                </div>
+            {% endif %}
 
-      <div class="form_actions left_form_actions">
-        <button type="submit" name="submit-delete" class="btn danger">ยืนยันการลบชั้นหนังสือ</button>
-        <button type="submit" name="submit-cancel" class="btn">ยกเลิก</button>
-      </div>
-    </form>
+            <div class="form-actions">
+                <button type="submit" name="submit-delete" class="btn btn-danger">ยืนยันการลบชั้นหนังสือ</button>
+                <button type="submit" name="submit-cancel" class="btn">ยกเลิก</button>
+            </div>
+        </form>
 
-  </div></div>
-</div>
+    </div></div>
+</div></div>
 {% endblock %}

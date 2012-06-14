@@ -23,6 +23,18 @@ def print_publication_tags(publication):
 # Shelf
 
 @register.simple_tag(takes_context=True)
+def generate_shelf_selection(context, user, organization): # USED
+    shelf_html = []
+    for shelf in get_permission_backend(context.get('request')).get_viewable_shelves(user, organization):
+        shelf_html.append(u'<li><a href="%s">%s</a></li>' % (reverse('view_documents_by_shelf', args=[organization.slug, shelf.id]), shelf.name))
+
+    return ''.join(shelf_html)
+
+
+
+
+
+@register.simple_tag(takes_context=True)
 def generate_shelf_list(context, user, organization, active_shelf=None):
     shelf_html = []
     for shelf in get_permission_backend(context.get('request')).get_viewable_shelves(user, organization):

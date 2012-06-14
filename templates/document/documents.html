@@ -4,14 +4,20 @@
 {% block head_title %}ไฟล์เอกสาร{% endblock %}
 {% block topnav %}{% include 'snippets/organization_topnav.html' with active_menu='document' %}{% endblock %}
 
-{% block html_head %}
-{{block.super}}
-
+{% block extra_head %}
 <script>
-var MAX_PUBLICATION_FILE_SIZE = {{MAX_PUBLICATION_FILE_SIZE}};
-var MAX_PUBLICATION_FILE_SIZE_TEXT = '{{MAX_PUBLICATION_FILE_SIZE_TEXT}}';
+var MAX_PUBLICATION_FILE_SIZE = {{ settings.MAX_PUBLICATION_FILE_SIZE }};
+var MAX_PUBLICATION_FILE_SIZE_TEXT = '{{ settings.MAX_PUBLICATION_FILE_SIZE_TEXT }}';
 
 $(document).ready(function () {
+    {% if shelves %}
+        initializeDocumentsPage();
+    {% endif %}
+
+    //$('#publication-modal').modal();
+
+
+
   function split( val ) {
     return val.split(/,\s*/);
   }
@@ -20,76 +26,77 @@ $(document).ready(function () {
     return split(term).pop();
   }
 
-  initializeDocumentsPage({% if shelf %}'{{shelf.id}}'{% else %}''{% endif %});
 });
 </script>
 {% endblock %}
 
 {% block body_authenticated %}
-{% autopaginate publications 50 %}
-
 <div class="container-fluid documents_page"><div class="row-fluid">
-  {% include 'document/snippets/documents_sidebar.html' %}
-  <div class="span9"><div class="content"><div class="inner-content">
-    <h2>{% if shelf_type == 'all' %}ไฟล์ทั้งหมด{% endif %}{% if shelf_type == 'none' %}ไฟล์ที่ไม่อยู่ในชั้นหนังสือ{% endif %}{% if shelf %}<span>ชั้นหนังสือ</span>{{shelf.name}}{% endif %}</h2>
+    <div class="span9 documents_shelves"><div class="content"><div class="inner-content">
 
-    {% if shelf %}
-    <div class="page_actions">
-      {% can user 'can_upload_shelf' organization shelf=shelf %}<button class="btn btn-primary upload_publication_button" data-toggle="button"><i class="icon-upload icon-white"></i> อัพโหลดไฟล์เข้าชั้นหนังสือ</button>{% endcan %}
-      {% can user 'can_manage_shelf' organization %}<a href="{% url edit_document_shelf organization.slug shelf.id %}" class="btn edit_shelf_button"><i class="icon-edit"></i> แก้ไขชั้นหนังสือ</a>{% endcan %}
-    </div>
-    {% endif %}
+        {% if shelves %}
+            <div class="page_actions">
+                {% if uploadable_shelves %}<button class="btn btn-primary js-upload-publication" data-toggle="button"><i class="icon-upload icon-white"></i> อัพโหลดไฟล์</button>{% endif %}
+                {% can user 'can_manage_shelf' organization %}<a href="{% url create_document_shelf organization.slug %}" class="btn"><i class="icon-plus-sign"></i> เพิ่มชั้นหนังสือ</a>{% endcan %}
+            </div>
 
-    <div class="upload_dropzone" id="upload_dropzone">
-      <span class="btn" id="select_files_button">
-        <input id="fileupload" type="file" name="files[]" multiple>
-        <span><i class="icon-plus"></i> เลือกไฟล์</span>
-      </span>
-      <div class="dragdrop">หรือลากไฟล์มาวางที่กรอบนี้</div>
-    </div>
+            <div class="upload_tool hide">
+                <form>
+                    <label for="id_upload_shelf">เลือกชั้นหนังสือ</label>
+                    <select id="id_upload_shelf" class="js-upload-tool-shelf-input"><option></option>{% for shelf in uploadable_shelves %}<option value="{{ shelf.id }}">{{ shelf.name }}</option>{% endfor %}</select>
+                    <span class="js-upload-tool-file-input"><label for="id_upload_file">เลือกไฟล์</label><input type="file" id="id_upload_file" multiple="" /></span>
+                </form>
+            </div>
 
-    <table class="table documents-upload-table" style="display:none;">
-      <thead><tr><th>กำลังอัพโหลดไฟล์</th><th class="progress_column"></th><th class="action_column"></th></tr></thead>
-      <tbody></tbody>
-    </table>
+            <ul class="js-uploading"></ul>
 
-    <div class="checkbox_actions" {% if not publications %}style="display:none;"{% endif %}>
-      <div class="inner">
-        <span class="check"><input type="checkbox"/></span>
-        <a href="#add_tag_modal" class="btn-small btn add_tag_button disabled" data-toggle="modal"><i class="icon-tag"></i> เพิ่มแถบป้าย</a>
-        <a href="#delete_files_confirmation_modal" class="btn-small btn disabled" data-toggle="modal"><i class="icon-trash"></i> ลบไฟล์</a>
-      </div>
-    </div>
+            <h3><em>ชั้นหนังสือ</em> ({{ shelves|length }} ชั้นหนังสือ)</h3>
+            <ul>
+                {% for shelf in shelves %}
+                <li class="shelf {{ shelf.icon|default:settings.DEFAULT_SHELF_ICON }}" id="shelf-{{ shelf.id }}">
+                    <div class="shelf_name"><a href="{% url view_documents_by_shelf organization.slug shelf.id %}">{{ shelf.name }}</a></div>
+                    <div class="details"><span class="num_files">{{ shelf.num_of_publications }} ไฟล์</span>{% if shelf.latest_publication %}<span class="latest_file">ไฟล์ล่าสุด <a href="#" class="js-open-publication" title="{{ shelf.latest_publication.title }}" uid="{{ shelf.latest_publication.uid }}">{{ shelf.latest_publication.title }}</a> อัพโหลดเมื่อวันที่ {{ shelf.latest_publication.uploaded|format_abbr_datetime }}</span>{% endif %}</div>
+                </li>
+                {% endfor %}
+            </ul>
 
-    <table class="table documents-table" {% if not publications %}style="display:none;"{% endif %}>
-      <tbody>
-        {% for publication in publications %}
-        <tr id="{{publication.uid}}">
-          <td class="row_checkbox"><input type="checkbox" /></td>
-          <td class="download"><a href="{% url download_publication publication.uid %}" title="ดาวน์โหลดไฟล์ {{publication.file_ext|upper}}" data-content="ขนาดไฟล์ {{publication.uploaded_file.size|file_size}}">ดาวน์โหลดไฟล์</a></td>
-          <td class="file">
-            <div class="filename">{{publication.title}}</div>
-            <div class="uploaded">อัพโหลดเมื่อวันที่ {{publication.uploaded|format_abbr_datetime}} {% if publication.is_processing %} <span class="processing">กำลังประมวลผล</span>{% endif %}</div>
-            <div class="tag">{% print_publication_tags publication %}</div>
-          </td>
-          <td class="row_actions">
-            <input type="hidden" name="description" value="{{publication.description}}"/>
-            <input type="hidden" name="thumbnail" value="{{publication.get_large_thumbnail}}"/>
-            <button class="btn-small btn edit_publication_button" data-toggle="button">แก้ไข</button>
-          </td>
-        </tr>
-        {% endfor %}
-        
-      </tbody>
-    </table>
+        {% else %}
+            {% if organization.shelf_count %}
+                <div class="no_shelf">
+                    <div class="notice">ยังไม่มีชั้นหนังสือที่คุณสามารถเข้าถึงได้ในระบบ{% can user 'can_manage_shelf' organization %} คุณสามารถสร้างชั้นหนังสือใหม่ได้จากหน้า 'สร้างชั้นหนังสือ'{% endcan %}</div>
+                    {% can user 'can_manage_shelf' organization %}<a href="{% url create_document_shelf organization.slug %}" class="btn"><i class="icon-plus-sign"></i> สร้างชั้นหนังสือ</a>{% endcan %}
+                </div>
+            {% else %}
+                <div class="no_shelf">
+                    <div class="notice">ยังไม่มีชั้นหนังสือในระบบ{% can user 'can_manage_shelf' organization %} คุณสามารถสร้างชั้นหนังสือใหม่ได้จากหน้า 'สร้างชั้นหนังสือ'{% endcan %}</div>
+                    {% can user 'can_manage_shelf' organization %}<a href="{% url create_document_shelf organization.slug %}" class="btn"><i class="icon-plus-sign"></i> สร้างชั้นหนังสือ</a>{% endcan %}
+                </div>
+            {% endif %}
+        {% endif %}
 
-    {% paginate %}
+    </div></div></div>
 
-    {% if not publications %}
-    <div class="no_information">ไม่มีไฟล์</div>
-    {% endif %}
-  </div></div></div>
+    <div class="span3 documents_sidebar"><div class="content"><div class="inner-content">
+        <h3><i class="icon-list-alt"></i> ไฟล์ล่าสุด</h3>
+
+        {% if not recent_publications %}<div class="no_recent">ไม่มีไฟล์ล่าสุด</div>{% endif %}
+
+        <ul>
+            {% for publication in recent_publications %}
+            <li>
+                <div><a href="#" class="js-open-publication" title="{{ publication.title }}" uid="{{ publication.uid }}">{{ publication.title }}</a></div>
+                <div class="uploaded">อัพโหลดเมื่อวันที่ {{ publication.uploaded|format_abbr_datetime }}</div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div></div></div>
 </div></div>
+
+{% include 'document/snippets/publication_modal.html' %}
+
+
+
+
 
 <div class="modal fade hide" id="add_tag_modal">
   <div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>เพิ่มแถบป้าย</h3></div>

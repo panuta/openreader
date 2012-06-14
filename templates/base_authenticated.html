@@ -70,8 +70,7 @@ $('#message_modal').modal();
 </div>
 
 <script type="text/javascript">
-$('.modal').on('show', function() {
-    console.log('remove error');
+$('.modal').live('show', function() {
     $(this).find('.modal-error').remove();
 });
 </script>

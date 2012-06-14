@@ -30,6 +30,7 @@ from domain.tasks import prepare_publication
 
 logger = logging.getLogger(settings.OPENREADER_LOGGER)
 
+
 @login_required
 def view_my_profile(request):
     if request.method == 'POST':
@@ -52,6 +53,7 @@ def view_my_profile(request):
 
     return render(request, 'accounts/my_profile.html', {'form':form})
 
+
 @login_required
 def change_my_account_password(request):
     if request.method == 'POST':
@@ -66,12 +68,14 @@ def change_my_account_password(request):
 
     return render(request, 'accounts/my_account_change_password.html', {'form':form})
 
+
 # Organization Profile
 # ----------------------------------------------------------------------------------------------------------------------
 
 @login_required
 def view_organization_front(request, organization_slug):
     return redirect('view_documents', organization_slug=organization_slug)
+
 
 @require_GET
 @login_required
@@ -104,6 +108,7 @@ def view_organization_users_groups(request, organization_slug):
 
     return render(request, 'organization/organization_manage_users_groups.html', {'organization':organization, 'organization_users':organization_users, 'organization_groups':organization_groups})
 
+
 # User Invitation
 
 @require_GET
@@ -116,6 +121,7 @@ def view_organization_invited_users(request, organization_slug):
 
     invited_users = UserOrganizationInvitation.objects.filter(organization=organization)
     return render(request, 'organization/organization_users_invited.html', {'organization':organization, 'invited_users':invited_users})
+
 
 @login_required
 def invite_organization_user(request, organization_slug):
@@ -268,6 +274,7 @@ def edit_organization_user(request, organization_user_id):
 
     return render(request, 'organization/organization_user_edit.html', {'organization':organization, 'user_organization':user_organization, 'form':form})
 
+
 # Organization Groups
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -294,6 +301,7 @@ def add_organization_group(request, organization_slug):
 
     return render(request, 'organization/organization_group_modify.html', {'organization':organization, 'form':form})
 
+
 @login_required
 def edit_organization_group(request, organization_group_id):
     group = get_object_or_404(OrganizationGroup, pk=organization_group_id)
@@ -317,6 +325,7 @@ def edit_organization_group(request, organization_group_id):
 
     return render(request, 'organization/organization_group_modify.html', {'organization':organization, 'group':group, 'form':form})
 
+
 # Publication
 ########################################################################################################################
 
@@ -329,8 +338,10 @@ def view_documents(request, organization_slug):
         raise Http404
 
     shelves = get_permission_backend(request).get_viewable_shelves(request.user, organization)
-    publications = Publication.objects.filter(shelves__in=shelves).order_by('-uploaded')
-    return render(request, 'document/documents.html', {'organization':organization, 'publications':publications, 'shelf':None, 'shelf_type':'all'})
+    uploadable_shelves = get_permission_backend(request).get_uploadable_shelves(request.user, organization)
+    recent_publications = Publication.objects.filter(organization=organization).order_by('-uploaded')[:10]
+    return render(request, 'document/documents.html', {'organization':organization, 'shelves':shelves, 'uploadable_shelves':uploadable_shelves, 'recent_publications':recent_publications})
+
 
 @require_GET
 @login_required
@@ -341,55 +352,10 @@ def view_documents_by_shelf(request, organization_slug, shelf_id):
     if shelf.organization.id != organization.id or not get_permission_backend(request).can_view_shelf(request.user, organization, {'shelf':shelf}):
         raise Http404
 
+    uploadable_shelves = get_permission_backend(request).get_uploadable_shelves(request.user, organization)
     publications = Publication.objects.filter(organization=organization, shelves__in=[shelf]).order_by('-uploaded')
-    return render(request, 'document/documents.html', {'organization':organization, 'publications':publications, 'shelf':shelf, 'shelf_type':'shelf'})
+    return render(request, 'document/documents_shelf.html', {'organization':organization, 'publications':publications, 'shelf':shelf, 'uploadable_shelves':uploadable_shelves})
 
-@transaction.commit_manually
-@require_POST
-@login_required
-def upload_publication(request, organization_slug, shelf_id):
-    organization = get_object_or_404(Organization, slug=organization_slug)
-    shelf = get_object_or_404(OrganizationShelf, pk=shelf_id)
-
-    if shelf.organization.id != organization.id or not get_permission_backend(request).can_upload_shelf(request.user, organization, {'shelf':shelf}):
-        raise Http404
-
-    try:
-        file = request.FILES[u'files[]']
-
-        if file.size > settings.MAX_PUBLICATION_FILE_SIZE:
-            return response_json_error('file-size-exceed')
-
-        uploading_file = UploadedFile(file)
-        publication = domain_functions.upload_publication(request, uploading_file, organization, shelf)
-
-        if not publication:
-            transaction.rollback()
-            return response_json_error()
-
-        transaction.commit() # Need to commit before create task
-
-        try:
-            prepare_publication.delay(publication.uid)
-        except:
-            import sys
-            import traceback
-            logger.critical(traceback.format_exc(sys.exc_info()[2]))
-
-        return response_json_success({
-            'uid': str(publication.uid),
-            'title': publication.title,
-            'file_ext':publication.file_ext,
-            'file_size_text': humanize_file_size(uploading_file.file.size),
-            'shelf':shelf.id if shelf else '',
-            'uploaded':format_abbr_datetime(publication.uploaded),
-            'thumbnail_url':publication.get_large_thumbnail(),
-            'download_url': reverse('download_publication', args=[publication.uid])
-        })
-
-    except:
-        transaction.rollback()
-        return response_json_error()
 
 @require_GET
 @login_required
@@ -399,7 +365,8 @@ def download_publication(request, publication_uid):
     if not get_permission_backend(request).can_view_publication(request.user, publication.organization, {'publication':publication}):
         raise Http404
 
-    return private_files_get_file(request, 'document', 'Publication', 'uploaded_file', str(publication.id), '%s.%s' % (publication.original_file_name, publication.file_ext))
+    return private_files_get_file(request, 'domain', 'Publication', 'uploaded_file', str(publication.id), '%s.%s' % (publication.original_file_name, publication.file_ext))
+
 
 @transaction.commit_manually
 @require_POST
@@ -440,6 +407,7 @@ def replace_publication(request, publication_uid):
         transaction.rollback()
         return response_json_error()
 
+
 # SHELF
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -462,6 +430,7 @@ def _persist_shelf_permissions(request, organization, shelf):
             user = get_object_or_404(User, pk=int(permit[1]))
             UserShelfPermission.objects.create(shelf=shelf, user=user, access_level=int(permit[2]), created_by=request.user)
 
+
 def _extract_shelf_permissions(shelf):
     shelf_permissions = []
 
@@ -478,6 +447,7 @@ def _extract_shelf_permissions(shelf):
         shelf_permissions.append('user-%d-%d' % (shelf_permission.user.id, shelf_permission.access_level))
 
     return shelf_permissions
+
 
 @login_required
 def create_document_shelf(request, organization_slug):
@@ -509,6 +479,7 @@ def create_document_shelf(request, organization_slug):
 
     return render(request, 'document/shelf_modify.html', {'organization':organization, 'form':form, 'shelf':None, 'shelf_type':'create', 'shelf_permissions':shelf_permissions})
 
+
 @login_required
 def edit_document_shelf(request, organization_slug, shelf_id):
     organization = get_object_or_404(Organization, slug=organization_slug)
@@ -538,25 +509,21 @@ def edit_document_shelf(request, organization_slug, shelf_id):
 
     return render(request, 'document/shelf_modify.html', {'organization':organization, 'form':form, 'shelf':shelf, 'shelf_type':'edit', 'shelf_permissions':shelf_permissions})
 
+
 @login_required
 def delete_document_shelf(request, organization_slug, shelf_id):
     organization = get_object_or_404(Organization, slug=organization_slug)
     shelf = get_object_or_404(OrganizationShelf, pk=shelf_id)
 
-
     if shelf.organization.id != organization.id or not get_permission_backend(request).can_manage_shelf(request.user, organization):
         raise Http404
 
     if request.method == 'POST':
+        print request.POST
         if 'submit-delete' in request.POST:
-            delete_documents = 'delete_documents' in request.POST and request.POST.get('delete_documents') == 'on'
+            to_delete_documents = request.POST.get('delete_documents') == 'on'
 
-            PublicationShelf.objects.filter(shelf=shelf).delete()
-            OrganizationShelfPermission.objects.filter(shelf=shelf).delete()
-            GroupShelfPermission.objects.filter(shelf=shelf).delete()
-            UserShelfPermission.objects.filter(shelf=shelf).delete()
-
-            if delete_documents:
+            if to_delete_documents:
                 for publication in Publication.objects.filter(shelves__in=[shelf]):
                     domain_functions.delete_publication(publication)
 
@@ -565,7 +532,12 @@ def delete_document_shelf(request, organization_slug, shelf_id):
             else:
                 messages.success(request, u'ลบชั้นหนังสือเรียบร้อย')
 
+            PublicationShelf.objects.filter(shelf=shelf).delete()
+            OrganizationShelfPermission.objects.filter(shelf=shelf).delete()
+            GroupShelfPermission.objects.filter(shelf=shelf).delete()
+            UserShelfPermission.objects.filter(shelf=shelf).delete()
             shelf.delete()
+
             return redirect('view_documents', organization_slug=organization.slug)
 
         else:

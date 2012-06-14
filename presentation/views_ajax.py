@@ -1,10 +1,13 @@
 # -*- encoding: utf-8 -*-
 
+import logging
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.files.uploadedfile import UploadedFile
 from django.core.urlresolvers import reverse
-from django.db import models
+from django.db import models, transaction
 from django.db.models import Q
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
@@ -12,11 +15,15 @@ from django.views.decorators.http import require_GET, require_POST
 from django.utils import simplejson
 
 from common.shortcuts import response_json_success, response_json_error
+from common.utilities import format_abbr_datetime, humanize_file_size
 
 from accounts.permissions import get_backend as get_permission_backend
 
 from domain import functions as domain_functions
-from domain.models import OrganizationTag, PublicationTag, Publication, Organization, UserGroup, UserOrganizationInvitation, OrganizationGroup, UserOrganization
+from domain.models import OrganizationTag, PublicationTag, Publication, Organization, UserGroup, UserOrganizationInvitation, OrganizationGroup, UserOrganization, OrganizationShelf
+from domain.tasks import prepare_publication
+
+logger = logging.getLogger(settings.OPENREADER_LOGGER)
 
 @require_POST
 @login_required
@@ -35,6 +42,7 @@ def ajax_resend_user_invitation(request, invitation_id):
     else:
         raise Http404
 
+
 @require_POST
 @login_required
 def ajax_cancel_user_invitation(request, invitation_id):
@@ -50,6 +58,7 @@ def ajax_cancel_user_invitation(request, invitation_id):
         return response_json_success({'redirect_url':reverse('view_organization_invited_users', args=[organization.slug])})
     else:
         raise Http404
+
 
 @require_POST
 @login_required
@@ -69,6 +78,7 @@ def ajax_remove_organization_user(request, organization_user_id):
     else:
         raise Http404
 
+
 @require_POST
 @login_required
 def ajax_remove_organization_group(request, organization_group_id):
@@ -86,6 +96,7 @@ def ajax_remove_organization_group(request, organization_group_id):
         return response_json_success({'redirect_url':reverse('view_organization_groups', args=[organization.slug])})
     else:
         raise Http404
+
 
 @require_GET
 @login_required
@@ -109,6 +120,7 @@ def ajax_query_users(request, organization_slug):
 
     raise Http404
 
+
 @require_GET
 @login_required
 def ajax_query_groups(request, organization_slug):
@@ -124,6 +136,85 @@ def ajax_query_groups(request, organization_slug):
 
     return HttpResponse(simplejson.dumps(result))
 
+
+# Publication
+########################################################################################################################
+
+def ajax_query_publication(request, publication_uid):
+    publication = get_object_or_404(Publication, uid=publication_uid)
+
+    if not get_permission_backend(request).can_view_publication(request.user, publication.organization, {'publication':publication}):
+        raise Http404
+
+    return response_json_success({
+        'uid': str(publication.uid),
+        'title': publication.title,
+        'description': publication.description,
+        'tag_names': ','.join([tag.tag_name for tag in publication.tags.all()]),
+        'uploaded': format_abbr_datetime(publication.uploaded),
+        'file_ext': publication.file_ext,
+        'file_size_text': humanize_file_size(publication.uploaded_file.file.size),
+
+        'thumbnail_url':publication.get_large_thumbnail(),
+        'download_url': reverse('download_publication', args=[publication.uid]),
+    })
+
+
+@transaction.commit_manually
+@require_POST
+@login_required
+def upload_publication(request, organization_slug):
+    organization = get_object_or_404(Organization, slug=organization_slug)
+
+    shelf_id = request.POST.get('shelf')
+    if shelf_id:
+        shelf = get_object_or_404(OrganizationShelf, pk=shelf_id)
+    else:
+        raise Http404
+
+    if shelf.organization.id != organization.id or not get_permission_backend(request).can_upload_shelf(request.user, organization, {'shelf':shelf}):
+        transaction.rollback()
+        raise Http404
+
+    try:
+        file = request.FILES[u'files[]']
+
+        if file.size > settings.MAX_PUBLICATION_FILE_SIZE:
+            transaction.rollback()
+            return response_json_error('file-size-exceed')
+
+        uploading_file = UploadedFile(file)
+        publication = domain_functions.upload_publication(request, uploading_file, organization, shelf)
+
+        if not publication:
+            transaction.rollback()
+            return response_json_error()
+
+        transaction.commit() # Need to commit before create task
+
+        """
+        try:
+            prepare_publication.delay(publication.uid)
+        except:
+            import sys
+            import traceback
+            logger.critical(traceback.format_exc(sys.exc_info()[2]))
+        """
+
+        return response_json_success({
+            'uid': str(publication.uid),
+            'title': publication.title,
+            'file_ext':publication.file_ext,
+            'file_size_text': humanize_file_size(uploading_file.file.size),
+            'shelf':shelf.id if shelf else '',
+            'uploaded':format_abbr_datetime(publication.uploaded),
+            'thumbnail_url':publication.get_large_thumbnail(),
+            'download_url': reverse('download_publication', args=[publication.uid])
+        })
+
+    except:
+        transaction.rollback()
+        return response_json_error()
 
 
 @require_POST
@@ -164,6 +255,7 @@ def ajax_edit_publication(request, organization_slug):
 
     return response_json_success()
 
+
 @require_POST
 @login_required
 def ajax_delete_publication(request, organization_slug):
@@ -195,15 +287,16 @@ def ajax_delete_publication(request, organization_slug):
 
     return response_json_success()
 
+
 @require_POST
 @login_required
 def ajax_add_publications_tag(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
     publication_uids = request.POST.getlist('publication[]')
-    tag_name = request.POST.get('tag')
+    tag_names = request.POST.get('tags')
 
-    if tag_name:
+    if tag_names:
         publications = []
         for publication_uid in publication_uids:
             try:
@@ -214,22 +307,31 @@ def ajax_add_publications_tag(request, organization_slug):
             if get_permission_backend(request).can_edit_publication(request.user, organization, {'publication':publication}):
                 publications.append(publication)
 
-        if publications:
-            try:
-                tag = OrganizationTag.objects.get(organization=organization, tag_name=tag_name)
-            except OrganizationTag.DoesNotExist:
-                tag = OrganizationTag.objects.create(organization=organization, tag_name=tag_name)
+        tag_names = tag_names.split(',')
+        saved_tag_names = []
+        if publications and tag_names:
+            for tag_name in tag_names:
+                tag_name = tag_name.strip()
 
-            for publication in publications:
-                PublicationTag.objects.get_or_create(publication=publication, tag=tag)
+                try:
+                    tag = OrganizationTag.objects.get(organization=organization, tag_name=tag_name)
+                except OrganizationTag.DoesNotExist:
+                    tag = OrganizationTag.objects.create(organization=organization, tag_name=tag_name)
 
-            return response_json_success()
+                for publication in publications:
+                    publication_tag, created = PublicationTag.objects.get_or_create(publication=publication, tag=tag)
+
+                    if created:
+                        saved_tag_names.append(tag_name)
+
+            return response_json_success({'tag_names':saved_tag_names})
 
         else:
             return response_json_error('invalid-publication')
 
     else:
         return response_json_error('missing-parameter')
+
 
 @require_GET
 @login_required

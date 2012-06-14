@@ -1,0 +1,40 @@
+<div class="modal hide" id="publication-modal">
+    <div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>เอกสาร</h3></div>
+    <div class="modal-body">
+        <div class="loading"><i></i> กำลังโหลดข้อมูล</div>
+        <div class="publication">
+            <div class="left">
+                <div class="thumbnail"><img src="" /></div>
+                <ul class="file_info"><li>ไฟล์ <span class="file_ext">PDF</span></li><li>ขนาด <span class="file_size">10 MB</span></li></ul>
+                <div class="actions">
+                    <a href="#" class="btn btn-mini replace_button">เปลี่ยนไฟล์ใหม่</a>
+                    <a href="#" class="btn btn-mini delete_button">ลบไฟล์</a>
+                </div>
+
+            </div>
+            <div class="right">
+                <form class="publication_form">
+                    <div class="control-group">
+                        <label class="control-label" for="id_publication_title">ชื่อเอกสาร</label>
+                        <div class="controls"><input type="text" id="id_publication_title"/></div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="id_publication_description">คำอธิบาย</label>
+                        <div class="controls"><textarea id="id_publication_description"></textarea></div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="id_publication_tags">แถบป้าย</label>
+                        <div class="controls"><input type="text" id="id_publication_tags"/></div>
+                    </div>
+
+                    <button class="btn btn-primary save_button"><i class="icon-pencil icon-white"></i> บันทึกข้อมูล</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="btn pull-left download_button"><i class="icon-download"></i> ดาวน์โหลดไฟล์</a>
+        <span class="uploaded">อัพโหลดเมื่อวันที่ <span class="uploaded_text">11 ธ.ค. 2555 เวลา 12:12 น.</span></span>
+    </div>
+</div>

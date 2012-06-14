@@ -418,135 +418,415 @@ table tr.checked td {
   color: #666;
 }
 .shelf.basic1-006 {
-  background: url(/static/images/shelficons/16/basic1-006.png) 10px 50% transparent no-repeat;
+  background: url(/static/images/shelficons/16/basic1-006.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic1-041 {
-  background: url(/static/images/shelficons/16/basic1-041.png) 10px 50% transparent no-repeat;
+  background: url(/static/images/shelficons/16/basic1-041.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic1-049 {
-  background: url(/static/images/shelficons/16/basic1-049.png) 10px 50% transparent no-repeat;
+  background: url(/static/images/shelficons/16/basic1-049.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic1-052 {
-  background: url(/static/images/shelficons/16/basic1-052.png) 10px 50% transparent no-repeat;
+  background: url(/static/images/shelficons/16/basic1-052.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic1-054 {
-  background: url(/static/images/shelficons/16/basic1-054.png) 10px 50% transparent no-repeat;
+  background: url(/static/images/shelficons/16/basic1-054.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic1-106 {
-  background: url(/static/images/shelficons/16/basic1-106.png) 10px 50% transparent no-repeat;
+  background: url(/static/images/shelficons/16/basic1-106.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic1-129 {
-  background: url(/static/images/shelficons/16/basic1-129.png) 10px 50% transparent no-repeat;
+  background: url(/static/images/shelficons/16/basic1-129.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-001 {
-  background: url(/static/images/shelficons/16/basic2-001.png) 10px 50% transparent no-repeat;
+  background: url(/static/images/shelficons/16/basic2-001.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-011 {
-  background: url(/static/images/shelficons/16/basic2-011.png) 10px 50% transparent no-repeat;
+  background: url(/static/images/shelficons/16/basic2-011.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-018 {
-  background: url(/static/images/shelficons/16/basic2-018.png) 10px 50% transparent no-repeat;
+  background: url(/static/images/shelficons/16/basic2-018.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-057 {
-  background: url(/static/images/shelficons/16/basic2-057.png) 10px 50% transparent no-repeat;
+  background: url(/static/images/shelficons/16/basic2-057.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-092 {
-  background: url(/static/images/shelficons/16/basic2-092.png) 10px 50% transparent no-repeat;
+  background: url(/static/images/shelficons/16/basic2-092.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-096 {
-  background: url(/static/images/shelficons/16/basic2-096.png) 10px 50% transparent no-repeat;
+  background: url(/static/images/shelficons/16/basic2-096.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-102 {
-  background: url(/static/images/shelficons/16/basic2-102.png) 10px 50% transparent no-repeat;
+  background: url(/static/images/shelficons/16/basic2-102.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-106 {
-  background: url(/static/images/shelficons/16/basic2-106.png) 10px 50% transparent no-repeat;
+  background: url(/static/images/shelficons/16/basic2-106.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-114 {
-  background: url(/static/images/shelficons/16/basic2-114.png) 10px 50% transparent no-repeat;
+  background: url(/static/images/shelficons/16/basic2-114.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-117 {
-  background: url(/static/images/shelficons/16/basic2-117.png) 10px 50% transparent no-repeat;
+  background: url(/static/images/shelficons/16/basic2-117.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-142 {
-  background: url(/static/images/shelficons/16/basic2-142.png) 10px 50% transparent no-repeat;
+  background: url(/static/images/shelficons/16/basic2-142.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-197 {
-  background: url(/static/images/shelficons/16/basic2-197.png) 10px 50% transparent no-repeat;
+  background: url(/static/images/shelficons/16/basic2-197.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-238 {
-  background: url(/static/images/shelficons/16/basic2-238.png) 10px 50% transparent no-repeat;
+  background: url(/static/images/shelficons/16/basic2-238.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-253 {
-  background: url(/static/images/shelficons/16/basic2-253.png) 10px 50% transparent no-repeat;
+  background: url(/static/images/shelficons/16/basic2-253.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-256 {
-  background: url(/static/images/shelficons/16/basic2-256.png) 10px 50% transparent no-repeat;
+  background: url(/static/images/shelficons/16/basic2-256.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-258 {
-  background: url(/static/images/shelficons/16/basic2-258.png) 10px 50% transparent no-repeat;
+  background: url(/static/images/shelficons/16/basic2-258.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-267 {
-  background: url(/static/images/shelficons/16/basic2-267.png) 10px 50% transparent no-repeat;
+  background: url(/static/images/shelficons/16/basic2-267.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-268 {
-  background: url(/static/images/shelficons/16/basic2-268.png) 10px 50% transparent no-repeat;
+  background: url(/static/images/shelficons/16/basic2-268.png) 14px 17px transparent no-repeat;
 }
 /* PAGES
 ==================================================================================================== */
+#publication-modal .loading {
+  background-color: #EEE;
+  padding: 15px 20px ;
+  text-align: center;
+}
+#publication-modal .loading i {
+  background: url('../images/loading.gif') no-repeat;
+  display: inline-block;
+  height: 16px;
+  line-height: 16px;
+  vertical-align: text-top;
+  width: 16px;
+}
+#publication-modal .left {
+  float: left;
+}
+#publication-modal .left .thumbnail {
+  border: 1px solid #999;
+  background-color: #CCC;
+  width: 100px;
+}
+#publication-modal .left .actions {
+  margin-top: 15px;
+}
+#publication-modal .left .actions a {
+  display: block;
+  margin-bottom: 10px;
+}
+#publication-modal .left .file_info {
+  margin-top: 10px;
+}
+#publication-modal .left .file_info li {
+  color: #333;
+  list-style: none;
+  margin-bottom: 5px;
+}
+#publication-modal .right {
+  margin-left: 130px;
+}
+#publication-modal .right form {
+  margin: 0px;
+  padding: 0px;
+}
+#publication-modal .right form .control-group {
+  margin-bottom: 7px;
+  padding: 0px;
+}
+#publication-modal .right form label {
+  font-weight: normal;
+  margin-bottom: 2px;
+}
+#publication-modal .right form #id_publication_title {
+  width: 370px;
+}
+#publication-modal .right form #id_publication_description {
+  height: 60px;
+  width: 370px;
+}
+#publication-modal .right form #id_publication_tags {
+  width: 370px;
+}
+#publication-modal .right form .actions {
+  margin-top: 20px;
+}
+#publication-modal .right form button {
+  margin-right: 15px;
+}
+#publication-modal .uploaded {
+  line-height: 30px;
+  color: #666;
+  margin-left: 10px;
+}
 /* DOCUMENTS PAGE
 -------------------------------------------------- */
-.documents_page .content-sidebar {
-  padding-top: 10px;
+.documents_page .js-upload-publication {
+  width: 180px;
 }
-.documents_page .content-sidebar .head {
-  margin: 15px 0px 5px 10px;
-}
-.documents_page .upload_dropzone {
+.documents_page .upload_tool {
+  background-color: #FFD;
   border: 1px dashed #CCC;
-  padding: 20px 0px;
-  text-align: center;
   margin-bottom: 20px;
-  display: none;
+  padding: 15px;
+  /*
+        .chzn-container {
+            margin-bottom: 0px;
+            vertical-align: -5px;
+        }*/
+
 }
-.documents_page .upload_dropzone .dragdrop {
-  margin-top: 15px;
-  color: #555;
-  font-size: 1.2em;
+.documents_page .upload_tool label {
+  color: #444;
+  display: inline;
+  font-size: 1.1em;
+  margin-right: 8px;
 }
-.documents_page #select_files_button {
-  width: 160px;
-  text-align: center;
-  overflow: hidden;
-  position: relative;
-  cursor: pointer;
+.documents_page .upload_tool select {
+  margin-right: 20px;
 }
-.documents_page #select_files_button input {
-  -moz-border-bottom-colors: none;
-  -moz-border-image: none;
-  -moz-border-left-colors: none;
-  -moz-border-right-colors: none;
-  -moz-border-top-colors: none;
-  -moz-transform: translate(-400px, 0pt) scale(4);
-  border-color: transparent;
-  border-style: solid;
-  border-width: 0 200px 100px 200px;
-  cursor: pointer;
-  direction: ltr;
-  margin: 0;
-  opacity: 0;
-  position: absolute;
+.documents_page .breadcrumb {
+  margin-bottom: 20px;
+}
+.documents_page .shelf_selection a.dropdown-toggle {
+  width: 120px;
+}
+.documents_page .shelf_selection .dropdown-menu {
   right: 0;
-  top: 0;
+  left: auto;
+  max-width: none;
+}
+.documents_page .no_publication {
+  font-size: 1.1em;
+  background-color: #F5F5F5;
+  padding: 10px;
+}
+.documents_page .js-uploading li.uploading {
+  background-color: #F3F3F3;
+  border-bottom: 1px solid #DDD;
+  border-right: 1px solid #DDD;
+  height: 50px;
+  margin-bottom: 15px;
+  padding: 15px;
+}
+.documents_page .js-uploading li.uploading .filename {
+  color: #555;
+  margin-bottom: 5px;
+}
+.documents_page .js-uploading li.uploading .filename em {
+  color: #333;
+  font-style: normal;
+  font-weight: bold;
+}
+.documents_page .js-uploading li.uploading .js-cancel-upload {
+  float: right;
+  margin-top: 5px;
+}
+.documents_page .js-uploading li.uploading .upload_progressbar {
+  margin-top: 10px;
+}
+.documents_page .js-uploading li.uploading .upload_progressbar span {
+  vertical-align: top;
+}
+.documents_page .js-uploading li.uploaded {
+  background-color: #c9edc5;
+}
+.documents_page .js-uploading li.uploaded .file_title {
+  margin-top: 7px;
+}
+.documents_page .js-uploading li.uploaded label {
+  color: #333;
+  display: inline;
+  margin: 0px;
+}
+.documents_page .js-uploading li.uploaded input {
+  display: inline;
+  height: 15px;
+  margin: 0px 10px 0px 6px;
+  vertical-align: 2px;
+  width: 400px;
+}
+.documents_page .js-uploading li.uploaded button {
+  vertical-align: 2px;
+}
+.documents_page .js-uploading li.failed {
+  background-color: #f2dede;
+}
+.documents_page .js-uploading li.failed button {
+  margin-top: 4px;
+}
+.documents_page .documents_sidebar h3 {
+  border-bottom: 1px solid #CCC;
+  color: #444;
+  font-size: 1.2em;
+  margin: 0px 0px 10px 0px;
+  padding-bottom: 10px;
+}
+.documents_page .documents_sidebar h3 i {
+  vertical-align: -1px;
+}
+.documents_page .documents_sidebar .no_recent {
+  color: #666;
+}
+.documents_page .documents_sidebar li {
+  list-style: disc;
+  margin: 0px 0px 10px 15px;
+}
+.documents_page .documents_sidebar li .uploaded {
+  color: #666;
+  margin-top: 3px;
+}
+.documents_page .documents_sidebar li a:link,
+.documents_page .documents_sidebar li a:active,
+.documents_page .documents_sidebar li a:visited {
+  text-decoration: underline;
+  color: #0088cc;
+}
+.documents_page .documents_sidebar li a:hover {
+  background-color: #0088cc !important;
+  color: #FFF !important;
+  text-shadow: none;
+}
+.documents_page .documents_shelves h3 {
+  border: none;
+  color: #666;
+  font-size: 1em;
+  font-weight: normal;
+  line-height: normal;
+  margin-bottom: 10px;
+  padding-bottom: 0px;
+}
+.documents_page .documents_shelves h3 em {
+  color: #333;
+  font-size: 1.1em;
+  font-style: normal;
+  margin-right: 5px;
+}
+.documents_page .documents_shelves li.shelf {
+  border-radius: 5px;
+  border-left: 1px solid #DDD;
+  border-top: 1px solid #DDD;
+  border-right: 1px solid #AAA;
+  border-bottom: 1px solid #AAA;
+  margin-bottom: 15px;
+  padding: 15px 15px 15px 45px;
+}
+.documents_page .documents_shelves li.shelf .shelf_name {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+.documents_page .documents_shelves li.shelf .shelf_name a:link,
+.documents_page .documents_shelves li.shelf .shelf_name a:active,
+.documents_page .documents_shelves li.shelf .shelf_name a:visited {
+  text-decoration: underline;
+  color: #0088cc;
+}
+.documents_page .documents_shelves li.shelf .shelf_name a:hover {
+  background-color: #0088cc !important;
+  color: #FFF !important;
+  text-shadow: none;
+}
+.documents_page .documents_shelves li.shelf .num_files {
+  background-color: #dae6eb;
+  margin-right: 15px;
+  padding: 0px 5px;
+}
+.documents_page .documents_shelves li.shelf .latest_file {
+  color: #666;
+}
+.documents_page .documents_shelves li.shelf .latest_file a {
+  color: #444 !important;
+  font-weight: bold;
+}
+.documents_page .documents_shelves li.shelf .latest_file a:link,
+.documents_page .documents_shelves li.shelf .latest_file a:active,
+.documents_page .documents_shelves li.shelf .latest_file a:visited {
+  text-decoration: underline;
+  color: #0088cc;
+}
+.documents_page .documents_shelves li.shelf .latest_file a:hover {
+  background-color: #0088cc !important;
+  color: #FFF !important;
+  text-shadow: none;
+}
+.documents_page .documents_shelves .no_shelf {
+  background-color: #FFC;
+  padding: 20px;
+}
+.documents_page .documents_shelves .no_shelf .notice {
+  font-size: 1.2em;
+  margin-bottom: 15px;
+}
+.documents_page .documents_table tr.uploaded_row {
+  background-color: #c9edc5;
+}
+.documents_page .documents_table td.row_checkbox {
+  width: 10px;
+}
+.documents_page .documents_table td.download {
+  padding-top: 10px;
+  width: 16px;
+}
+.documents_page .documents_table td.download a {
+  text-indent: -9999px;
+  display: block;
+  width: 16px;
+  height: 16px;
+  background: url(../images/ui/row_download.png) no-repeat;
+  outline: none;
+}
+.documents_page .documents_table td.download a:hover {
+  background-position: right center;
+}
+.documents_page .documents_table td.file .filename {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+.documents_page .documents_table td.file .uploaded {
+  color: #777;
+  font-size: 0.95em;
+  margin-bottom: 5px;
+}
+.documents_page .documents_table td.file .uploaded .processing {
+  color: #b57420;
+  margin-left: 5px;
+}
+.documents_page .documents_table td.file .error_message {
+  color: #b94a48;
+  margin-top: 5px;
+  font-weight: bold;
+}
+.documents_page .documents_table td.file .tag {
+  margin-bottom: 5px;
+}
+.documents_page .documents_table td.file .tag li {
+  background-color: #e2e8ce;
+  font-size: 0.9em;
+  display: inline-block;
+  margin-right: 10px;
+  border-radius: 3px;
+  padding: 0px 5px;
+}
+.documents_page .documents_table td.row_actions {
+  width: 70px;
 }
 .documents_page .checkbox_actions {
   background: url(../images/ui/checkbox_down_arrow.png) 0px 0px transparent no-repeat;
   height: 62px;
+  margin-bottom: 10px;
 }
 .documents_page .checkbox_actions .inner {
   line-height: 50px;
   background-color: #EEE;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 .documents_page .checkbox_actions span.check {
   padding: 8px;
@@ -561,275 +841,391 @@ table tr.checked td {
 .documents_page .checkbox_actions_selected .inner {
   background-color: #666;
 }
-.documents_page .upload_progressbar span {
-  vertical-align: top;
+/*
+.documents_page {
+    .content-sidebar {
+        padding-top:10px;
+        .head {
+            margin:15px 0px 5px 10px;
+        }
+    }
+
+    .upload_dropzone {
+        border:1px dashed #CCC;
+        padding:20px 0px;
+        text-align:center;
+        margin-bottom:20px;
+        display:none;
+
+        .dragdrop {
+            margin-top:15px;
+            color:#555;
+            font-size:1.2em;
+        }
+    }
+
+    #select_files_button {
+        width:160px;
+        text-align:center;
+        overflow: hidden;
+        position: relative;
+        cursor:pointer;
+
+        input {
+            -moz-border-bottom-colors: none;
+            -moz-border-image: none;
+            -moz-border-left-colors: none;
+            -moz-border-right-colors: none;
+            -moz-border-top-colors: none;
+            -moz-transform: translate(-400px, 0pt) scale(4);
+            border-color: transparent;
+            border-style: solid;
+            border-width: 0 200px 100px 200px;
+            cursor: pointer;
+            direction: ltr;
+            margin: 0;
+            opacity: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+    }
+
+    .checkbox_actions {
+        background:url(../images/ui/checkbox_down_arrow.png) 0px 0px transparent no-repeat;
+        height:62px;
+        
+        .inner {
+            line-height:50px;
+            background-color:#EEE;
+            margin-bottom:10px;
+        }
+        
+        span.check {
+            padding:8px;
+            margin-right:5px;
+        }
+
+        a {
+            margin-right:10px;
+        }
+    }
+
+    .checkbox_actions_selected {
+        background:url(../images/ui/checkbox_down_arrow.png) 0px -62px transparent no-repeat;
+
+        .inner {
+            background-color:#666;
+        }
+    }
+
+    .upload_progressbar {
+        span {
+            vertical-align:top;
+        }
+    }
+
+    .documents-upload-table {
+        .error_row {
+            background-color:@errorBackground;
+
+            .error_message {
+                color:@errorText;
+                margin-top:5px;
+                font-weight:bold;
+            }
+        }
+
+        .progress_column {
+            width:320px;
+        }
+
+        .action_column {
+            width:100px;
+        }
+
+        .processing {
+            color:#b57420;
+        }
+    }
+
+    .documents-table {
+        margin-top:15px;
+
+        tr.uploaded_row {
+            background-color:@success-light-background;
+        }
+
+        td {
+            &.row_checkbox {
+                width:10px;
+            }
+
+            &.download {
+                padding-top:10px;
+                width:16px;
+
+                a {
+                    text-indent:-9999px;
+                    display:block;
+                    width:16px;
+                    height:16px;
+                    background:url(../images/ui/row_download.png) no-repeat;
+                    outline:none;
+
+                    &:hover {
+                        background-position:right center;
+                    }
+                }
+            }
+
+            &.file {
+                .filename {
+                    font-weight:bold;
+                    margin-bottom:5px;
+                }
+
+                .uploaded {
+                    color:#777;
+                    font-size:0.95em;
+                    margin-bottom:5px;
+
+                    .processing {
+                        color:#b57420;
+                        margin-left:5px;
+                    }
+                }
+
+                .error_message {
+                    color:@errorText;
+                    margin-top:5px;
+                    font-weight:bold;
+                }
+
+                .tag {
+                    li {
+                        background-color:#e2e8ce;
+                        font-size:0.9em;
+                        display: inline-block;
+                        margin-right:10px;
+                        border-radius:3px;
+                        padding:0px 5px;
+                    }
+                }
+            }
+
+            &.row_actions {
+                width:70px;
+            }
+        }
+
+        .editing_row {
+            display:none;
+            border-left:1px solid #CCC;
+            border-right:1px solid #CCC;
+            background-color:#faf2e9;
+
+            td {
+                padding:15px 15px;
+
+                .cover {
+                    float:left;
+                    width:200px;
+                    height:250px;
+                    
+                    img {
+                        border:1px solid #999;
+                        vertical-align:middle;
+                    }
+                }
+
+                .original_filename {
+                    margin:0px 0px 20px 230px;
+
+                    em {
+                        font-size:1.2em;
+                        font-weight:bold;
+                        font-style:normal;
+                        margin-right:10px;
+                    }
+
+                    a {
+                        .content_link;
+                    }
+                }
+
+                form {
+                    padding:0px;
+                    margin:0px 0px 30px 230px;
+
+                    .item {
+                        margin-bottom:10px;
+
+                        input {
+                            width:550px;
+                        }
+
+                        textarea {
+                            width:550px;
+                            height:60px;
+                        }
+                    }
+
+                    .form_actions {
+                        button {
+                            margin-right:15px;
+                        }
+
+                        .replace_file_input {
+                            text-indent:-9999px;
+                        }
+
+                        .right_actions {
+                            float:right;
+                            margin-top:6px;
+
+                            a {
+                                text-decoration:underline;
+                            }
+
+                            a.link {
+                                .content_link;
+                            }
+                        }
+                    }
+
+                    .error_message {
+                        color:#C30;
+                        margin-left:20px;
+                    }
+                }
+
+                .ui-menu {
+                    .ui-menu-item {
+                        float:none;
+
+                        a {
+                            font-size:1.1em;
+                            color:#333;
+                            padding:10px 20px;
+                            cursor:pointer;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .no_information {
+        margin-top:20px;
+    }
 }
-.documents_page .documents-upload-table .error_row {
-  background-color: #f2dede;
-}
-.documents_page .documents-upload-table .error_row .error_message {
-  color: #b94a48;
-  margin-top: 5px;
-  font-weight: bold;
-}
-.documents_page .documents-upload-table .progress_column {
-  width: 320px;
-}
-.documents_page .documents-upload-table .action_column {
-  width: 100px;
-}
-.documents_page .documents-upload-table .processing {
-  color: #b57420;
-}
-.documents_page .documents-table {
-  margin-top: 15px;
-}
-.documents_page .documents-table tr.uploaded_row {
-  background-color: #c9edc5;
-}
-.documents_page .documents-table td.row_checkbox {
-  width: 10px;
-}
-.documents_page .documents-table td.download {
-  padding-top: 10px;
-  width: 16px;
-}
-.documents_page .documents-table td.download a {
-  text-indent: -9999px;
-  display: block;
-  width: 16px;
-  height: 16px;
-  background: url(../images/ui/row_download.png) no-repeat;
-  outline: none;
-}
-.documents_page .documents-table td.download a:hover {
-  background-position: right center;
-}
-.documents_page .documents-table td.file .filename {
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-.documents_page .documents-table td.file .uploaded {
-  color: #777;
-  font-size: 0.95em;
-  margin-bottom: 5px;
-}
-.documents_page .documents-table td.file .uploaded .processing {
-  color: #b57420;
-  margin-left: 5px;
-}
-.documents_page .documents-table td.file .error_message {
-  color: #b94a48;
-  margin-top: 5px;
-  font-weight: bold;
-}
-.documents_page .documents-table td.file .tag li {
-  background-color: #e2e8ce;
-  font-size: 0.9em;
-  display: inline-block;
-  margin-right: 10px;
-  border-radius: 3px;
-  padding: 0px 5px;
-}
-.documents_page .documents-table td.row_actions {
-  width: 70px;
-}
-.documents_page .documents-table .editing_row {
-  display: none;
-  border-left: 1px solid #CCC;
-  border-right: 1px solid #CCC;
-  background-color: #faf2e9;
-}
-.documents_page .documents-table .editing_row td {
-  padding: 15px 15px;
-}
-.documents_page .documents-table .editing_row td .cover {
-  float: left;
-  width: 200px;
-  height: 250px;
-}
-.documents_page .documents-table .editing_row td .cover img {
-  border: 1px solid #999;
-  vertical-align: middle;
-}
-.documents_page .documents-table .editing_row td .original_filename {
-  margin: 0px 0px 20px 230px;
-}
-.documents_page .documents-table .editing_row td .original_filename em {
-  font-size: 1.2em;
-  font-weight: bold;
-  font-style: normal;
-  margin-right: 10px;
-}
-.documents_page .documents-table .editing_row td .original_filename a:link,
-.documents_page .documents-table .editing_row td .original_filename a:active,
-.documents_page .documents-table .editing_row td .original_filename a:visited {
-  text-decoration: underline;
-  color: #0088cc;
-}
-.documents_page .documents-table .editing_row td .original_filename a:hover {
-  background-color: #0088cc !important;
-  color: #FFF !important;
-  text-shadow: none;
-}
-.documents_page .documents-table .editing_row td form {
-  padding: 0px;
-  margin: 0px 0px 30px 230px;
-}
-.documents_page .documents-table .editing_row td form .item {
-  margin-bottom: 10px;
-}
-.documents_page .documents-table .editing_row td form .item input {
-  width: 550px;
-}
-.documents_page .documents-table .editing_row td form .item textarea {
-  width: 550px;
-  height: 60px;
-}
-.documents_page .documents-table .editing_row td form .form_actions button {
-  margin-right: 15px;
-}
-.documents_page .documents-table .editing_row td form .form_actions .replace_file_input {
-  text-indent: -9999px;
-}
-.documents_page .documents-table .editing_row td form .form_actions .right_actions {
-  float: right;
-  margin-top: 6px;
-}
-.documents_page .documents-table .editing_row td form .form_actions .right_actions a {
-  text-decoration: underline;
-}
-.documents_page .documents-table .editing_row td form .form_actions .right_actions a.link:link,
-.documents_page .documents-table .editing_row td form .form_actions .right_actions a.link:active,
-.documents_page .documents-table .editing_row td form .form_actions .right_actions a.link:visited {
-  text-decoration: underline;
-  color: #0088cc;
-}
-.documents_page .documents-table .editing_row td form .form_actions .right_actions a.link:hover {
-  background-color: #0088cc !important;
-  color: #FFF !important;
-  text-shadow: none;
-}
-.documents_page .documents-table .editing_row td form .error_message {
-  color: #C30;
-  margin-left: 20px;
-}
-.documents_page .documents-table .editing_row td .ui-menu .ui-menu-item {
-  float: none;
-}
-.documents_page .documents-table .editing_row td .ui-menu .ui-menu-item a {
-  font-size: 1.1em;
-  color: #333;
-  padding: 10px 20px;
-  cursor: pointer;
-}
-.documents_page .no_information {
-  margin-top: 20px;
-}
-#add_tag_modal form {
+*/
+#add-tags-modal form {
   margin: 0px;
   padding: 0px;
 }
-#add_tag_modal form .item .input {
+#add-tags-modal form .item .input {
   margin-left: 0px;
 }
-#add_tag_modal form .item input {
-  width: 350px;
+#add-tags-modal form .item input {
+  width: 450px;
 }
 /* MODIFY SHELF PAGE
 -------------------------------------------------- */
-.modify_shelf_page .icon_input img {
+.modify_shelf_page .shelf-icon-controls img {
   vertical-align: middle;
   margin-right: 15px;
 }
-.modify_shelf_page .shelf_permissions_input {
-  margin: 10px 0px 40px;
+.modify_shelf_page .shelf-permission-controls {
+  margin: 10px 0px 10px;
 }
-.modify_shelf_page .shelf_permissions_input .permissions li {
+.modify_shelf_page .shelf-permission-controls .permissions li {
   background-color: #FFD;
   list-style: disc;
   margin: 0px 0px 10px 20px;
   padding: 5px 10px;
   border: 1px solid #DDD;
 }
-.modify_shelf_page .shelf_permissions_input .permissions li span {
+.modify_shelf_page .shelf-permission-controls .permissions li span {
   margin-left: 15px;
   font-size: 0.9em;
 }
-.modify_shelf_page .shelf_permissions_input .permissions li span a:link,
-.modify_shelf_page .shelf_permissions_input .permissions li span a:active,
-.modify_shelf_page .shelf_permissions_input .permissions li span a:visited {
+.modify_shelf_page .shelf-permission-controls .permissions li span a:link,
+.modify_shelf_page .shelf-permission-controls .permissions li span a:active,
+.modify_shelf_page .shelf-permission-controls .permissions li span a:visited {
   text-decoration: underline;
   color: #0088cc;
 }
-.modify_shelf_page .shelf_permissions_input .permissions li span a:hover {
+.modify_shelf_page .shelf-permission-controls .permissions li span a:hover {
   background-color: #0088cc !important;
   color: #FFF !important;
   text-shadow: none;
 }
-.modify_shelf_page .shelf_permissions_input .permissions li em {
+.modify_shelf_page .shelf-permission-controls .permissions li em {
   font-weight: bold;
   font-style: normal;
   color: #444;
 }
-.modify_shelf_page .shelf_permissions_input .add_permissions {
+.modify_shelf_page .shelf-permission-controls .add_permissions {
   color: #333;
   margin: 20px 0px 0px 20px;
 }
-.modify_shelf_page .shelf_permissions_input .add_permissions a {
+.modify_shelf_page .shelf-permission-controls .add_permissions a {
   margin-left: 10px;
 }
-.modify_shelf_page .shelf_permissions_input .permission_panel {
+.modify_shelf_page .shelf-permission-controls .permission_panel {
   display: none;
   background-color: #666;
   border: 1px solid #999;
   padding: 15px;
   margin-top: 20px;
 }
-.modify_shelf_page .shelf_permissions_input .permission_panel .head {
+.modify_shelf_page .shelf-permission-controls .permission_panel .head {
   font-size: 1.1em;
   color: #ceecef;
   margin-bottom: 15px;
 }
-.modify_shelf_page .shelf_permissions_input .permission_panel .head select {
+.modify_shelf_page .shelf-permission-controls .permission_panel .head select {
   margin: 0px 10px;
 }
-.modify_shelf_page .shelf_permissions_input .permission_panel li {
+.modify_shelf_page .shelf-permission-controls .permission_panel li {
   margin-bottom: 10px;
 }
-.modify_shelf_page .shelf_permissions_input .permission_panel input {
+.modify_shelf_page .shelf-permission-controls .permission_panel input {
   display: inline;
   margin-right: 8px;
 }
-.modify_shelf_page .shelf_permissions_input .permission_panel label {
+.modify_shelf_page .shelf-permission-controls .permission_panel label {
   color: #FFF;
   display: inline;
   font-size: 1em;
 }
-.modify_shelf_page .shelf_permissions_input .permission_panel .permission_actions {
+.modify_shelf_page .shelf-permission-controls .permission_panel .permission_actions {
   margin-top: 20px;
 }
-.modify_shelf_page .shelf_permissions_input .permission_panel .permission_actions button {
+.modify_shelf_page .shelf-permission-controls .permission_panel .permission_actions button {
   margin-right: 15px;
 }
-.modify_shelf_page .shelf_permissions_input .permission_panel .select_individual {
+.modify_shelf_page .shelf-permission-controls .permission_panel .select_individual {
   margin-bottom: 15px;
 }
-.modify_shelf_page .shelf_permissions_input .permission_panel .select_individual select {
+.modify_shelf_page .shelf-permission-controls .permission_panel .select_individual select {
   width: 500px;
 }
-.modify_shelf_page .shelf_permissions_input .permission_panel .select_individual .as-selections {
+.modify_shelf_page .shelf-permission-controls .permission_panel .select_individual .as-selections {
   margin: 7px 0px 15px;
 }
-.modify_shelf_page .shelf_permissions_input .permission_panel .select_individual input.as-input {
+.modify_shelf_page .shelf-permission-controls .permission_panel .select_individual input.as-input {
   box-shadow: none;
 }
 .modify_shelf_page .delete_documents {
-  margin-bottom: 20px;
+  margin: 20px 0px 10px 20px;
 }
 .modify_shelf_page .delete_documents input {
   display: inline;
   margin-right: 7px;
+  vertical-align: 0px;
 }
 .modify_shelf_page .delete_documents label {
   display: inline;

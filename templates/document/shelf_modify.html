@@ -4,25 +4,24 @@
 {% block head_title %}{% if not shelf %}สร้างชั้นหนังสือใหม่{% else %}แก้ไขชั้นหนังสือ{% endif %}{% endblock %}
 {% block topnav %}{% include 'snippets/organization_topnav.html' with active_menu='document' %}{% endblock %}
 
-{% block html_head %}
-{{block.super}}
+{% block extra_head %}
 <script>
 function _append_shelf_permission(str, value) {
-  if(!$('.shelf_permissions_input .permissions input[value="' + value + '"]').length) {
-    $('.shelf_permissions_input .permissions').append('<li>' + str + ' <span>[ <a href="#">ลบออก</a> ]</span><input type="hidden" name="permission" value="' + value + '" /></li>');
+  if(!$('.shelf-permission-controls .permissions input[value="' + value + '"]').length) {
+    $('.shelf-permission-controls .permissions').append('<li>' + str + ' <span>[ <a href="#">ลบออก</a> ]</span><input type="hidden" name="permission" value="' + value + '" /></li>');
   }
 }
 
 $(document).ready(function () {
   /* Select Shelf Icon */
   $('#shelf_icons_modal .modal-body a').on('click', function(e) {
-    $('.icon_input img').attr('src', $(this).find('img').attr('src'));
-    $('.icon_input input').val($(this).attr('rel'));
+    $('.shelf-icon-controls img').attr('src', $(this).find('img').attr('src'));
+    $('.shelf-icon-controls input').val($(this).attr('rel'));
     $('#shelf_icons_modal').modal('hide');
     return false;
   });
 
-  $('.shelf_permissions_input li a').live('click', function(e) {
+  $('.shelf-permission-controls li a').live('click', function(e) {
     $(this).closest('li').fadeOut(function() {
       $(this).remove();
     });
@@ -30,9 +29,9 @@ $(document).ready(function () {
   });
 
   /* Add Shelf Permission */
-  $('.shelf_permissions_input .actions button').button();
+  $('.shelf-permission-controls .actions button').button();
 
-  $('.shelf_permissions_input .add_permissions a').on('click', function(e) {
+  $('.shelf-permission-controls .add_permissions a').on('click', function(e) {
     e.preventDefault();
     if(!$(this).hasClass('active')) {
       $('.permission_panel').hide();
@@ -48,7 +47,7 @@ $(document).ready(function () {
   $('.permission_panel .cancel_button').on('click', function(e) {
     e.preventDefault();
     $(this).closest('.permission_panel').slideUp('fast');
-    $('.shelf_permissions_input .add_permissions a').removeClass('active');
+    $('.shelf-permission-controls .add_permissions a').removeClass('active');
   });
 
   // All People Shelf Permission
@@ -66,7 +65,7 @@ $(document).ready(function () {
     }
 
     $('#add-all-permission').slideUp('fast');
-    $('.shelf_permissions_input .add_permissions a').removeClass('active');
+    $('.shelf-permission-controls .add_permissions a').removeClass('active');
   });
 
   $('#add-all-permission input[type="radio"]').on('click', function(e) {
@@ -92,7 +91,7 @@ $(document).ready(function () {
     }
 
     $('#add-group-permission').slideUp('fast');
-    $('.shelf_permissions_input .add_permissions a').removeClass('active');
+    $('.shelf-permission-controls .add_permissions a').removeClass('active');
   });
 
   $('#add-group-permission input[type="radio"]').on('click', function(e) {
@@ -131,7 +130,7 @@ $(document).ready(function () {
     });
 
     $('#add-individual-permission').slideUp('fast');
-    $('.shelf_permissions_input .add_permissions a').removeClass('active');
+    $('.shelf-permission-controls .add_permissions a').removeClass('active');
   });
 
   $('#add-individual-permission input[type="radio"]').on('click', function(e) {
@@ -154,75 +153,94 @@ $(document).ready(function () {
 
 {% block body_authenticated %}
 <div class="container-fluid modify_shelf_page"><div class="row-fluid">
-  {% include 'document/snippets/documents_sidebar.html' %}
-  <div class="span9"><div class="content"><div class="inner-content">
-    {% if not shelf %}
-    <h2>สร้างชั้นหนังสือใหม่</h2>
-    {% else %}
-    <ul class="breadcrumb">
-      <li><a href="{% url view_documents_by_shelf organization.slug shelf.id %}">ชั้นหนังสือ {{shelf.name}}</a> <span class="divider">/</span></li>
-      <li class="active">แก้ไขชั้นหนังสือ</li>
-    </ul>
-    <h2>แก้ไขชั้นหนังสือ</h2>
-    {% endif %}
+    <div class="content"><div class="inner-content">
 
-    <form method="POST" action=".">
-      {% csrf_token %}
-      {{form.non_field_errors}}
+        {% if not shelf %}
+            <ul class="breadcrumb">
+                <li><a href="{% url view_documents organization.slug %}">ชั้นหนังสือทั้งหมด</a> <span class="divider">/</span></li>
+                <li class="active">สร้างชั้นหนังสือใหม่</li>
+            </ul>
+            <h2>สร้างชั้นหนังสือใหม่</h2>
+        {% else %}
+            <ul class="breadcrumb">
+                <li><a href="{% url view_documents organization.slug %}">ชั้นหนังสือทั้งหมด</a> <span class="divider">/</span></li>
+                <li><a href="{% url view_documents_by_shelf organization.slug shelf.id %}">ชั้นหนังสือ {{shelf.name}}</a> <span class="divider">/</span></li>
+                <li class="active">แก้ไขชั้นหนังสือ</li>
+            </ul>
+            <h2>แก้ไขชั้นหนังสือ</h2>
+        {% endif %}
 
-      <div class="item"><label for="id_name">ชื่อชั้นหนังสือ</label><div class="input">{{form.name}}{{form.name.errors}}</div></div>
-      <div class="item"><label for="id_autosync">Auto-Sync</label><div class="input"><label class="checkbox">{{form.auto_sync}} ทุกไฟล์ในชั้นหนังสือนี้จะถูกดาวน์โหลดลงเครื่องผู้ใช้โดยอัตโนมัติ</label>{{form.auto_sync.errors}}</div></div>
-      <div class="item"><label for="id_shelf_icon">ไอคอนชั้นหนังสือ</label><div class="input icon_input"><input type="hidden" name="shelf_icon" id="id_shelf_icon" value="{{form.shelf_icon.value}}" /><img src="{{STATIC_URL}}images/shelficons/24/{{form.shelf_icon.value}}.png" /><button class="btn btn-small" data-toggle="modal" data-target="#shelf_icons_modal">เปลี่ยนไอคอน</button></div></div>
-      <div class="item">
-        <label>การเข้าถึงชั้นหนังสือ</label>
-        <div class="input shelf_permissions_input">
-          <ul class="permissions">
-            {% generate_shelf_permission_list shelf_permissions %}
-          </ul>
-          {{form.permission.errors}}
-          <div class="add_permissions">
-            <span><i class="icon-plus"></i> เพิ่มการเข้าถึงสำหรับ</span>
-            <a href="#add-all-permission" class="btn btn-small" data-toggle="button">ทุกคนในบริษัท</a>
-            <a href="#add-group-permission" class="btn btn-small" data-toggle="button">กลุ่มผู้ใช้</a>
-            <a href="#add-individual-permission" class="btn btn-small" data-toggle="button">รายบุคคล</a>
-          </div>
+        <form method="POST" action=".">
+            {% csrf_token %}
+            {{form.non_field_errors}}
 
-          <div class="permission_panel" id="add-all-permission">
-            <div class="head">ทุกคนในบริษัทสามารถ</div>
-            <ul><li><label><input type="radio" name="all-shelf-permission" value="2"/> อัพโหลดไฟล์และแก้ไขไฟล์ได้</label></li><li><label><input type="radio" name="all-shelf-permission" value="1"/> ดูไฟล์ได้อย่างเดียว (ยกเว้นผู้ดูแลระบบ)</label></li></ul>
-            <div class="permission_actions"><button class="btn add_button"><i class="icon-plus"></i> เพิ่มการเข้าถึง</button><button class="btn cancel_button">ยกเลิก</button></div>
-          </div>
+            <div class="control-group">
+                <label class="control-label" for="id_name">ชื่อชั้นหนังสือ</label>
+                <div class="controls">{{form.name}}{{form.name.errors}}</div>
+            </div>
 
-          <div class="permission_panel" id="add-group-permission">
-            <div class="head">กลุ่มผู้ใช้ <select>{% generate_group_select_options organization %}</select> สามารถ</div>
-            <ul><li><label><input type="radio" name="group-shelf-permission" value="2"/> อัพโหลดไฟล์และแก้ไขไฟล์ได้</label></li><li><label><input type="radio" name="group-shelf-permission" value="1"/> ดูไฟล์ได้อย่างเดียว</label></li></ul>
-            <div class="permission_actions"><button class="btn add_button"><i class="icon-plus"></i> เพิ่มการเข้าถึง</button><button class="btn cancel_button">ยกเลิก</button></div>
-          </div>
+            <div class="control-group">
+                <label class="control-label" for="id_email">Auto-Sync</label>
+                <div class="controls row-controls"><ul><li><label>{{form.auto_sync}} ทุกไฟล์ในชั้นหนังสือนี้จะถูกดาวน์โหลดลงเครื่องผู้ใช้โดยอัตโนมัติ</label></li></ul>{{form.auto_sync.errors}}</div>
+            </div>
 
-          <div class="permission_panel" id="add-individual-permission">
-            <div class="select_individual"><select multiple="multiple" style="width:600px;" data-placeholder="เลือกผู้ใช้">{% generate_user_select_options organization %}</select></div>
-            <div class="head">ผู้ใช้สามารถ</div>
-            <ul><li><label><input type="radio" name="individual-shelf-permission" value="2"/> อัพโหลดไฟล์และแก้ไขไฟล์ได้</label></li><li><label><input type="radio" name="individual-shelf-permission" value="1"/> ดูไฟล์ได้อย่างเดียว</label></li></ul>
-            <div class="permission_actions"><button class="btn add_button"><i class="icon-plus"></i> เพิ่มการเข้าถึง</button><button class="btn cancel_button">ยกเลิก</button></div>
-          </div>
+            <div class="control-group">
+                <label class="control-label" for="id_shelf_icon">ไอคอนชั้นหนังสือ</label>
+                <div class="controls shelf-icon-controls">
+                    <input type="hidden" name="shelf_icon" id="id_shelf_icon" value="{{form.shelf_icon.value}}" /><img src="{{STATIC_URL}}images/shelficons/24/{{form.shelf_icon.value}}.png" /><button class="btn btn-small" data-toggle="modal" data-target="#shelf_icons_modal">เปลี่ยนไอคอน</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="id_email">การเข้าถึงชั้นหนังสือ</label>
+                <div class="controls shelf-permission-controls">
+                    <ul class="permissions">
+                        {% generate_shelf_permission_list shelf_permissions %}
+                    </ul>
+                    {{form.permission.errors}}
+                    <div class="add_permissions">
+                        <span><i class="icon-plus"></i> เพิ่มการเข้าถึงสำหรับ</span>
+                        <a href="#add-all-permission" class="btn btn-small" data-toggle="button">ทุกคนในบริษัท</a>
+                        <a href="#add-group-permission" class="btn btn-small" data-toggle="button">กลุ่มผู้ใช้</a>
+                        <a href="#add-individual-permission" class="btn btn-small" data-toggle="button">รายบุคคล</a>
+                    </div>
+
+                    <div class="permission_panel" id="add-all-permission">
+                        <div class="head">ทุกคนในบริษัทสามารถ</div>
+                        <ul><li><label><input type="radio" name="all-shelf-permission" value="2"/> อัพโหลดไฟล์และแก้ไขไฟล์ได้</label></li><li><label><input type="radio" name="all-shelf-permission" value="1"/> ดูไฟล์ได้อย่างเดียว (ยกเว้นผู้ดูแลระบบ)</label></li></ul>
+                        <div class="permission_actions"><button class="btn add_button"><i class="icon-plus"></i> เพิ่มการเข้าถึง</button><button class="btn cancel_button">ยกเลิก</button></div>
+                    </div>
+
+                    <div class="permission_panel" id="add-group-permission">
+                        <div class="head">กลุ่มผู้ใช้ <select>{% generate_group_select_options organization %}</select> สามารถ</div>
+                        <ul><li><label><input type="radio" name="group-shelf-permission" value="2"/> อัพโหลดไฟล์และแก้ไขไฟล์ได้</label></li><li><label><input type="radio" name="group-shelf-permission" value="1"/> ดูไฟล์ได้อย่างเดียว</label></li></ul>
+                        <div class="permission_actions"><button class="btn add_button"><i class="icon-plus"></i> เพิ่มการเข้าถึง</button><button class="btn cancel_button">ยกเลิก</button></div>
+                    </div>
+
+                    <div class="permission_panel" id="add-individual-permission">
+                        <div class="select_individual"><select multiple="multiple" style="width:600px;" data-placeholder="เลือกผู้ใช้">{% generate_user_select_options organization %}</select></div>
+                        <div class="head">ผู้ใช้สามารถ</div>
+                        <ul><li><label><input type="radio" name="individual-shelf-permission" value="2"/> อัพโหลดไฟล์และแก้ไขไฟล์ได้</label></li><li><label><input type="radio" name="individual-shelf-permission" value="1"/> ดูไฟล์ได้อย่างเดียว</label></li></ul>
+                        <div class="permission_actions"><button class="btn add_button"><i class="icon-plus"></i> เพิ่มการเข้าถึง</button><button class="btn cancel_button">ยกเลิก</button></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> {% if not shelf %}สร้างชั้นหนังสือ{% else %}แก้ไขชั้นหนังสือ{% endif %}</button>
+                <button type="reset" class="btn">ล้างข้อมูล</button>
+            </div>
+        </form>
+
+        {% if shelf %}
+        <div class="delete-panel">
+            <a href="{% url delete_document_shelf organization.slug shelf.id %}" class="danger">ลบชั้นหนังสือ</a>
         </div>
-      </div>
-
-      <div class="form-actions">
-        <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> {% if not shelf %}สร้างชั้นหนังสือ{% else %}แก้ไขชั้นหนังสือ{% endif %}</button>
-        <button type="reset" class="btn">ล้างข้อมูล</button>
-      </div>
-    </form>
-
-    {% if shelf %}
-    <div class="delete-panel">
-      <a href="{% url delete_document_shelf organization.slug shelf.id %}" class="danger">ลบชั้นหนังสือ</a>
-    </div>
-    {% endif %}
-  </div></div></div>
+        {% endif %}
+    </div></div>
 </div></div>
 
-<div class="modal fade hide" id="shelf_icons_modal">
+<div class="modal hide" id="shelf_icons_modal">
   <div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>เลือกไอคอน</h3></div>
   <div class="modal-body">
     <ul>

@@ -90,6 +90,11 @@ class Organization(models.Model):
     def __unicode__(self):
         return self.name
 
+    def _get_organization_shelf_count(self):
+        return OrganizationShelf.objects.filter(organization=self).count()
+
+    shelf_count = property(_get_organization_shelf_count)
+
 class OrganizationGroup(models.Model):
     organization = models.ForeignKey(Organization)
     name = models.CharField(max_length=100)
@@ -270,6 +275,21 @@ class OrganizationShelf(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def _get_publication_count(self):
+        return PublicationShelf.objects.filter(shelf=self).count()
+
+    num_of_publications = property(_get_publication_count)
+
+    def _get_latest_publication(self):
+        publications = Publication.objects.filter(shelves__in=[self]).order_by('-uploaded')
+        if publications:
+            return publications[0]
+
+        return None
+
+    latest_publication = property(_get_latest_publication)
+
 
 class PublicationShelf(models.Model):
     publication = models.ForeignKey(Publication)

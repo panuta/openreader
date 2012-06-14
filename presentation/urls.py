@@ -13,7 +13,7 @@ urlpatterns = patterns('presentation.views',
     url(r'^org/(?P<organization_slug>\w+)/profile/$', 'view_organization_profile', name='view_organization_profile'),
 
     url(r'^org/(?P<organization_slug>\w+)/manage/users-groups/$', 'view_organization_users_groups', name='view_organization_users_groups'),
-    url(r'^org/(?P<organization_slug>\w+)/manage/users-groups/#usres', RedirectView.as_view(), name='view_organization_users'),
+    url(r'^org/(?P<organization_slug>\w+)/manage/users-groups/#users', RedirectView.as_view(), name='view_organization_users'),
     url(r'^org/(?P<organization_slug>\w+)/manage/users-groups/#groups$', RedirectView.as_view(), name='view_organization_groups'),
 
     url(r'^user/(?P<organization_user_id>\d+)/edit/$', 'edit_organization_user', name='edit_organization_user'),
@@ -32,8 +32,6 @@ urlpatterns = patterns('presentation.views',
 
     url(r'^org/(?P<organization_slug>\w+)/documents/$', 'view_documents', name='view_documents'),
     url(r'^org/(?P<organization_slug>\w+)/documents/shelf/(?P<shelf_id>\d+)/$', 'view_documents_by_shelf', name='view_documents_by_shelf'),
-
-    url(r'^org/(?P<organization_slug>\w+)/documents/shelf/(?P<shelf_id>\d+)/upload/$', 'upload_publication', name='upload_publication'),
 
     url(r'^org/(?P<organization_slug>\w+)/shelf/create/$', 'create_document_shelf', name='create_document_shelf'),
     url(r'^org/(?P<organization_slug>\w+)/shelf/(?P<shelf_id>\d+)/edit/$', 'edit_document_shelf', name='edit_document_shelf'),
