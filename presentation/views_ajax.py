@@ -244,14 +244,16 @@ def ajax_edit_publication(request, organization_slug):
 
     PublicationTag.objects.filter(publication=publication).delete()
 
+    tag_names = tag_names.split(',')
     for tag_name in tag_names:
         if tag_name:
+            tag_name = tag_name.lower().strip()
             try:
                 tag = OrganizationTag.objects.get(organization=organization, tag_name=tag_name)
             except OrganizationTag.DoesNotExist:
                 tag = OrganizationTag.objects.create(organization=organization, tag_name=tag_name)
 
-            PublicationTag.objects.create(publication=publication, tag=tag)
+            PublicationTag.objects.get_or_create(publication=publication, tag=tag)
 
     return response_json_success()
 
@@ -311,18 +313,19 @@ def ajax_add_publications_tag(request, organization_slug):
         saved_tag_names = []
         if publications and tag_names:
             for tag_name in tag_names:
-                tag_name = tag_name.strip()
+                if tag_name:
+                    tag_name = tag_name.lower().strip()
 
-                try:
-                    tag = OrganizationTag.objects.get(organization=organization, tag_name=tag_name)
-                except OrganizationTag.DoesNotExist:
-                    tag = OrganizationTag.objects.create(organization=organization, tag_name=tag_name)
+                    try:
+                        tag = OrganizationTag.objects.get(organization=organization, tag_name=tag_name)
+                    except OrganizationTag.DoesNotExist:
+                        tag = OrganizationTag.objects.create(organization=organization, tag_name=tag_name)
 
-                for publication in publications:
-                    publication_tag, created = PublicationTag.objects.get_or_create(publication=publication, tag=tag)
+                    for publication in publications:
+                        publication_tag, created = PublicationTag.objects.get_or_create(publication=publication, tag=tag)
 
-                    if created:
-                        saved_tag_names.append(tag_name)
+                        if created:
+                            saved_tag_names.append(tag_name)
 
             return response_json_success({'tag_names':saved_tag_names})
 

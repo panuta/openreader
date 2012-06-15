@@ -1,4 +1,7 @@
-from django.utils import simplejson
+from httpauth import logged_in_or_basicauth
+from datetime import datetime, timedelta
+import md5
+import base64
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate
@@ -8,27 +11,24 @@ from django.core import serializers
 from django.forms.models import model_to_dict
 from django.core.urlresolvers import reverse
 from django.views.decorators.http import require_GET
+from django.utils import simplejson
 
 from common.fileservers import generate_download_url
-from common.permissions import can
 
+from accounts.permissions import get_backend as get_permission_backend
 from api.models import *
-from domain.models import UserOrganization
+from domain.models import UserProfile, UserOrganization, OrganizationShelf, Publication, OrganizationDownloadServer
 
-from httpauth import logged_in_or_basicauth
-
-from datetime import datetime, timedelta
-import md5
-import base64
 
 def _has_required_parameters(request, names):
     if request.method != 'GET':
         raise Http404
-		
+        
     for name in names:
         if name not in request.GET:
             raise Http404
     return True
+    
 def _get_email(request):
     # TODO: check if use token, return email from database
     
@@ -69,7 +69,8 @@ def list_publication(request):
         result['user_profile'] = model_to_dict(user_profile)
         result['organization'] = model_to_dict(user_organization.organization)
         
-        shelves = user_profile.get_viewable_shelves(user_organization.organization)
+        shelves = get_permission_backend(request).get_viewable_shelves(user_profile.user, user_organization.organization)
+        # shelves = user_profile.get_viewable_shelves(user_organization.organization)
         shelves_list = []
         for shelf in shelves:
             shelf_dict = model_to_dict(shelf)
@@ -145,7 +146,8 @@ def request_download_publication(request, publication_uid):
     publication = get_object_or_404(Publication, uid=publication_uid)
     user = _extract_user(request)
 
-    if not can(user, 'view_publication', publication.organization, {'publication':publication}):
+    # if not can(user, 'view_publication', publication.organization, {'publication':publication}):
+    if not get_permission_backend(request).get_publication_access(user, publication):
         raise Http403
     
     server_urls = []
