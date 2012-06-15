@@ -590,7 +590,7 @@ table tr.checked td {
   margin-right: 8px;
 }
 .documents_page .upload_tool select {
-  margin-right: 20px;
+  margin: 0px 20px 0px 0px;
 }
 .documents_page .breadcrumb {
   margin-bottom: 20px;
@@ -789,6 +789,17 @@ table tr.checked td {
 .documents_page .documents_table td.file .filename {
   font-weight: bold;
   margin-bottom: 5px;
+}
+.documents_page .documents_table td.file .filename a:link,
+.documents_page .documents_table td.file .filename a:active,
+.documents_page .documents_table td.file .filename a:visited {
+  text-decoration: underline;
+  color: #0088cc;
+}
+.documents_page .documents_table td.file .filename a:hover {
+  background-color: #0088cc !important;
+  color: #FFF !important;
+  text-shadow: none;
 }
 .documents_page .documents_table td.file .uploaded {
   color: #777;

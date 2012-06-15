@@ -12,6 +12,13 @@ var MAX_PUBLICATION_FILE_SIZE_TEXT = '{{ settings.MAX_PUBLICATION_FILE_SIZE_TEXT
 $(document).ready(function () {
     initializeDocumentsShelfPage("{{ shelf.id }}");
 
+    $('.documents_table .js-open-publication').live('click', function() {
+        $('#publication-modal').on('publication_deleted', function() {
+            var trObject = $('.documents_table .js-open-publication[uid="' + $('#publication-modal').data('uid') + '"]').closest('tr');
+            trObject.remove();
+        });
+        return false;
+    });
 
     function split( val ) {
         return val.split(/,\s*/);
@@ -20,8 +27,6 @@ $(document).ready(function () {
     function extractLast(term) {
         return split(term).pop();
     }
-
-    //initializeDocumentsPage({% if shelf %}'{{shelf.id}}'{% else %}''{% endif %});
 });
 </script>
 {% endblock %}
@@ -77,14 +82,9 @@ $(document).ready(function () {
                     <td class="row_checkbox"><input type="checkbox" /></td>
                     <td class="download"><a href="{% url download_publication publication.uid %}" title="ดาวน์โหลดไฟล์ {{publication.file_ext|upper}}" data-content="ขนาดไฟล์ {{publication.uploaded_file.size|file_size}}">ดาวน์โหลดไฟล์</a></td>
                     <td class="file">
-                        <div class="filename">{{publication.title}}</div>
+                        <div class="filename"><a href="#" class="js-open-publication" uid="{{ publication.uid }}" title="{{ publication.title }}">{{publication.title}}</a></div>
                         <div class="uploaded">อัพโหลดเมื่อวันที่ {{publication.uploaded|format_abbr_datetime}} {% if publication.is_processing %} <span class="processing">กำลังประมวลผล</span>{% endif %}</div>
                         <div class="tag">{% print_publication_tags publication %}</div>
-                    </td>
-                    <td class="row_actions">
-                        <input type="hidden" name="description" value="{{publication.description}}"/>
-                        <input type="hidden" name="thumbnail" value="{{publication.get_large_thumbnail}}"/>
-                        <button class="btn-small btn edit_publication_button" data-toggle="button">แก้ไข</button>
                     </td>
                 </tr>
             {% endfor %}

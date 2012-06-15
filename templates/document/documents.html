@@ -11,21 +11,29 @@ var MAX_PUBLICATION_FILE_SIZE_TEXT = '{{ settings.MAX_PUBLICATION_FILE_SIZE_TEXT
 
 $(document).ready(function () {
     {% if shelves %}
-        initializeDocumentsPage();
+    initializeDocumentsPage();
+
+    $('.documents_shelves .js-open-publication').live('click', function() {
+        $('#publication-modal').on('publication_deleted', function() {
+            _publication_is_deleted($('#publication-modal').data('uid'));
+        });
+        return false;
+    });
+
+    $('.documents_sidebar .js-open-publication').live('click', function() {
+        $('#publication-modal').on('publication_deleted', function() {
+            _publication_is_deleted($('#publication-modal').data('uid'));
+        });
+        return false;
+    });
+
+    function _publication_is_deleted(uid) {
+        var liObject = $('.documents_sidebar .js-open-publication[uid="' + uid + '"]').closest('li');
+        liObject.fadeOut('fast', function() {
+            liObject.remove();
+        });
+    }
     {% endif %}
-
-    //$('#publication-modal').modal();
-
-
-
-  function split( val ) {
-    return val.split(/,\s*/);
-  }
-
-  function extractLast(term) {
-    return split(term).pop();
-  }
-
 });
 </script>
 {% endblock %}

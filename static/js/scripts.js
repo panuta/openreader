@@ -97,12 +97,18 @@ $(document).ready(function () {
         }
     });
 
+    $('#publication-modal').on('hidden', function() {
+        $('#publication-modal').off('publication_deleted')
+    });
+
     $('#publication-modal .replace_button').on('click', function() {
         $('#publication-modal .publication_form').fadeOut('fast', function() {
             $('#publication-modal .right').append('<form class="replace_form"><label for="replace_file_input">เลือกไฟล์ที่ต้องการแทนไฟล์เก่า</label><input type="file" id="replace_file_input" /><div class="actions"><button type="submit" class="btn btn-primary submit_replace_button">เปลี่ยนไฟล์</button><button class="btn cancel_button">ยกเลิก</button></div></form>');
 
             $('#publication-modal .replace_form .submit_replace_button').on('click', function() {
                 // TODO
+
+                return false;
             });
 
             $('#publication-modal .replace_form .cancel_button').on('click', function() {
@@ -110,8 +116,10 @@ $(document).ready(function () {
                     $('#publication-modal .replace_form').remove();
                     $('#publication-modal .publication_form').show();
                 });
+                return false;
             });
         });
+        return false;
     });
 
     $('#publication-modal .delete_button').on('click', function() {
@@ -123,7 +131,7 @@ $(document).ready(function () {
 
                 $.post('/ajax/' + var_organization_slug + '/publication/delete/', {uid:uid}, function(response) {
                     $('#publication-modal').modal('hide');
-                    // TODO Remove related DOM
+                    $('#publication-modal').trigger('publication_deleted');
                 });
 
                 return false;
@@ -134,8 +142,10 @@ $(document).ready(function () {
                     $('#publication-modal .delete_form').remove();
                     $('#publication-modal .publication_form').show();
                 });
+                return false;
             });
         });
+        return false;
     });
 
     $('#publication-modal .save_button').on('click', function() {
@@ -158,6 +168,7 @@ $(document).ready(function () {
                 }
             }
         }, 'json');
+        return false;
     });
 });
 
