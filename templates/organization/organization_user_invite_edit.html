@@ -15,7 +15,7 @@ $(document).ready(function () {
             $('#resend-invitation-modal').modal('hide');
             _showAlertBar('ส่งคำขอถึงผู้ใช้เรียบร้อย', 'success', true);
         } else if(response.status == 'error') {
-            if(response.error == 'send-invitation-failed') _addModalErrorMessage('resend-invitation-modal', 'ไม่สามารถส่งอีเมลได้');
+            if(response.error == 'send-invitation-failed') _addModalMessage('resend-invitation-modal', 'ไม่สามารถส่งอีเมลได้', 'error');
         }
     }, 'json');
     return false;

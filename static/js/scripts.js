@@ -55,15 +55,6 @@ function _removeModalMessage(modal_id) {
     $('#' + modal_id + ' .modal-message').remove();
 }
 
-function _addModalErrorMessage(modal_id, message) {
-    $('#' + modal_id + ' .modal-error').remove();
-    $('#' + modal_id + ' .modal-header').after('<div class="modal-error"><i class="icon-exclamation-sign icon-white"></i> ' + message + '</div>');
-}
-
-function _removeModalErrorMessage(modal_id) {
-    $('#' + modal_id + ' .modal-error').remove();
-}
-
 $('.js-open-publication').live('click', function() {
     $('#publication-modal').data('uid', $(this).attr('uid'));
     $('#publication-modal').data('title', $(this).attr('title'));
