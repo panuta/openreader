@@ -494,11 +494,13 @@ function initializeDocumentsShelfPage(shelf_id) {
         if(tags) {
             $.post('/ajax/' + var_organization_slug + '/publication/tag/add/', {tags:tags, publication:publications}, function(response) {
                 if(response.status == 'success') {
-                    $('.documents_table input[type="checkbox"]:checked').each(function(e) {
-                        for(var i=0; i<response.tag_names.length; i++) {
-                            $(this).closest('tr').find('.tag ul').append('<li>' + response.tag_names[i] + '</li>')
+                    for(var i=0; i<publications.length; i++){
+                        for(var j=0; j<response.tag_names.length; j++) {
+                            if(!$('#' + publications[i] + ' .tag li').filter(function(index){return $(this).text() == response.tag_names[i];}).length) {
+                                $('#' + publications[i] + ' .tag ul').append('<li>' + response.tag_names[i] + '</li>');
+                            }
                         }
-                    });
+                    }
                     $('#add-tags-modal').modal('hide');
 
                 } else {

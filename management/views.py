@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 
-from domain.models import User, Organization, UserOrganization, UserOrganizationInvitation
+from domain.models import User, Organization, UserOrganization, UserOrganizationInvitation, OrganizationAdminPermission, OrganizationGroup
 
 from forms import *
 
@@ -21,11 +21,11 @@ def manage_organizations(request):
     return render(request, 'manage/manage_organizations.html', {'organizations':organizations})
 
 @login_required
-def manage_organization(request, organization_id):
+def manage_organization(request, organization_slug):
     if not request.user.is_superuser:
         raise Http404
 
-    organization = get_object_or_404(Organization, id=organization_id)
+    organization = get_object_or_404(Organization, slug=organization_slug)
     return render(request, 'manage/manage_organization.html', {'organization':organization})
 
 @login_required
@@ -44,18 +44,18 @@ def create_organization(request):
             organization = Organization.objects.create(name=organization_name, slug=organization_slug, prefix=organization_prefix, created_by=request.user)
 
             # Send invitation
-            organization_admin_role = Role.objects.get(code='organization_admin')
-
+            group = OrganizationGroup.objects.create(organization=organization, name='Administrator', description='Admin job')
+            organization_admin_role = [OrganizationAdminPermission.objects.all()[0]]
+            
             try:
                 user = User.objects.get(email=admin_email)
             except User.DoesNotExist:
-                invitation = UserOrganizationInvitation.objects.create_invitation(admin_email, organization, organization_admin_role, request.user)
+                invitation = UserOrganizationInvitation.objects.create_invitation(admin_email, organization, organization_admin_role, [group], request.user)
             else:
-                invitation = UserOrganizationInvitation.objects.create_invitation(user.email, organization, organization_admin_role, request.user)                
-            
+                invitation = UserOrganizationInvitation.objects.create_invitation(user.email, organization, organization_admin_role, [], request.user)                
+                # invitation = UserOrganizationInvitation.objects.create_invitation(email, organization, admin_permissions, groups, request.user)
             if invitation:
-                invitation.send_invitation_email(is_created_organization=True)
-
+                invitation.send_invitation_email()
                 messages.success(request, u'เพิ่มสำนักพิมพ์ และส่งอีเมลถึงผู้ใช้เรียบร้อย')
 
             else:

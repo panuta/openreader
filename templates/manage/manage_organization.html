@@ -10,9 +10,9 @@
   <div class="sidebar">
     <div class="head"><a href="{% url manage_organizations %}">บริษัท</a></div>
     <ul>
-      <li class="publisher_front active"><a href="{% url manage_organization publisher.id %}">ภาพรวม</a></li>
-      <li class="publisher_module"><a href="{% url manage_organization publisher.id %}">โมดูล</a></li>
-      <li class="publisher_users"><a href="{% url manage_organization publisher.id %}">บัญชีผู้ใช้</a></li>
+      <li class="publisher_front active"><a href="{% url manage_organization organization.slug %}">ภาพรวม</a></li>
+      <li class="publisher_module"><a href="{% url manage_organization organization.slug %}">โมดูล</a></li>
+      <li class="publisher_users"><a href="{% url manage_organization organization.slug %}">บัญชีผู้ใช้</a></li>
     </ul>
   </div>
 
