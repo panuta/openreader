@@ -39,6 +39,6 @@ urlpatterns = patterns('presentation.views',
 
     # Publication
     url(r'^publication/(?P<publication_uid>[a-zA-Z0-9\-]+)/download/$', 'download_publication', name='download_publication'),
-    url(r'^publication/(?P<publication_uid>[a-zA-Z0-9\-]+)/replace/$', 'replace_publication', name='replace_publication'),
+    #url(r'^publication/(?P<publication_uid>[a-zA-Z0-9\-]+)/replace/$', 'replace_publication', name='replace_publication'),
 
 )

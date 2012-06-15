@@ -168,19 +168,18 @@ body {
   color: #369;
   font-style: normal;
 }
-.modal .modal-error {
-  background-color: #e56068;
+.modal .modal-message {
   color: #FFF;
   padding: 8px 15px;
 }
-.modal .modal-error i {
+.modal .modal-message i {
   vertical-align: -2px;
 }
-.modal .modal-message {
-  padding: 10px 15px;
-  background-color: #C30;
-  color: #FFF;
-  border-bottom: 1px solid #EEE;
+.modal .modal-message-success {
+  background-color: #51a351;
+}
+.modal .modal-message-error {
+  background-color: #e56068;
 }
 .modal .modal-footer button {
   margin-left: 15px;
@@ -557,6 +556,9 @@ table tr.checked td {
 }
 #publication-modal .right form .actions {
   margin-top: 20px;
+}
+#publication-modal .right form .uploading button {
+  margin-top: 10px;
 }
 #publication-modal .right form button {
   margin-right: 15px;

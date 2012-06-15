@@ -12,10 +12,14 @@ var MAX_PUBLICATION_FILE_SIZE_TEXT = '{{ settings.MAX_PUBLICATION_FILE_SIZE_TEXT
 $(document).ready(function () {
     initializeDocumentsShelfPage("{{ shelf.id }}");
 
+
     $('.documents_table .js-open-publication').live('click', function() {
         $('#publication-modal').on('publication_deleted', function() {
-            var trObject = $('.documents_table .js-open-publication[uid="' + $('#publication-modal').data('uid') + '"]').closest('tr');
-            trObject.remove();
+            $('.documents_table .js-open-publication[uid="' + $('#publication-modal').data('uid') + '"]').closest('tr').remove();
+            if(!$('.documents_table tr').length) {
+                $('.checkbox_actions').hide();
+                $('.no_publication').show();
+            }
         });
         return false;
     });
@@ -91,9 +95,7 @@ $(document).ready(function () {
             </tbody>
         </table>
 
-        {% if not publications %}
-            <div class="no_publication">ไม่มีไฟล์</div>
-        {% endif %}
+        <div class="no_publication"{% if publications %} style="display:none;"{% endif %}>ไม่มีไฟล์</div>
 
     </div></div>
 </div></div>

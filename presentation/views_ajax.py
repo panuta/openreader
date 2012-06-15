@@ -170,6 +170,7 @@ def upload_publication(request, organization_slug):
     if shelf_id:
         shelf = get_object_or_404(OrganizationShelf, pk=shelf_id)
     else:
+        transaction.rollback()
         raise Http404
 
     if shelf.organization.id != organization.id or not get_permission_backend(request).can_upload_shelf(request.user, organization, {'shelf':shelf}):
@@ -208,6 +209,71 @@ def upload_publication(request, organization_slug):
             'file_size_text': humanize_file_size(uploading_file.file.size),
             'shelf':shelf.id if shelf else '',
             'uploaded':format_abbr_datetime(publication.uploaded),
+            'thumbnail_url':publication.get_large_thumbnail(),
+            'download_url': reverse('download_publication', args=[publication.uid])
+        })
+
+    except:
+        transaction.rollback()
+        return response_json_error()
+
+
+@transaction.commit_manually
+@require_POST
+@login_required
+def replace_publication(request, organization_slug):
+    organization = get_object_or_404(Organization, slug=organization_slug)
+
+    print 'A'
+
+    publication_id = request.POST.get('publication_id')
+    print publication_id
+    if publication_id:
+        publication = get_object_or_404(Publication, uid=publication_id)
+    else:
+        transaction.rollback()
+        raise Http404
+
+    print 'B'
+
+    if not get_permission_backend(request).can_edit_publication(request.user, publication.organization, {'publication':publication}):
+        transaction.rollback()
+        raise Http404
+
+    print '000'
+
+    try:
+        file = request.FILES[u'files[]']
+
+        if file.size > settings.MAX_PUBLICATION_FILE_SIZE:
+            transaction.rollback()
+            return response_json_error('file-size-exceed')
+
+        print '1111'
+
+        uploading_file = UploadedFile(file)
+        publication = domain_functions.replace_publication(request, uploading_file, publication)
+
+        print '222'
+
+        if not publication:
+            transaction.rollback()
+            return response_json_error()
+
+        transaction.commit()
+
+        """
+        prepare_publication.delay(publication.uid)
+        """
+
+        print '333'
+
+        return response_json_success({
+            'uid': str(publication.uid),
+            'file_ext':publication.file_ext,
+            'file_size_text': humanize_file_size(uploading_file.file.size),
+            'uploaded':format_abbr_datetime(publication.uploaded),
+            'replaced':format_abbr_datetime(publication.replaced),
             'thumbnail_url':publication.get_large_thumbnail(),
             'download_url': reverse('download_publication', args=[publication.uid])
         })

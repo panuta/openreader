@@ -41,9 +41,27 @@ function _showAlertBar(message, alert_class, auto_hide) {
  Modal functions
  */
 
+function _addModalMessage(modal_id, message, type) {
+    $('#' + modal_id + ' .modal-message').remove();
+
+    if(type == 'success') {
+        $('#' + modal_id + ' .modal-header').after('<div class="modal-message modal-message-success"><i class="icon-ok-sign icon-white"></i> ' + message + '</div>');
+    } else if(type == 'error') {
+        $('#' + modal_id + ' .modal-header').after('<div class="modal-message modal-message-error"><i class="icon-exclamation-sign icon-white"></i> ' + message + '</div>');
+    }
+}
+
+function _removeModalMessage(modal_id) {
+    $('#' + modal_id + ' .modal-message').remove();
+}
+
 function _addModalErrorMessage(modal_id, message) {
     $('#' + modal_id + ' .modal-error').remove();
     $('#' + modal_id + ' .modal-header').after('<div class="modal-error"><i class="icon-exclamation-sign icon-white"></i> ' + message + '</div>');
+}
+
+function _removeModalErrorMessage(modal_id) {
+    $('#' + modal_id + ' .modal-error').remove();
 }
 
 $('.js-open-publication').live('click', function() {
@@ -55,6 +73,8 @@ $('.js-open-publication').live('click', function() {
 
 $(document).ready(function () {
     $('#publication-modal').on('show', function() {
+        _removeModalMessage('publication-modal');
+
         var uid = $(this).data('uid');
 
         if(uid) {
@@ -103,20 +123,105 @@ $(document).ready(function () {
 
     $('#publication-modal .replace_button').on('click', function() {
         $('#publication-modal .publication_form').fadeOut('fast', function() {
-            $('#publication-modal .right').append('<form class="replace_form"><label for="replace_file_input">เลือกไฟล์ที่ต้องการแทนไฟล์เก่า</label><input type="file" id="replace_file_input" /><div class="actions"><button type="submit" class="btn btn-primary submit_replace_button">เปลี่ยนไฟล์</button><button class="btn cancel_button">ยกเลิก</button></div></form>');
+            $('#publication-modal .right .panel').remove();
+            $('#publication-modal .right').append('<form class="replace_form panel"><label for="replace_file_input">เลือกไฟล์ที่ต้องการแทนไฟล์เก่า</label><input type="file" id="replace_file_input" /><div class="actions"><button class="btn cancel_button">ยกเลิก</button></div></form>');
+            //$('#publication-modal .right').append('<form class="replace_form panel"><label for="replace_file_input">เลือกไฟล์ที่ต้องการแทนไฟล์เก่า</label><input type="file" id="replace_file_input" /><div class="uploading"><div class="upload_progressbar"></div><button class="btn">ยกเลิก</button></div></form>');
+            //$('#publication-modal .right .upload_progressbar').progressBar(40, {width:262, height:20, boxImage:'/static/libs/progressbar/images/progressbar.png', barImage:{0:'/static/libs/progressbar/images/progressbg.png', 30:'/static/libs/progressbar/images/progressbg.png', 70:'/static/libs/progressbar/images/progressbg.png'}});
 
-            $('#publication-modal .replace_form .submit_replace_button').on('click', function() {
-                // TODO
-
+            $('#publication-modal .replace_form .cancel_button').on('click', function() {
+                $('#publication-modal .panel').fadeOut('fast', function(){
+                    $('#publication-modal .panel').remove();
+                    $('#publication-modal .publication_form').show();
+                    _removeModalMessage('publication-modal');
+                });
                 return false;
             });
 
-            $('#publication-modal .replace_form .cancel_button').on('click', function() {
-                $('#publication-modal .replace_form').fadeOut('fast', function(){
-                    $('#publication-modal .replace_form').remove();
-                    $('#publication-modal .publication_form').show();
-                });
-                return false;
+            $('#replace_file_input').fileupload({
+                dataType: 'json',
+                url: '/org/' + var_organization_slug + '/documents/replace/',
+                formData: function (form) {
+                    return [{name:"publication_id", value:$('#publication-modal').data('uid')}];
+                },
+                add: function (e, data) {
+                    var file = data.files[0];
+                    if(file.size > MAX_PUBLICATION_FILE_SIZE) {
+                        _addModalMessage('publication-modal', 'ไฟล์มีขนาดใหญ่เกินกำหนด (สูงสุดที่ ' + MAX_PUBLICATION_FILE_SIZE_TEXT + ')', 'error');
+
+                    } else {
+                        var uid = $('#publication-modal').data('uid');
+                        $('#publication-modal .right .panel').html('<div class="uploading"><div class="upload_progressbar"></div><button class="btn">ยกเลิก</button></div>');
+                        $('#publication-modal .right .panel .upload_progressbar').progressBar({width:262, height:20, boxImage:'/static/libs/progressbar/images/progressbar.png', barImage:{0:'/static/libs/progressbar/images/progressbg.png', 30:'/static/libs/progressbar/images/progressbg.png', 70:'/static/libs/progressbar/images/progressbg.png'}});
+
+                        data.submit();
+
+                        $('#publication-modal .right .panel button').on('click', function() {
+                            data.jqXHR.abort();
+
+                            $('#publication-modal .panel').remove();
+                            $('#publication-modal .publication_form').show();
+                            _removeModalMessage('publication-modal');
+                        });
+
+
+                        /*
+                         var rowObject = $('#' + uid);
+
+                         rowObject.find('.uploaded').hide().after('<div class="upload_progressbar"></div>');
+                         rowObject.find('.upload_progressbar').progressBar({width:262, height:20, boxImage:'/static/libs/progressbar/images/progressbar.png', barImage:{0:'/static/libs/progressbar/images/progressbg.png', 30:'/static/libs/progressbar/images/progressbg.png', 70:'/static/libs/progressbar/images/progressbg.png'}});
+
+                         //rowObject.data('data', data);
+                         data.rowObject = rowObject;
+                         data.submit();
+
+                         $('#replace_publication_modal').modal('hide');
+
+                         $('tr.editing_row').remove();
+                         rowObject.find('.edit_publication_button').removeClass('active').hide();
+                         rowObject.find('.row_actions').append('<button class="btn btn-danger cancel_button">ยกเลิก</button>');
+
+                         rowObject.find('.cancel_button').on('click', function(e) {
+                         //var context = $(this).closest('tr');
+                         //context.data('data').jqXHR.abort();
+                         data.jqXHR.abort();
+                         });
+                         */
+                    }
+                },
+                progress: function (e, data) {
+                    var progress = parseInt(data.loaded / data.total * 100, 10);
+                    $('#publication-modal .right .panel .upload_progressbar').progressBar(progress);
+                },
+                done: function (e, data) {
+                    var file = data.files[0];
+                    var response = data.result;
+
+                    if(response.status == 'success') {
+                        $('#publication-modal .file_ext').text(response.file_ext);
+                        $('#publication-modal .file_size').text(response.file_size);
+                        $('#publication-modal .thumbnail img').attr('src', response.thumbnail_url);
+
+                        _addModalMessage('publication-modal', 'เปลี่ยนไฟล์ใหม่เรียบร้อย', 'success');
+
+                        $('#publication-modal .panel').remove();
+                        $('#publication-modal .publication_form').show();
+
+                    } else {
+                        var error_message = 'ไม่สามารถบันทึกไฟล์ที่อัพโหลดได้';
+                        if(responseObject.error == 'file-size-exceed') error_message = 'ไฟล์มีขนาดใหญ่เกินกำหนด';
+                        if(responseObject.error == 'access-denied') error_message = 'ผู้ใช้ไม่สามารถอัพโหลดไฟล์ในชั้นหนังสือนี้ได้';
+                        _addModalMessage('publication-modal', error_message, 'error');
+                    }
+                },
+                fail: function (e, data) {
+                    if (data.errorThrown == 'abort') {
+                        $('#publication-modal .panel').remove();
+                        $('#publication-modal .publication_form').show();
+
+                    } else {
+                        _addModalMessage('publication-modal', 'เกิดข้อผิดพลาด ไม่สามารถอัพโหลดได้', 'error');
+                    }
+                }
             });
         });
         return false;
@@ -124,22 +229,23 @@ $(document).ready(function () {
 
     $('#publication-modal .delete_button').on('click', function() {
         $('#publication-modal .publication_form').fadeOut('fast', function() {
-            $('#publication-modal .right').append('<form class="delete_form"><div><button type="submit" class="btn btn-danger submit_delete_button">ยืนยันการลบไฟล์</button><button class="btn cancel_button">ยกเลิก</button></div></form>');
+            $('#publication-modal .right .panel').remove();
+            $('#publication-modal .right').append('<form class="delete_form panel"><div><button type="submit" class="btn btn-danger submit_delete_button">ยืนยันการลบไฟล์</button><button class="btn cancel_button">ยกเลิก</button></div></form>');
 
             $('#publication-modal .delete_form .submit_delete_button').on('click', function() {
                 var uid = $('#publication-modal').data('uid');
 
                 $.post('/ajax/' + var_organization_slug + '/publication/delete/', {uid:uid}, function(response) {
-                    $('#publication-modal').modal('hide');
                     $('#publication-modal').trigger('publication_deleted');
+                    $('#publication-modal').modal('hide');
                 });
 
                 return false;
             });
 
             $('#publication-modal .delete_form .cancel_button').on('click', function() {
-                $('#publication-modal .delete_form').fadeOut('fast', function(){
-                    $('#publication-modal .delete_form').remove();
+                $('#publication-modal .panel').fadeOut('fast', function(){
+                    $('#publication-modal .panel').remove();
                     $('#publication-modal .publication_form').show();
                 });
                 return false;
@@ -156,7 +262,7 @@ $(document).ready(function () {
 
         $.post('/ajax/' + var_organization_slug + '/publication/edit/', {uid:uid, title:title, description:description, tags:tagnames}, function(response) {
             if(response.status == 'success') {
-                // TODO Show success message on the right of button
+                _addModalMessage('publication-modal', 'บันทึกข้อมูลเรียบร้อย', 'success')
 
             } else {
                 if(response.error == 'invalid-publication') {
@@ -239,6 +345,7 @@ function initializeDocumentsPage() {
         $('.upload_tool select option:first').attr('selected', true);
         $('.js-upload-tool-file-input').hide();
         $('.upload_tool').slideToggle('fast');
+        return false;
     });
 
     $('.js-upload-tool-shelf-input').on('change', function() {
@@ -254,6 +361,7 @@ function initializeDocumentsPage() {
         $(this).closest('li').fadeOut('fast', function() {
             $(this).remove();
         });
+        return false;
     });
 
     $('#id_upload_file').fileupload({
@@ -323,6 +431,7 @@ function initializeDocumentsPage() {
         $(this).closest('li').fadeOut('fast', function() {
             $(this).remove();
         });
+        return false;
     });
 }
 
@@ -333,6 +442,7 @@ function initializeDocumentsShelfPage(shelf_id) {
     $('.js-upload-publication').on('click', function() {
         $('.upload_tool select option[value="' + shelf_id + '"]').attr('selected', true);
         $('.upload_tool').slideToggle('fast');
+        return false;
     });
 
     $('.js-upload-tool-shelf-input').on('change', function() {
@@ -348,6 +458,7 @@ function initializeDocumentsShelfPage(shelf_id) {
         $(this).closest('li').fadeOut('fast', function() {
             $(this).remove();
         });
+        return false;
     });
 
     $('#id_upload_file').fileupload({
@@ -391,7 +502,7 @@ function initializeDocumentsShelfPage(shelf_id) {
 
                 data.context.remove();
 
-                var uploaded_row = $('<tr id="' + responseObject.uid + '" class="uploaded_row"><td class="row_checkbox"><input type="checkbox" checked="checked"/></td><td class="download"><a href="' + responseObject.download_url + '" title="ดาวน์โหลดไฟล์ ' + responseObject.file_ext.toUpperCase() + '" data-content="ขนาดไฟล์ ' + responseObject.file_size_text + '">ดาวน์โหลดไฟล์</a></td><td class="file"><div class="filename">' + responseObject.title + '</div><div class="uploaded">อัพโหลดเมื่อวันที่ ' + responseObject.uploaded + '</div><div class="tag"><ul></ul></div></td><td class="row_actions"><input type="hidden" name="description" value=""/><input type="hidden" name="thumbnail" value="' + responseObject.thumbnail_url + '"/><button class="btn-small btn edit_publication_button" data-toggle="button">แก้ไข</button></td></tr>');
+                var uploaded_row = $('<tr id="' + responseObject.uid + '" class="uploaded_row"><td class="row_checkbox"><input type="checkbox" checked="checked"/></td><td class="download"><a href="' + responseObject.download_url + '" title="ดาวน์โหลดไฟล์ ' + responseObject.file_ext.toUpperCase() + '" data-content="ขนาดไฟล์ ' + responseObject.file_size_text + '">ดาวน์โหลดไฟล์</a></td><td class="file"><div class="filename"><a href="#" class="js-open-publication" uid="' + responseObject.uid + '" title="' + responseObject.title + '">' + responseObject.title + '</a></div><div class="uploaded">อัพโหลดเมื่อวันที่ ' + responseObject.uploaded + '</div><div class="tag"><ul></ul></div></td><td class="row_actions"><input type="hidden" name="description" value=""/><input type="hidden" name="thumbnail" value="' + responseObject.thumbnail_url + '"/><button class="btn-small btn edit_publication_button" data-toggle="button">แก้ไข</button></td></tr>');
                 uploaded_row.find('.edit_publication_button').button();
                 uploaded_row.find('.download a').popover();
                 uploaded_row.prependTo('.documents_table tbody');
@@ -417,26 +528,6 @@ function initializeDocumentsShelfPage(shelf_id) {
         }
     });
 
-    $('.js-save-uploaded').live('click', function() {
-        var rowObject = $(this).closest('li');
-        var uid = rowObject.data('uid');
-        var title = rowObject.find('input').val();
-
-        if(uid && title) {
-            $.post('ajax/' + var_organization_slug + '/publication/edit/', {uid:uid, title:title}, function(response) {
-                if(response.status == 'success') {
-                    $(this).closest('li').fadeOut('fast', function() {
-                        $(this).remove();
-                    });
-
-                } else if(response.status == 'error') {
-                    // TODO show error message
-                }
-            });
-        }
-
-    });
-
     $(document).bind('drop dragover', function (e) {
         e.preventDefault();
     });
@@ -448,6 +539,7 @@ function initializeDocumentsShelfPage(shelf_id) {
         $(this).closest('li').fadeOut('fast', function() {
             $(this).remove();
         });
+        return false;
     });
 
     // Documents Table -------------------------------------------------------------------------------------------------
@@ -524,6 +616,8 @@ function initializeDocumentsShelfPage(shelf_id) {
                 }
             }, 'json');
         }
+
+        return false;
     });
 
     $('#add-tags-modal').on('show', function() {
@@ -555,6 +649,7 @@ function initializeDocumentsShelfPage(shelf_id) {
                 }
             }
         }, 'json');
+        return false;
     });
 
     $('#delete-files-confirmation-modal').on('show', function() {

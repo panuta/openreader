@@ -27,17 +27,15 @@ def upload_publication(request, uploading_file, organization, shelf):
 
 def replace_publication(request, uploading_file, publication):
     (file_path, file_name, file_ext) = split_filepath(uploading_file.name)
-    new_uid = uuid.uuid4()
 
     try:
         publication.uploaded_file.delete()
-        publication.uploaded_file.save('%s.%s' % (new_uid, file_ext), uploading_file.file)
+        publication.uploaded_file.save('%s.%s' % (publication.uid, file_ext), uploading_file.file)
     except:
         logger.critical(traceback.format_exc(sys.exc_info()[2]))
         return None
 
     # Change file details
-    publication.uid = new_uid
     publication.original_file_name = file_name
     publication.file_ext = file_ext
     publication.replaced = datetime.datetime.now()

@@ -375,12 +375,14 @@ def replace_publication(request, publication_uid):
     publication = get_object_or_404(Publication, uid=publication_uid)
 
     if not get_permission_backend(request).can_edit_publication(request.user, publication.organization, {'publication':publication}):
+        transaction.rollback()
         raise Http404
 
     try:
         file = request.FILES[u'files[]']
 
         if file.size > settings.MAX_PUBLICATION_FILE_SIZE:
+            transaction.rollback()
             return response_json_error('file-size-exceed')
 
         uploading_file = UploadedFile(file)
