@@ -225,7 +225,7 @@ def ajax_edit_publication(request, organization_slug):
     publication_uid = request.POST.get('uid')
     title = request.POST.get('title')
     description = request.POST.get('description')
-    tag_names = request.POST.getlist('tags[]')
+    tag_names = request.POST.get('tags')
 
     try:
         publication = Publication.objects.get(uid=publication_uid)

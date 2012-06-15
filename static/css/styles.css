@@ -494,12 +494,12 @@ table tr.checked td {
 }
 /* PAGES
 ==================================================================================================== */
-#publication-modal .loading {
+#publication-modal .message-panel {
   background-color: #EEE;
   padding: 15px 20px ;
   text-align: center;
 }
-#publication-modal .loading i {
+#publication-modal .message-panel i.loading {
   background: url('../images/loading.gif') no-repeat;
   display: inline-block;
   height: 16px;

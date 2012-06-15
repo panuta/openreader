@@ -64,14 +64,11 @@ $(document).ready(function () {
                 $(this).find('.modal-header h3').text('เอกสาร');
             }
 
-            var loadingObject = $(this).find('.loading');
-            var publicationObject = $(this).find('.publication');
-
-            loadingObject.show();
-            publicationObject.hide();
+            $('#publication-modal .modal-body .message-panel').remove();
+            $('#publication-modal .modal-body .publication').hide();
+            $('<div class="message-panel"><i class="loading"></i> กำลังโหลดข้อมูล</div>').appendTo('#publication-modal .modal-body');
 
             $.get('/ajax/publication/' + uid + '/query/', {}, function(response) {
-                console.log(response);
                 $('#publication-modal .modal-header h3').text(response.title);
 
                 $('#id_publication_title').val(response.title);
@@ -85,9 +82,10 @@ $(document).ready(function () {
                 $('#publication-modal .download_button').attr('href', response.download_url);
                 $('#publication-modal .thumbnail img').attr('src', response.thumbnail_url);
 
-                loadingObject.fadeOut('fast', function() {
-                    publicationObject.show();
+                $('#publication-modal .modal-body .message-panel').fadeOut('fast', function() {
+                    $('#publication-modal .modal-body .publication').show();
                 });
+
             }, 'json');
         }
     });
