@@ -58,30 +58,28 @@ body {
 .navbar h1 span {
   color: #CCC;
 }
-.navbar li a {
-  color: #EEE !important;
+.navbar li a.nav_top_link {
+  color: #EEE;
   font-size: 1.1em;
-  padding: 12px 15px 8px !important;
+  padding: 12px 15px 8px;
   margin-right: 10px;
 }
-.navbar li.active a {
-  color: #FFF !important;
-  background-color: #272e34 !important;
+.navbar li.active a.nav_top_link {
+  color: #FFF;
+  background-color: #272e34;
 }
-.navbar li a:hover {
-  background-color: #272e34 !important;
+.navbar li a.nav_top_link:hover {
+  background-color: #272e34;
 }
 .navbar a.logout {
-  font-size: 1em !important;
   color: #CCC !important;
-}
-.navbar .dropdown-menu {
-  background-color: #555 !important;
+  font-size: 1em !important;
+  padding: 12px 10px 8px !important;
 }
 .navbar .dropdown-menu a {
-  color: #FFF !important;
-  text-decoration: none !important;
-  outline: 0;
+  font-size: 1.1em;
+  padding-bottom: 10px;
+  padding-top: 10px;
 }
 .navbar .accounts {
   padding: 12px 0px 8px;

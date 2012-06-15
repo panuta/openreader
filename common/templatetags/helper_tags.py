@@ -106,9 +106,9 @@ def generate_organization_menu(user):
     if len(user_organizations) > 1:
         menus = []
         for user_organization in user_organizations:
-            menus.append('<li><a href="%s">%s</a></li>' % (reverse('view_organization_front', args=[user_organization.organization.slug]), user_organization.organization.name))
+            menus.append('<li><a href="%s">%s%s</a></li>' % (reverse('view_organization_front', args=[user_organization.organization.slug]), '%s ' % user_organization.organization.prefix if user_organization.organization.prefix else '', user_organization.organization.name))
 
-        return u'<li class="dropdown"><a class="dropdown-toggle" href="#">เปลี่ยนบัญชี</a><ul class="dropdown-menu">%s</ul></li>' % ''.join(menus)
+        return u'<li class="dropdown" id="switch_org_menu"><a class="dropdown-toggle nav_top_link" data-toggle="dropdown" href="#switch_org_menu">เปลี่ยนบัญชี <b class="caret"></b></a><ul class="dropdown-menu">%s</ul></li>' % ''.join(menus)
     else:
         return ''
 
