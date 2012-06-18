@@ -6,5 +6,6 @@ urlpatterns = patterns('management.views',
     url(r'^organizations/create/$', 'create_organization', name='manage.create_organization'),
 
     url(r'^organization/(?P<organization_slug>\w+)/$', 'manage_organization', name='manage_organization'),
+    url(r'^organization/(?P<organization_slug>\w+)/edit/$', 'edit_organization', name='edit_organization'),
 
 )

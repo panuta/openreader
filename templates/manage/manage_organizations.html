@@ -2,7 +2,7 @@
 {% load helper_tags %}
 
 {% block manage_head_title %}สำนักพิมพ์{% endblock %}
-{% block topnav %}{% include 'manage/snippets/manage_topnav.html' with active_menu='organization' %}{% endblock %}
+{% block topnav %}{% include 'manage/snippets/manage_topnav.html' with active_menu='management' %}{% endblock %}
 
 {% block body_authenticated %}
 <div class="container-fluid container-body">
@@ -26,7 +26,7 @@
         <tr>
           <td>{{organization.name}}</td>
           <td>{% print_organization_status organization %}</td>
-          <td class="row_actions"><a href="{% url manage_organization organization.slug %}">การจัดการบริษัท</a></td>
+          <td class="row_actions"><a href="{% url view_organization_profile organization.slug %}">การจัดการบริษัท</a></td>
         </tr>
         {% endfor %}
       </tbody>

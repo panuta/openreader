@@ -44,13 +44,12 @@ def create_organization(request):
             organization = Organization.objects.create(name=organization_name, slug=organization_slug, prefix=organization_prefix, created_by=request.user)
 
             # Send invitation
-            group = OrganizationGroup.objects.create(organization=organization, name='Administrator', description='Admin job')
             organization_admin_role = [OrganizationAdminPermission.objects.all()[0]]
             
             try:
                 user = User.objects.get(email=admin_email)
             except User.DoesNotExist:
-                invitation = UserOrganizationInvitation.objects.create_invitation(admin_email, organization, organization_admin_role, [group], request.user)
+                invitation = UserOrganizationInvitation.objects.create_invitation(admin_email, organization, organization_admin_role, [], request.user)
             else:
                 invitation = UserOrganizationInvitation.objects.create_invitation(user.email, organization, organization_admin_role, [], request.user)                
                 # invitation = UserOrganizationInvitation.objects.create_invitation(email, organization, admin_permissions, groups, request.user)
@@ -67,4 +66,30 @@ def create_organization(request):
         form = CreateOrganizationForm()
 
     return render(request, 'manage/manage_organization_create.html', {'form':form})
+
+@login_required
+def edit_organization(request, organization_slug):
+    if not request.user.is_superuser:
+        raise Http404
+
+    organization = get_object_or_404(Organization, slug=organization_slug)
+
+    if request.method == 'POST':
+        form = EditOrganizationForm(request.POST)
+        if form.is_valid():
+            organization.name = form.cleaned_data['organization_name']
+            organization.slug = form.cleaned_data['organization_slug']
+            organization.prefix = form.cleaned_data['organization_prefix']
+
+            organization.save()
+
+            return redirect('manage_organizations')
+    
+    else:
+        form = EditOrganizationForm(initial={
+            'organization_name': organization.name,
+            'organization_slug': organization.slug,
+            'organization_prefix': organization.prefix,
+        })
+    return render(request, 'manage/manage_organization_edit.html', {'organization':organization,'form':form})
 

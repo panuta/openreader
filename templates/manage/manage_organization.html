@@ -2,7 +2,7 @@
 {% load helper_tags %}
 
 {% block manage_head_title %}บริษัท{% endblock %}
-{% block topnav %}{% include 'manage/snippets/manage_topnav.html' with active_menu='publisher' %}{% endblock %}
+{% block topnav %}{% include 'manage/snippets/manage_topnav.html' with active_menu='management' %}{% endblock %}
 
 {% block body_authenticated %}
 <div class="container-fluid container-body publisher_manage_page">
@@ -10,18 +10,15 @@
   <div class="sidebar">
     <div class="head"><a href="{% url manage_organizations %}">บริษัท</a></div>
     <ul>
-      <li class="publisher_front active"><a href="{% url manage_organization organization.slug %}">ภาพรวม</a></li>
-      <li class="publisher_module"><a href="{% url manage_organization organization.slug %}">โมดูล</a></li>
-      <li class="publisher_users"><a href="{% url manage_organization organization.slug %}">บัญชีผู้ใช้</a></li>
+      <li class="publisher_front active"><a href="{% url view_organization_profile organization.slug %}">ภาพรวม</a></li>
+      <li class="publisher_users"><a href="{% url view_organization_users_groups organization.slug %}">บัญชีผู้ใช้</a></li>
     </ul>
   </div>
 
   <div class="content"><div class="content-inner">
-    <h2><span>{{organization.prefix}}</span> {{organization.name}}</h2>
+    <h2><span>{{ organization.prefix }}</span> {{ organization.name }}</h2>
 
-    <div class="page_actions">
-      <a href="#" class="btn">แก้ไขข้อมูลบริษัท</a>
-    </div>
+    
 
     <div>Publication statistics</div>
     <div>Publisher usage</div>

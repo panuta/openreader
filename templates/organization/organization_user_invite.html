@@ -1,7 +1,7 @@
 {% extends 'base_authenticated.html' %}
 
 {% block head_title %}เพิ่มผู้ใช้ระบบ{% endblock %}
-{% block topnav %}{% include 'snippets/organization_topnav.html' with active_menu='user' %}{% endblock %}
+{% block topnav %}{% if user.is_superuser %}{% include 'manage/snippets/manage_topnav.html' with active_menu='management' %}{% else %}{% include 'snippets/organization_topnav.html' with active_menu='user' %}{% endif %}{% endblock %}
 
 {% block html_head %}
 {{block.super}}
@@ -13,6 +13,7 @@ $(document).ready(function () {
 {% endblock %}
 
 {% block body_authenticated %}
+{% include 'manage/snippets/manage_organization_topnav.html' %}
 <div class="container-fluid organization_users_page"><div class="row-fluid">
     <div class="content"><div class="inner-content">
         <ul class="breadcrumb">

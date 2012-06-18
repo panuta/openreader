@@ -1,0 +1,4 @@
+{% if user.is_superuser %}
+<a href="{% url view_organization_users organization.slug %}">รายชื่อและกลุ่มผู้ใช้</a>
+<a href="{% url view_organization_profile organization.slug %}">ข้อมูลบริษัท</a>
+{% endif %}

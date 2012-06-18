@@ -12,11 +12,24 @@ class CreateOrganizationForm(forms.Form):
     organization_prefix = StrippedCharField(max_length=100, widget=forms.TextInput(attrs={'class':'span4'}))
     admin_email = forms.EmailField(widget=forms.TextInput(attrs={'class':'span6'}))
 
-    def clean_publisher_name(self):
+    def clean_organization_slug(self):
         organization_slug = self.cleaned_data['organization_slug']
 
         if Organization.objects.filter(slug=organization_slug).exists():
             raise forms.ValidationError(u'ชื่อย่อบริษัทนี้ซ้ำกับชื่ออื่นๆ ในระบบ')
         
-        return organization_name
+        return organization_slug
+    
+class EditOrganizationForm(forms.Form):
+    organization_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'span6'}))
+    organization_slug = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'span6'}))
+    organization_prefix = StrippedCharField(max_length=100, widget=forms.TextInput(attrs={'class':'span4'}))
+    
+    def clean_organization_slug(self):
+        organization_slug = self.cleaned_data['organization_slug']
+
+        if Organization.objects.filter(slug=organization_slug).exists():
+            raise forms.ValidationError(u'ชื่อย่อบริษัทนี้ซ้ำกับชื่ออื่นๆ ในระบบ')
+        
+        return organization_slug
     

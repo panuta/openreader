@@ -17,6 +17,9 @@ class DefaultUserPermissionBackend(object):
 
     @staticmethod
     def can_view_organization(user, organization, parameters={}):
+        if user.is_superuser:
+            return True
+
         try:
             UserOrganization.objects.get(user=user, organization=organization, is_active=True)
         except UserOrganization.DoesNotExist:
@@ -28,6 +31,9 @@ class DefaultUserPermissionBackend(object):
 
     @staticmethod
     def can_manage_user(user, organization, parameters={}):
+        if user.is_superuser:
+            return True
+            
         try:
             user_organization = UserOrganization.objects.get(user=user, organization=organization, is_active=True)
         except UserOrganization.DoesNotExist:
@@ -40,6 +46,9 @@ class DefaultUserPermissionBackend(object):
 
     @staticmethod
     def can_manage_group(user, organization, parameters={}):
+        if user.is_superuser:
+            return True
+            
         try:
             user_organization = UserOrganization.objects.get(user=user, organization=organization, is_active=True)
         except UserOrganization.DoesNotExist:
