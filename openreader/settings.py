@@ -1,11 +1,29 @@
 # -*- encoding: utf-8 -*-
 
 import os
-base_path = os.path.join(os.path.join(os.path.abspath(os.path.dirname(__file__)), os.path.pardir), os.path.pardir)
+base_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), os.path.pardir)
 
 from django.conf import global_settings
 
+DEBUG = True
+TEMPLATE_DEBUG = DEBUG
+
 WEBSITE_NAME = 'OpenReader'
+WEBSITE_DOMAIN = 'http://127.0.0.1:8000'
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'openreader',
+        'USER': 'openreader',
+        'PASSWORD': 'openreader',
+        'HOST': '',
+        'PORT': '',
+    }
+}
+
+ADMINS = ()
+MANAGERS = ADMINS
 
 TIME_ZONE = 'Asia/Bangkok'
 LANGUAGE_CODE = 'th'
@@ -29,7 +47,7 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 CACHES = {
@@ -39,6 +57,8 @@ CACHES = {
     }
 }
 
+SECRET_KEY = 'THIS IS A SECRET KEY'
+
 AUTH_PROFILE_MODULE = 'domain.UserProfile'
 LOGIN_REDIRECT_URL = '/'
 
@@ -47,7 +67,7 @@ AUTHENTICATION_BACKENDS = (
     'openreader.backends.InvitationAuthenticationBackend',
     'django.contrib.auth.backends.RemoteUserBackend',
     'django.contrib.auth.backends.ModelBackend',
-)
+    )
 
 FILE_UPLOAD_HANDLERS = ('openreader.handlers.UploadProgressCachedHandler', ) + global_settings.FILE_UPLOAD_HANDLERS
 
@@ -55,7 +75,7 @@ FILE_UPLOAD_HANDLERS = ('openreader.handlers.UploadProgressCachedHandler', ) + g
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
+    #     'django.template.loaders.eggs.Loader',
 )
 
 ROOT_URLCONF = 'openreader.urls'
@@ -76,6 +96,21 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'openreader.context.constants',
 )
 
+MIDDLEWARE_CLASSES = (
+    'openreader.middleware.AJAXSimpleExceptionResponse',
+    'openreader.http.Http403Middleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.transaction.TransactionMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.RemoteUserMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+
+    'pagination.middleware.PaginationMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+)
+
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
@@ -86,10 +121,10 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'private_files',
-    
+
     'pagination',
-    'djcelery',
     'debug_toolbar',
+    'djcelery',
 
     'accounts',
     'domain',
@@ -102,12 +137,42 @@ INSTALLED_APPS = (
 
 OPENREADER_LOGGER = 'openreader'
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'default': {
+            'format': '%(levelname)s %(asctime)s %(filename)s:%(lineno)d %(message)s'
+        }
+    },
+    'handlers': {
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': MEDIA_ROOT + '/openreader.log',
+            'formatter':'default'
+        }
+    },
+    'loggers': {
+        OPENREADER_LOGGER: {
+            'handlers': ['file'],
+            'level': 'DEBUG'
+        },
+    }
+}
+
+# Email
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_DOMAIN_NAME = 'localhost'
+
+EMAIL_ADDRESS_NO_REPLY = 'noreply@' + EMAIL_DOMAIN_NAME
+
 ########## Django Debug Toolbar ##########
 
 INTERNAL_IPS = ('127.0.0.1',)
 DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
-}
+    }
 
 ########## Django Celery ##########
 
@@ -123,7 +188,6 @@ BROKER_PASSWORD = "guest"
 BROKER_VHOST = "/"
 
 BROKER_TRANSPORT = 'redis'
-
 
 ########## Django Private Files ##########
 
@@ -163,3 +227,8 @@ DEFAULT_SHELF_ICON = 'basic1-006'
 SHELF_ICONS = ['basic1-006', 'basic1-041', 'basic1-049', 'basic1-052', 'basic1-054', 'basic1-106', 'basic1-129', 'basic2-001', 'basic2-011', 'basic2-018', 'basic2-057', 'basic2-092', 'basic2-096', 'basic2-102', 'basic2-106', 'basic2-114', 'basic2-117', 'basic2-142', 'basic2-197', 'basic2-238', 'basic2-253', 'basic2-256', 'basic2-258', 'basic2-267', 'basic2-268']
 
 #######################################################
+
+try:
+    from settings_local import *
+except ImportError:
+    pass

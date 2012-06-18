@@ -1,15 +1,4 @@
-# -*- encoding: utf-8 -*-
-
-from openreader.settings import *
-
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
-
-ADMINS = (
-    ('Panu Tangchalermkul', 'panuta@gmail.com'),
-)
-
-MANAGERS = ADMINS
+DEBUG = False
 
 DATABASES = {
     'default': {
@@ -19,7 +8,7 @@ DATABASES = {
         'PASSWORD': 'openreader',
         'HOST': '',
         'PORT': '',
-    }
+        }
 }
 
 WEBSITE_DOMAIN = 'http://127.0.0.1:8000'
@@ -27,9 +16,7 @@ WEBSITE_DOMAIN = 'http://127.0.0.1:8000'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_DOMAIN_NAME = 'localhost'
 
-EMAIL_ADDRESS_NO_REPLY = 'noreply@' + EMAIL_DOMAIN_NAME
-
-SECRET_KEY = 'THIS IS A SECRET KEY'
+SECRET_KEY = '*r3geszk-gvq8cl==g1_o^2ivx&wx6vuz*osszca2mtivv=u*@'
 
 MIDDLEWARE_CLASSES = (
     'openreader.middleware.AJAXSimpleExceptionResponse',
@@ -41,10 +28,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.RemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-
     'pagination.middleware.PaginationMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-)
+    )
 
 INSTALLED_APPS = (
     'django.contrib.admin',
@@ -55,10 +40,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'private_files',
-    
     'pagination',
-    'debug_toolbar',
+    'private_files',
     'djcelery',
 
     'accounts',
@@ -68,31 +51,4 @@ INSTALLED_APPS = (
     'api',
     'common',
     'management',
-)
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': True,
-    'formatters': {
-        'default': {
-            'format': '%(levelname)s %(asctime)s %(filename)s:%(lineno)d %(message)s'
-        }
-    },
-    'handlers': {
-        'file': {
-            'class': 'logging.FileHandler',
-            'filename': MEDIA_ROOT + '/openreader.log',
-            'formatter':'default'
-        }
-    },
-    'loggers': {
-        OPENREADER_LOGGER: {
-            'handlers': ['file'],
-            'level': 'DEBUG'
-        },
-    }
-}
-
-########## Django Debug Toolbar ##########
-
-DEBUG_TOOLBAR_CONFIG = {'INTERCEPT_REDIRECTS':False}
+    )
