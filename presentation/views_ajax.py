@@ -21,7 +21,7 @@ from accounts.permissions import get_backend as get_permission_backend
 
 from domain import functions as domain_functions
 from domain.models import OrganizationTag, PublicationTag, Publication, Organization, UserGroup, UserOrganizationInvitation, OrganizationGroup, UserOrganization, OrganizationShelf
-from domain.tasks import prepare_publication
+from domain.tasks import generate_thumbnails
 
 logger = logging.getLogger(settings.OPENREADER_LOGGER)
 
@@ -193,14 +193,12 @@ def upload_publication(request, organization_slug):
 
         transaction.commit() # Need to commit before create task
 
-        """
         try:
-            prepare_publication.delay(publication.uid)
+            generate_thumbnails.delay(publication.uid)
         except:
             import sys
             import traceback
             logger.critical(traceback.format_exc(sys.exc_info()[2]))
-        """
 
         return response_json_success({
             'uid': str(publication.uid),
@@ -224,8 +222,6 @@ def upload_publication(request, organization_slug):
 def replace_publication(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
-    print 'A'
-
     publication_id = request.POST.get('publication_id')
     print publication_id
     if publication_id:
@@ -234,13 +230,9 @@ def replace_publication(request, organization_slug):
         transaction.rollback()
         raise Http404
 
-    print 'B'
-
     if not get_permission_backend(request).can_edit_publication(request.user, publication.organization, {'publication':publication}):
         transaction.rollback()
         raise Http404
-
-    print '000'
 
     try:
         file = request.FILES[u'files[]']
@@ -249,12 +241,8 @@ def replace_publication(request, organization_slug):
             transaction.rollback()
             return response_json_error('file-size-exceed')
 
-        print '1111'
-
         uploading_file = UploadedFile(file)
         publication = domain_functions.replace_publication(request, uploading_file, publication)
-
-        print '222'
 
         if not publication:
             transaction.rollback()
@@ -262,11 +250,12 @@ def replace_publication(request, organization_slug):
 
         transaction.commit()
 
-        """
-        prepare_publication.delay(publication.uid)
-        """
-
-        print '333'
+        try:
+            generate_thumbnails.delay(publication.uid)
+        except:
+            import sys
+            import traceback
+            logger.critical(traceback.format_exc(sys.exc_info()[2]))
 
         return response_json_success({
             'uid': str(publication.uid),
