@@ -19,6 +19,7 @@ urlpatterns = patterns('presentation.views_ajax',
     url(r'^org/(?P<organization_slug>\w+)/documents/replace/$', 'replace_publication', name='replace_publication'),
 
     url(r'^ajax/publication/(?P<publication_uid>[a-zA-Z0-9\-]+)/query/$', 'ajax_query_publication', name='ajax_query_publication'),
+    url(r'^ajax/(?P<shelf_id>\d+)/latest_publication/$', 'ajax_query_latest_publication_on_shelf', name='ajax_query_latest_publication_on_shelf'),
 
     url(r'^ajax/(?P<organization_slug>\w+)/publication/tag/add/$', 'ajax_add_publications_tag', name='ajax_add_publications_tag'),
     url(r'^ajax/(?P<organization_slug>\w+)/publication/edit/$', 'ajax_edit_publication', name='ajax_edit_publication'),
