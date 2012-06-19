@@ -63,7 +63,7 @@ $(document).ready(function () {
                 {% for shelf in shelves %}
                 <li class="shelf {{ shelf.icon|default:settings.DEFAULT_SHELF_ICON }}" id="shelf-{{ shelf.id }}">
                     <div class="shelf_name"><a href="{% url view_documents_by_shelf organization.slug shelf.id %}">{{ shelf.name }}</a></div>
-                    <div class="details"><span class="num_files">{{ shelf.num_of_publications }} ไฟล์</span>{% if shelf.latest_publication %}<span class="latest_file">ไฟล์ล่าสุด <a href="#" class="js-open-publication" title="{{ shelf.latest_publication.title }}" uid="{{ shelf.latest_publication.uid }}">{{ shelf.latest_publication.title }}</a> อัพโหลดเมื่อวันที่ {{ shelf.latest_publication.uploaded|format_abbr_datetime }}</span>{% endif %}</div>
+                    <div class="details"><span class="num_files">{{ shelf.num_of_publications }} ไฟล์</span></div>
                 </li>
                 {% endfor %}
             </ul>

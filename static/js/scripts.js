@@ -236,13 +236,6 @@ $(document).ready(function () {
                         var id = shelf_id[i];
                         var total = parseInt($('#shelf-' + id + ' .num_files').text()) - 1;
                         $('#shelf-' + id + ' .num_files').text(total + ' ไฟล์');
-                        if (total == 0){
-                            $('#shelf-' + id + ' .latest_file').text('');
-                        }else{
-                            $.get('/ajax/' + id + '/latest_publication/', {}, function(response) {
-                                $('#shelf-' + id + ' .latest_file').html('ไฟล์ล่าสุด <a href="#" class="js-open-publication" uid="'+ response.uid +'">' + response.title + '</a> อัพโหลดเมื่อวันที่ ' + response.uploaded);
-                            }, 'json');
-                        }
                     }
                 });
 
@@ -269,10 +262,6 @@ $(document).ready(function () {
         $.post('/ajax/' + var_organization_slug + '/publication/edit/', {uid:uid, title:title, description:description, tags:tagnames}, function(response) {
             if(response.status == 'success') {
                 _addModalMessage('publication-modal', 'บันทึกข้อมูลเรียบร้อย', 'success')
-                var shelf_id = shelves_id.split(",");
-                for (var i=0; i<shelf_id.length; i++){
-                    $('#shelf-' + shelf_id[i] + ' .latest_file').html('ไฟล์ล่าสุด <a href="#" class="js-open-publication">' + title + '</a> อัพโหลดเมื่อวันที่ ' + $('#publication-modal .uploaded .uploaded_text').text());
-                }
             } else {
                 if(response.error == 'invalid-publication') {
                     $('#message_modal').modal('show').find('.modal-body p').text('ข้อมูลไม่ถูกต้อง');
@@ -413,8 +402,7 @@ function initializeDocumentsPage() {
 
                 // Update num of files in shelf
                 $('#shelf-' + responseObject.shelf + ' .num_files').text($('#shelf-' + responseObject.shelf + ' .num_files').text().split(' ')[0] * 1 + 1 + ' ไฟล์');
-                $('#shelf-' + responseObject.shelf + ' .latest_file').html('ไฟล์ล่าสุด <a href="#" class="js-open-publication">' + responseObject.title + '</a> อัพโหลดเมื่อวันที่ ' + responseObject.uploaded);
-
+                
             } else {
                 var error_message = 'ไม่สามารถบันทึกไฟล์ที่อัพโหลดได้';
 

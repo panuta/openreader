@@ -160,15 +160,6 @@ def ajax_query_publication(request, publication_uid):
         'download_url': reverse('download_publication', args=[publication.uid]),
     })
 
-def ajax_query_latest_publication_on_shelf(request, shelf_id):
-    shelf = get_object_or_404(OrganizationShelf, id=shelf_id)
-    publication = shelf.latest_publication
-    return response_json_success({
-        'uid': str(publication.uid),
-        'title': publication.title,
-        'uploaded': format_abbr_datetime(publication.uploaded),
-    })
-
 @transaction.commit_manually
 @require_POST
 @login_required
