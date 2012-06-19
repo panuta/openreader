@@ -310,7 +310,7 @@ def ajax_edit_publication(request, organization_slug):
 
     tag_names = tag_names.split(',')
     for tag_name in tag_names:
-        if tag_name:
+        if tag_name and len(tag_name.strip())>0:
             tag_name = tag_name.lower().strip()
             try:
                 tag = OrganizationTag.objects.get(organization=organization, tag_name=tag_name)
@@ -377,7 +377,7 @@ def ajax_add_publications_tag(request, organization_slug):
         saved_tag_names = []
         if publications and tag_names:
             for tag_name in tag_names:
-                if tag_name:
+                if tag_name and len(tag_name.strip())>0:
                     tag_name = tag_name.lower().strip()
 
                     try:
