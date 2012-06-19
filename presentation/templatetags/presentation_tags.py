@@ -81,7 +81,7 @@ def generate_shelf_icons():
 
 @register.simple_tag
 def print_user_count(organization):
-    return UserOrganization.objects.filter(organization=organization).count()
+    return UserOrganization.objects.filter(organization=organization, is_active=True).count()
 
 @register.simple_tag
 def print_user_group_count(organization):

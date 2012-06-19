@@ -154,11 +154,11 @@ def ajax_query_publication(request, publication_uid):
         'uploaded': format_abbr_datetime(publication.uploaded),
         'file_ext': publication.file_ext,
         'file_size_text': humanize_file_size(publication.uploaded_file.file.size),
+        'shelves': ','.join([str(shelf.id) for shelf in publication.shelves.all()]),
 
         'thumbnail_url':publication.get_large_thumbnail(),
         'download_url': reverse('download_publication', args=[publication.uid]),
     })
-
 
 @transaction.commit_manually
 @require_POST
@@ -301,7 +301,7 @@ def ajax_edit_publication(request, organization_slug):
 
     tag_names = tag_names.split(',')
     for tag_name in tag_names:
-        if tag_name:
+        if tag_name and len(tag_name.strip())>0:
             tag_name = tag_name.lower().strip()
             try:
                 tag = OrganizationTag.objects.get(organization=organization, tag_name=tag_name)
@@ -368,7 +368,7 @@ def ajax_add_publications_tag(request, organization_slug):
         saved_tag_names = []
         if publications and tag_names:
             for tag_name in tag_names:
-                if tag_name:
+                if tag_name and len(tag_name.strip())>0:
                     tag_name = tag_name.lower().strip()
 
                     try:
