@@ -487,7 +487,7 @@ def delete_document_shelf(request, organization_slug, shelf_id):
                 for publication in Publication.objects.filter(shelves__in=[shelf]):
                     domain_functions.delete_publication(publication)
 
-                messages.success(request, u'ลบกลุ่มเอกสารและไฟล์ในชั้นเรียบร้อย')
+                messages.success(request, u'ลบกลุ่มเอกสารและไฟล์ในกลุ่มเรียบร้อย')
 
             else:
                 messages.success(request, u'ลบกลุ่มเอกสารเรียบร้อย')
