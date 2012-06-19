@@ -88,7 +88,7 @@ $(document).ready(function () {
                 $('#id_publication_tags').val(response.tag_names);
 
                 $('#publication-modal .file_ext').text(response.file_ext);
-                $('#publication-modal .file_size').text(response.file_size);
+                $('#publication-modal .file_size').text(response.file_size_text);
                 $('#publication-modal .uploaded .uploaded_text').text(response.uploaded);
                 shelves_id = response.shelves;
 
