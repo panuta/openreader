@@ -428,7 +428,7 @@ def create_document_shelf(request, organization_slug):
 
             _persist_shelf_permissions(request, organization, shelf)
 
-            messages.success(request, u'สร้างชั้นหนังสือเรียบร้อย')
+            messages.success(request, u'สร้างกลุ่มเอกสารเรียบร้อย')
             return redirect('view_documents_by_shelf', organization_slug=organization.slug, shelf_id=shelf.id)
 
         shelf_permissions = request.POST.getlist('permission')
@@ -458,7 +458,7 @@ def edit_document_shelf(request, organization_slug, shelf_id):
 
             _persist_shelf_permissions(request, organization, shelf)
 
-            messages.success(request, u'แก้ไขชั้นหนังสือเรียบร้อย')
+            messages.success(request, u'แก้ไขกลุ่มเอกสารเรียบร้อย')
             return redirect('view_documents_by_shelf', organization_slug=organization.slug, shelf_id=shelf.id)
 
         shelf_permissions = request.POST.getlist('permission')
@@ -487,10 +487,10 @@ def delete_document_shelf(request, organization_slug, shelf_id):
                 for publication in Publication.objects.filter(shelves__in=[shelf]):
                     domain_functions.delete_publication(publication)
 
-                messages.success(request, u'ลบชั้นหนังสือและไฟล์ในชั้นเรียบร้อย')
+                messages.success(request, u'ลบกลุ่มเอกสารและไฟล์ในชั้นเรียบร้อย')
 
             else:
-                messages.success(request, u'ลบชั้นหนังสือเรียบร้อย')
+                messages.success(request, u'ลบกลุ่มเอกสารเรียบร้อย')
 
             PublicationShelf.objects.filter(shelf=shelf).delete()
             OrganizationShelfPermission.objects.filter(shelf=shelf).delete()

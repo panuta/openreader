@@ -1,7 +1,7 @@
 {% extends 'base_authenticated.html' %}
 {% load helper_tags presentation_tags %}
 
-{% block head_title %}{% if not shelf %}สร้างชั้นหนังสือใหม่{% else %}แก้ไขชั้นหนังสือ{% endif %}{% endblock %}
+{% block head_title %}{% if not shelf %}สร้างกลุ่มเอกสารใหม่{% else %}แก้ไขกลุ่มเอกสาร{% endif %}{% endblock %}
 {% block topnav %}{% include 'snippets/organization_topnav.html' with active_menu='document' %}{% endblock %}
 
 {% block extra_head %}
@@ -157,17 +157,17 @@ $(document).ready(function () {
 
         {% if not shelf %}
             <ul class="breadcrumb">
-                <li><a href="{% url view_documents organization.slug %}">ชั้นหนังสือทั้งหมด</a> <span class="divider">/</span></li>
-                <li class="active">สร้างชั้นหนังสือใหม่</li>
+                <li><a href="{% url view_documents organization.slug %}">กลุ่มเอกสารทั้งหมด</a> <span class="divider">/</span></li>
+                <li class="active">สร้างกลุ่มเอกสารใหม่</li>
             </ul>
-            <h2>สร้างชั้นหนังสือใหม่</h2>
+            <h2>สร้างกลุ่มเอกสารใหม่</h2>
         {% else %}
             <ul class="breadcrumb">
-                <li><a href="{% url view_documents organization.slug %}">ชั้นหนังสือทั้งหมด</a> <span class="divider">/</span></li>
-                <li><a href="{% url view_documents_by_shelf organization.slug shelf.id %}">ชั้นหนังสือ {{shelf.name}}</a> <span class="divider">/</span></li>
-                <li class="active">แก้ไขชั้นหนังสือ</li>
+                <li><a href="{% url view_documents organization.slug %}">กลุ่มเอกสารทั้งหมด</a> <span class="divider">/</span></li>
+                <li><a href="{% url view_documents_by_shelf organization.slug shelf.id %}">กลุ่มเอกสาร {{shelf.name}}</a> <span class="divider">/</span></li>
+                <li class="active">แก้ไขกลุ่มเอกสาร</li>
             </ul>
-            <h2>แก้ไขชั้นหนังสือ</h2>
+            <h2>แก้ไขกลุ่มเอกสาร</h2>
         {% endif %}
 
         <form method="POST" action=".">
@@ -175,24 +175,24 @@ $(document).ready(function () {
             {{form.non_field_errors}}
 
             <div class="control-group">
-                <label class="control-label" for="id_name">ชื่อชั้นหนังสือ</label>
+                <label class="control-label" for="id_name">ชื่อกลุ่มเอกสาร</label>
                 <div class="controls">{{form.name}}{{form.name.errors}}</div>
             </div>
 
             <div class="control-group">
                 <label class="control-label" for="id_email">Auto-Sync</label>
-                <div class="controls row-controls"><ul><li><label>{{form.auto_sync}} ทุกไฟล์ในชั้นหนังสือนี้จะถูกดาวน์โหลดลงเครื่องผู้ใช้โดยอัตโนมัติ</label></li></ul>{{form.auto_sync.errors}}</div>
+                <div class="controls row-controls"><ul><li><label>{{form.auto_sync}} ทุกไฟล์ในกลุ่มเอกสารนี้จะถูกดาวน์โหลดลงเครื่องผู้ใช้โดยอัตโนมัติ</label></li></ul>{{form.auto_sync.errors}}</div>
             </div>
 
             <div class="control-group">
-                <label class="control-label" for="id_shelf_icon">ไอคอนชั้นหนังสือ</label>
+                <label class="control-label" for="id_shelf_icon">ไอคอนกลุ่มเอกสาร</label>
                 <div class="controls shelf-icon-controls">
                     <input type="hidden" name="shelf_icon" id="id_shelf_icon" value="{{form.shelf_icon.value}}" /><img src="{{STATIC_URL}}images/shelficons/24/{{form.shelf_icon.value}}.png" /><button class="btn btn-small" data-toggle="modal" data-target="#shelf_icons_modal">เปลี่ยนไอคอน</button>
                 </div>
             </div>
 
             <div class="control-group">
-                <label class="control-label" for="id_email">การเข้าถึงชั้นหนังสือ</label>
+                <label class="control-label" for="id_email">การเข้าถึงกลุ่มเอกสาร</label>
                 <div class="controls shelf-permission-controls">
                     <ul class="permissions">
                         {% generate_shelf_permission_list shelf_permissions %}
@@ -227,14 +227,14 @@ $(document).ready(function () {
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> {% if not shelf %}สร้างชั้นหนังสือ{% else %}แก้ไขชั้นหนังสือ{% endif %}</button>
+                <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> {% if not shelf %}สร้างกลุ่มเอกสาร{% else %}แก้ไขกลุ่มเอกสาร{% endif %}</button>
                 <button type="reset" class="btn">ล้างข้อมูล</button>
             </div>
         </form>
 
         {% if shelf %}
         <div class="delete-panel">
-            <a href="{% url delete_document_shelf organization.slug shelf.id %}" class="danger">ลบชั้นหนังสือ</a>
+            <a href="{% url delete_document_shelf organization.slug shelf.id %}" class="danger">ลบกลุ่มเอกสาร</a>
         </div>
         {% endif %}
     </div></div>
