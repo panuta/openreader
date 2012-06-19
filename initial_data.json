@@ -17,8 +17,8 @@
 {"pk": 3, "model": "domain.userprofile", "fields": {"first_name": "Staff", "last_name": "Openreader", "is_first_time": true, "user": 3}},
 {"pk": 4, "model": "domain.userprofile", "fields": {"first_name": "User", "last_name": "Openreader", "is_first_time": true, "user": 4}},
 
-{"pk": 1, "model": "domain.organization", "fields": {"status": 0, "modified_by": 2, "name": "Opendream1", "slug":"opendream1", "prefix":"บริษัท", "created_by": 2, "created": "2011-12-01 00:00:00+07:00", "modified": "2011-12-01 00:00:00+07:00"}},
-{"pk": 2, "model": "domain.organization", "fields": {"status": 0, "modified_by": 2, "name": "Opendream2", "slug":"opendream2", "prefix":"บริษัท", "created_by": 2, "created": "2011-12-01 00:00:00+07:00", "modified": "2011-12-01 00:00:00+07:00"}},
+{"pk": 1, "model": "domain.organization", "fields": {"status": 0, "modified_by": 2, "name": "Opendream", "slug":"opendream", "prefix":"บริษัท", "created_by": 2, "created": "2011-12-01 00:00:00+07:00", "modified": "2011-12-01 00:00:00+07:00"}},
+{"pk": 2, "model": "domain.organization", "fields": {"status": 0, "modified_by": 2, "name": "OpendreamTwo", "slug":"OpendreamTwo", "prefix":"บริษัท", "created_by": 2, "created": "2011-12-01 00:00:00+07:00", "modified": "2011-12-01 00:00:00+07:00"}},
 
 
 {"pk": 1, "model": "domain.userorganization", "fields": {"is_default": true, "organization": 1, "user": 2, "is_admin":true, "created": "2011-12-01 00:00:00+07:00"}},

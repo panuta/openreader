@@ -16,7 +16,7 @@ from django.utils import simplejson
 from common.fileservers import generate_download_url
 
 from accounts.permissions import get_backend as get_permission_backend
-from api.models import *
+from models import *
 from domain.models import UserProfile, UserOrganization, OrganizationShelf, Publication, OrganizationDownloadServer
 
 
