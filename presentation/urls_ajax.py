@@ -25,4 +25,7 @@ urlpatterns = patterns('presentation.views_ajax',
     url(r'^ajax/(?P<organization_slug>\w+)/publication/delete/$', 'ajax_delete_publication', name='ajax_delete_publication'),
     url(r'^ajax/(?P<organization_slug>\w+)/query/publication-tags/$', 'ajax_query_publication_tags', name='ajax_query_publication_tags'),
 
+
+    url(r'^ajax/(?P<organization_slug>\w+)/query/shelves/$', 'ajax_query_organization_shelves', name='ajax_query_organization_shelves'),
+
 )
