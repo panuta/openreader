@@ -79,23 +79,25 @@ $(document).ready(function () {
             </div>
         </div>
 
-        <table class="table documents_table" {% if not publications %}style="display:none;"{% endif %}>
-            <tbody>
-            {% for publication in publications %}
-                <tr id="{{publication.uid}}">
-                    <td class="row_checkbox"><input type="checkbox" /></td>
-                    <td class="download"><a href="{% url download_publication publication.uid %}" title="ดาวน์โหลดไฟล์ {{publication.file_ext|upper}}" data-content="ขนาดไฟล์ {{publication.uploaded_file.size|file_size}}">ดาวน์โหลดไฟล์</a></td>
-                    <td class="file">
-                        <div class="filename"><a href="#" class="js-open-publication" uid="{{ publication.uid }}" title="{{ publication.title }}">{{publication.title}}</a></div>
-                        <div class="uploaded">อัพโหลดเมื่อวันที่ {{publication.uploaded|format_abbr_datetime}} {% if publication.is_processing %} <span class="processing">กำลังประมวลผล</span>{% endif %}</div>
-                        <div class="tag">{% print_publication_tags publication %}</div>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+        <div class="documents-content">
+            <table class="table documents_table" {% if not publications %}style="display:none;"{% endif %}>
+                <tbody>
+                {% for publication in publications %}
+                    <tr id="{{publication.uid}}">
+                        <td class="row_checkbox"><input type="checkbox" /></td>
+                        <td class="download"><a href="{% url download_publication publication.uid %}" title="ดาวน์โหลดไฟล์ {{publication.file_ext|upper}}" data-content="ขนาดไฟล์ {{publication.uploaded_file.size|file_size}}">ดาวน์โหลดไฟล์</a></td>
+                        <td class="file">
+                            <div class="filename"><a href="#" class="js-open-publication" uid="{{ publication.uid }}" title="{{ publication.title }}">{{publication.title}}</a></div>
+                            <div class="uploaded">อัพโหลดเมื่อวันที่ {{publication.uploaded|format_abbr_datetime}} {% if publication.is_processing %} <span class="processing">กำลังประมวลผล</span>{% endif %}</div>
+                            <div class="tag">{% print_publication_tags publication %}</div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
 
-        <div class="no_publication"{% if publications %} style="display:none;"{% endif %}>ไม่มีไฟล์</div>
+            <div class="no_publication"{% if publications %} style="display:none;"{% endif %}>ไม่มีไฟล์</div>
+        </div>
 
     </div></div>
 </div></div>

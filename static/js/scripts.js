@@ -110,16 +110,15 @@ $(document).ready(function () {
         }
     });
 
+    /*
     $('#publication-modal').on('hidden', function() {
         $('#publication-modal').off('publication_deleted')
-    });
+    });*/
 
     $('#publication-modal .replace_button').on('click', function() {
         $('#publication-modal .publication_form').fadeOut('fast', function() {
             $('#publication-modal .right .panel').remove();
             $('#publication-modal .right').append('<form class="replace_form panel"><label for="replace_file_input">เลือกไฟล์ที่ต้องการแทนไฟล์เก่า</label><input type="file" id="replace_file_input" /><div class="actions"><button class="btn cancel_button">ยกเลิก</button></div></form>');
-            //$('#publication-modal .right').append('<form class="replace_form panel"><label for="replace_file_input">เลือกไฟล์ที่ต้องการแทนไฟล์เก่า</label><input type="file" id="replace_file_input" /><div class="uploading"><div class="upload_progressbar"></div><button class="btn">ยกเลิก</button></div></form>');
-            //$('#publication-modal .right .upload_progressbar').progressBar(40, {width:262, height:20, boxImage:'/static/libs/progressbar/images/progressbar.png', barImage:{0:'/static/libs/progressbar/images/progressbg.png', 30:'/static/libs/progressbar/images/progressbg.png', 70:'/static/libs/progressbar/images/progressbg.png'}});
 
             $('#publication-modal .replace_form .cancel_button').on('click', function() {
                 $('#publication-modal .panel').fadeOut('fast', function(){
@@ -199,6 +198,8 @@ $(document).ready(function () {
                         $('#publication-modal .panel').remove();
                         $('#publication-modal .publication_form').show();
 
+                        $('#publication-modal').trigger('publication_replaced', [response.uid, response.file_ext, response.file_size]);
+
                     } else {
                         var error_message = 'ไม่สามารถบันทึกไฟล์ที่อัพโหลดได้';
                         if(responseObject.error == 'file-size-exceed') error_message = 'ไฟล์มีขนาดใหญ่เกินกำหนด';
@@ -229,7 +230,7 @@ $(document).ready(function () {
                 var uid = $('#publication-modal').data('uid');
 
                 $.post('/ajax/' + var_organization_slug + '/publication/delete/', {uid:uid}, function(response) {
-                    $('#publication-modal').trigger('publication_deleted');
+                    $('#publication-modal').trigger('publication_deleted', [uid]);
                     $('#publication-modal').modal('hide');
                     var shelf_id = shelves_id.split(",");
                     for (var i=0; i<shelf_id.length; i++){
@@ -261,7 +262,8 @@ $(document).ready(function () {
 
         $.post('/ajax/' + var_organization_slug + '/publication/edit/', {uid:uid, title:title, description:description, tags:tagnames}, function(response) {
             if(response.status == 'success') {
-                _addModalMessage('publication-modal', 'บันทึกข้อมูลเรียบร้อย', 'success')
+                _addModalMessage('publication-modal', 'บันทึกข้อมูลเรียบร้อย', 'success');
+                $('#publication-modal').trigger('publication_updated', [uid, title, tagnames]);
             } else {
                 if(response.error == 'invalid-publication') {
                     $('#message_modal').modal('show').find('.modal-body p').text('ข้อมูลไม่ถูกต้อง');
@@ -339,11 +341,14 @@ $(document).ready(function () {
 ********************************************************/
 
 function initializeDocumentsPage() {
+
+    // UPLOAD PUBLICATION ----------------------------------------------------------------------------------------------
+
     $('.js-upload-publication').on('click', function() {
         $('.upload_tool select option:first').attr('selected', true);
         $('.js-upload-tool-file-input').hide();
         $('.upload_tool').slideToggle('fast');
-        return false;
+        return true;
     });
 
     $('.js-upload-tool-shelf-input').on('change', function() {
@@ -402,6 +407,8 @@ function initializeDocumentsPage() {
 
                 // Update num of files in shelf
                 $('#shelf-' + responseObject.shelf + ' .num_files').text($('#shelf-' + responseObject.shelf + ' .num_files').text().split(' ')[0] * 1 + 1 + ' ไฟล์');
+
+                _appendRecentDocuments(responseObject.uid, responseObject.title, responseObject.uploaded);
                 
             } else {
                 var error_message = 'ไม่สามารถบันทึกไฟล์ที่อัพโหลดได้';
@@ -430,16 +437,49 @@ function initializeDocumentsPage() {
         });
         return false;
     });
+
+    function _appendRecentDocuments(uid, title, uploaded) {
+        $('.documents_sidebar .no_recent').remove();
+        if(!$('.documents_sidebar ul').length) {
+            $('.documents_sidebar h3').after('<ul></ul>');
+        }
+
+        $('.documents_sidebar ul').prepend('<li><div><a href="#" class="js-open-publication" title="' + title + '" uid="' + uid + '">' + title + '</a></div><div class="uploaded">อัพโหลดเมื่อวันที่ ' + uploaded + '</div></li>');
+    }
+
+    // PUBLICATION MODAL -----------------------------------------------------------------------------------------------
+
+    $('#publication-modal').on('publication_updated', function(e, uid, title, tags) {
+        $('.documents_sidebar .js-open-publication[uid="' + uid + '"]').attr('title', title).text(title);
+    });
+
+    $('#publication-modal').on('publication_deleted', function(e, uid) {
+        $.get('/ajax/' + var_organization_slug + '/query/shelves/', {}, function(response) {
+            if(response.status == 'success') {
+                for(var i=0; i<response.shelves.length; i++) {
+                    var shelf = response.shelves[i];
+                    $('#shelf-' + shelf.id + ' .num_files').text(shelf.document_count + ' ไฟล์');
+                }
+            }
+        });
+
+        $('.documents_sidebar .js-open-publication[uid="' + uid + '"]').closest('li').remove();
+        if(!$('.documents_sidebar .js-open-publication').length) {
+            $('.documents_sidebar ul').remove();
+            $('.documents_sidebar h3').after('<div class="no_recent">ไม่มีไฟล์ล่าสุด</div>');
+        }
+    });
 }
+
 
 function initializeDocumentsShelfPage(shelf_id) {
 
-    // Upload Tool -----------------------------------------------------------------------------------------------------
+    // UPLOAD TOOL -----------------------------------------------------------------------------------------------------
 
     $('.js-upload-publication').on('click', function() {
         $('.upload_tool select option[value="' + shelf_id + '"]').attr('selected', true);
         $('.upload_tool').slideToggle('fast');
-        return false;
+        return true;
     });
 
     $('.js-upload-tool-shelf-input').on('change', function() {
@@ -499,7 +539,7 @@ function initializeDocumentsShelfPage(shelf_id) {
 
                 data.context.remove();
 
-                var uploaded_row = $('<tr id="' + responseObject.uid + '" class="uploaded_row"><td class="row_checkbox"><input type="checkbox" checked="checked"/></td><td class="download"><a href="' + responseObject.download_url + '" title="ดาวน์โหลดไฟล์ ' + responseObject.file_ext.toUpperCase() + '" data-content="ขนาดไฟล์ ' + responseObject.file_size_text + '">ดาวน์โหลดไฟล์</a></td><td class="file"><div class="filename"><a href="#" class="js-open-publication" uid="' + responseObject.uid + '" title="' + responseObject.title + '">' + responseObject.title + '</a></div><div class="uploaded">อัพโหลดเมื่อวันที่ ' + responseObject.uploaded + '</div><div class="tag"><ul></ul></div></td><td class="row_actions"><input type="hidden" name="description" value=""/><input type="hidden" name="thumbnail" value="' + responseObject.thumbnail_url + '"/><button class="btn-small btn edit_publication_button" data-toggle="button">แก้ไข</button></td></tr>');
+                var uploaded_row = $('<tr id="' + responseObject.uid + '" class="uploaded_row"><td class="row_checkbox"><input type="checkbox" checked="checked"/></td><td class="download"><a href="' + responseObject.download_url + '" title="ดาวน์โหลดไฟล์ ' + responseObject.file_ext.toUpperCase() + '" data-content="ขนาดไฟล์ ' + responseObject.file_size_text + '">ดาวน์โหลดไฟล์</a></td><td class="file"><div class="filename"><a href="#" class="js-open-publication" uid="' + responseObject.uid + '" title="' + responseObject.title + '">' + responseObject.title + '</a></div><div class="uploaded">อัพโหลดเมื่อวันที่ ' + responseObject.uploaded + '</div><div class="tag"><ul></ul></div></td></tr>');
                 uploaded_row.find('.edit_publication_button').button();
                 uploaded_row.find('.download a').popover();
                 uploaded_row.prependTo('.documents_table tbody');
@@ -581,7 +621,15 @@ function initializeDocumentsShelfPage(shelf_id) {
         }
     });
 
-    // Checkbox Actions
+    // Add Tags Modal --------------------------------------------------------------------------------------------------
+
+    $('#add-tags-modal').on('show', function() {
+        if(!$('.documents_table input[type="checkbox"]:checked').length) {
+            return false;
+        }
+
+        $('#add-tags-modal .modal-body input[name="tag"]').val('');
+    });
 
     $('#add-tags-modal .modal-footer button.btn-primary').on('click', function(e) {
         var tags = $('#add-tags-modal .modal-body input[name="tag"]').val();
@@ -617,8 +665,14 @@ function initializeDocumentsShelfPage(shelf_id) {
         return false;
     });
 
-    $('#add-tags-modal').on('show', function() {
-        $('#add-tags-modal .modal-body input[name="tag"]').val('');
+    // Delete Files Modal ----------------------------------------------------------------------------------------------
+
+    $('#delete-files-confirmation-modal').on('show', function() {
+        if(!$('.documents_table input[type="checkbox"]:checked').length) {
+            return false;
+        }
+
+        $('#delete-files-confirmation-modal .modal-footer span').text($('.documents_table input[type="checkbox"]:checked').length);
     });
 
     $('#delete-files-confirmation-modal .modal-footer button.btn-danger').on('click', function(e) {
@@ -639,7 +693,6 @@ function initializeDocumentsShelfPage(shelf_id) {
                 $('.checkbox_actions input[type="checkbox"]').attr('checked', false);
                 $('.checkbox_actions').removeClass('checkbox_actions_selected').find('a').addClass('disabled');
 
-
             } else {
                 if(response.error == 'invalid-publication') {
                     $('#message_modal').modal('show').find('.modal-body p').text('ไม่พบไฟล์ที่ต้องการลบในระบบ');
@@ -649,8 +702,33 @@ function initializeDocumentsShelfPage(shelf_id) {
         return false;
     });
 
-    $('#delete-files-confirmation-modal').on('show', function() {
-        $('#delete-files-confirmation-modal .modal-footer span').text($('.documents_table input[type="checkbox"]:checked').length);
+    // PUBLICATION MODAL -----------------------------------------------------------------------------------------------
+
+    $('#publication-modal').on('publication_updated', function(e, uid, title, tags) {
+        $('#' + uid + ' .js-open-publication').attr('title', title).text(title);
+
+        if(tags) {
+            var tagnames = tags.split(',');
+            var tag_html = '';
+            for(var i=0; i<tagnames.length; i++) {
+                tag_html = tag_html + '<li>' + tagnames[i] + '</li>'
+            }
+            $('#' + uid + ' .tag ul').html(tag_html);
+        } else {
+            $('#' + uid + ' .tag ul').remove();
+        }
+    });
+
+    $('#publication-modal').on('publication_replaced', function(e, uid, file_ext, file_size) {
+        $('#' + uid + ' .download a').attr('title', 'ดาวน์โหลดไฟล์ ' + file_ext.toUpperCase()).attr('data-content', 'ขนาดไฟล์ ' + file_size);
+    });
+
+    $('#publication-modal').on('publication_deleted', function(e, uid) {
+        $('#' + uid).remove();
+
+        if(!$('.documents_table tr').length) {
+            $('.documents-content').html('<div class="no_publication">ไม่มีไฟล์</div>');
+        }
     });
 }
 

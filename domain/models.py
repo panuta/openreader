@@ -275,10 +275,10 @@ class OrganizationShelf(models.Model):
     def __unicode__(self):
         return self.name
 
-    def _get_publication_count(self):
+    def _get_document_count(self):
         return PublicationShelf.objects.filter(shelf=self).count()
 
-    num_of_publications = property(_get_publication_count)
+    num_of_documents = property(_get_document_count)
 
     def _get_latest_publication(self):
         publications = Publication.objects.filter(shelves__in=[self]).order_by('-uploaded')

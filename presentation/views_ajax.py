@@ -407,3 +407,18 @@ def ajax_query_publication_tags(request, organization_slug):
         result.append({'id':str(tag.id), 'label':tag.tag_name, 'value':tag.tag_name})
 
     return HttpResponse(simplejson.dumps(result))
+
+@require_GET
+@login_required
+def ajax_query_organization_shelves(request, organization_slug):
+    organization = get_object_or_404(Organization, slug=organization_slug)
+    permission_backend = get_permission_backend(request)
+
+    if not permission_backend.can_view_organization(request.user, organization):
+        raise Http404
+
+    shelves_json = []
+    for shelf in permission_backend.get_viewable_shelves(request.user, organization):
+        shelves_json.append({'id':shelf.id, 'name':shelf.name, 'document_count':shelf.num_of_documents})
+
+    return response_json_success({'shelves':shelves_json})

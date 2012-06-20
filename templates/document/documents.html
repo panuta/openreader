@@ -10,30 +10,7 @@ var MAX_PUBLICATION_FILE_SIZE = {{ settings.MAX_PUBLICATION_FILE_SIZE }};
 var MAX_PUBLICATION_FILE_SIZE_TEXT = '{{ settings.MAX_PUBLICATION_FILE_SIZE_TEXT }}';
 
 $(document).ready(function () {
-    {% if shelves %}
-    initializeDocumentsPage();
-
-    $('.documents_shelves .js-open-publication').live('click', function() {
-        $('#publication-modal').on('publication_deleted', function() {
-            _publication_is_deleted($('#publication-modal').data('uid'));
-        });
-        return false;
-    });
-
-    $('.documents_sidebar .js-open-publication').live('click', function() {
-        $('#publication-modal').on('publication_deleted', function() {
-            _publication_is_deleted($('#publication-modal').data('uid'));
-        });
-        return false;
-    });
-
-    function _publication_is_deleted(uid) {
-        var liObject = $('.documents_sidebar .js-open-publication[uid="' + uid + '"]').closest('li');
-        liObject.fadeOut('fast', function() {
-            liObject.remove();
-        });
-    }
-    {% endif %}
+    {% if shelves %}initializeDocumentsPage();{% endif %}
 });
 </script>
 {% endblock %}
@@ -63,7 +40,7 @@ $(document).ready(function () {
                 {% for shelf in shelves %}
                 <li class="shelf {{ shelf.icon|default:settings.DEFAULT_SHELF_ICON }}" id="shelf-{{ shelf.id }}">
                     <div class="shelf_name"><a href="{% url view_documents_by_shelf organization.slug shelf.id %}">{{ shelf.name }}</a></div>
-                    <div class="details"><span class="num_files">{{ shelf.num_of_publications }} ไฟล์</span></div>
+                    <div class="details"><span class="num_files">{{ shelf.num_of_documents }} ไฟล์</span></div>
                 </li>
                 {% endfor %}
             </ul>
