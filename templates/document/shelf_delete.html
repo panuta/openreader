@@ -1,16 +1,16 @@
 {% extends 'base_authenticated.html' %}
 {% load helper_tags presentation_tags %}
 
-{% block head_title %}{{shelf.name}} | ลบชั้นหนังสือ{% endblock %}
+{% block head_title %}{{shelf.name}} | ลบกลุ่มเอกสาร{% endblock %}
 {% block topnav %}{% include 'snippets/organization_topnav.html' with active_menu='document' %}{% endblock %}
 
 {% block body_authenticated %}
 <div class="container-fluid modify_shelf_page"><div class="row-fluid">
     <div class="content"><div class="inner-content">
         <ul class="breadcrumb">
-            <li><a href="{% url view_documents organization.slug %}">ชั้นหนังสือทั้งหมด</a> <span class="divider">/</span></li>
-            <li><a href="{% url view_documents_by_shelf organization.slug shelf.id %}">ชั้นหนังสือ {{shelf.name}}</a> <span class="divider">/</span></li>
-            <li class="active">ลบชั้นหนังสือ</li>
+            <li><a href="{% url view_documents organization.slug %}">กลุ่มเอกสารทั้งหมด</a> <span class="divider">/</span></li>
+            <li><a href="{% url view_documents_by_shelf organization.slug shelf.id %}">กลุ่มเอกสาร {{shelf.name}}</a> <span class="divider">/</span></li>
+            <li class="active">ลบกลุ่มเอกสาร</li>
         </ul>
 
         <form method="POST" action=".">
@@ -19,12 +19,12 @@
 
             {% if shelf_documents_count %}
                 <div class="delete_documents">
-                    <input type="checkbox" name="delete_documents" id="id_delete_documents" /><label for="id_delete_documents">ลบไฟล์ทั้งหมดที่อยู่ในชั้น {{shelf.name}} ({{shelf_documents_count}} ไฟล์)</label>
+                    <input type="checkbox" name="delete_documents" id="id_delete_documents" /><label for="id_delete_documents">ลบไฟล์ทั้งหมดที่อยู่ในกลุ่ม {{shelf.name}} ({{shelf_documents_count}} ไฟล์)</label>
                 </div>
             {% endif %}
 
             <div class="form-actions">
-                <button type="submit" name="submit-delete" class="btn btn-danger">ยืนยันการลบชั้นหนังสือ</button>
+                <button type="submit" name="submit-delete" class="btn btn-danger">ยืนยันการลบกลุ่มเอกสาร</button>
                 <button type="submit" name="submit-cancel" class="btn">ยกเลิก</button>
             </div>
         </form>

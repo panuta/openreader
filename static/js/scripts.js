@@ -202,7 +202,7 @@ $(document).ready(function () {
                     } else {
                         var error_message = 'ไม่สามารถบันทึกไฟล์ที่อัพโหลดได้';
                         if(responseObject.error == 'file-size-exceed') error_message = 'ไฟล์มีขนาดใหญ่เกินกำหนด';
-                        if(responseObject.error == 'access-denied') error_message = 'ผู้ใช้ไม่สามารถอัพโหลดไฟล์ในชั้นหนังสือนี้ได้';
+                        if(responseObject.error == 'access-denied') error_message = 'ผู้ใช้ไม่สามารถอัพโหลดไฟล์ในกลุ่มเอกสารนี้ได้';
                         _addModalMessage('publication-modal', error_message, 'error');
                     }
                 },
@@ -407,7 +407,7 @@ function initializeDocumentsPage() {
                 var error_message = 'ไม่สามารถบันทึกไฟล์ที่อัพโหลดได้';
 
                 if(responseObject.error == 'file-size-exceed') error_message = 'ไฟล์มีขนาดใหญ่เกินกำหนด';
-                if(responseObject.error == 'access-denied') error_message = 'ผู้ใช้ไม่สามารถอัพโหลดไฟล์ในชั้นหนังสือนี้ได้';
+                if(responseObject.error == 'access-denied') error_message = 'ผู้ใช้ไม่สามารถอัพโหลดไฟล์ในกลุ่มเอกสารนี้ได้';
 
                 data.context.addClass('failed').html('<div class="filename"><em>' + file.name + '</em> ' + error_message + '</div><div><button class="btn btn-small js-dismiss-uploading">ยกเลิกการอัพโหลด</button></div>');
             }
@@ -511,7 +511,7 @@ function initializeDocumentsShelfPage(shelf_id) {
                 var error_message = 'ไม่สามารถบันทึกไฟล์ที่อัพโหลดได้';
 
                 if(responseObject.error == 'file-size-exceed') error_message = 'ไฟล์มีขนาดใหญ่เกินกำหนด';
-                if(responseObject.error == 'access-denied') error_message = 'ผู้ใช้ไม่สามารถอัพโหลดไฟล์ในชั้นหนังสือนี้ได้';
+                if(responseObject.error == 'access-denied') error_message = 'ผู้ใช้ไม่สามารถอัพโหลดไฟล์ในกลุ่มเอกสารนี้ได้';
 
                 data.context.addClass('failed').html('<div class="filename"><em>' + file.name + '</em> ' + error_message + '</div><div><button class="btn btn-small js-dismiss-uploading">ยกเลิกการอัพโหลด</button></div>');
             }
@@ -724,7 +724,7 @@ function initializeDocumentsPage(shelf_id) {
           var error_message = 'ไม่สามารถบันทึกไฟล์ที่อัพโหลดได้';
 
           if(responseObject.error == 'file-size-exceed') error_message = 'ไฟล์มีขนาดใหญ่เกินกำหนด';
-          if(responseObject.error == 'access-denied') error_message = 'ผู้ใช้ไม่สามารถอัพโหลดไฟล์ในชั้นหนังสือนี้ได้';
+          if(responseObject.error == 'access-denied') error_message = 'ผู้ใช้ไม่สามารถอัพโหลดไฟล์ในกลุ่มเอกสารนี้ได้';
 
           data.context.addClass('error_row').find('td:first').append('<div class="error_message">' + error_message + '</div>');
           data.context.find('.cancel_button').removeClass('cancel_button').addClass('delete_button');
@@ -911,7 +911,7 @@ function initializeDocumentsPage(shelf_id) {
         var error_message = 'ไม่สามารถบันทึกไฟล์ที่อัพโหลดได้';
 
         if(responseObject.error == 'file-size-exceed') error_message = 'ไฟล์มีขนาดใหญ่เกินกำหนด';
-        if(responseObject.error == 'access-denied') error_message = 'ผู้ใช้ไม่สามารถอัพโหลดไฟล์ในชั้นหนังสือนี้ได้';
+        if(responseObject.error == 'access-denied') error_message = 'ผู้ใช้ไม่สามารถอัพโหลดไฟล์ในกลุ่มเอกสารนี้ได้';
 
         data.rowObject.find('.uploaded').after('<div class="error_message">' + error_message + '</div>');
       }
