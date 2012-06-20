@@ -98,6 +98,7 @@ class OrganizationGroup(models.Model):
     organization = models.ForeignKey(Organization)
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=500, blank=True)
+    admin_permissions = models.ManyToManyField(OrganizationAdminPermission)
 
     def __unicode__(self):
         return self.name
@@ -114,7 +115,6 @@ class UserOrganization(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     groups = models.ManyToManyField(OrganizationGroup, through='UserGroup')
-    admin_permissions = models.ManyToManyField(OrganizationAdminPermission)
 
     def __unicode__(self):
         return '%s:%s' % (self.user.get_profile().get_fullname(), self.organization.name)
@@ -125,19 +125,18 @@ class UserGroup(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
-        return '%s:%s' % (self.user.get_profile().get_fullname(), self.group.name)
+        return '%s:%s' % (self.user_organization.user.get_profile().get_fullname(), self.group.name)
 
 # User Invitation
 
 class UserInvitationManager(models.Manager):
 
-    def create_invitation(self, email, organization, admin_permissions, groups, created_by):
+    def create_invitation(self, email, organization, groups, created_by):
         key_salt = 'domain.models.UserInvitationManager'
         email = email.encode('utf-8')
         invitation_key = salted_hmac(key_salt, email).hexdigest()
 
         invitation = self.create(email=email, organization=organization, invitation_key=invitation_key, created_by=created_by)
-        invitation.admin_permissions = admin_permissions
         invitation.groups = groups
 
         return invitation
@@ -147,8 +146,7 @@ class UserInvitationManager(models.Manager):
             UserOrganization.objects.get(user=user)
         except UserOrganization.DoesNotExist:
             user_organization = UserOrganization.objects.create(user=user, organization=invitation.organization, is_default=is_default)
-            user_organization.admin_permissions = invitation.admin_permissions.all()
-
+            
             for group in invitation.groups.all():
                 UserGroup.objects.create(user_organization=user_organization, group=group)
 
@@ -163,8 +161,7 @@ class UserOrganizationInvitation(models.Model):
     created_by = models.ForeignKey(User, related_name='created_invitations')
 
     groups = models.ManyToManyField(OrganizationGroup)
-    admin_permissions = models.ManyToManyField(OrganizationAdminPermission)
-
+    
     def __unicode__(self):
         return '%s:%s' % (self.email, self.organization.name)
 
