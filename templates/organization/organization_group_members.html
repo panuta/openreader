@@ -33,7 +33,7 @@
                 <tbody>
                 {% for member in group_members %}
                     <tr>
-                        <td class="row_actions"><a href="{% url edit_organization_user member.id %}?next={% url view_organization_group_members group.id %}" class="btn btn-small">แก้ไข</a></td>
+                        <td class="row_actions"><a href="{% url edit_organization_user member.user_organization.id %}?next={% url view_organization_group_members group.id %}" class="btn btn-small">แก้ไข</a></td>
                         <td>{{ member.user_organization.user.get_profile.get_fullname }}</td>
                         <td>{{ member.user_organization.user.email }}</td>
                     </tr>

@@ -55,6 +55,7 @@ def ajax_cancel_user_invitation(request, invitation_id):
 
         invitation.delete()
 
+        messages.success(request, u'เพิกถอนคำขอผู้ใช้เรียบร้อย')
         return response_json_success({'redirect_url':reverse('view_organization_invited_users', args=[organization.slug])})
     else:
         raise Http404
