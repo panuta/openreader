@@ -261,18 +261,28 @@ def edit_organization_user(request, organization_user_id):
             UserGroup.objects.filter(user_organization=user_organization, group__in=removing_groups).delete()
 
             messages.success(request, u'แก้ไขข้อมูลผู้ใช้เรียบร้อย')
-            return redirect('view_organization_users', organization_slug=organization.slug)
+
+            next = request.POST.get('next')
+            
+            return redirect(next) if next else redirect('view_organization_users', organization_slug=organization.slug)
 
     else:
         form = EditOrganizationUserForm(user_organization, initial={
-            'email':user_organization.user.email,
-            'first_name':user_organization.user.get_profile().first_name,
-            'last_name':user_organization.user.get_profile().last_name,
-            'admin_permissions':user_organization.admin_permissions.all(),
-            'groups':user_organization.groups.all()}
+            'email'             :user_organization.user.email,
+            'first_name'        :user_organization.user.get_profile().first_name,
+            'last_name'         :user_organization.user.get_profile().last_name,
+            'admin_permissions' :user_organization.admin_permissions.all(),
+            'groups'            :user_organization.groups.all()}
         )
 
-    return render(request, 'organization/organization_user_edit.html', {'organization':organization, 'user_organization':user_organization, 'form':form})
+    return render(request, 
+        'organization/organization_user_edit.html', {
+            'form'              :form,
+            'organization'      :organization, 
+            'user_organization' :user_organization, 
+            'next'              :request.GET.get('next', ''),
+        }
+    )
 
 
 # Organization Groups
@@ -301,6 +311,20 @@ def add_organization_group(request, organization_slug):
 
     return render(request, 'organization/organization_group_modify.html', {'organization':organization, 'form':form})
 
+@login_required
+def view_organization_group_members(request, organization_group_id):
+    group = get_object_or_404(OrganizationGroup, pk=organization_group_id)
+    organization = group.organization
+
+    if not get_permission_backend(request).can_manage_user(request.user, organization):
+        raise Http404
+
+    group_members = UserGroup.objects.filter(group=group)
+    return render(request, 'organization/organization_group_members.html', {
+        'organization': organization, 
+        'group' :group,
+        'group_members': group_members
+    })
 
 @login_required
 def edit_organization_group(request, organization_group_id):
