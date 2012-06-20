@@ -316,7 +316,7 @@ def view_organization_group_members(request, organization_group_id):
     if not get_permission_backend(request).can_manage_user(request.user, organization):
         raise Http404
 
-    group_members = UserGroup.objects.filter(group=group)
+    group_members = UserGroup.objects.filter(group=group, user_organization__is_active=True)
     return render(request, 'organization/organization_group_members.html', {
         'organization': organization, 
         'group' :group,

@@ -104,7 +104,7 @@ class OrganizationGroup(models.Model):
         return self.name
 
     def get_user_count(self):
-        return UserGroup.objects.filter(group=self).count()
+        return UserGroup.objects.filter(group=self, user_organization__is_active=True).count()
 
 class UserOrganization(models.Model):
     user = models.ForeignKey(User)
