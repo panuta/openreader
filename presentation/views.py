@@ -133,11 +133,12 @@ def invite_organization_user(request, organization_slug):
     if request.method == 'POST':
         form = InviteOrganizationUserForm(organization, request.POST)
         if form.is_valid():
-            email = form.cleaned_data['email']
-            groups = form.cleaned_data['groups']
+            emails = form.cleaned_data['emails']
+            groups = form.cleaned_data['groups']        
 
-            invitation = UserOrganizationInvitation.objects.create_invitation(email, organization, groups, request.user)
-            invitation.send_invitation_email()
+            for email in ','.join(emails).split(','):
+                invitation = UserOrganizationInvitation.objects.create_invitation(email, organization, groups, request.user)
+                invitation.send_invitation_email()
 
             messages.success(request, u'ส่งคำขอเพิ่มผู้ใช้เรียบร้อย รอผู้ใช้ยืนยันคำขอ')
             return redirect('view_organization_users', organization_slug=organization.slug)

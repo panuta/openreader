@@ -2,6 +2,7 @@
 
 from django import forms
 from django.contrib.auth.models import User
+from django.core.validators import email_re
 from django.utils.translation import ugettext_lazy as _
 
 from common.forms import StrippedCharField
@@ -42,7 +43,7 @@ class UserProfileForm(forms.Form):
 # ORGANIZATION MANAGEMENT
 
 class InviteOrganizationUserForm(forms.Form):
-    email = forms.EmailField(widget=forms.TextInput(attrs={'class':'input-normal'}))
+    emails = forms.CharField(widget=forms.Textarea(attrs={'class':'input-large', 'rows':'3'}))
     groups = OrganizationGroupMultipleChoiceField(required=False)
 
     def __init__(self, organization, *args, **kwargs):
@@ -51,16 +52,22 @@ class InviteOrganizationUserForm(forms.Form):
         self.organization = organization
         self.fields['groups'].queryset = OrganizationGroup.objects.filter(organization=organization).order_by('name')
 
-    def clean_email(self):
-        email = self.cleaned_data.get('email', '')
+    def clean_emails(self):
+        saved_emails = self.cleaned_data.get('emails', '')
+        saved_emails = [saved_email.strip() for saved_email in saved_emails.split(',') if len(saved_email.strip())>0]
+        emails = list(set(saved_emails))
+        
+        for email in emails:
+            if not email_re.match(email):
+                raise forms.ValidationError('%s เป็นอีเมลที่ไม่ถูกต้อง.' % str(email))
 
-        if UserOrganizationInvitation.objects.filter(email=email, organization=self.organization).exists():
-            raise forms.ValidationError(u'มีการส่งคำขอเพิ่มผู้ใช้ถึงผู้ใช้คนนี้ก่อนหน้านี้แล้ว')
+            if UserOrganizationInvitation.objects.filter(email=email, organization=self.organization).exists():
+                raise forms.ValidationError(u'มีการส่งคำขอเพิ่มผู้ใช้ถึงผู้ใช้คนนี้ก่อนหน้านี้แล้ว')
 
-        if UserOrganization.objects.filter(organization=self.organization, user__email=email).exists():
-            raise forms.ValidationError(u'ผู้ใช้คนนี้อยู่ใน%s %s แล้ว' % (self.organization.prefix, self.organization.name))
+            if UserOrganization.objects.filter(organization=self.organization, user__email=email).exists():
+                raise forms.ValidationError(u'ผู้ใช้คนนี้อยู่ใน%s %s แล้ว' % (self.organization.prefix, self.organization.name))
 
-        return email
+        return emails
 
 
 class EditOrganizationUserInviteForm(forms.Form):
