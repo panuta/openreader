@@ -262,6 +262,12 @@ $(document).ready(function () {
         $.post('/ajax/' + var_organization_slug + '/publication/edit/', {uid:uid, title:title, description:description, tags:tagnames}, function(response) {
             if(response.status == 'success') {
                 _addModalMessage('publication-modal', 'บันทึกข้อมูลเรียบร้อย', 'success')
+                $('#' + uid + ' .filename').text(title);
+                for(var i=0; i<response.tag_names.length; i++){
+                    if(!$('#' + uid + ' .tag li').filter(function(index){return $(this).text() == response.tag_names[i];}).length) {
+                        $('#' + uid + ' .tag ul').append('<li>' + response.tag_names[i] + '</li>');
+                    }
+                }
             } else {
                 if(response.error == 'invalid-publication') {
                     $('#message_modal').modal('show').find('.modal-body p').text('ข้อมูลไม่ถูกต้อง');

@@ -24,6 +24,8 @@ urlpatterns = patterns('',
 
     #url(r'^admin/', include(admin.site.urls)),
 
+    url(r'^private_files/', include('private_files.urls')),
+
     url(r'^$', 'accounts.views.view_user_home', name='view_user_home'),
 )
 

@@ -17,11 +17,8 @@ class EmailAuthenticationBackend(ModelBackend):
                 user = user[0]
 
                 if user.check_password(password):
-                    if user.is_superuser or user.is_staff:
-                        return user
+                    return user
 
-                    if user.get_profile().web_access:
-                        return user
         return None
 
 class InvitationAuthenticationBackend(object):
@@ -45,3 +42,4 @@ class InvitationAuthenticationBackend(object):
             return User.objects.get(pk=user_id)
         except User.DoesNotExist:
             return None
+
