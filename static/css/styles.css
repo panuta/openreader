@@ -491,12 +491,12 @@ table tr.checked td {
 }
 /* PAGES
 ==================================================================================================== */
-#publication-modal .message-panel {
+#publication-modal .panel-message {
   background-color: #EEE;
   padding: 15px 20px ;
   text-align: center;
 }
-#publication-modal .message-panel i.loading {
+#publication-modal .panel-message i.loading {
   background: url('../images/loading.gif') no-repeat;
   display: inline-block;
   height: 16px;

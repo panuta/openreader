@@ -287,13 +287,13 @@ def ajax_edit_publication(request, organization_slug):
     try:
         publication = Publication.objects.get(uid=publication_uid)
     except Publication.DoesNotExist:
-        return response_json_error('invalid-publication')
+        return response_json_error('publication-notfound')
 
     if not get_permission_backend(request).can_edit_publication(request.user, organization, {'publication':publication}):
         raise Http404
 
     if not title:
-        return response_json_error('missing-parameter')
+        return response_json_error('parameter-missing')
 
     publication.title = title
     publication.description = description
