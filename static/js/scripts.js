@@ -89,7 +89,8 @@ $(document).ready(function () {
 
                 $('#publication-modal .file_ext').text(response.file_ext);
                 $('#publication-modal .file_size').text(response.file_size_text);
-                $('#publication-modal .uploaded .uploaded_text').text(response.uploaded);
+                $('#publication-modal .uploaded .uploaded_date').text(response.uploaded);
+                $('#publication-modal .uploaded .uploaded_by').text(response.uploaded_by);
                 shelves_id = response.shelves;
 
                 $('#publication-modal .download_button').attr('href', response.download_url);
