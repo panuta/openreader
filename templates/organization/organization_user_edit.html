@@ -53,6 +53,13 @@ $(document).ready(function () {
                 <div class="controls">{{form.groups}}{{form.groups.errors}}</div>
             </div>
 
+            <div class="control-group">
+                <label class="control-label" for="id_is_admin">สิทธิ์การจัดการระบบ</label>
+                <div class="controls row-controls">{{form.admin_permissions}}{{form.admin_permissions.errors}}</div>
+            </div>
+
+            <input type="hidden" name="next" value="{{ next }}"/>
+
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> บันทึกข้อมูล</button>
                 <button type="reset" class="btn">ล้างข้อมูล</button>

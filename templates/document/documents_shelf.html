@@ -40,32 +40,32 @@ $(document).ready(function () {
     <div class="content"><div class="inner-content">
         <ul class="breadcrumb">
             <li>
-                <a href="{% url view_documents organization.slug %}">ชั้นหนังสือทั้งหมด</a> <span class="divider">/</span>
+                <a href="{% url view_documents organization.slug %}">กลุ่มเอกสารทั้งหมด</a> <span class="divider">/</span>
             </li>
-            <li class="active">ชั้นหนังสือ {{ shelf.name }}</li>
+            <li class="active">กลุ่มเอกสาร {{ shelf.name }}</li>
         </ul>
 
         <div class="btn-group shelf_selection pull-right">
-            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">เปลี่ยนชั้นหนังสือ <span class="caret"></span></a>
+            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">เปลี่ยนกลุ่มเอกสาร <span class="caret"></span></a>
             <ul class="dropdown-menu">
                 {% generate_shelf_selection user organization %}
                 {% can user 'can_manage_shelf' organization %}
                 <li class="divider"/>
-                <li><a href="{% url create_document_shelf organization.slug %}"><i class="icon-plus-sign"></i> สร้างชั้นหนังสือใหม่</a></li>
+                <li><a href="{% url create_document_shelf organization.slug %}"><i class="icon-plus-sign"></i> สร้างกลุ่มเอกสารใหม่</a></li>
                 {% endcan %}
             </ul>
         </div>
 
-        <h2><span>ชั้นหนังสือ</span> {{ shelf.name }}</h2>
+        <h2><span>กลุ่มเอกสาร</span> {{ shelf.name }}</h2>
 
         <div class="page_actions">
-            {% can user 'can_upload_shelf' organization shelf=shelf %}{% if uploadable_shelves %}<button class="btn btn-primary js-upload-publication" data-toggle="button"><i class="icon-upload icon-white"></i> อัพโหลดไฟล์</button>{% endif %}{% endcan %}
-            {% can user 'can_manage_shelf' organization %}<a href="{% url edit_document_shelf organization.slug shelf.id %}" class="btn"><i class="icon-pencil"></i> แก้ไขชั้นหนังสือ</a>{% endcan %}
+            {% if uploadable_shelves %}<button class="btn btn-primary js-upload-publication" data-toggle="button"><i class="icon-upload icon-white"></i> อัพโหลดไฟล์</button>{% endif %}
+            {% can user 'can_manage_shelf' organization %}<a href="{% url edit_document_shelf organization.slug shelf.id %}" class="btn"><i class="icon-pencil"></i> แก้ไขกลุ่มเอกสาร</a>{% endcan %}
         </div>
 
         <div class="upload_tool hide">
             <form>
-                <label for="id_upload_shelf">เลือกชั้นหนังสือ</label>
+                <label for="id_upload_shelf">เลือกกลุ่มเอกสาร</label>
                 <select id="id_upload_shelf" class="js-upload-tool-shelf-input"><option></option>{% for shelf in uploadable_shelves %}<option value="{{ shelf.id }}">{{ shelf.name }}</option>{% endfor %}</select>
                 <span class="js-upload-tool-file-input"><label for="id_upload_file">เลือกไฟล์</label><input type="file" id="id_upload_file" multiple="" /></span>
             </form>

@@ -147,17 +147,18 @@ def ajax_query_publication(request, publication_uid):
         raise Http404
 
     return response_json_success({
-        'uid': str(publication.uid),
-        'title': publication.title,
-        'description': publication.description,
-        'tag_names': ','.join([tag.tag_name for tag in publication.tags.all()]),
-        'uploaded': format_abbr_datetime(publication.uploaded),
-        'file_ext': publication.file_ext,
-        'file_size_text': humanize_file_size(publication.uploaded_file.file.size),
-        'shelves': ','.join([str(shelf.id) for shelf in publication.shelves.all()]),
+        'uid'            : str(publication.uid),
+        'title'          : publication.title,
+        'description'    : publication.description,
+        'tag_names'      : ','.join([tag.tag_name for tag in publication.tags.all()]),
+        'uploaded'       : format_abbr_datetime(publication.uploaded),
+        'uploaded_by'    : publication.uploaded_by.get_profile().get_fullname(),
+        'file_ext'       : publication.file_ext,
+        'file_size_text' : humanize_file_size(publication.uploaded_file.file.size),
+        'shelves'        : ','.join([str(shelf.id) for shelf in publication.shelves.all()]),
 
-        'thumbnail_url':publication.get_large_thumbnail(),
-        'download_url': reverse('download_publication', args=[publication.uid]),
+        'thumbnail_url'  :publication.get_large_thumbnail(),
+        'download_url'   : reverse('download_publication', args=[publication.uid]),
     })
 
 @transaction.commit_manually

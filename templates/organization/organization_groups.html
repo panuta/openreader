@@ -19,7 +19,7 @@
         <tr>
             <td class="row_actions"><a href="{% url edit_organization_group group.id %}" class="btn-small btn"><i class="icon edit"></i> แก้ไข</a></td>
             <td>{{ group.name }}</td>
-            <td>{{ group.get_user_count }} คน</td>
+            <td><a href="{% url view_organization_group_members group.id %}">{{ group.get_user_count }} คน</a></td>
             <td>{% if group.description %}{{ group.description }}{% else %}-{% endif %}</td>
         </tr>
     {% endfor %}

@@ -254,7 +254,10 @@ def edit_organization_user(request, organization_user_id):
             UserGroup.objects.filter(user_organization=user_organization, group__in=removing_groups).delete()
 
             messages.success(request, u'แก้ไขข้อมูลผู้ใช้เรียบร้อย')
-            return redirect('view_organization_users', organization_slug=organization.slug)
+
+            next = request.POST.get('next')
+            
+            return redirect(next) if next else redirect('view_organization_users', organization_slug=organization.slug)
 
     else:
         form = EditOrganizationUserForm(user_organization, initial={
@@ -264,7 +267,14 @@ def edit_organization_user(request, organization_user_id):
             'groups':user_organization.groups.all()}
         )
 
-    return render(request, 'organization/organization_user_edit.html', {'organization':organization, 'user_organization':user_organization, 'form':form})
+    return render(request, 
+        'organization/organization_user_edit.html', {
+            'form'              :form,
+            'organization'      :organization, 
+            'user_organization' :user_organization, 
+            'next'              :request.GET.get('next', ''),
+        }
+    )
 
 
 # Organization Groups
@@ -298,6 +308,20 @@ def add_organization_group(request, organization_slug):
 
     return render(request, 'organization/organization_group_modify.html', {'organization':organization, 'form':form})
 
+@login_required
+def view_organization_group_members(request, organization_group_id):
+    group = get_object_or_404(OrganizationGroup, pk=organization_group_id)
+    organization = group.organization
+
+    if not get_permission_backend(request).can_manage_user(request.user, organization):
+        raise Http404
+
+    group_members = UserGroup.objects.filter(group=group)
+    return render(request, 'organization/organization_group_members.html', {
+        'organization': organization, 
+        'group' :group,
+        'group_members': group_members
+    })
 
 @login_required
 def edit_organization_group(request, organization_group_id):
@@ -434,7 +458,7 @@ def create_document_shelf(request, organization_slug):
 
             _persist_shelf_permissions(request, organization, shelf)
 
-            messages.success(request, u'สร้างชั้นหนังสือเรียบร้อย')
+            messages.success(request, u'สร้างกลุ่มเอกสารเรียบร้อย')
             return redirect('view_documents_by_shelf', organization_slug=organization.slug, shelf_id=shelf.id)
 
         shelf_permissions = request.POST.getlist('permission')
@@ -464,7 +488,7 @@ def edit_document_shelf(request, organization_slug, shelf_id):
 
             _persist_shelf_permissions(request, organization, shelf)
 
-            messages.success(request, u'แก้ไขชั้นหนังสือเรียบร้อย')
+            messages.success(request, u'แก้ไขกลุ่มเอกสารเรียบร้อย')
             return redirect('view_documents_by_shelf', organization_slug=organization.slug, shelf_id=shelf.id)
 
         shelf_permissions = request.POST.getlist('permission')
@@ -493,10 +517,10 @@ def delete_document_shelf(request, organization_slug, shelf_id):
                 for publication in Publication.objects.filter(shelves__in=[shelf]):
                     domain_functions.delete_publication(publication)
 
-                messages.success(request, u'ลบชั้นหนังสือและไฟล์ในชั้นเรียบร้อย')
+                messages.success(request, u'ลบกลุ่มเอกสารและไฟล์ในกลุ่มเรียบร้อย')
 
             else:
-                messages.success(request, u'ลบชั้นหนังสือเรียบร้อย')
+                messages.success(request, u'ลบกลุ่มเอกสารเรียบร้อย')
 
             PublicationShelf.objects.filter(shelf=shelf).delete()
             OrganizationShelfPermission.objects.filter(shelf=shelf).delete()
