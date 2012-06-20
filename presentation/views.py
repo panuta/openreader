@@ -135,9 +135,8 @@ def invite_organization_user(request, organization_slug):
         if form.is_valid():
             email = form.cleaned_data['email']
             groups = form.cleaned_data['groups']
-            admin_permissions = form.cleaned_data['admin_permissions']
 
-            invitation = UserOrganizationInvitation.objects.create_invitation(email, organization, admin_permissions, groups, request.user)
+            invitation = UserOrganizationInvitation.objects.create_invitation(email, organization, groups, request.user)
             invitation.send_invitation_email()
 
             messages.success(request, u'ส่งคำขอเพิ่มผู้ใช้เรียบร้อย รอผู้ใช้ยืนยันคำขอ')
@@ -160,14 +159,13 @@ def edit_user_invitation(request, invitation_id):
     if request.method == 'POST':
         form = EditOrganizationUserInviteForm(organization, request.POST)
         if form.is_valid():
-            invitation.admin_permissions = form.cleaned_data['admin_permissions']
             invitation.groups = form.cleaned_data['groups']
 
             messages.success(request, u'แก้ไขข้อมูลคำขอเรียบร้อยแล้ว')
             return redirect('view_organization_invited_users', organization_slug=organization.slug)
 
     else:
-        form = EditOrganizationUserInviteForm(organization, initial={'admin_permissions':invitation.admin_permissions.all(), 'groups':invitation.groups.all()})
+        form = EditOrganizationUserInviteForm(organization, initial={'groups':invitation.groups.all()})
 
     return render(request, 'organization/organization_user_invite_edit.html', {'organization':organization, 'invitation':invitation, 'form':form})
 
@@ -209,6 +207,8 @@ def claim_user_invitation(request, invitation_key):
             password1 = form.cleaned_data['password1']
 
             user_profile = UserProfile.objects.create_user_profile(invitation.email, first_name, last_name, password1)
+            user_profile.user.is_staff = True
+            user_profile.user.save()
             UserOrganizationInvitation.objects.claim_invitation(invitation, user_profile.user, True)
 
             # Automatically log user in
@@ -237,13 +237,6 @@ def edit_organization_user(request, organization_user_id):
         if form.is_valid():
             user_organization.user.email = form.cleaned_data['email']
 
-
-            user_organization.admin_permissions.clear()
-            for admin_permission in form.cleaned_data['admin_permissions']: user_organization.admin_permissions.add(admin_permission)
-
-            user_organization.user.is_staff = len(form.cleaned_data['admin_permissions']) > 0
-            user_organization.user.save()
-
             new_groups = set()
             for group in form.cleaned_data['groups']:
                 new_groups.add(group)
@@ -261,18 +254,27 @@ def edit_organization_user(request, organization_user_id):
             UserGroup.objects.filter(user_organization=user_organization, group__in=removing_groups).delete()
 
             messages.success(request, u'แก้ไขข้อมูลผู้ใช้เรียบร้อย')
-            return redirect('view_organization_users', organization_slug=organization.slug)
+
+            next = request.POST.get('next')
+            
+            return redirect(next) if next else redirect('view_organization_users', organization_slug=organization.slug)
 
     else:
         form = EditOrganizationUserForm(user_organization, initial={
             'email':user_organization.user.email,
             'first_name':user_organization.user.get_profile().first_name,
             'last_name':user_organization.user.get_profile().last_name,
-            'admin_permissions':user_organization.admin_permissions.all(),
             'groups':user_organization.groups.all()}
         )
 
-    return render(request, 'organization/organization_user_edit.html', {'organization':organization, 'user_organization':user_organization, 'form':form})
+    return render(request, 
+        'organization/organization_user_edit.html', {
+            'form'              :form,
+            'organization'      :organization, 
+            'user_organization' :user_organization, 
+            'next'              :request.GET.get('next', ''),
+        }
+    )
 
 
 # Organization Groups
@@ -291,7 +293,12 @@ def add_organization_group(request, organization_slug):
             name = form.cleaned_data['name']
             description = form.cleaned_data['description']
 
-            OrganizationGroup.objects.create(organization=organization, name=name, description=description)
+            group = OrganizationGroup.objects.create(organization=organization, name=name, description=description)
+
+            for admin_permission in form.cleaned_data['admin_permissions']:
+                group.admin_permissions.add(admin_permission)
+
+            group.save()
 
             messages.success(request, u'เพิ่มกลุ่มผู้ใช้เรียบร้อย')
             return redirect('view_organization_groups', organization_slug=organization.slug)
@@ -301,6 +308,20 @@ def add_organization_group(request, organization_slug):
 
     return render(request, 'organization/organization_group_modify.html', {'organization':organization, 'form':form})
 
+@login_required
+def view_organization_group_members(request, organization_group_id):
+    group = get_object_or_404(OrganizationGroup, pk=organization_group_id)
+    organization = group.organization
+
+    if not get_permission_backend(request).can_manage_user(request.user, organization):
+        raise Http404
+
+    group_members = UserGroup.objects.filter(group=group)
+    return render(request, 'organization/organization_group_members.html', {
+        'organization': organization, 
+        'group' :group,
+        'group_members': group_members
+    })
 
 @login_required
 def edit_organization_group(request, organization_group_id):
@@ -315,13 +336,22 @@ def edit_organization_group(request, organization_group_id):
         if form.is_valid():
             group.name = form.cleaned_data['name']
             group.description = form.cleaned_data['description']
+
+            group.admin_permissions.clear()
+            for admin_permission in form.cleaned_data['admin_permissions']:
+                group.admin_permissions.add(admin_permission)
+
             group.save()
 
             messages.success(request, u'แก้ไขกลุ่มผู้ใช้เรียบร้อย')
             return redirect('view_organization_groups', organization_slug=organization.slug)
 
     else:
-        form = OrganizationGroupForm(initial={'name':group.name, 'description':group.description})
+        form = OrganizationGroupForm(initial={
+            'name':group.name, 
+            'description':group.description, 
+            'admin_permissions':group.admin_permissions.all(),
+        })
 
     return render(request, 'organization/organization_group_modify.html', {'organization':organization, 'group':group, 'form':form})
 
@@ -428,7 +458,7 @@ def create_document_shelf(request, organization_slug):
 
             _persist_shelf_permissions(request, organization, shelf)
 
-            messages.success(request, u'สร้างชั้นหนังสือเรียบร้อย')
+            messages.success(request, u'สร้างกลุ่มเอกสารเรียบร้อย')
             return redirect('view_documents_by_shelf', organization_slug=organization.slug, shelf_id=shelf.id)
 
         shelf_permissions = request.POST.getlist('permission')
@@ -458,7 +488,7 @@ def edit_document_shelf(request, organization_slug, shelf_id):
 
             _persist_shelf_permissions(request, organization, shelf)
 
-            messages.success(request, u'แก้ไขชั้นหนังสือเรียบร้อย')
+            messages.success(request, u'แก้ไขกลุ่มเอกสารเรียบร้อย')
             return redirect('view_documents_by_shelf', organization_slug=organization.slug, shelf_id=shelf.id)
 
         shelf_permissions = request.POST.getlist('permission')
@@ -487,10 +517,10 @@ def delete_document_shelf(request, organization_slug, shelf_id):
                 for publication in Publication.objects.filter(shelves__in=[shelf]):
                     domain_functions.delete_publication(publication)
 
-                messages.success(request, u'ลบชั้นหนังสือและไฟล์ในชั้นเรียบร้อย')
+                messages.success(request, u'ลบกลุ่มเอกสารและไฟล์ในกลุ่มเรียบร้อย')
 
             else:
-                messages.success(request, u'ลบชั้นหนังสือเรียบร้อย')
+                messages.success(request, u'ลบกลุ่มเอกสารเรียบร้อย')
 
             PublicationShelf.objects.filter(shelf=shelf).delete()
             OrganizationShelfPermission.objects.filter(shelf=shelf).delete()

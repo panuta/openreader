@@ -22,12 +22,12 @@ $(document).ready(function () {
         {% if shelves %}
             <div class="page_actions">
                 {% if uploadable_shelves %}<button class="btn btn-primary js-upload-publication" data-toggle="button"><i class="icon-upload icon-white"></i> อัพโหลดไฟล์</button>{% endif %}
-                {% can user 'can_manage_shelf' organization %}<a href="{% url create_document_shelf organization.slug %}" class="btn"><i class="icon-plus-sign"></i> เพิ่มชั้นหนังสือ</a>{% endcan %}
+                {% can user 'can_manage_shelf' organization %}<a href="{% url create_document_shelf organization.slug %}" class="btn"><i class="icon-plus-sign"></i> เพิ่มกลุ่มเอกสาร</a>{% endcan %}
             </div>
 
             <div class="upload_tool hide">
                 <form>
-                    <label for="id_upload_shelf">เลือกชั้นหนังสือ</label>
+                    <label for="id_upload_shelf">เลือกกลุ่มเอกสาร</label>
                     <select id="id_upload_shelf" class="js-upload-tool-shelf-input"><option></option>{% for shelf in uploadable_shelves %}<option value="{{ shelf.id }}">{{ shelf.name }}</option>{% endfor %}</select>
                     <span class="js-upload-tool-file-input"><label for="id_upload_file">เลือกไฟล์</label><input type="file" id="id_upload_file" multiple="" /></span>
                 </form>
@@ -35,7 +35,7 @@ $(document).ready(function () {
 
             <ul class="js-uploading"></ul>
 
-            <h3><em>ชั้นหนังสือ</em> ({{ shelves|length }} ชั้นหนังสือ)</h3>
+            <h3><em>กลุ่มเอกสาร</em> ({{ shelves|length }} กลุ่มเอกสาร)</h3>
             <ul>
                 {% for shelf in shelves %}
                 <li class="shelf {{ shelf.icon|default:settings.DEFAULT_SHELF_ICON }}" id="shelf-{{ shelf.id }}">
@@ -48,13 +48,13 @@ $(document).ready(function () {
         {% else %}
             {% if organization.shelf_count %}
                 <div class="no_shelf">
-                    <div class="notice">ยังไม่มีชั้นหนังสือที่คุณสามารถเข้าถึงได้ในระบบ{% can user 'can_manage_shelf' organization %} คุณสามารถสร้างชั้นหนังสือใหม่ได้จากหน้า 'สร้างชั้นหนังสือ'{% endcan %}</div>
-                    {% can user 'can_manage_shelf' organization %}<a href="{% url create_document_shelf organization.slug %}" class="btn"><i class="icon-plus-sign"></i> สร้างชั้นหนังสือ</a>{% endcan %}
+                    <div class="notice">ยังไม่มีกลุ่มเอกสารที่คุณสามารถเข้าถึงได้ในระบบ{% can user 'can_manage_shelf' organization %} คุณสามารถสร้างกลุ่มเอกสารใหม่ได้จากหน้า 'สร้างกลุ่มเอกสาร'{% endcan %}</div>
+                    {% can user 'can_manage_shelf' organization %}<a href="{% url create_document_shelf organization.slug %}" class="btn"><i class="icon-plus-sign"></i> สร้างกลุ่มเอกสาร</a>{% endcan %}
                 </div>
             {% else %}
                 <div class="no_shelf">
-                    <div class="notice">ยังไม่มีชั้นหนังสือในระบบ{% can user 'can_manage_shelf' organization %} คุณสามารถสร้างชั้นหนังสือใหม่ได้จากหน้า 'สร้างชั้นหนังสือ'{% endcan %}</div>
-                    {% can user 'can_manage_shelf' organization %}<a href="{% url create_document_shelf organization.slug %}" class="btn"><i class="icon-plus-sign"></i> สร้างชั้นหนังสือ</a>{% endcan %}
+                    <div class="notice">ยังไม่มีกลุ่มเอกสารในระบบ{% can user 'can_manage_shelf' organization %} คุณสามารถสร้างกลุ่มเอกสารใหม่ได้จากหน้า 'สร้างกลุ่มเอกสาร'{% endcan %}</div>
+                    {% can user 'can_manage_shelf' organization %}<a href="{% url create_document_shelf organization.slug %}" class="btn"><i class="icon-plus-sign"></i> สร้างกลุ่มเอกสาร</a>{% endcan %}
                 </div>
             {% endif %}
         {% endif %}

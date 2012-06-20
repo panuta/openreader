@@ -43,7 +43,6 @@ class UserProfileForm(forms.Form):
 
 class InviteOrganizationUserForm(forms.Form):
     email = forms.EmailField(widget=forms.TextInput(attrs={'class':'input-normal'}))
-    admin_permissions = forms.ModelMultipleChoiceField(required=False, queryset=OrganizationAdminPermission.objects.all(), widget=forms.CheckboxSelectMultiple())
     groups = OrganizationGroupMultipleChoiceField(required=False)
 
     def __init__(self, organization, *args, **kwargs):
@@ -65,7 +64,6 @@ class InviteOrganizationUserForm(forms.Form):
 
 
 class EditOrganizationUserInviteForm(forms.Form):
-    admin_permissions = forms.ModelMultipleChoiceField(required=False, queryset=OrganizationAdminPermission.objects.all(), widget=forms.CheckboxSelectMultiple())
     groups = OrganizationGroupMultipleChoiceField(required=False)
 
     def __init__(self, organization, *args, **kwargs):
@@ -94,7 +92,6 @@ class EditOrganizationUserForm(forms.Form):
     first_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'input-normal'}))
     last_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'input-normal'}))
     groups = OrganizationGroupMultipleChoiceField(required=False)
-    admin_permissions = forms.ModelMultipleChoiceField(required=False, queryset=OrganizationAdminPermission.objects.all(), widget=forms.CheckboxSelectMultiple())
 
     def __init__(self, user_organization, *args, **kwargs):
         forms.Form.__init__(self, *args, **kwargs)
@@ -114,6 +111,7 @@ class EditOrganizationUserForm(forms.Form):
 class OrganizationGroupForm(forms.Form):
     name = StrippedCharField(max_length=100, widget=forms.TextInput(attrs={'class':'input-normal'}))
     description = StrippedCharField(required=False, max_length=500, widget=forms.Textarea(attrs={'class':'input-large', 'rows':'3'}))
+    admin_permissions = forms.ModelMultipleChoiceField(required=False, queryset=OrganizationAdminPermission.objects.all(), widget=forms.CheckboxSelectMultiple())
 
 
 # DOCUMENT #############################################################################################################

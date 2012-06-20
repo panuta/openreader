@@ -55,6 +55,7 @@ def ajax_cancel_user_invitation(request, invitation_id):
 
         invitation.delete()
 
+        messages.success(request, u'เพิกถอนคำขอผู้ใช้เรียบร้อย')
         return response_json_success({'redirect_url':reverse('view_organization_invited_users', args=[organization.slug])})
     else:
         raise Http404
@@ -147,17 +148,18 @@ def ajax_query_publication(request, publication_uid):
         raise Http404
 
     return response_json_success({
-        'uid': str(publication.uid),
-        'title': publication.title,
-        'description': publication.description,
-        'tag_names': ','.join([tag.tag_name for tag in publication.tags.all()]),
-        'uploaded': format_abbr_datetime(publication.uploaded),
-        'file_ext': publication.file_ext,
-        'file_size_text': humanize_file_size(publication.uploaded_file.file.size),
-        'shelves': ','.join([str(shelf.id) for shelf in publication.shelves.all()]),
+        'uid'            : str(publication.uid),
+        'title'          : publication.title,
+        'description'    : publication.description,
+        'tag_names'      : ','.join([tag.tag_name for tag in publication.tags.all()]),
+        'uploaded'       : format_abbr_datetime(publication.uploaded),
+        'uploaded_by'    : publication.uploaded_by.get_profile().get_fullname(),
+        'file_ext'       : publication.file_ext,
+        'file_size_text' : humanize_file_size(publication.uploaded_file.file.size),
+        'shelves'        : ','.join([str(shelf.id) for shelf in publication.shelves.all()]),
 
-        'thumbnail_url':publication.get_large_thumbnail(),
-        'download_url': reverse('download_publication', args=[publication.uid]),
+        'thumbnail_url'  :publication.get_large_thumbnail(),
+        'download_url'   : reverse('download_publication', args=[publication.uid]),
     })
 
 @transaction.commit_manually
@@ -299,6 +301,7 @@ def ajax_edit_publication(request, organization_slug):
 
     PublicationTag.objects.filter(publication=publication).delete()
 
+    saved_tag_names = []
     tag_names = tag_names.split(',')
     for tag_name in tag_names:
         if tag_name and len(tag_name.strip())>0:
@@ -309,8 +312,9 @@ def ajax_edit_publication(request, organization_slug):
                 tag = OrganizationTag.objects.create(organization=organization, tag_name=tag_name)
 
             PublicationTag.objects.get_or_create(publication=publication, tag=tag)
+            saved_tag_names.append(tag_name)
 
-    return response_json_success()
+    return response_json_success({'tag_names':saved_tag_names})
 
 
 @require_POST

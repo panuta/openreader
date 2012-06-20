@@ -27,6 +27,7 @@ urlpatterns = patterns('presentation.views',
     # Group
     url(r'^org/(?P<organization_slug>\w+)/manage/group/add/$', 'add_organization_group', name='add_organization_group'),
     url(r'^group/(?P<organization_group_id>\d+)/edit/$', 'edit_organization_group', name='edit_organization_group'),
+    url(r'^group/(?P<organization_group_id>\d+)/members/$', 'view_organization_group_members', name='view_organization_group_members'),
 
     # DOCUMENT #########################################################################################################
 

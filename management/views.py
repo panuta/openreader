@@ -44,15 +44,14 @@ def create_organization(request):
             organization = Organization.objects.create(name=organization_name, slug=organization_slug, prefix=organization_prefix, created_by=request.user)
 
             # Send invitation
-            organization_admin_role = [OrganizationAdminPermission.objects.all()[0]]
             
             try:
                 user = User.objects.get(email=admin_email)
             except User.DoesNotExist:
-                invitation = UserOrganizationInvitation.objects.create_invitation(admin_email, organization, organization_admin_role, [], request.user)
+                invitation = UserOrganizationInvitation.objects.create_invitation(admin_email, organization, [], request.user)
             else:
-                invitation = UserOrganizationInvitation.objects.create_invitation(user.email, organization, organization_admin_role, [], request.user)                
-                # invitation = UserOrganizationInvitation.objects.create_invitation(email, organization, admin_permissions, groups, request.user)
+                invitation = UserOrganizationInvitation.objects.create_invitation(user.email, organization, [], request.user)                
+                
             if invitation:
                 invitation.send_invitation_email()
                 messages.success(request, u'เพิ่มสำนักพิมพ์ และส่งอีเมลถึงผู้ใช้เรียบร้อย')

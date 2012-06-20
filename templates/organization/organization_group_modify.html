@@ -44,6 +44,11 @@ $(document).ready(function () {
                 <div class="controls">{{form.description}}{{form.description.errors}}</div>
             </div>
 
+            <div class="control-group">
+                <label class="control-label" for="id_is_admin">สิทธิ์การจัดการระบบ</label>
+                <div class="controls row-controls">{{form.admin_permissions}}{{form.admin_permissions.errors}}</div>
+            </div>
+
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> {% if not group %}เพิ่มกลุ่มผู้ใช้{% else %}แก้ไขกลุ่มผู้ใช้{% endif %}</button>
                 <button type="reset" class="btn">ล้างข้อมูล</button>

@@ -1,5 +1,5 @@
 /*
- * jQuery File Upload Plugin Test 6.3
+ * jQuery File Upload Plugin Test 6.9
  * https://github.com/blueimp/jQuery-File-Upload
  *
  * Copyright 2010, Sebastian Tschan
@@ -61,6 +61,15 @@ $(function () {
         ok($('#fileupload').fileupload().data('fileupload'));
     });
 
+    test('Data attribute options', function () {
+        $('#fileupload').attr('data-url', 'http://example.org');
+        $('#fileupload').fileupload();
+        strictEqual(
+            $('#fileupload').fileupload('option', 'url'),
+            'http://example.org'
+        );
+    });
+
     test('File input initialization', function () {
         var fu = $('#fileupload').fileupload();
         ok(
@@ -85,16 +94,18 @@ $(function () {
                 .data('events').change.length,
             'Listens to file input change events'
         );
-        ok(
-            fu.fileupload('option', 'dropZone')
-                .data('events').drop.length,
-            'Listens to drop zone drop events'
-        );
-        ok(
-            fu.fileupload('option', 'dropZone')
-                .data('events').dragover.length,
-            'Listens to drop zone dragover events'
-        );
+        if ($.support.xhrFormDataFileUpload) {
+            ok(
+                fu.fileupload('option', 'dropZone')
+                    .data('events').drop.length,
+                'Listens to drop zone drop events'
+            );
+            ok(
+                fu.fileupload('option', 'dropZone')
+                    .data('events').dragover.length,
+                'Listens to drop zone dragover events'
+            );
+        }
     });
 
     module('API', lifecycle);
@@ -112,16 +123,18 @@ $(function () {
             1,
             'Removes own file input change event listener'
         );
-        strictEqual(
-            dropZone.data('events').drop.length,
-            1,
-            'Removes own drop zone drop event listener'
-        );
-        strictEqual(
-            dropZone.data('events').dragover.length,
-            1,
-            'Removes own drop zone dragover event listener'
-        );
+        if ($.support.xhrFormDataFileUpload) {
+            strictEqual(
+                dropZone.data('events').drop.length,
+                1,
+                'Removes own drop zone drop event listener'
+            );
+            strictEqual(
+                dropZone.data('events').dragover.length,
+                1,
+                'Removes own drop zone dragover event listener'
+            );
+        }
     });
 
     test('disable', function () {
@@ -133,22 +146,23 @@ $(function () {
         dropZone.bind('drop', $.noop);
         dropZone.bind('dragover', $.noop);
         fu.fileupload('disable');
-        expect(3);
         strictEqual(
             fileInput.data('events').change.length,
             1,
             'Removes own file input change event listener'
         );
-        strictEqual(
-            dropZone.data('events').drop.length,
-            1,
-            'Removes own drop zone drop event listener'
-        );
-        strictEqual(
-            dropZone.data('events').dragover.length,
-            1,
-            'Removes own drop zone dragover event listener'
-        );
+        if ($.support.xhrFormDataFileUpload) {
+            strictEqual(
+                dropZone.data('events').drop.length,
+                1,
+                'Removes own drop zone drop event listener'
+            );
+            strictEqual(
+                dropZone.data('events').dragover.length,
+                1,
+                'Removes own drop zone dragover event listener'
+            );
+        }
         fu.fileupload({
             add: function (e, data) {
                 ok(false);
@@ -161,22 +175,23 @@ $(function () {
             param = {files: [{name: 'test'}]};
         fu.fileupload('disable');
         fu.fileupload('enable');
-        expect(4);
         ok(
             fu.fileupload('option', 'fileInput')
                 .data('events').change.length,
             'Listens to file input change events'
         );
-        ok(
-            fu.fileupload('option', 'dropZone')
-                .data('events').drop.length,
-            'Listens to drop zone drop events'
-        );
-        ok(
-            fu.fileupload('option', 'dropZone')
-                .data('events').dragover.length,
-            'Listens to drop zone dragover events'
-        );
+        if ($.support.xhrFormDataFileUpload) {
+            ok(
+                fu.fileupload('option', 'dropZone')
+                    .data('events').drop.length,
+                'Listens to drop zone drop events'
+            );
+            ok(
+                fu.fileupload('option', 'dropZone')
+                    .data('events').dragover.length,
+                'Listens to drop zone dragover events'
+            );
+        }
         $('#fileupload').fileupload({
             send: function (e, data) {
                 strictEqual(
@@ -199,23 +214,51 @@ $(function () {
             !fileInput.data('events'),
             'Removes event listener after changing fileInput option'
         );
-        ok(
-            !dropZone.data('events'),
-            'Removes event listeners after changing dropZone option'
-        );
+        if ($.support.xhrFormDataFileUpload) {
+            ok(
+                !dropZone.data('events'),
+                'Removes event listeners after changing dropZone option'
+            );
+        }
         fu.fileupload('option', 'fileInput', fileInput);
         fu.fileupload('option', 'dropZone', dropZone);
         ok(
             fileInput.data('events').change.length,
             'Adds change event listener after setting fileInput option'
         );
-        ok(
-            dropZone.data('events').drop.length,
-            'Adds drop event listener after setting dropZone option'
+        if ($.support.xhrFormDataFileUpload) {
+            ok(
+                dropZone.data('events').drop.length,
+                'Adds drop event listener after setting dropZone option'
+            );
+            ok(
+                dropZone.data('events').dragover.length,
+                'Adds dragover event listener after setting dropZone option'
+            );
+        }
+        fu.fileupload('option', 'dropZone', 'body');
+        strictEqual(
+            fu.fileupload('option', 'dropZone')[0],
+            document.body,
+            'Allow a query string as parameter for the dropZone option'
         );
-        ok(
-            dropZone.data('events').dragover.length,
-            'Adds dragover event listener after setting dropZone option'
+        fu.fileupload('option', 'dropZone', document);
+        strictEqual(
+            fu.fileupload('option', 'dropZone')[0],
+            document,
+            'Allow a document element as parameter for the dropZone option'
+        );
+        fu.fileupload('option', 'fileInput', ':file');
+        strictEqual(
+            fu.fileupload('option', 'fileInput')[0],
+            $(':file')[0],
+            'Allow a query string as parameter for the fileInput option'
+        );
+        fu.fileupload('option', 'fileInput', $(':file')[0]);
+        strictEqual(
+            fu.fileupload('option', 'fileInput')[0],
+            $(':file')[0],
+            'Allow a document element as parameter for the fileInput option'
         );
     });
 
@@ -509,7 +552,7 @@ $(function () {
             paramName: null,
             send: function (e, data) {
                 strictEqual(
-                    data.paramName,
+                    data.paramName[0],
                     data.fileInput.prop('name'),
                     'Takes paramName from file input field if not set'
                 );
@@ -752,44 +795,43 @@ $(function () {
         fu.fileupload('add', param);
     });
 
-    asyncTest('multipart', function () {
-        expect(4);
-        var param = {files: [{
-                name: 'test.png',
-                size: 123,
-                type: 'image/png'
-            }]},
-            fu = $('#fileupload').fileupload({
-                multipart: false,
-                always: function (e, data) {
-                    strictEqual(
-                        data.contentType,
-                        param.files[0].type,
-                        'non-multipart upload sets file type as contentType'
-                    );
-                    strictEqual(
-                        data.headers['X-File-Name'],
-                        param.files[0].name,
-                        'non-multipart upload sets X-File-Name header'
-                    );
-                    strictEqual(
-                        data.headers['X-File-Type'],
-                        param.files[0].type,
-                        'non-multipart upload sets X-File-Type header'
-                    );
-                    strictEqual(
-                        data.headers['X-File-Size'],
-                        param.files[0].size,
-                        'non-multipart upload sets X-File-Size header'
-                    );
-                    start();
-                }
-            });
-        fu.data('fileupload')._isXHRUpload = function () {
-            return true;
-        };
-        fu.fileupload('send', param);
-    });
+    if ($.support.xhrFileUpload) {
+        asyncTest('multipart', function () {
+            expect(4);
+            var param = {files: [{
+                    name: 'test.png',
+                    size: 123,
+                    type: 'image/png'
+                }]},
+                fu = $('#fileupload').fileupload({
+                    multipart: false,
+                    always: function (e, data) {
+                        strictEqual(
+                            data.contentType,
+                            param.files[0].type,
+                            'non-multipart upload sets file type as contentType'
+                        );
+                        strictEqual(
+                            data.headers['X-File-Name'],
+                            param.files[0].name,
+                            'non-multipart upload sets X-File-Name header'
+                        );
+                        strictEqual(
+                            data.headers['X-File-Type'],
+                            param.files[0].type,
+                            'non-multipart upload sets X-File-Type header'
+                        );
+                        strictEqual(
+                            data.headers['X-File-Size'],
+                            param.files[0].size,
+                            'non-multipart upload sets X-File-Size header'
+                        );
+                        start();
+                    }
+                });
+            fu.fileupload('send', param);
+        });
+    }
 
     module('UI Initialization', lifecycleUI);
 
@@ -1057,6 +1099,8 @@ $(function () {
                         addIndex
                     );
                 },
+                progress: $.noop,
+                progressall: $.noop,
                 done: $.noop,
                 stop: $.noop
             })

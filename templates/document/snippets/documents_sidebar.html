@@ -4,9 +4,9 @@
     <li class="shelf-all{% if shelf_type == 'all' %} active{% endif %}"><a href="{% url view_documents organization.slug %}">ไฟล์ทั้งหมด <span>({% print_all_publication_count user organization %} ไฟล์)</span></a></li>
   </ul>
 
-  <div class="head">ชั้นหนังสือ</div>
+  <div class="head">กลุ่มเอกสาร</div>
   <ul>
     {% generate_shelf_list user organization shelf %}
-    {% can user 'can_manage_shelf' organization %}<li class="add{% if shelf_type == 'create' %} active{% endif %}"><a href="{% url create_document_shelf organization.slug %}">สร้างชั้นหนังสือใหม่</a></li>{% endcan %}
+    {% can user 'can_manage_shelf' organization %}<li class="add{% if shelf_type == 'create' %} active{% endif %}"><a href="{% url create_document_shelf organization.slug %}">สร้างกลุ่มเอกสารใหม่</a></li>{% endcan %}
   </ul>
 </div>

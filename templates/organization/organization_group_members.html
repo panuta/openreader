@@ -1,0 +1,60 @@
+{% extends 'base_authenticated.html' %}
+{% load presentation_tags %}
+
+{% block head_title %}สมาชิกในกลุ่ม{% endblock %}
+{% block topnav %}{% if user.is_superuser %}{% include 'manage/snippets/manage_topnav.html' with active_menu='management' %}{% else %}{% include 'snippets/organization_topnav.html' with active_menu='user' %}{% endif %}{% endblock %}
+
+{% load helper_tags pagination_tags presentation_tags %}
+
+{% block body_authenticated %}
+{% include 'manage/snippets/manage_organization_topnav.html' %}
+
+<div class="container-fluid organization_users_page"><div class="row-fluid">
+    <div class="content"><div class="inner-content">
+        <ul class="breadcrumb">
+            <li><a href="{% url view_organization_groups organization.slug %}">รายชื่อและกลุ่มผู้ใช้</a> <span class="divider">/</span></li>
+            <li class="active">สมาชิกในกลุ่ม</li>
+
+        </ul>
+
+        <h2>กลุ่ม {{ group.name }}</h2>
+
+        <div class="tab-content">
+
+            {% autopaginate group_members 50 %}
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th class="edit_column"></th>
+                    <th>ชื่อ</th>
+                    <th>อีเมล</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for member in group_members %}
+                    <tr>
+                        <td class="row_actions"><a href="{% url edit_organization_user member.user_organization.id %}?next={% url view_organization_group_members group.id %}" class="btn btn-small">แก้ไข</a></td>
+                        <td>{{ member.user_organization.user.get_profile.get_fullname }}</td>
+                        <td>{{ member.user_organization.user.email }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% paginate %}
+
+        </div>
+
+    </div></div>
+</div></div>
+
+<div class="modal hide fade" id="remove-group-modal">
+  <div class="modal-header">
+    <a class="close" data-dismiss="modal">×</a>
+    <h3>ลบกลุ่มผู้ใช้</h3>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal">ยกเลิก</button>
+    <button type="submit" class="btn btn-danger">ยืนยันลบกลุ่มผู้ใช้</button>
+  </div>
+</div>
+{% endblock %}
