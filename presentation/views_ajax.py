@@ -299,6 +299,7 @@ def ajax_edit_publication(request, organization_slug):
 
     PublicationTag.objects.filter(publication=publication).delete()
 
+    saved_tag_names = []
     tag_names = tag_names.split(',')
     for tag_name in tag_names:
         if tag_name and len(tag_name.strip())>0:
@@ -309,8 +310,9 @@ def ajax_edit_publication(request, organization_slug):
                 tag = OrganizationTag.objects.create(organization=organization, tag_name=tag_name)
 
             PublicationTag.objects.get_or_create(publication=publication, tag=tag)
+            saved_tag_names.append(tag_name)
 
-    return response_json_success()
+    return response_json_success({'tag_names':saved_tag_names})
 
 
 @require_POST
