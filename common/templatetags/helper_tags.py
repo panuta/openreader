@@ -56,19 +56,27 @@ class CanNode(template.Node):
     
     def render(self, context):
         user = self.user.resolve(context)
-        action = self.action
+        permissions = self.action.split(',')
         organization = self.organization.resolve(context)
+        permission_backend = get_permission_backend(context['request'])
 
         parameters = {}
         for key in self.parameters.keys():
             parameters[key] = self.parameters[key].resolve(context)
 
-        if getattr(get_permission_backend(context['request']), action)(user, organization, parameters):
-            output = self.nodelist_true.render(context)
-            return output
+        if self._has_any_permission(permission_backend, permissions, user, organization, parameters):
+            return self.nodelist_true.render(context)
         else:
-            output = self.nodelist_false.render(context)
-            return output
+            return self.nodelist_false.render(context)
+
+    def _has_any_permission(self, backend, permissions, user, organization, parameters):
+        for permission in permissions:
+            if hasattr(backend, permission):
+                if getattr(backend, permission)(user, organization, parameters):
+                    return True
+                else:
+                    continue
+        return False
 
 @register.tag(name="can")
 def do_can(parser, token):

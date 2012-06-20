@@ -21,17 +21,19 @@
 <div class="container-fluid organization_users_page"><div class="row-fluid">
     <div class="content"><div class="inner-content">
         <h2>รายชื่อและกลุ่มผู้ใช้</h2>
-
+        
         <ul class="nav nav-tabs">
+            {% can user 'can_manage_user' organization %}
             <li class="active"><a href="#users" data-toggle="tab">รายชื่อผู้ใช้ ({% print_user_count organization %})</a></li>
+            {% endcan %}
+            {% can user 'can_manage_group' organization %}
             <li><a href="#groups" data-toggle="tab">กลุ่มผู้ใช้ ({% print_user_group_count organization %})</a></li>
+            {% endcan %}
         </ul>
-
         <div class="tab-content">
             <div class="tab-pane active" id="users">{% include 'organization/organization_users.html' %}</div>
             <div class="tab-pane" id="groups">{% include 'organization/organization_groups.html' %}</div>
         </div>
-
     </div></div>
 </div></div>
 {% endblock %}

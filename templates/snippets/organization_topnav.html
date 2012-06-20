@@ -1,7 +1,12 @@
 {% load helper_tags %}
 <h1><a href="/">{% if organization.prefix %}{{ organization.prefix }}{% endif %} {{organization.name}}</a></h1>
 <ul class="nav">
-  <li{% if active_menu == "document" %} class="active"{% endif %}><a href="{% url view_documents organization.slug %}" class="nav_top_link"><i class="icon-file icon-white"></i> ไฟล์เอกสาร</a></li>
-  <li{% if active_menu == "user" %} class="active"{% endif %}><a href="{% url view_organization_users organization.slug %}" class="nav_top_link"><i class="icon-user icon-white"></i> รายชื่อและกลุ่มผู้ใช้</a></li>
-  <li{% if active_menu == "organization" %} class="active"{% endif %}><a href="{% url view_organization_profile organization.slug %}" class="nav_top_link"><i class="icon-cog icon-white"></i> ข้อมูลบริษัท</a></li>
+  <li{% if active_menu == "document" %} class="active"{% endif %}>
+    <a href="{% url view_documents organization.slug %}" class="nav_top_link"><i class="icon-file icon-white"></i> ไฟล์เอกสาร</a></li>
+  {% can user 'can_manage_user,can_manage_group' organization %}
+  <li{% if active_menu == "user" %} class="active"{% endif %}>
+    <a href="{% url view_organization_users organization.slug %}" class="nav_top_link"><i class="icon-user icon-white"></i> รายชื่อและกลุ่มผู้ใช้</a></li>
+  {% endcan %}
+  <li{% if active_menu == "organization" %} class="active"{% endif %}>
+    <a href="{% url view_organization_profile organization.slug %}" class="nav_top_link"><i class="icon-cog icon-white"></i> ข้อมูลบริษัท</a></li>
 </ul>
