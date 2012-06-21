@@ -133,22 +133,36 @@ class OrganizationInvitationManager(models.Manager):
 
     def create_invitation(self, organization_prefix, organization_name, organization_slug, admin_email, created_by):
         key_salt = 'domain.models.OrganizationInvitationManager'
-        admin_email = admin_email.encode('utf-8')
-        invitation_key = salted_hmac(key_salt, admin_email).hexdigest()
+        encode_key = (admin_email+organization_slug).encode('utf-8')
+        invitation_key = salted_hmac(key_salt, encode_key).hexdigest()
 
         return self.create(
-            admin_email=admin_email,
             organization_prefix=organization_prefix,
             organization_name=organization_name,
             organization_slug=organization_slug,
             invitation_key=invitation_key,
-            created_by=created_by
+            admin_email=admin_email,
+            created_by=created_by,
         )
 
     def claim_invitation(self, invitation, user, is_default=False):
 
         # TODO Create Organization
+        organization = Organization.objects.create(
+            name=invitation.organization_name, 
+            slug=invitation.organization_slug, 
+            prefix=invitation.organization_prefix, 
+            created_by=invitation.created_by
+        )
+        
         # TODO Create UserOrganization
+        try:
+            user_organization = UserOrganization.objects.get(user=user, organization=organization)
+        except UserOrganization.DoesNotExist:
+            user_organization = UserOrganization.objects.create(user=user, organization=organization, is_default=is_default)
+        
+        user_organization.is_admin = True
+        user_organization.save()
 
         invitation.delete()
         return user_organization
@@ -180,8 +194,8 @@ class UserInvitationManager(models.Manager):
 
     def create_invitation(self, email, organization, groups, created_by):
         key_salt = 'domain.models.UserInvitationManager'
-        email = email.encode('utf-8')
-        invitation_key = salted_hmac(key_salt, email).hexdigest()
+        encode_key = (email+organization.slug).encode('utf-8')
+        invitation_key = salted_hmac(key_salt, encode_key).hexdigest()
 
         invitation = self.create(email=email, organization=organization, invitation_key=invitation_key, created_by=created_by)
         invitation.groups = groups

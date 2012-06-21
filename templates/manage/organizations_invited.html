@@ -1,0 +1,46 @@
+{% extends 'manage/manage_base.html' %}
+{% load helper_tags pagination_tags %}
+
+{% block manage_head_title %}สำนักพิมพ์{% endblock %}
+{% block topnav %}{% include 'manage/snippets/manage_topnav.html' with active_menu='management' %}{% endblock %}
+
+{% block body_authenticated %}
+<div class="container-fluid organization_users_page"><div class="row-fluid">
+    <div class="content"><div class="inner-content">
+        <ul class="breadcrumb">
+            <li><a href="{% url manage_organizations %}">รายชื่อบริษัท</a> <span class="divider">/</span></li>
+            <li class="active">คำขอเพิ่มบริษัท</li>
+        </ul>
+
+        <h2>คำขอเพิ่มบริษัท</h2>
+
+        {% if organizations_invited|length > 0 %}
+            {% autopaginate organizations_invited 50 %}
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>บริษัท</th>
+                    <th>อีเมลผู้ดูแลระบบ</th>
+                    <th>ส่งเมื่อวันที่</th>
+                    <th class="edit_column"></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for invitation in organizations_invited %}
+                    <tr>
+                        <td>{{invitation.organization_name}}</td>
+                        <td>{{invitation.admin_email}}</td>
+                        <td>{{invitation.created|format_abbr_datetime}}</td>
+                        <td class="row_actions"><a href="{% url edit_organization_invitation invitation.id %}" class="btn btn-small">แก้ไข</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% paginate %}
+        {% else %}
+            <div class="no_information">ไม่มีคำขอเพิ่มบริษัท</div>
+        {% endif %}
+
+    </div></div>
+</div></div>
+{% endblock %}

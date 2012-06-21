@@ -13,6 +13,7 @@ urlpatterns = patterns('',
 
     url('api/', include('api.urls')),
     url('management/', include('management.urls')),
+    url('management/', include('management.urls_ajax')),
 
     url(r'^accounts/logout/$', 'django.contrib.auth.views.logout', {'next_page':'/accounts/login/'},name='auth_logout'),
     url(r'^accounts/password_reset/$', 'django.contrib.auth.views.password_reset', name='auth_password_reset'),

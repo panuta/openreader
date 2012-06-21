@@ -10,6 +10,10 @@
     <h2>บริษัท</h2>
     <div class="page_actions"><a href="{% url manage.create_organization %}" class="btn">เพิ่มบริษัท</a></div>
 
+    {% if organizations_invited_count > 0 %}
+      <div class="user_invitations"><a href="{% url view_organizations_invited %}">มีบริษัท {{ organizations_invited_count }} บริษัทยังไม่ตอบรับคำขอเพิ่มบริษัท</a></div>
+    {% endif %}
+
     <table class="zebra-striped">
       <col />
       <col width="400"/>
