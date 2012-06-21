@@ -24,7 +24,7 @@
         
         <ul class="nav nav-tabs">
             {% can user 'can_manage_user' organization %}
-            <li class="active"><a href="#users" data-toggle="tab">รายชื่อผู้ใช้ ({% print_user_count organization %})</a></li>
+            <li class="active"><a href="#users" data-toggle="tab">รายชื่อผู้ใช้ ({% print_all_user_count organization %})</a></li>
             {% endcan %}
             {% can user 'can_manage_group' organization %}
             <li><a href="#groups" data-toggle="tab">กลุ่มผู้ใช้ ({% print_user_group_count organization %})</a></li>

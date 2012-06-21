@@ -10,6 +10,8 @@ urlpatterns = patterns('presentation.views_ajax',
     url(r'^user/(?P<organization_user_id>\d+)/remove/$', 'ajax_remove_organization_user', name='ajax_remove_organization_user'),
     url(r'^group/(?P<organization_group_id>\d+)/remove/$', 'ajax_remove_organization_group', name='ajax_remove_organization_group'),
 
+    url(r'^user/(?P<organization_user_id>\d+)/bringback/$', 'ajax_bringback_organization_user', name='ajax_bringback_organization_user'),
+
     url(r'^ajax/(?P<organization_slug>\w+)/query/users/$', 'ajax_query_users', name='ajax_query_users'),
     url(r'^ajax/(?P<organization_slug>\w+)/query/groups/$', 'ajax_query_groups', name='ajax_query_groups'),
 

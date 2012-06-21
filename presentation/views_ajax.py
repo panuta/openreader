@@ -79,6 +79,25 @@ def ajax_remove_organization_user(request, organization_user_id):
     else:
         raise Http404
 
+@require_POST
+@login_required
+def ajax_bringback_organization_user(request, organization_user_id):
+    if request.is_ajax():
+        user_organization = get_object_or_404(UserOrganization, pk=organization_user_id)
+        organization = user_organization.organization
+
+        if not get_permission_backend(request).can_manage_user(request.user, organization):
+            raise Http404
+
+        user_organization.is_active = True
+        user_organization.save()
+
+        messages.success(request, u'นำผู้ใช้กลับเข้าบริษัทเรียบร้อย')
+        return response_json_success({'redirect_url':reverse('view_organization_users', args=[organization.slug])})
+    else:
+        raise Http404
+
+
 
 @require_POST
 @login_required

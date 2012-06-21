@@ -103,10 +103,17 @@ def view_organization_users_groups(request, organization_slug):
     if not get_permission_backend(request).can_manage_user(request.user, organization) and not get_permission_backend(request).can_manage_group(request.user, organization):
         raise Http404
 
-    organization_users = UserOrganization.objects.filter(organization=organization, is_active=True).order_by('user__userprofile__first_name', 'user__userprofile__last_name')
+    organization_users = UserOrganization.objects.filter(organization=organization).order_by('user__userprofile__first_name', 'user__userprofile__last_name')
     organization_groups = OrganizationGroup.objects.filter(organization=organization).order_by('name')
 
-    return render(request, 'organization/organization_manage_users_groups.html', {'organization':organization, 'organization_users':organization_users, 'organization_groups':organization_groups})
+    return render(
+        request, 
+        'organization/organization_manage_users_groups.html', {
+            'organization' :organization, 
+            'organization_users' :organization_users, 
+            'organization_groups' :organization_groups
+        }
+    )
 
 
 # User Invitation
