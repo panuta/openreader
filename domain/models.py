@@ -127,6 +127,53 @@ class UserGroup(models.Model):
     def __unicode__(self):
         return '%s:%s' % (self.user_organization.user.get_profile().get_fullname(), self.group.name)
 
+# Organization Invitation
+
+class OrganizationInvitationManager(models.Manager):
+
+    def create_invitation(self, organization_prefix, organization_name, organization_slug, admin_email, created_by):
+        key_salt = 'domain.models.OrganizationInvitationManager'
+        admin_email = admin_email.encode('utf-8')
+        invitation_key = salted_hmac(key_salt, admin_email).hexdigest()
+
+        return self.create(
+            admin_email=admin_email,
+            organization_prefix=organization_prefix,
+            organization_name=organization_name,
+            organization_slug=organization_slug,
+            invitation_key=invitation_key,
+            created_by=created_by
+        )
+
+    def claim_invitation(self, invitation, user, is_default=False):
+
+        # TODO Create Organization
+        # TODO Create UserOrganization
+
+        invitation.delete()
+        return user_organization
+
+class OrganizationInvitation(models.Model):
+    organization_prefix = models.CharField(max_length=200, default='บริษัท')
+    organization_name = models.CharField(max_length=200)
+    organization_slug = models.CharField(max_length=200, unique=True)
+    admin_email = models.CharField(max_length=100)
+    invitation_key = models.CharField(max_length=40, unique=True)
+    created = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, related_name='created_organization_invitations')
+
+    def __unicode__(self):
+        return '%s' % (self.organization_name)
+
+    objects = OrganizationInvitationManager()
+
+    def send_invitation_email(self):
+        try:
+            send_mail('Please confirm to create %s account in %s' % (self.organization_name, settings.WEBSITE_NAME), render_to_string('manage/emails/organization_invitation.html', {'invitation':self }), settings.EMAIL_ADDRESS_NO_REPLY, [self.admin_email], fail_silently=False)
+            return True
+        except:
+            return False
+
 # User Invitation
 
 class UserInvitationManager(models.Manager):
@@ -158,7 +205,7 @@ class UserOrganizationInvitation(models.Model):
     organization = models.ForeignKey(Organization)
     invitation_key = models.CharField(max_length=40, unique=True)
     created = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, related_name='created_invitations')
+    created_by = models.ForeignKey(User, related_name='created_user_invitations')
 
     groups = models.ManyToManyField(OrganizationGroup)
     
