@@ -100,7 +100,7 @@ def view_organization_profile(request, organization_slug):
 def view_organization_users_groups(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
-    if not get_permission_backend(request).can_manage_user(request.user, organization):
+    if not get_permission_backend(request).can_manage_user(request.user, organization) and not get_permission_backend(request).can_manage_group(request.user, organization):
         raise Http404
 
     organization_users = UserOrganization.objects.filter(organization=organization, is_active=True).order_by('user__userprofile__first_name', 'user__userprofile__last_name')
