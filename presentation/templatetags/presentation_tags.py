@@ -47,9 +47,9 @@ def shelf_organization_permission_radio(shelf):
 def shelf_group_permission_radio(group, shelf):
     shelf_permission, created = GroupShelfPermission.objects.get_or_create(shelf=shelf, group=group)
 
-    return '<label><input type="radio" name="group-%d-permission" value="%d"%s/> อัพโหลดและแก้ไขไฟล์ได้</label>\
-        <label><input type="radio" name="group-%d-permission" value="%d"%s/> ดูไฟล์ได้อย่างเดียว</label>\
-        <label><input type="radio" name="group-%d-permission" value="%d"%s/> ไม่สามารถเข้าถึงได้</label>' % (
+    return '<label><input type="radio" name="group-permission-%d" value="%d"%s/> อัพโหลดและแก้ไขไฟล์ได้</label>\
+        <label><input type="radio" name="group-permission-%d" value="%d"%s/> ดูไฟล์ได้อย่างเดียว</label>\
+        <label><input type="radio" name="group-permission-%d" value="%d"%s/> ไม่สามารถเข้าถึงได้</label>' % (
         group.id,
         OrganizationShelf.SHELF_ACCESS['PUBLISH_ACCESS'],
         ' checked="checked"' if shelf_permission.access_level == OrganizationShelf.SHELF_ACCESS['PUBLISH_ACCESS'] else '',
