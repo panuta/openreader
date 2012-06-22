@@ -422,7 +422,7 @@ def _persist_shelf_permissions(request, organization, shelf):
 
     # Group Level
     for group in organization.organizationgroup_set.all():
-        group_access_level = int(request.POST.get('group-permission-%d' % group.id, OrganizationShelf.SHELF_ACCESS['VIEW_ACCESS']))
+        group_access_level = int(request.POST.get('group-%d-permission' % group.id, OrganizationShelf.SHELF_ACCESS['VIEW_ACCESS']))
 
         try:
             group_shelf_permission = GroupShelfPermission.objects.get(group=group, shelf=shelf)
