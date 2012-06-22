@@ -183,7 +183,7 @@ $(document).ready(function () {
                             </div>
                         </div>
 
-                        {% if shelf %}
+                        {% if shelf and shelf.usershelfpermission_set.all %}
                             <table class="table table-bordered">
                                 <tbody>
                                     {% for user_permission in shelf.usershelfpermission_set.all %}
