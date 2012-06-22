@@ -2,7 +2,6 @@ import subprocess, sys, traceback, os, logging
 import Image
 
 from django.conf import settings
-from django.utils.importlib import import_module
 
 from common.utilities import split_filepath
 

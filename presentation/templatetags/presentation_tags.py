@@ -32,7 +32,10 @@ def generate_shelf_selection(context, user, organization): # USED
 
 @register.simple_tag
 def shelf_organization_permission_radio(shelf):
-    shelf_permission, created = OrganizationShelfPermission.objects.get_or_create(shelf=shelf)
+    try:
+        shelf_permission = OrganizationShelfPermission.objects.get(shelf=shelf)
+    except OrganizationShelfPermission.DoesNotExist:
+        shelf_permission = OrganizationShelf.SHELF_ACCESS['VIEW_ACCESS']
 
     return '<label><input type="radio" name="all-permission" value="%d"%s/> อัพโหลดและแก้ไขไฟล์ได้</label>\
         <label><input type="radio" name="all-permission" value="%d"%s/> ดูไฟล์ได้อย่างเดียว</label>'% (
@@ -45,7 +48,10 @@ def shelf_organization_permission_radio(shelf):
 
 @register.simple_tag
 def shelf_group_permission_radio(group, shelf):
-    shelf_permission, created = GroupShelfPermission.objects.get_or_create(shelf=shelf, group=group)
+    try:
+        shelf_permission = GroupShelfPermission.objects.get(shelf=shelf, group=group)
+    except GroupShelfPermission.DoesNotExist:
+        shelf_permission = OrganizationShelf.SHELF_ACCESS['NO_ACCESS']
 
     return '<label><input type="radio" name="group-permission-%d" value="%d"%s/> อัพโหลดและแก้ไขไฟล์ได้</label>\
         <label><input type="radio" name="group-permission-%d" value="%d"%s/> ดูไฟล์ได้อย่างเดียว</label>\

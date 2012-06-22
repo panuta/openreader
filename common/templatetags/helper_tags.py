@@ -5,16 +5,13 @@ from django.template.base import TemplateSyntaxError
 
 register = template.Library()
 
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.template import NodeList
-from django.template import loader
 
 from common import utilities
 from accounts.permissions import get_backend as get_permission_backend
 
-from domain.models import UserOrganization, OrganizationGroup, UserOrganizationInvitation
-from domain.models import Publication
+from domain.models import UserOrganization
 
 # DATE TIME #################################################################
 
