@@ -125,8 +125,6 @@ $(document).ready(function () {
     });
 
     $('#publication-modal .replace_button').live('click', function() {
-        _addModalMessage('publication-modal', 'เปลี่ยนไฟล์ใหม่เรียบร้อย', 'success');
-
         $('#publication-modal .publication_form').fadeOut('fast', function() {
             $('#publication-modal .right .panel').remove();
             $('#publication-modal .right').append('<form class="replace_form panel"><label for="replace_file_input">เลือกไฟล์ที่ต้องการแทนไฟล์เก่า</label><input type="file" id="replace_file_input" /><div class="actions"><button class="btn cancel_button">ยกเลิก</button></div></form>');
