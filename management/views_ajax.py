@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+from datetime import datetime
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -22,6 +23,8 @@ def ajax_resend_organization_invitation(request, invitation_id):
         invitation = get_object_or_404(OrganizationInvitation, pk=invitation_id)
 
         if invitation.send_invitation_email():
+            invitation.created = datetime.now()
+            invitation.save()
             return response_json_success()
         else:
             return response_json_error('send-invitation-failed')

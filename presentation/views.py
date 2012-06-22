@@ -126,7 +126,7 @@ def view_organization_invited_users(request, organization_slug):
     if not get_permission_backend(request).can_manage_user(request.user, organization):
         raise Http404
 
-    invited_users = UserOrganizationInvitation.objects.filter(organization=organization)
+    invited_users = UserOrganizationInvitation.objects.filter(organization=organization).order_by('-created')
     return render(request, 'organization/organization_users_invited.html', {'organization':organization, 'invited_users':invited_users})
 
 

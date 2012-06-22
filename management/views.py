@@ -29,7 +29,7 @@ def view_organizations_invited(request):
     if not request.user.is_superuser:
         raise Http404
 
-    organizations_invited = OrganizationInvitation.objects.all()
+    organizations_invited = OrganizationInvitation.objects.all().order_by('-created')
     return render(request, 'manage/organizations_invited.html', {'organizations_invited': organizations_invited})    
 
 @login_required
@@ -40,7 +40,7 @@ def edit_organization_invitation(request, invitation_id):
     invitation = get_object_or_404(OrganizationInvitation, id=invitation_id)
 
     if request.method == 'POST':
-        form = EditOrganizationForm(request.POST)
+        form = EditOrganizationInvitationForm(invitation, request.POST)
         if form.is_valid():
             invitation.organization_name = form.cleaned_data['organization_name']
             invitation.organization_slug = form.cleaned_data['organization_slug']
@@ -50,7 +50,7 @@ def edit_organization_invitation(request, invitation_id):
             return redirect('view_organizations_invited')
 
     else:
-        form = EditOrganizationForm(initial={
+        form = EditOrganizationInvitationForm(invitation, initial={
             'organization_name': invitation.organization_name,
             'organization_slug': invitation.organization_slug,
             'organization_prefix': invitation.organization_prefix,
@@ -167,7 +167,7 @@ def edit_organization(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
     if request.method == 'POST':
-        form = EditOrganizationForm(request.POST)
+        form = EditOrganizationForm(organization, request.POST)
         if form.is_valid():
             organization.name = form.cleaned_data['organization_name']
             organization.slug = form.cleaned_data['organization_slug']
@@ -178,7 +178,7 @@ def edit_organization(request, organization_slug):
             return redirect('manage_organizations')
     
     else:
-        form = EditOrganizationForm(initial={
+        form = EditOrganizationForm(organization, initial={
             'organization_name': organization.name,
             'organization_slug': organization.slug,
             'organization_prefix': organization.prefix,

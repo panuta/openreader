@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 import logging
+from datetime import datetime
 
 from django.conf import settings
 from django.contrib import messages
@@ -36,6 +37,8 @@ def ajax_resend_user_invitation(request, invitation_id):
             raise Http404
 
         if invitation.send_invitation_email():
+            invitation.created = datetime.now()
+            invitation.save()
             return response_json_success()
         else:
             return response_json_error('send-invitation-failed')

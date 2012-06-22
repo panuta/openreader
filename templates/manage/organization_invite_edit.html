@@ -59,19 +59,19 @@ $(document).ready(function () {
 
             <div class="control-group">
                 <label class="control-label" for="id_organization_name">ชื่อบริษัท</label>
-                <div class="fixed-controls controls">{{form.organization_name}}</div>
+                <div class="fixed-controls controls">{{form.organization_name}}{{form.organization_name.errors}}</div>
             </div>
 
             <div class="control-group">
                 <label class="control-label" for="id_organization_slug">ชื่อย่อบริษัท</label>
-                <div class="fixed-controls controls">{{form.organization_slug}}</div>
-                <span class="help-block">ชื่อบริษัทภาษาอังกฤษที่ไม่ซ้ำกับบริษัทอื่น</span>
+                <div class="fixed-controls controls">{{form.organization_slug}}<span class="help-block">ชื่อบริษัทภาษาอังกฤษที่ไม่ซ้ำกับบริษัทอื่น</span>{{form.organization_slug.errors}}</div>
+                
             </div>
 
             <div class="control-group">
                 <label class="control-label" for="id_organization_prefix">คำนำหน้าบริษัท</label>
-                <div class="fixed-controls controls">{{form.organization_prefix}}</div>
-                <span class="help-block">เช่น "บริษัท" "สำนักพิมพ์" หรือ "แผนก" เป็นต้น</span>
+                <div class="fixed-controls controls">{{form.organization_prefix}}<span class="help-block">เช่น "บริษัท" "สำนักพิมพ์" หรือ "แผนก" เป็นต้น</span>{{form.organization_prefix.errors}}</div>
+                
             </div>
 
             <div class="form-actions">

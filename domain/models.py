@@ -204,7 +204,7 @@ class UserInvitationManager(models.Manager):
 
     def claim_invitation(self, invitation, user, is_default=False):
         try:
-            UserOrganization.objects.get(user=user)
+            UserOrganization.objects.get(user=user, organization=invitation.organization)
         except UserOrganization.DoesNotExist:
             user_organization = UserOrganization.objects.create(user=user, organization=invitation.organization, is_default=is_default)
             
