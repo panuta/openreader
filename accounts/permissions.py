@@ -155,6 +155,9 @@ class DefaultUserPermissionBackend(object):
         except UserOrganization.DoesNotExist:
             return OrganizationShelf.SHELF_ACCESS['NO_ACCESS']
 
+        if user_organization.is_admin:
+            return OrganizationShelf.SHELF_ACCESS['PUBLISH_ACCESS']
+
         # User Access Level
         try:
             return UserShelfPermission.objects.get(shelf=shelf, user=user).access_level

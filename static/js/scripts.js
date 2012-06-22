@@ -332,6 +332,7 @@ function initializeDocumentsPage() {
             if (data.errorThrown == 'abort') {
                 data.context.remove();
             } else {
+                var file = data.files[0];
                 data.context.addClass('failed').html('<div class="filename"><em>' + file.name + '</em> เกิดข้อผิดพลาด ไม่สามารถอัพโหลดไฟล์ได้</div><div><button class="btn btn-small js-dismiss-uploading">ยกเลิกการอัพโหลด</button></div>');
             }
         }
