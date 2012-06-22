@@ -1,7 +1,6 @@
 # -*- encoding: utf-8 -*-
 
 import logging
-from datetime import datetime
 
 from django.conf import settings
 from django.contrib import messages
@@ -14,6 +13,7 @@ from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_GET, require_POST
 from django.utils import simplejson
+from django.utils.timezone import now
 
 from common.shortcuts import response_json_success, response_json_error
 from common.utilities import format_abbr_datetime, humanize_file_size
@@ -37,7 +37,7 @@ def ajax_resend_user_invitation(request, invitation_id):
             raise Http404
 
         if invitation.send_invitation_email():
-            invitation.created = datetime.now()
+            invitation.created = now()
             invitation.save()
             return response_json_success()
         else:
@@ -284,7 +284,7 @@ def replace_publication(request, organization_slug):
         return response_json_success({
             'uid': str(publication.uid),
             'file_ext':publication.file_ext,
-            'file_size_text': humanize_file_size(uploading_file.file.size),
+            'file_size': humanize_file_size(uploading_file.file.size),
             'uploaded':format_abbr_datetime(publication.uploaded),
             'replaced':format_abbr_datetime(publication.replaced),
             'thumbnail_url':publication.get_large_thumbnail(),
@@ -319,7 +319,7 @@ def ajax_edit_publication(request, organization_slug):
 
     publication.title = title
     publication.description = description
-    publication.modified = datetime.now()
+    publication.modified = now()
     publication.modified_by = request.user
     publication.save()
 

@@ -1,11 +1,11 @@
 # -*- encoding: utf-8 -*-
-from datetime import datetime
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from django.utils.timezone import now
 from django.views.decorators.http import require_GET, require_POST
 
 from common.shortcuts import response_json_success, response_json_error
@@ -23,7 +23,7 @@ def ajax_resend_organization_invitation(request, invitation_id):
         invitation = get_object_or_404(OrganizationInvitation, pk=invitation_id)
 
         if invitation.send_invitation_email():
-            invitation.created = datetime.now()
+            invitation.created = now()
             invitation.save()
             return response_json_success()
         else:

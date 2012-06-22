@@ -1,9 +1,10 @@
-import datetime, logging, sys, traceback, uuid
+import logging, sys, traceback, uuid
 
 from django.conf import settings
 
 from common.thumbnails import delete_thumbnails
 from common.utilities import split_filepath
+from django.utils.timezone import now
 
 from domain.models import Publication, PublicationShelf
 
@@ -38,7 +39,7 @@ def replace_publication(request, uploading_file, publication):
     # Change file details
     publication.original_file_name = file_name
     publication.file_ext = file_ext
-    publication.replaced = datetime.datetime.now()
+    publication.replaced = now()
     publication.replaced_by = request.user
     publication.save()
 
