@@ -119,6 +119,9 @@ class UserOrganization(models.Model):
 
     groups = models.ManyToManyField(OrganizationGroup, through='UserGroup')
 
+    class Meta:
+        ordering = ['user__userprofile__first_name', 'user__userprofile__last_name']
+
     def __unicode__(self):
         return '%s:%s' % (self.user.get_profile().get_fullname(), self.organization.name)
 

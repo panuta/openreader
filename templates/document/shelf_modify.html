@@ -169,7 +169,11 @@ $(document).ready(function () {
 
                         <div id="add-user-permission" class="hide permission_panel">
                             <div class="user_selection">
-                                <select multiple="multiple" data-placeholder="เลือกผู้ใช้">{% generate_user_select_options organization %}</select>
+                                <select multiple="multiple" data-placeholder="เลือกผู้ใช้">
+                                    {% for user_organization in organization.userorganization_set.all %}
+                                        <option value="{{ user_organization.user.id }}">{{ user_organization.user.get_profile.get_fullname }}</option>
+                                    {% endfor %}
+                                </select>
                             </div>
                             <div class="head">ผู้ใช้สามารถ</div>
                             <div class="input">

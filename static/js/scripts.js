@@ -124,7 +124,7 @@ $(document).ready(function () {
         }
     });
 
-    $('#publication-modal .replace_button').on('click', function() {
+    $('#publication-modal .replace_button').live('click', function() {
         _addModalMessage('publication-modal', 'เปลี่ยนไฟล์ใหม่เรียบร้อย', 'success');
 
         $('#publication-modal .publication_form').fadeOut('fast', function() {
@@ -199,7 +199,7 @@ $(document).ready(function () {
         return false;
     });
 
-    $('#publication-modal .delete_button').on('click', function() {
+    $('#publication-modal .delete_button').live('click', function() {
         $('#publication-modal .publication_form').fadeOut('fast', function() {
             $('#publication-modal .right .panel').remove();
             $('#publication-modal .right').append('<form class="delete_form panel"><div><button type="submit" class="btn btn-danger submit_delete_button">ยืนยันการลบไฟล์</button><button class="btn cancel_button">ยกเลิก</button></div></form>');
