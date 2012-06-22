@@ -319,6 +319,8 @@ def ajax_edit_publication(request, organization_slug):
 
     publication.title = title
     publication.description = description
+    publication.modified = datetime.now()
+    publication.modified_by = request.user
     publication.save()
 
     PublicationTag.objects.filter(publication=publication).delete()
