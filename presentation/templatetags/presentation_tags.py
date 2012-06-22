@@ -33,23 +33,23 @@ def generate_shelf_selection(context, user, organization): # USED
 @register.simple_tag
 def shelf_organization_permission_radio(shelf):
     try:
-        shelf_permission = OrganizationShelfPermission.objects.get(shelf=shelf)
+        shelf_permission = OrganizationShelfPermission.objects.get(shelf=shelf).access_level
     except OrganizationShelfPermission.DoesNotExist:
         shelf_permission = OrganizationShelf.SHELF_ACCESS['VIEW_ACCESS']
 
     return '<label><input type="radio" name="all-permission" value="%d"%s/> อัพโหลดและแก้ไขไฟล์ได้</label>\
         <label><input type="radio" name="all-permission" value="%d"%s/> ดูไฟล์ได้อย่างเดียว</label>'% (
         OrganizationShelf.SHELF_ACCESS['PUBLISH_ACCESS'],
-        ' checked="checked"' if shelf_permission.access_level == OrganizationShelf.SHELF_ACCESS['PUBLISH_ACCESS'] else '',
+        ' checked="checked"' if shelf_permission == OrganizationShelf.SHELF_ACCESS['PUBLISH_ACCESS'] else '',
         OrganizationShelf.SHELF_ACCESS['VIEW_ACCESS'],
-        ' checked="checked"' if shelf_permission.access_level == OrganizationShelf.SHELF_ACCESS['VIEW_ACCESS'] else '',
+        ' checked="checked"' if shelf_permission == OrganizationShelf.SHELF_ACCESS['VIEW_ACCESS'] else '',
     )
 
 
 @register.simple_tag
 def shelf_group_permission_radio(group, shelf):
     try:
-        shelf_permission = GroupShelfPermission.objects.get(shelf=shelf, group=group)
+        shelf_permission = GroupShelfPermission.objects.get(shelf=shelf, group=group).access_level
     except GroupShelfPermission.DoesNotExist:
         shelf_permission = OrganizationShelf.SHELF_ACCESS['NO_ACCESS']
 
@@ -58,13 +58,13 @@ def shelf_group_permission_radio(group, shelf):
         <label><input type="radio" name="group-permission-%d" value="%d"%s/> ไม่สามารถเข้าถึงได้</label>' % (
         group.id,
         OrganizationShelf.SHELF_ACCESS['PUBLISH_ACCESS'],
-        ' checked="checked"' if shelf_permission.access_level == OrganizationShelf.SHELF_ACCESS['PUBLISH_ACCESS'] else '',
+        ' checked="checked"' if shelf_permission == OrganizationShelf.SHELF_ACCESS['PUBLISH_ACCESS'] else '',
         group.id,
         OrganizationShelf.SHELF_ACCESS['VIEW_ACCESS'],
-        ' checked="checked"' if shelf_permission.access_level == OrganizationShelf.SHELF_ACCESS['VIEW_ACCESS'] else '',
+        ' checked="checked"' if shelf_permission == OrganizationShelf.SHELF_ACCESS['VIEW_ACCESS'] else '',
         group.id,
         OrganizationShelf.SHELF_ACCESS['NO_ACCESS'],
-        ' checked="checked"' if shelf_permission.access_level == OrganizationShelf.SHELF_ACCESS['NO_ACCESS'] else '',
+        ' checked="checked"' if shelf_permission == OrganizationShelf.SHELF_ACCESS['NO_ACCESS'] else '',
     )
 
 
