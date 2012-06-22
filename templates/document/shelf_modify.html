@@ -6,147 +6,87 @@
 
 {% block extra_head %}
 <script>
-function _append_shelf_permission(str, value) {
-  if(!$('.shelf-permission-controls .permissions input[value="' + value + '"]').length) {
-    $('.shelf-permission-controls .permissions').append('<li>' + str + ' <span>[ <a href="#">ลบออก</a> ]</span><input type="hidden" name="permission" value="' + value + '" /></li>');
-  }
-}
-
 $(document).ready(function () {
-  /* Select Shelf Icon */
-  $('#shelf_icons_modal .modal-body a').on('click', function(e) {
-    $('.shelf-icon-controls img').attr('src', $(this).find('img').attr('src'));
-    $('.shelf-icon-controls input').val($(this).attr('rel'));
-    $('#shelf_icons_modal').modal('hide');
-    return false;
-  });
 
-  $('.shelf-permission-controls li a').live('click', function(e) {
-    $(this).closest('li').fadeOut(function() {
-      $(this).remove();
-    });
-    return false;
-  });
+    // Shelf Icon
 
-  /* Add Shelf Permission */
-  $('.shelf-permission-controls .actions button').button();
-
-  $('.shelf-permission-controls .add_permissions a').on('click', function(e) {
-    e.preventDefault();
-    if(!$(this).hasClass('active')) {
-      $('.permission_panel').hide();
-      $(this).prevAll('a').removeClass('active');
-      $(this).nextAll('a').removeClass('active');
-      $($(this).attr('href')).slideDown('fast').trigger('afterShow');
-      $($(this).attr('href') + ' .add_button').attr('disabled', true);
-    } else {
-      $($(this).attr('href')).slideUp('fast');
-    }
-  });
-
-  $('.permission_panel .cancel_button').on('click', function(e) {
-    e.preventDefault();
-    $(this).closest('.permission_panel').slideUp('fast');
-    $('.shelf-permission-controls .add_permissions a').removeClass('active');
-  });
-
-  // All People Shelf Permission
-  $('#add-all-permission').on('afterShow', function(e) {
-    $(this).find('input').attr('checked', false);
-
-  }).find('.add_button').on('click', function(e) {
-    e.preventDefault();
-
-    var permission_value = $('#add-all-permission input[type="radio"]:checked').val();
-    if(permission_value == '2') {
-      _append_shelf_permission('ทุกคนในบริษัทสามารถอัพโหลดไฟล์และแก้ไขไฟล์ได้', 'all-2');
-    } else if(permission_value == '1') {
-      _append_shelf_permission('ทุกคนในบริษัทสามารถดูไฟล์ได้อย่างเดียว (ยกเว้นผู้ดูแลระบบ)', 'all-1');
-    }
-
-    $('#add-all-permission').slideUp('fast');
-    $('.shelf-permission-controls .add_permissions a').removeClass('active');
-  });
-
-  $('#add-all-permission input[type="radio"]').on('click', function(e) {
-    $('#add-all-permission .add_button').attr('disabled', false);
-  });
-
-  // Group Shelf Permission
-  $('#add-group-permission').on('afterShow', function(e) {
-    $(this).find('input').attr('checked', false);
-    $(this).find('select option:first').attr('selected', true);
-
-  }).find('.add_button').on('click', function(e) {
-    e.preventDefault();
-
-    var group_id = $('#add-group-permission select option:selected').val();
-    var group_name = $('#add-group-permission select option:selected').text();
-    var permission_value = $('#add-group-permission input[type="radio"]:checked').val();
-
-    if(permission_value == '2') {
-      _append_shelf_permission('กลุ่มผู้ใช้ <em>' + group_name + '</em> สามารถอัพโหลดไฟล์และแก้ไขไฟล์ได้', 'group-' + group_id + '-2');
-    } else if(permission_value == '1') {
-      _append_shelf_permission('กลุ่มผู้ใช้ <em>' + group_name + '</em> สามารถดูไฟล์ได้อย่างเดียว', 'group-' + group_id + '-1');
-    }
-
-    $('#add-group-permission').slideUp('fast');
-    $('.shelf-permission-controls .add_permissions a').removeClass('active');
-  });
-
-  $('#add-group-permission input[type="radio"]').on('click', function(e) {
-    if($('#add-group-permission select').val() && $('#add-group-permission input[name="group-shelf-permission"]:checked').length) {
-      $('#add-group-permission .add_button').attr('disabled', false);
-    }
-  });
-
-  $('#add-group-permission select').on('change', function(e) {
-    if($('#add-group-permission select').val() && $('#add-group-permission input[name="group-shelf-permission"]:checked').length) {
-      $('#add-group-permission .add_button').attr('disabled', false);
-    } else {
-      $('#add-group-permission .add_button').attr('disabled', true);
-    }
-  });
-
-  // Individual Shelf Permission
-  $('#add-individual-permission').on('afterShow', function(e) {
-    $(this).find('input').attr('checked', false);
-    $('#add-individual-permission .select_individual select option').attr('selected', false);
-    $('#add-individual-permission .select_individual select').trigger("liszt:updated");
-
-  }).find('.add_button').on('click', function(e) {
-    e.preventDefault();
-    var permission_text;
-    var permission_value = $('#add-individual-permission input[type="radio"]:checked').val();
-
-    if(permission_value == '2') {
-      permission_text = 'อัพโหลดไฟล์และแก้ไขไฟล์ได้';
-    } else if(permission_value == '1') {
-      permission_text = 'ดูไฟล์ได้อย่างเดียว';
-    }
-
-    $('#add-individual-permission .select_individual select option:selected').each(function() {
-      _append_shelf_permission('ผู้ใช้ <em>' + $(this).text() + '</em> สามารถ' + permission_text, 'user-' + $(this).val() + '-' + permission_value);
+    $('#shelf_icons_modal .modal-body a').on('click', function(e) {
+        $('.shelf-icon-controls img').attr('src', $(this).find('img').attr('src'));
+        $('.shelf-icon-controls input').val($(this).attr('rel'));
+        $('#shelf_icons_modal').modal('hide');
+        return false;
     });
 
-    $('#add-individual-permission').slideUp('fast');
-    $('.shelf-permission-controls .add_permissions a').removeClass('active');
-  });
+    // Shelf User Permission
 
-  $('#add-individual-permission input[type="radio"]').on('click', function(e) {
-    if($('#add-individual-permission .select_individual select option:selected').length && $('#add-individual-permission input[name="individual-shelf-permission"]:checked').length) {
-      $('#add-individual-permission .add_button').attr('disabled', false);
-    }
-  });
+    $('.shelf-permission-controls a[href="#add-user-permission"]').on('click', function(e) {
+        e.preventDefault();
+        if(!$(this).hasClass('active')) {
+            $('#add-user-permission').slideDown('fast');
+            $('#add-user-permission .add_button').attr('disabled', true);
 
-  $('#add-individual-permission .select_individual select').chosen().change(function(e) {
+            $('#add-user-permission .input input').attr('checked', false);
+            $('#add-user-permission .user_selection select option').attr('selected', false);
+            $('#add-user-permission .user_selection select').trigger("liszt:updated");
 
-    if($(this).find('option:selected').length && $('#add-individual-permission input[name="individual-shelf-permission"]:checked').length) {
-      $('#add-individual-permission .add_button').attr('disabled', false);
-    } else {
-      $('#add-individual-permission .add_button').attr('disabled', true);
-    }
-  });
+        } else {
+            $('#add-user-permission').slideUp('fast');
+        }
+    });
+
+    $('#add-user-permission .add_button').on('click', function(e) {
+        e.preventDefault();
+
+        if(!$('.user_permissions table').length) {
+            $('.user_permissions').append('<table class="table table-bordered"><tbody></tbody></table>');
+        }
+
+        var permission_value = $('#add-user-permission input[type="radio"]:checked').val();
+
+        $('#add-user-permission .user_selection select option:selected').each(function() {
+            var userObject;
+            if($('.user_permissions table tr.user-permission-' + $(this).val()).length) {
+                userObject = $('.user_permissions table tr.user-permission-' + $(this).val());
+            } else {
+                userObject = $('<tr class="user-permission-' + $(this).val() + '"><td class="remove"><button class="btn btn-mini">ยกเลิก</button></td><td class="group">' + $(this).text() + '</td><td class="permission"><label><input type="radio" name="user-permission-' + $(this).val() + '" value="2"/> อัพโหลดและแก้ไขไฟล์ได้</label><label><input type="radio" name="user-permission-' + $(this).val() + '" value="1"/> ดูไฟล์ได้อย่างเดียว</label><label><input type="radio" name="user-permission-' + $(this).val() + '" value="0"/> ไม่สามารถเข้าถึงได้</label></td></tr>');
+                userObject.appendTo('.user_permissions table');
+            }
+
+            userObject.find('input').attr('checked', false);
+            userObject.find('input[value="' + permission_value + '"]').attr('checked', true);
+        });
+
+        $('#add-user-permission').slideUp('fast');
+        $('.shelf-permission-controls a[href="#add-user-permission"]').removeClass('active');
+    });
+
+    $('#add-user-permission .cancel_button').on('click', function(e) {
+        $('#add-user-permission').slideUp('fast');
+        $('.shelf-permission-controls a[href="#add-user-permission"]').removeClass('active');
+        return false;
+    });
+
+    $('#add-user-permission .user_selection select').chosen().change(function(e) {
+        if($(this).find('option:selected').length && $('#add-user-permission input[name="add-user-permission"]:checked').length) {
+            $('#add-user-permission .add_button').attr('disabled', false);
+        } else {
+            $('#add-user-permission .add_button').attr('disabled', true);
+        }
+    });
+
+    $('#add-user-permission input[type="radio"]').on('click', function(e) {
+        if($('#add-user-permission .user_selection select option:selected').length && $('#add-user-permission input[name="add-user-permission"]:checked').length) {
+            $('#add-user-permission .add_button').attr('disabled', false);
+        }
+    });
+
+    $('.user_permissions table td.remove button').live('click', function() {
+        $(this).closest('tr').remove();
+
+        if(!$('.user_permissions table tr').length) {
+            $('.user_permissions table').remove();
+        }
+    });
 })
 </script>
 {% endblock %}
@@ -194,34 +134,68 @@ $(document).ready(function () {
             <div class="control-group">
                 <label class="control-label" for="id_email">การเข้าถึงกลุ่มเอกสาร</label>
                 <div class="controls shelf-permission-controls">
-                    <ul class="permissions">
-                        {% generate_shelf_permission_list shelf_permissions %}
-                    </ul>
-                    {{form.permission.errors}}
-                    <div class="add_permissions">
-                        <span><i class="icon-plus"></i> เพิ่มการเข้าถึงสำหรับ</span>
-                        <a href="#add-all-permission" class="btn btn-small" data-toggle="button">ทุกคนในบริษัท</a>
-                        <a href="#add-group-permission" class="btn btn-small" data-toggle="button">กลุ่มผู้ใช้</a>
-                        <a href="#add-individual-permission" class="btn btn-small" data-toggle="button">รายบุคคล</a>
-                    </div>
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <td class="group">ทุกคนในบริษัท</td>
+                                <td class="permission">
+                                    {% if shelf %}
+                                        {% shelf_organization_permission_radio shelf %}
+                                    {% else %}
+                                        <label><input type="radio" name="all-permission" value="2"/> อัพโหลดและแก้ไขไฟล์ได้</label>
+                                        <label><input type="radio" name="all-permission" value="1" checked="checked"/> ดูไฟล์ได้อย่างเดียว</label>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% for group in organization.organizationgroup_set.all %}
+                            <tr>
+                                <td class="group">กลุ่มผู้ใช้ <em>{{ group.name }}</em></td>
+                                <td class="permission">
+                                    {% if shelf %}
+                                        {% shelf_group_permission_radio group shelf %}
+                                    {% else %}
+                                        <label><input type="radio" name="group-permission-{{ group.id }}" value="2"/> อัพโหลดและแก้ไขไฟล์ได้</label>
+                                        <label><input type="radio" name="group-permission-{{ group.id }}" value="1" checked="checked"/> ดูไฟล์ได้อย่างเดียว</label>
+                                        <label><input type="radio" name="group-permission-{{ group.id }}" value="0"/> ไม่สามารถเข้าถึงได้</label>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="user_permissions">
+                        <h4>การเข้าถึงเป็นรายบุคคล</h4>
+                        <a href="#add-user-permission" class="btn btn-small" data-toggle="button">เพิ่มการเข้าถึงเป็นรายบุคคล</a>
 
-                    <div class="permission_panel" id="add-all-permission">
-                        <div class="head">ทุกคนในบริษัทสามารถ</div>
-                        <ul><li><label><input type="radio" name="all-shelf-permission" value="2"/> อัพโหลดไฟล์และแก้ไขไฟล์ได้</label></li><li><label><input type="radio" name="all-shelf-permission" value="1"/> ดูไฟล์ได้อย่างเดียว (ยกเว้นผู้ดูแลระบบ)</label></li></ul>
-                        <div class="permission_actions"><button class="btn add_button"><i class="icon-plus"></i> เพิ่มการเข้าถึง</button><button class="btn cancel_button">ยกเลิก</button></div>
-                    </div>
+                        <div id="add-user-permission" class="hide permission_panel">
+                            <div class="user_selection">
+                                <select multiple="multiple" data-placeholder="เลือกผู้ใช้">{% generate_user_select_options organization %}</select>
+                            </div>
+                            <div class="head">ผู้ใช้สามารถ</div>
+                            <div class="input">
+                                <label><input type="radio" name="add-user-permission" value="2"/> อัพโหลดและแก้ไขไฟล์ได้</label>
+                                <label><input type="radio" name="add-user-permission" value="1"/> ดูไฟล์ได้อย่างเดียว</label>
+                                <label><input type="radio" name="add-user-permission" value="0"/> ไม่สามารถเข้าถึงได้</label>
+                            </div>
+                            <div class="permission_actions">
+                                <button class="btn add_button"><i class="icon-plus"></i> เพิ่มการเข้าถึง</button>
+                                <button class="btn cancel_button">ยกเลิก</button>
+                            </div>
+                        </div>
 
-                    <div class="permission_panel" id="add-group-permission">
-                        <div class="head">กลุ่มผู้ใช้ <select>{% generate_group_select_options organization %}</select> สามารถ</div>
-                        <ul><li><label><input type="radio" name="group-shelf-permission" value="2"/> อัพโหลดไฟล์และแก้ไขไฟล์ได้</label></li><li><label><input type="radio" name="group-shelf-permission" value="1"/> ดูไฟล์ได้อย่างเดียว</label></li></ul>
-                        <div class="permission_actions"><button class="btn add_button"><i class="icon-plus"></i> เพิ่มการเข้าถึง</button><button class="btn cancel_button">ยกเลิก</button></div>
-                    </div>
-
-                    <div class="permission_panel" id="add-individual-permission">
-                        <div class="select_individual"><select multiple="multiple" style="width:600px;" data-placeholder="เลือกผู้ใช้">{% generate_user_select_options organization %}</select></div>
-                        <div class="head">ผู้ใช้สามารถ</div>
-                        <ul><li><label><input type="radio" name="individual-shelf-permission" value="2"/> อัพโหลดไฟล์และแก้ไขไฟล์ได้</label></li><li><label><input type="radio" name="individual-shelf-permission" value="1"/> ดูไฟล์ได้อย่างเดียว</label></li></ul>
-                        <div class="permission_actions"><button class="btn add_button"><i class="icon-plus"></i> เพิ่มการเข้าถึง</button><button class="btn cancel_button">ยกเลิก</button></div>
+                        {% if shelf %}
+                            <table class="table table-bordered">
+                                <tbody>
+                                    {% for user_permission in shelf.usershelfpermission_set.all %}
+                                    <tr class="user-permission-{{ user_permission.user.id }}">
+                                        <td class="remove"><button class="btn btn-mini">ยกเลิก</button></td>
+                                        <td class="group">{{ user_permission.user.get_profile.get_fullname }}</td>
+                                        <td class="permission">{% shelf_user_permission_radio user_permission %}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
                     </div>
                 </div>
             </div>

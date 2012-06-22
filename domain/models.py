@@ -100,6 +100,9 @@ class OrganizationGroup(models.Model):
     description = models.CharField(max_length=500, blank=True)
     admin_permissions = models.ManyToManyField(OrganizationAdminPermission)
 
+    class Meta:
+        ordering = ['name']
+
     def __unicode__(self):
         return self.name
 
@@ -132,7 +135,7 @@ class UserGroup(models.Model):
 class OrganizationInvitationManager(models.Manager):
 
     def create_invitation(self, organization_prefix, organization_name, organization_slug, admin_email, created_by):
-        key_salt = 'domain.models.OrganizationInvitationManager'
+        key_salt = 'domain.models.OrganizationInvitationManager' + settings.SECRET_KEY
         admin_email = admin_email.encode('utf-8')
         invitation_key = salted_hmac(key_salt, admin_email).hexdigest()
 

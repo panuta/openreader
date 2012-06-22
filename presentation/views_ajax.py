@@ -144,22 +144,25 @@ def ajax_query_groups(request, organization_slug):
 def ajax_query_publication(request, publication_uid):
     publication = get_object_or_404(Publication, uid=publication_uid)
 
-    if not get_permission_backend(request).can_view_publication(request.user, publication.organization, {'publication':publication}):
+    permission_backend = get_permission_backend(request)
+    if not permission_backend.can_view_publication(request.user, publication.organization, {'publication':publication}):
         raise Http404
 
     return response_json_success({
-        'uid'            : str(publication.uid),
-        'title'          : publication.title,
-        'description'    : publication.description,
-        'tag_names'      : ','.join([tag.tag_name for tag in publication.tags.all()]),
-        'uploaded'       : format_abbr_datetime(publication.uploaded),
-        'uploaded_by'    : publication.uploaded_by.get_profile().get_fullname(),
-        'file_ext'       : publication.file_ext,
-        'file_size_text' : humanize_file_size(publication.uploaded_file.file.size),
-        'shelves'        : ','.join([str(shelf.id) for shelf in publication.shelves.all()]),
+        'uid': str(publication.uid),
+        'title': publication.title,
+        'description': publication.description,
+        'tag_names': ','.join([tag.tag_name for tag in publication.tags.all()]),
+        'uploaded': format_abbr_datetime(publication.uploaded),
+        'uploaded_by': publication.uploaded_by.get_profile().get_fullname(),
+        'file_ext': publication.file_ext,
+        'file_size_text': humanize_file_size(publication.uploaded_file.file.size),
+        'shelves': ','.join([str(shelf.id) for shelf in publication.shelves.all()]),
 
-        'thumbnail_url'  :publication.get_large_thumbnail(),
-        'download_url'   : reverse('download_publication', args=[publication.uid]),
+        'thumbnail_url': publication.get_large_thumbnail(),
+        'download_url': reverse('download_publication', args=[publication.uid]),
+
+        'readonly': 'true' if not permission_backend.can_edit_publication(request.user, publication.organization, {'publication':publication}) else 'false',
     })
 
 @transaction.commit_manually

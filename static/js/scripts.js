@@ -76,28 +76,29 @@ $(document).ready(function () {
                 $(this).find('.modal-header h3').text('เอกสาร');
             }
 
-            $('#publication-modal .modal-body .publication').hide().after('<div class="panel-message"><i class="loading"></i> กำลังโหลดข้อมูล</div>');
+            $('#publication-modal .modal-body .publication').remove();
+            $('#publication-modal .modal-body').html('<div class="panel-message"><i class="loading"></i> กำลังโหลดข้อมูล</div>');
             $('#publication-modal .modal-footer .publication').hide();
 
             $.get('/ajax/publication/' + uid + '/query/', {}, function(response) {
                 if(response.status == 'success') {
+                    var publication_form = '';
+
+                    if(response.readonly == 'true') {
+                        publication_form = $('<div class="publication"><div class="left"><div class="thumbnail"><img src="' + response.thumbnail_url + '" /></div><ul class="file_info"><li>ไฟล์ <span class="file_ext">' + response.file_ext.toUpperCase() + '</span></li><li>ขนาด <span class="file_size">' + response.file_size_text + '</span></li></ul></div><div class="right"><form class="publication_form"><div class="control-group"><label class="control-label" for="id_publication_title">ชื่อเอกสาร</label><div class="controls"><input type="text" id="id_publication_title" readonly="readonly" value="' + response.title + '"/></div></div><div class="control-group"><label class="control-label" for="id_publication_description">คำอธิบาย</label><div class="controls"><textarea id="id_publication_description" readonly="readonly">' + response.description + '</textarea></div></div><div class="control-group"><label class="control-label" for="id_publication_tags">แถบป้าย</label><div class="controls"><input type="text" id="id_publication_tags" readonly="readonly" value="' + response.tag_names + '"/></div></div></form></div></div>')
+                    } else {
+                        publication_form = $('<div class="publication"><div class="left"><div class="thumbnail"><img src="' + response.thumbnail_url + '" /></div><ul class="file_info"><li>ไฟล์ <span class="file_ext">' + response.file_ext.toUpperCase() + '</span></li><li>ขนาด <span class="file_size">' + response.file_size_text + '</span></li></ul><div class="actions"><a href="#" class="btn btn-mini replace_button">เปลี่ยนไฟล์ใหม่</a><a href="#" class="btn btn-mini delete_button">ลบไฟล์</a></div></div><div class="right"><form class="publication_form"><div class="control-group"><label class="control-label" for="id_publication_title">ชื่อเอกสาร</label><div class="controls"><input type="text" id="id_publication_title" value="' + response.title + '"/></div></div><div class="control-group"><label class="control-label" for="id_publication_description">คำอธิบาย</label><div class="controls"><textarea id="id_publication_description">' + response.description + '</textarea></div></div><div class="control-group"><label class="control-label" for="id_publication_tags">แถบป้าย</label><div class="controls"><input type="text" id="id_publication_tags" value="' + response.tag_names + '"/></div></div><button class="btn btn-primary save_button"><i class="icon-pencil icon-white"></i> บันทึกข้อมูล</button></form></div></div>')
+                    }
+
                     $('#publication-modal .modal-header h3').text(response.title);
 
-                    $('#id_publication_title').val(response.title);
-                    $('#id_publication_description').val(response.description);
-                    $('#id_publication_tags').val(response.tag_names);
-
-                    $('#publication-modal .publication .file_ext').text(response.file_ext);
-                    $('#publication-modal .publication .file_size').text(response.file_size_text);
                     $('#publication-modal .publication .uploaded .uploaded_date').text(response.uploaded);
                     $('#publication-modal .publication .uploaded .uploaded_by').text(response.uploaded_by);
                     $('#publication-modal .publication .download_button').attr('href', response.download_url);
-                    $('#publication-modal .publication .thumbnail img').attr('src', response.thumbnail_url);
 
                     $('#publication-modal .panel-message').fadeOut('fast', function() {
-                        $('#publication-modal .panel-message').remove();
+                        $('#publication-modal .modal-body').html(publication_form);
                         $('#publication-modal .modal-footer .publication').show();
-                        $('#publication-modal .modal-body .publication').show();
                     });
                 } else {
                     $('#publication-modal .panel-message').remove();
