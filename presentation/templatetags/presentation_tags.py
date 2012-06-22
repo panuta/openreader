@@ -3,13 +3,11 @@
 from django.conf import settings
 
 from django import template
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
 register = template.Library()
 
-from domain.models import SHELF_ACCESS
-from domain.models import Publication, OrganizationGroup, UserOrganization, UserOrganizationInvitation, OrganizationShelfPermission
+from domain.models import OrganizationGroup, UserOrganization, UserOrganizationInvitation, OrganizationShelfPermission
 
 from accounts.permissions import get_backend as get_permission_backend
 
@@ -38,10 +36,10 @@ def shelf_organization_permission_radio(shelf):
 
     return '<label><input type="radio" name="all-permission" value="%d"%s/> อัพโหลดและแก้ไขไฟล์ได้</label>\
         <label><input type="radio" name="all-permission" value="%d"%s/> ดูไฟล์ได้อย่างเดียว</label>'% (
-        SHELF_ACCESS['PUBLISH_ACCESS'],
-        ' checked="checked"' if shelf_permission.access_level == SHELF_ACCESS['PUBLISH_ACCESS'] else '',
-        SHELF_ACCESS['VIEW_ACCESS'],
-        ' checked="checked"' if shelf_permission.access_level == SHELF_ACCESS['VIEW_ACCESS'] else '',
+        OrganizationShelf.SHELF_ACCESS['PUBLISH_ACCESS'],
+        ' checked="checked"' if shelf_permission.access_level == OrganizationShelf.SHELF_ACCESS['PUBLISH_ACCESS'] else '',
+        OrganizationShelf.SHELF_ACCESS['VIEW_ACCESS'],
+        ' checked="checked"' if shelf_permission.access_level == OrganizationShelf.SHELF_ACCESS['VIEW_ACCESS'] else '',
     )
 
 
@@ -53,14 +51,14 @@ def shelf_group_permission_radio(group, shelf):
         <label><input type="radio" name="group-%d-permission" value="%d"%s/> ดูไฟล์ได้อย่างเดียว</label>\
         <label><input type="radio" name="group-%d-permission" value="%d"%s/> ไม่สามารถเข้าถึงได้</label>' % (
         group.id,
-        SHELF_ACCESS['PUBLISH_ACCESS'],
-        ' checked="checked"' if shelf_permission.access_level == SHELF_ACCESS['PUBLISH_ACCESS'] else '',
+        OrganizationShelf.SHELF_ACCESS['PUBLISH_ACCESS'],
+        ' checked="checked"' if shelf_permission.access_level == OrganizationShelf.SHELF_ACCESS['PUBLISH_ACCESS'] else '',
         group.id,
-        SHELF_ACCESS['VIEW_ACCESS'],
-        ' checked="checked"' if shelf_permission.access_level == SHELF_ACCESS['VIEW_ACCESS'] else '',
+        OrganizationShelf.SHELF_ACCESS['VIEW_ACCESS'],
+        ' checked="checked"' if shelf_permission.access_level == OrganizationShelf.SHELF_ACCESS['VIEW_ACCESS'] else '',
         group.id,
-        SHELF_ACCESS['NO_ACCESS'],
-        ' checked="checked"' if shelf_permission.access_level == SHELF_ACCESS['NO_ACCESS'] else '',
+        OrganizationShelf.SHELF_ACCESS['NO_ACCESS'],
+        ' checked="checked"' if shelf_permission.access_level == OrganizationShelf.SHELF_ACCESS['NO_ACCESS'] else '',
     )
 
 
@@ -70,14 +68,14 @@ def shelf_user_permission_radio(user_permission):
         <label><input type="radio" name="user-permission-%d" value="%d"%s/> ดูไฟล์ได้อย่างเดียว</label>\
         <label><input type="radio" name="user-permission-%d" value="%d"%s/> ไม่สามารถเข้าถึงได้</label>' % (
         user_permission.user.id,
-        SHELF_ACCESS['PUBLISH_ACCESS'],
-        ' checked="checked"' if user_permission.access_level == SHELF_ACCESS['PUBLISH_ACCESS'] else '',
+        OrganizationShelf.SHELF_ACCESS['PUBLISH_ACCESS'],
+        ' checked="checked"' if user_permission.access_level == OrganizationShelf.SHELF_ACCESS['PUBLISH_ACCESS'] else '',
         user_permission.user.id,
-        SHELF_ACCESS['VIEW_ACCESS'],
-        ' checked="checked"' if user_permission.access_level == SHELF_ACCESS['VIEW_ACCESS'] else '',
+        OrganizationShelf.SHELF_ACCESS['VIEW_ACCESS'],
+        ' checked="checked"' if user_permission.access_level == OrganizationShelf.SHELF_ACCESS['VIEW_ACCESS'] else '',
         user_permission.user.id,
-        SHELF_ACCESS['NO_ACCESS'],
-        ' checked="checked"' if user_permission.access_level == SHELF_ACCESS['NO_ACCESS'] else '',
+        OrganizationShelf.SHELF_ACCESS['NO_ACCESS'],
+        ' checked="checked"' if user_permission.access_level == OrganizationShelf.SHELF_ACCESS['NO_ACCESS'] else '',
     )
 
 

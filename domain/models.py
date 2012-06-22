@@ -322,8 +322,6 @@ class PublicationRevision(models.Model):
 
 # SHELF
 
-SHELF_ACCESS = {'NO_ACCESS':0, 'VIEW_ACCESS':1, 'PUBLISH_ACCESS':2}
-
 class OrganizationShelf(models.Model):
     organization = models.ForeignKey(Organization)
     name = models.CharField(max_length=200)
@@ -335,6 +333,8 @@ class OrganizationShelf(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    SHELF_ACCESS = {'NO_ACCESS':0, 'VIEW_ACCESS':1, 'PUBLISH_ACCESS':2}
 
     def _get_document_count(self):
         return PublicationShelf.objects.filter(shelf=self).count()
@@ -359,21 +359,21 @@ class PublicationShelf(models.Model):
 
 class OrganizationShelfPermission(models.Model):
     shelf = models.OneToOneField(OrganizationShelf)
-    access_level = models.IntegerField(default=SHELF_ACCESS['NO_ACCESS'])
+    access_level = models.IntegerField(default=OrganizationShelf.SHELF_ACCESS['NO_ACCESS'])
     created = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(User, related_name='created_organization_shelf_permissions')
 
 class GroupShelfPermission(models.Model):
     group = models.ForeignKey(OrganizationGroup)
     shelf = models.ForeignKey(OrganizationShelf)
-    access_level = models.IntegerField(default=SHELF_ACCESS['NO_ACCESS'])
+    access_level = models.IntegerField(default=OrganizationShelf.SHELF_ACCESS['NO_ACCESS'])
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='created_group_shelf_permissions')
 
 class UserShelfPermission(models.Model):
     user = models.ForeignKey(User)
     shelf = models.ForeignKey(OrganizationShelf)
-    access_level = models.IntegerField(default=SHELF_ACCESS['NO_ACCESS'])
+    access_level = models.IntegerField(default=OrganizationShelf.SHELF_ACCESS['NO_ACCESS'])
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='created_user_shelf_permissions')
 

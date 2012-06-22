@@ -411,7 +411,7 @@ def download_publication(request, publication_uid):
 
 def _persist_shelf_permissions(request, organization, shelf):
     # Organization Level
-    organization_access_level = int(request.POST.get('all-permission', SHELF_ACCESS['VIEW_ACCESS']))
+    organization_access_level = int(request.POST.get('all-permission', OrganizationShelf.SHELF_ACCESS['VIEW_ACCESS']))
     try:
         organization_shelf_permission = OrganizationShelfPermission.objects.get(shelf=shelf)
     except OrganizationShelfPermission.DoesNotExist:
@@ -422,7 +422,7 @@ def _persist_shelf_permissions(request, organization, shelf):
 
     # Group Level
     for group in organization.organizationgroup_set.all():
-        group_access_level = int(request.POST.get('group-permission-%d' % group.id, SHELF_ACCESS['VIEW_ACCESS']))
+        group_access_level = int(request.POST.get('group-permission-%d' % group.id, OrganizationShelf.SHELF_ACCESS['VIEW_ACCESS']))
 
         try:
             group_shelf_permission = GroupShelfPermission.objects.get(group=group, shelf=shelf)
@@ -449,7 +449,7 @@ def _persist_shelf_permissions(request, organization, shelf):
             except UserOrganization.DoesNotExist:
                 continue
 
-            user_access_level = int(request.POST.get('user-permission-%d' % user.id, SHELF_ACCESS['VIEW_ACCESS']))
+            user_access_level = int(request.POST.get('user-permission-%d' % user.id, OrganizationShelf.SHELF_ACCESS['VIEW_ACCESS']))
             UserShelfPermission.objects.create(user=user, shelf=shelf, access_level=user_access_level, created_by=request.user)
 
 
