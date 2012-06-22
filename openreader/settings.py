@@ -162,8 +162,14 @@ LOGGING = {
 
 # Email
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_DOMAIN_NAME = 'localhost'
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'application.testbed@gmail.com'
+EMAIL_HOST_PASSWORD = 'opendreamqwer'
+EMAIL_PORT = 587
 
 EMAIL_ADDRESS_NO_REPLY = 'noreply@' + EMAIL_DOMAIN_NAME
 
