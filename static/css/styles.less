@@ -834,6 +834,97 @@
     .shelf-permission-controls {
         margin:10px 0px 10px;
 
+        table {
+            td.group {
+                color: #444;
+                font-size: 1.1em;
+                padding: 10px;
+
+                em {
+                    color: #333;
+                    font-weight: bold;
+                    font-style: normal;
+                }
+            }
+
+            td.permission {
+                padding: 10px;
+                width: 455px;
+
+                label {
+                    display: inline;
+                    margin-right: 20px;
+                }
+
+                input {
+                    margin-right: 2px;
+                }
+            }
+
+            td.remove {
+                text-align: center;
+                width: 60px;
+            }
+        }
+
+        .user_permissions {
+            h4 {
+                color: #555;
+                font-size: 1em;
+                font-weight: normal;
+                margin-bottom: 7px;
+            }
+
+            table {
+                margin-top: 15px;
+            }
+
+            .permission_panel {
+                background-color: #FFC;
+                border: 1px solid #CCC;
+                padding: 15px;
+                margin-top: 10px;
+
+                .head {
+                    color: #555;
+                    font-size: 1.1em;
+                    margin-bottom: 10px;
+                }
+
+                .input {
+                    label {
+                        display:inline;
+                        margin-right: 15px;
+                    }
+                }
+
+                .permission_actions {
+                    margin-top:20px;
+
+                    button {
+                        margin-right:15px;
+                    }
+                }
+
+                .user_selection {
+                    margin-bottom:15px;
+
+                    select {
+                        width: 600px;
+                    }
+                }
+            }
+        }
+
+        .user_permission_head {
+            color: #777;
+            margin-bottom: 7px;
+        }
+
+        .extra_permission {
+
+        }
+
         .permissions li {
             background-color:#FFD;
             list-style:disc;
@@ -863,63 +954,6 @@
 
             a {
                 margin-left:10px;
-            }
-        }
-
-        .permission_panel {
-            display:none;
-            background-color:#666;
-            border:1px solid #999;
-            padding:15px;
-            margin-top:20px;
-
-            .head {
-                font-size:1.1em;
-                color:#ceecef;
-                margin-bottom:15px;
-
-                select {
-                    margin:0px 10px;
-                }
-            }
-
-            li {
-                margin-bottom:10px;
-            }
-
-            input {
-                display:inline;
-                margin-right:8px;
-            }
-
-            label {
-                color:#FFF;
-                display:inline;
-                font-size:1em;
-            }
-
-            .permission_actions {
-                margin-top:20px;
-
-                button {
-                    margin-right:15px;
-                }
-            }
-
-            .select_individual {
-                margin-bottom:15px;
-
-                select {
-                    width:500px;
-                }
-
-                .as-selections {
-                    margin:7px 0px 15px;
-                }
-
-                input.as-input {
-                    box-shadow:none;
-                }
             }
         }
     }

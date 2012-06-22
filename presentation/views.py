@@ -410,23 +410,47 @@ def download_publication(request, publication_uid):
 # ----------------------------------------------------------------------------------------------------------------------
 
 def _persist_shelf_permissions(request, organization, shelf):
-    OrganizationShelfPermission.objects.filter(shelf=shelf).delete()
-    GroupShelfPermission.objects.filter(shelf=shelf).delete()
+    # Organization Level
+    organization_access_level = int(request.POST.get('all-permission', SHELF_ACCESS['VIEW_ACCESS']))
+    try:
+        organization_shelf_permission = OrganizationShelfPermission.objects.get(shelf=shelf)
+    except OrganizationShelfPermission.DoesNotExist:
+        OrganizationShelfPermission.objects.create(shelf=shelf, access_level=organization_access_level, created_by=request.user)
+    else:
+        organization_shelf_permission.access_level = organization_access_level
+        organization_shelf_permission.save()
+
+    # Group Level
+    for group in organization.organizationgroup_set.all():
+        group_access_level = int(request.POST.get('group-permission-%d' % group.id, SHELF_ACCESS['VIEW_ACCESS']))
+
+        try:
+            group_shelf_permission = GroupShelfPermission.objects.get(group=group, shelf=shelf)
+        except GroupShelfPermission.DoesNotExist:
+            GroupShelfPermission.objects.create(group=group, shelf=shelf, access_level=group_access_level, created_by=request.user)
+        else:
+            group_shelf_permission.access_level = group_access_level
+            group_shelf_permission.save()
+
+    # User Level
     UserShelfPermission.objects.filter(shelf=shelf).delete()
 
-    for permission in request.POST.getlist('permission'):
-        permit = permission.split('-')
+    for key in request.POST.keys():
+        print key[:16]
+        if key[:16] == 'user-permission-':
+            print 'user-%s' % key[16:]
+            try:
+                user = User.objects.get(id=key[16:])
+            except User.DoesNotExist:
+                continue
 
-        if permit[0] == 'all':
-            OrganizationShelfPermission.objects.create(shelf=shelf, access_level=int(permit[1]), created_by=request.user)
+            try:
+                UserOrganization.objects.get(user=user, organization=organization)
+            except UserOrganization.DoesNotExist:
+                continue
 
-        elif permit[0] == 'group':
-            group = get_object_or_404(OrganizationGroup, pk=int(permit[1]))
-            GroupShelfPermission.objects.create(shelf=shelf, group=group, access_level=int(permit[2]), created_by=request.user)
-
-        elif permit[0] == 'user':
-            user = get_object_or_404(User, pk=int(permit[1]))
-            UserShelfPermission.objects.create(shelf=shelf, user=user, access_level=int(permit[2]), created_by=request.user)
+            user_access_level = int(request.POST.get('user-permission-%d' % user.id, SHELF_ACCESS['VIEW_ACCESS']))
+            UserShelfPermission.objects.create(user=user, shelf=shelf, access_level=user_access_level, created_by=request.user)
 
 
 def _extract_shelf_permissions(shelf):
@@ -455,27 +479,23 @@ def create_document_shelf(request, organization_slug):
         raise Http404
 
     if request.method == 'POST':
+        print request.POST
         form = OrganizationShelfForm(request.POST)
         if form.is_valid():
             name = form.cleaned_data['name']
             auto_sync = form.cleaned_data['auto_sync']
             shelf_icon = form.cleaned_data['shelf_icon']
-            permissions = request.POST.getlist('permission')
 
             shelf = OrganizationShelf.objects.create(organization=organization, name=name, auto_sync=auto_sync, icon=shelf_icon, created_by=request.user)
-
             _persist_shelf_permissions(request, organization, shelf)
 
             messages.success(request, u'สร้างกลุ่มเอกสารเรียบร้อย')
             return redirect('view_documents_by_shelf', organization_slug=organization.slug, shelf_id=shelf.id)
 
-        shelf_permissions = request.POST.getlist('permission')
-
     else:
         form = OrganizationShelfForm(initial={'shelf_icon':settings.DEFAULT_SHELF_ICON})
-        shelf_permissions = ['all-1']
 
-    return render(request, 'document/shelf_modify.html', {'organization':organization, 'form':form, 'shelf':None, 'shelf_type':'create', 'shelf_permissions':shelf_permissions})
+    return render(request, 'document/shelf_modify.html', {'organization':organization, 'form':form, 'shelf':None, 'shelf_type':'create'})
 
 
 @login_required
@@ -499,13 +519,10 @@ def edit_document_shelf(request, organization_slug, shelf_id):
             messages.success(request, u'แก้ไขกลุ่มเอกสารเรียบร้อย')
             return redirect('view_documents_by_shelf', organization_slug=organization.slug, shelf_id=shelf.id)
 
-        shelf_permissions = request.POST.getlist('permission')
-
     else:
         form = OrganizationShelfForm(initial={'name':shelf.name, 'auto_sync':shelf.auto_sync, 'shelf_icon':shelf.icon})
-        shelf_permissions = _extract_shelf_permissions(shelf)
 
-    return render(request, 'document/shelf_modify.html', {'organization':organization, 'form':form, 'shelf':shelf, 'shelf_type':'edit', 'shelf_permissions':shelf_permissions})
+    return render(request, 'document/shelf_modify.html', {'organization':organization, 'form':form, 'shelf':shelf, 'shelf_type':'edit'})
 
 
 @login_required

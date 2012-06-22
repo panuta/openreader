@@ -1151,6 +1151,71 @@ table tr.checked td {
 .modify_shelf_page .shelf-permission-controls {
   margin: 10px 0px 10px;
 }
+.modify_shelf_page .shelf-permission-controls table td.group {
+  color: #444;
+  font-size: 1.1em;
+  padding: 10px;
+}
+.modify_shelf_page .shelf-permission-controls table td.group em {
+  color: #333;
+  font-weight: bold;
+  font-style: normal;
+}
+.modify_shelf_page .shelf-permission-controls table td.permission {
+  padding: 10px;
+  width: 455px;
+}
+.modify_shelf_page .shelf-permission-controls table td.permission label {
+  display: inline;
+  margin-right: 20px;
+}
+.modify_shelf_page .shelf-permission-controls table td.permission input {
+  margin-right: 2px;
+}
+.modify_shelf_page .shelf-permission-controls table td.remove {
+  text-align: center;
+  width: 60px;
+}
+.modify_shelf_page .shelf-permission-controls .user_permissions h4 {
+  color: #555;
+  font-size: 1em;
+  font-weight: normal;
+  margin-bottom: 7px;
+}
+.modify_shelf_page .shelf-permission-controls .user_permissions table {
+  margin-top: 15px;
+}
+.modify_shelf_page .shelf-permission-controls .user_permissions .permission_panel {
+  background-color: #FFC;
+  border: 1px solid #CCC;
+  padding: 15px;
+  margin-top: 10px;
+}
+.modify_shelf_page .shelf-permission-controls .user_permissions .permission_panel .head {
+  color: #555;
+  font-size: 1.1em;
+  margin-bottom: 10px;
+}
+.modify_shelf_page .shelf-permission-controls .user_permissions .permission_panel .input label {
+  display: inline;
+  margin-right: 15px;
+}
+.modify_shelf_page .shelf-permission-controls .user_permissions .permission_panel .permission_actions {
+  margin-top: 20px;
+}
+.modify_shelf_page .shelf-permission-controls .user_permissions .permission_panel .permission_actions button {
+  margin-right: 15px;
+}
+.modify_shelf_page .shelf-permission-controls .user_permissions .permission_panel .user_selection {
+  margin-bottom: 15px;
+}
+.modify_shelf_page .shelf-permission-controls .user_permissions .permission_panel .user_selection select {
+  width: 600px;
+}
+.modify_shelf_page .shelf-permission-controls .user_permission_head {
+  color: #777;
+  margin-bottom: 7px;
+}
 .modify_shelf_page .shelf-permission-controls .permissions li {
   background-color: #FFD;
   list-style: disc;
@@ -1184,51 +1249,6 @@ table tr.checked td {
 }
 .modify_shelf_page .shelf-permission-controls .add_permissions a {
   margin-left: 10px;
-}
-.modify_shelf_page .shelf-permission-controls .permission_panel {
-  display: none;
-  background-color: #666;
-  border: 1px solid #999;
-  padding: 15px;
-  margin-top: 20px;
-}
-.modify_shelf_page .shelf-permission-controls .permission_panel .head {
-  font-size: 1.1em;
-  color: #ceecef;
-  margin-bottom: 15px;
-}
-.modify_shelf_page .shelf-permission-controls .permission_panel .head select {
-  margin: 0px 10px;
-}
-.modify_shelf_page .shelf-permission-controls .permission_panel li {
-  margin-bottom: 10px;
-}
-.modify_shelf_page .shelf-permission-controls .permission_panel input {
-  display: inline;
-  margin-right: 8px;
-}
-.modify_shelf_page .shelf-permission-controls .permission_panel label {
-  color: #FFF;
-  display: inline;
-  font-size: 1em;
-}
-.modify_shelf_page .shelf-permission-controls .permission_panel .permission_actions {
-  margin-top: 20px;
-}
-.modify_shelf_page .shelf-permission-controls .permission_panel .permission_actions button {
-  margin-right: 15px;
-}
-.modify_shelf_page .shelf-permission-controls .permission_panel .select_individual {
-  margin-bottom: 15px;
-}
-.modify_shelf_page .shelf-permission-controls .permission_panel .select_individual select {
-  width: 500px;
-}
-.modify_shelf_page .shelf-permission-controls .permission_panel .select_individual .as-selections {
-  margin: 7px 0px 15px;
-}
-.modify_shelf_page .shelf-permission-controls .permission_panel .select_individual input.as-input {
-  box-shadow: none;
 }
 .modify_shelf_page .delete_documents {
   margin: 20px 0px 10px 20px;
