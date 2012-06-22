@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 import logging
+from datetime import datetime
 
 from django.conf import settings
 from django.contrib import messages
@@ -36,6 +37,8 @@ def ajax_resend_user_invitation(request, invitation_id):
             raise Http404
 
         if invitation.send_invitation_email():
+            invitation.created = datetime.now()
+            invitation.save()
             return response_json_success()
         else:
             return response_json_error('send-invitation-failed')
@@ -78,6 +81,25 @@ def ajax_remove_organization_user(request, organization_user_id):
         return response_json_success({'redirect_url':reverse('view_organization_users', args=[organization.slug])})
     else:
         raise Http404
+
+@require_POST
+@login_required
+def ajax_bringback_organization_user(request, organization_user_id):
+    if request.is_ajax():
+        user_organization = get_object_or_404(UserOrganization, pk=organization_user_id)
+        organization = user_organization.organization
+
+        if not get_permission_backend(request).can_manage_user(request.user, organization):
+            raise Http404
+
+        user_organization.is_active = True
+        user_organization.save()
+
+        messages.success(request, u'นำผู้ใช้กลับเข้าบริษัทเรียบร้อย')
+        return response_json_success({'redirect_url':reverse('view_organization_users', args=[organization.slug])})
+    else:
+        raise Http404
+
 
 
 @require_POST
@@ -300,6 +322,8 @@ def ajax_edit_publication(request, organization_slug):
 
     publication.title = title
     publication.description = description
+    publication.modified = datetime.now()
+    publication.modified_by = request.user
     publication.save()
 
     PublicationTag.objects.filter(publication=publication).delete()

@@ -14,6 +14,13 @@ $(document).ready(function () {
     }, 'json');
     return false;
   });
+
+  $('#bringback-user-modal button[type="submit"]').on('click', function(e) {
+    $.post('{% url ajax_bringback_organization_user user_organization.id %}', {}, function(response) {
+      window.location = response.redirect_url;
+    }, 'json');
+    return false;
+  });
 });
 </script>
 {% endblock %}
@@ -63,13 +70,27 @@ $(document).ready(function () {
 
         {% if user.id != user_organization.user.id %}
             <div class="delete-panel">
-                <a href="#remove-user-modal" class="danger" data-toggle="modal">ถอดผู้ใช้ออกจาก{{organization.prefix}}</a>
+                {% if user_organization.is_active %}
+                <a href="#remove-user-modal" class="danger" data-toggle="modal">นำผู้ใช้ออกจาก{{organization.prefix}}</a>
+                {% else %}
+                <a href="#bringback-user-modal" data-toggle="modal">นำผู้ใช้กลับเข้า{{organization.prefix}}</a>
+                {% endif %}
             </div>
         {% endif %}
 
     </div></div>
 </div></div>
 
+<div class="modal hide" id="bringback-user-modal">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>นำผู้ใช้กลับเข้าบริษัท</h3>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal">ยกเลิก</button>
+        <button type="submit" class="btn btn-danger">ยืนยันการนำกลับ</button>
+    </div>
+</div>
 <div class="modal hide" id="remove-user-modal">
     <div class="modal-header">
         <a class="close" data-dismiss="modal">×</a>

@@ -23,15 +23,22 @@ class EmailAuthenticationBackend(ModelBackend):
 
 class InvitationAuthenticationBackend(object):
     def authenticate(self, invitation_key=None):
-        from domain.models import UserOrganizationInvitation
+        from domain.models import UserOrganizationInvitation, OrganizationInvitation
 
         try:
             invitation = UserOrganizationInvitation.objects.get(invitation_key=invitation_key)
         except UserOrganizationInvitation.DoesNotExist:
-            return None
+            try:
+                invitation = OrganizationInvitation.objects.get(invitation_key=invitation_key)
+            except OrganizationInvitation.DoesNotExist:
+                return None
+            else:
+                email = invitation.admin_email
+        else:
+            email = invitation.email
 
         try:
-            user = User.objects.get(email=invitation.email)
+            user = User.objects.get(email=email)
         except User.DoesNotExist:
             return None
 
