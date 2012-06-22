@@ -109,7 +109,7 @@ def do_can(parser, token):
 
 @register.simple_tag
 def generate_organization_menu(user):
-    user_organizations = UserOrganization.objects.filter(user=user).order_by('organization__name')
+    user_organizations = UserOrganization.objects.filter(user=user, is_active=True).order_by('organization__name')
 
     if len(user_organizations) > 1:
         menus = []
