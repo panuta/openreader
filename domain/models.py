@@ -132,7 +132,7 @@ class UserGroup(models.Model):
 class OrganizationInvitationManager(models.Manager):
 
     def create_invitation(self, organization_prefix, organization_name, organization_slug, admin_email, created_by):
-        key_salt = 'domain.models.OrganizationInvitationManager'
+        key_salt = 'domain.models.OrganizationInvitationManager' + settings.SECRET_KEY
         encode_key = (admin_email+organization_slug).encode('utf-8')
         invitation_key = salted_hmac(key_salt, encode_key).hexdigest()
 
@@ -193,7 +193,7 @@ class OrganizationInvitation(models.Model):
 class UserInvitationManager(models.Manager):
 
     def create_invitation(self, email, organization, groups, created_by):
-        key_salt = 'domain.models.UserInvitationManager'
+        key_salt = 'domain.models.UserInvitationManager' + settings.SECRET_KEY
         encode_key = (email+organization.slug).encode('utf-8')
         invitation_key = salted_hmac(key_salt, encode_key).hexdigest()
 
