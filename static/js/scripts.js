@@ -225,7 +225,7 @@ $(document).ready(function () {
         return false;
     });
 
-    $('#publication-modal .save_button').on('click', function() {
+    $('#publication-modal .save_button').live('click', function() {
         var uid = $('#publication-modal').data('uid');
         var title = $('#id_publication_title').val();
         var description = $('#id_publication_description').val();
@@ -556,8 +556,8 @@ function initializeDocumentsShelfPage(shelf_id) {
                 if(response.status == 'success') {
                     for(var i=0; i<publications.length; i++){
                         for(var j=0; j<response.tag_names.length; j++) {
-                            if(!$('#' + publications[i] + ' .tag li').filter(function(index){return $(this).text() == response.tag_names[i];}).length) {
-                                $('#' + publications[i] + ' .tag ul').append('<li>' + response.tag_names[i] + '</li>');
+                            if(!$('#' + publications[i] + ' .tag li').filter(function(index){return $(this).text() == response.tag_names[j];}).length) {
+                                $('#' + publications[i] + ' .tag ul').append('<li>' + response.tag_names[j] + '</li>');
                             }
                         }
                     }

@@ -12,7 +12,6 @@ var MAX_PUBLICATION_FILE_SIZE_TEXT = '{{ settings.MAX_PUBLICATION_FILE_SIZE_TEXT
 $(document).ready(function () {
     initializeDocumentsShelfPage("{{ shelf.id }}");
 
-
     $('.documents_table .js-open-publication').live('click', function() {
         $('#publication-modal').on('publication_deleted', function() {
             $('.documents_table .js-open-publication[uid="' + $('#publication-modal').data('uid') + '"]').closest('tr').remove();
