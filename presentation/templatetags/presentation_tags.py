@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 
 register = template.Library()
 
-from domain.models import OrganizationGroup, UserOrganization, UserOrganizationInvitation, OrganizationShelfPermission
+from domain.models import OrganizationGroup, UserOrganization, UserOrganizationInvitation, OrganizationShelf, OrganizationShelfPermission, GroupShelfPermission
 
 from accounts.permissions import get_backend as get_permission_backend
 
@@ -45,7 +45,7 @@ def shelf_organization_permission_radio(shelf):
 
 @register.simple_tag
 def shelf_group_permission_radio(group, shelf):
-    shelf_permission, created = OrganizationShelfPermission.objects.get_or_create(shelf=shelf)
+    shelf_permission, created = GroupShelfPermission.objects.get_or_create(shelf=shelf, group=group)
 
     return '<label><input type="radio" name="group-%d-permission" value="%d"%s/> อัพโหลดและแก้ไขไฟล์ได้</label>\
         <label><input type="radio" name="group-%d-permission" value="%d"%s/> ดูไฟล์ได้อย่างเดียว</label>\
