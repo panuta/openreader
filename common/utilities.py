@@ -11,17 +11,17 @@ from dateutil import tz
 from constants import THAI_MONTH_NAME, THAI_MONTH_ABBR_NAME
 
 def format_full_datetime(datetime):
-    localzone = tz.tzlocal()
-    datetime = datetime.astimezone(localzone)
     try:
+        localzone = tz.tzlocal()
+        datetime = datetime.astimezone(localzone)
         return unicode('%d %s %d เวลา %02d:%02d น.', 'utf-8') % (datetime.day, unicode(THAI_MONTH_NAME[datetime.month], 'utf-8'), datetime.year + 543, datetime.hour, datetime.minute)
     except:
         return ''
 
 def format_abbr_datetime(datetime):
-    localzone = tz.tzlocal()
-    datetime = datetime.astimezone(localzone)
     try:
+        localzone = tz.tzlocal()
+        datetime = datetime.astimezone(localzone)
         return unicode('%d %s %d เวลา %02d:%02d น.', 'utf-8') % (datetime.day, unicode(THAI_MONTH_ABBR_NAME[datetime.month], 'utf-8'), datetime.year + 543, datetime.hour, datetime.minute)
     except:
         return ''
