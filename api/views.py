@@ -2,6 +2,7 @@ from httpauth import logged_in_or_basicauth
 from datetime import datetime, timedelta
 import md5
 import base64
+from StringIO import StringIO
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate
@@ -17,7 +18,7 @@ from common.fileservers import generate_download_url
 
 from accounts.permissions import get_backend as get_permission_backend
 from models import *
-from domain.models import UserProfile, UserOrganization, OrganizationShelf, Publication, OrganizationDownloadServer
+from domain.models import *
 
 
 def _has_required_parameters(request, names):
@@ -51,7 +52,6 @@ def request_access(request):
 
 @logged_in_or_basicauth()
 def list_publication(request):
-    print request
     #http://admin%40openreader.com:panuta@localhost:8000/api/list/publication/?organization=opendream
     if _has_required_parameters(request, ['organization']):
         result = {}
@@ -74,7 +74,7 @@ def list_publication(request):
         shelves_list = []
         for shelf in shelves:
             shelf_dict = model_to_dict(shelf)
-            #shelf_dict['icon'] = ''
+            shelf_dict['archive'] = UserShelfArchive.objects.is_archive(user_profile.user, shelf)
             shelf_dict['publications'] = []
             for publication in shelf.publication_set.all():
                 publication_dict = model_to_dict(publication)
@@ -123,10 +123,6 @@ def get_user_organization(request):
     
     return HttpResponse(simplejson.dumps(result))
 
-
-
-
-
 from django.utils.importlib import import_module
 
 def _extract_user(request):
@@ -158,3 +154,21 @@ def request_download_publication(request, publication_uid):
     
     return HttpResponse(simplejson.dumps(server_urls))
 
+@require_GET
+@logged_in_or_basicauth()
+def user_archive_shelves(request):
+    if _has_required_parameters(request, ['shelves']):
+        str_shelves = request.GET.get('shelves')
+        shelves = simplejson.load(StringIO(str_shelves))
+        for s in shelves:
+            try:
+                shelf = OrganizationShelf.objects.get(id=s['id'])
+            except OrganizationShelf.DoesNotExist:
+                return HttpResponse('Fail, shelf[%s] does not exist.' % s['id'])
+
+            if s['archive']:
+                archive, created = UserShelfArchive.objects.get_or_create(user=request.user, shelf=shelf)
+            else:
+                UserShelfArchive.objects.filter(user=request.user, shelf=shelf).delete()
+                
+    return HttpResponse('Success')

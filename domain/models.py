@@ -333,6 +333,7 @@ class OrganizationShelf(models.Model):
     auto_sync = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='created_organization_shelves')
+    archive = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.name
@@ -379,6 +380,20 @@ class UserShelfPermission(models.Model):
     access_level = models.IntegerField(default=OrganizationShelf.SHELF_ACCESS['NO_ACCESS'])
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='created_user_shelf_permissions')
+
+class ShelfArchiveManager(models.Manager):
+    def is_archive(self, user, shelf):
+        if UserShelfArchive.objects.filter(user=user, shelf=shelf).exists():
+            return True
+        else:
+            return shelf.archive 
+
+class UserShelfArchive(models.Model):
+    user    = models.ForeignKey(User)
+    shelf   = models.ForeignKey(OrganizationShelf)
+    created = models.DateTimeField(auto_now_add=True)
+
+    objects = ShelfArchiveManager()
 
 # TAG
 
