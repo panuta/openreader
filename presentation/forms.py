@@ -135,5 +135,6 @@ class OrganizationShelfMultipleChoiceField(forms.ModelMultipleChoiceField):
 class OrganizationShelfForm(forms.Form):
     name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'input-normal'}))
     auto_sync = forms.BooleanField(required=False)
+    archive = forms.BooleanField(required=False)
     shelf_icon = forms.CharField(max_length=100)
 
