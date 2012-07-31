@@ -32,11 +32,11 @@ This is a helper function used by both 'logged_in_or_basicauth' and
 are already logged in or if they have provided proper http-authorization
 and returning the view if all goes well, otherwise responding with a 401.
 """
-    token = request.GET.get('token')
-    if (token):
-        if token_expired(token):
-            return HttpResponse(simplejson.dumps({'error': 'token expired'}))
-        
+    # token = request.GET.get('token')
+    # if (token):
+    #     if token_expired(token):
+    #         return HttpResponse(simplejson.dumps({'error': 'token expired'}))
+    
     if test_func(request.user):
         # Already logged in, just return the view.
         #
@@ -72,7 +72,41 @@ and returning the view if all goes well, otherwise responding with a 401.
     response.status_code = 401
     response['WWW-Authenticate'] = 'Basic realm="%s"' % realm
     return response
- 
+
+import re
+
+def determine_device(request):
+
+    device = {}
+
+    ua = request.META.get('HTTP_USER_AGENT', '').lower()
+    
+    if ua.find("iphone") > 0:
+        device['type'] = "iphone" + re.search("iphone os (\d)", ua).groups(0)[0]
+        
+    if ua.find("ipad") > 0:
+        device['type'] = "ipad"
+        
+    if ua.find("android") > 0:
+        device['type'] = "android" + re.search("android (\d\.\d)", ua).groups(0)[0].translate(None, '.')
+        
+    if ua.find("blackberry") > 0:
+        device['type'] = "blackberry"
+        
+    if ua.find("windows phone os 7") > 0:
+        device['type'] = "winphone7"
+        
+    if ua.find("iemobile") > 0:
+        device['type'] = "winmo"
+        
+    if not device:          # either desktop, or something we don't care about.
+        device['type'] = "baseline"
+    
+    # spits out device names for CSS targeting, to be applied to <html> or <body>.
+    device['classes'] = " ".join(v for (k,v) in device.items())
+    
+    return {'device': device }
+
 #############################################################################
 #
 def logged_in_or_basicauth(realm = ""):

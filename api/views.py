@@ -14,6 +14,7 @@ from django.core.urlresolvers import reverse
 from django.views.decorators.http import require_GET
 from django.utils import simplejson
 
+from private_files.views import get_file as private_files_get_file
 from common.fileservers import generate_download_url
 
 from accounts.permissions import get_backend as get_permission_backend
@@ -36,19 +37,33 @@ def _get_email(request):
     auth = request.META['HTTP_AUTHORIZATION'].split()
     email, password = base64.b64decode(auth[1]).split(':')
     return email
+
+from django.utils.importlib import import_module
+
+def _extract_user(request):
+    if request.user.is_authenticated():
+        return request.user
+    else:
+        try:
+            auth = request.META['HTTP_AUTHORIZATION'].split(' ')
+            email, password = base64.b64decode(auth[1]).split(':')
+            return UserProfile.get_instance_from_email(email).user
+        except:
+            return None
+
+
+# @logged_in_or_basicauth()
+# def request_access(request):
+#     #http://staff%40openreader.com:panuta@localhost:8000/api/request/access/
+#     email = _get_email(request)
     
-@logged_in_or_basicauth()
-def request_access(request):
-    #http://staff%40openreader.com:panuta@localhost:8000/api/request/access/
-    email = _get_email(request)
-    
-    t = datetime.now()
-    token = md5.md5(email + t.strftime('%s') + str(t.microsecond)).hexdigest()
-    expired = datetime.now() + timedelta(days=1)
-    Token.objects.filter(email=email).delete()
-    Token.objects.create(email=email, token=token, expired=expired)
+#     t = datetime.now()
+#     token = md5.md5(email + t.strftime('%s') + str(t.microsecond)).hexdigest()
+#     expired = datetime.now() + timedelta(days=1)
+#     Token.objects.filter(email=email).delete()
+#     Token.objects.create(email=email, token=token, expired=expired)
         
-    return HttpResponse(simplejson.dumps({'token': token}))
+    # return HttpResponse(simplejson.dumps({'token': token}))
 
 @logged_in_or_basicauth()
 def list_publication(request):
@@ -82,7 +97,7 @@ def list_publication(request):
                 publication_dict['auto_sync'] =  shelf.auto_sync
                 publication_dict['tags'] = [tag.tag_name for tag in publication.tags.all()]
                 
-                url = reverse('download_publication', args=[publication.uid])
+                url = reverse('api_request_download_publication', args=[publication.uid])
                 url = request.build_absolute_uri(url)
                 publication_dict['url'] = url
                 
@@ -123,36 +138,24 @@ def get_user_organization(request):
     
     return HttpResponse(simplejson.dumps(result))
 
-from django.utils.importlib import import_module
-
-def _extract_user(request):
-    if request.user.is_authenticated():
-        return request.user
-    else:
-        try:
-            auth = request.META['HTTP_AUTHORIZATION'].split(' ')
-            email, password = base64.b64decode(auth[1]).split(':')
-            return UserProfile.get_instance_from_email(email).user
-        except:
-            return None
-
 @require_GET
 @logged_in_or_basicauth()
 def request_download_publication(request, publication_uid):
     publication = get_object_or_404(Publication, uid=publication_uid)
     user = _extract_user(request)
 
-    # if not can(user, 'view_publication', publication.organization, {'publication':publication}):
     if not get_permission_backend(request).get_publication_access(user, publication):
         raise Http403
-    
-    server_urls = []
-    for server in OrganizationDownloadServer.objects.filter(organization=publication.organization).order_by('-priority'):
-        download_url = generate_download_url(server, publication)
-        if download_url:
-            server_urls.append(download_url)
-    
-    return HttpResponse(simplejson.dumps(server_urls))
+
+    # ----- CDN support is not available for NBTC -----
+    # server_urls = []
+    # for server in OrganizationDownloadServer.objects.filter(organization=publication.organization).order_by('-priority'):
+    #     download_url = generate_download_url(server, publication)
+    #     if download_url:
+    #         server_urls.append(download_url)
+    # return HttpResponse(simplejson.dumps(server_urls))
+
+    return private_files_get_file(request, 'domain', 'Publication', 'uploaded_file', str(publication.id), '%s.%s' % (publication.original_file_name, publication.file_ext))
 
 @require_GET
 @logged_in_or_basicauth()
@@ -172,3 +175,4 @@ def user_archive_shelves(request):
                 UserShelfArchive.objects.filter(user=request.user, shelf=shelf).delete()
                 
     return HttpResponse('Success')
+
