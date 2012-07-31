@@ -125,6 +125,11 @@ $(document).ready(function () {
             </div>
 
             <div class="control-group">
+                <label class="control-label" for="id_archive">Archive</label>
+                <div class="controls row-controls"><ul><li><label>{{form.archive}} ทุกไฟล์ในกลุ่มเอกสารนี้จะถูกเก็บเข้ากรุ</label></li></ul>{{form.archive.errors}}</div>
+            </div>
+
+            <div class="control-group">
                 <label class="control-label" for="id_shelf_icon">ไอคอนกลุ่มเอกสาร</label>
                 <div class="controls shelf-icon-controls">
                     <input type="hidden" name="shelf_icon" id="id_shelf_icon" value="{{form.shelf_icon.value}}" /><img src="{{STATIC_URL}}images/shelficons/24/{{form.shelf_icon.value}}.png" /><button class="btn btn-small" data-toggle="modal" data-target="#shelf_icons_modal">เปลี่ยนไอคอน</button>

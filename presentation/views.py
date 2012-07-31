@@ -485,8 +485,9 @@ def create_document_shelf(request, organization_slug):
             name = form.cleaned_data['name']
             auto_sync = form.cleaned_data['auto_sync']
             shelf_icon = form.cleaned_data['shelf_icon']
+            archive = form.cleaned_data['archive']
 
-            shelf = OrganizationShelf.objects.create(organization=organization, name=name, auto_sync=auto_sync, icon=shelf_icon, created_by=request.user)
+            shelf = OrganizationShelf.objects.create(organization=organization, name=name, auto_sync=auto_sync, archive=archive, icon=shelf_icon, created_by=request.user)
             _persist_shelf_permissions(request, organization, shelf)
 
             messages.success(request, u'สร้างกลุ่มเอกสารเรียบร้อย')
@@ -511,6 +512,7 @@ def edit_document_shelf(request, organization_slug, shelf_id):
         if form.is_valid():
             shelf.name = form.cleaned_data['name']
             shelf.auto_sync = form.cleaned_data['auto_sync']
+            shelf.archive = form.cleaned_data['archive']
             shelf.icon = form.cleaned_data['shelf_icon']
             shelf.save()
 
@@ -520,7 +522,7 @@ def edit_document_shelf(request, organization_slug, shelf_id):
             return redirect('view_documents_by_shelf', organization_slug=organization.slug, shelf_id=shelf.id)
 
     else:
-        form = OrganizationShelfForm(initial={'name':shelf.name, 'auto_sync':shelf.auto_sync, 'shelf_icon':shelf.icon})
+        form = OrganizationShelfForm(initial={'name':shelf.name, 'auto_sync':shelf.auto_sync, 'archive':shelf.archive, 'shelf_icon':shelf.icon})
 
     return render(request, 'document/shelf_modify.html', {'organization':organization, 'form':form, 'shelf':shelf, 'shelf_type':'edit'})
 
