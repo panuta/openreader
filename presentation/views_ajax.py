@@ -219,13 +219,17 @@ def upload_publication(request, organization_slug):
             return response_json_error()
 
         transaction.commit() # Need to commit before create task
+        
+        from signals import publication_uploaded
 
-        try:
-            generate_thumbnails.delay(publication.uid)
-        except:
-            import sys
-            import traceback
-            logger.critical(traceback.format_exc(sys.exc_info()[2]))
+        publication_uploaded.send(sender=publication, data=publication.id)
+
+        # try:
+        #     generate_thumbnails.delay(publication.uid)
+        # except:
+        #     import sys
+        #     import traceback
+        #     logger.critical(traceback.format_exc(sys.exc_info()[2]))
 
         return response_json_success({
             'uid': str(publication.uid),
