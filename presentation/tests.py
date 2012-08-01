@@ -51,18 +51,3 @@ class GroupMemberTest(TestCase):
         self.assertEqual(200, response.status_code)
         self.assertTrue(next in response.redirect_chain[0][0])
         
-class SignalstTest(TestCase):
-
-    def setUp(self):
-        self.admin = User.objects.get(email='admin@openreader.com')
-        self.opendream = Organization.objects.get(id=1)
-        self.shelf = OrganizationShelf.objects.create(organization=self.opendream, name='Test Shelf', created_by=self.admin)
-        self.pub = Publication(organization=self.opendream, title='Test Publication')
-        self.pub.uploaded_file = File(open('README.md'))
-        self.pub.uploaded_by = self.admin
-        self.pub.save()
-        PublicationShelf.objects.create(publication=self.pub, shelf=self.shelf, created_by=self.admin)
-
-    def test_publication_uploaded_signal(self):
-        generate_publication_thumbnail(sender=None, data=self.pub.id)
-        self.assertTrue(True)
