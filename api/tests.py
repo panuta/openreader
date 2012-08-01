@@ -36,20 +36,12 @@ class APITest(TestCase):
     def tearDown(self):
         self.client.logout()
 
-    def test_request_access(self):
-        response = self.client.get(reverse('api_request_access'))
-        self.assertEquals(200, response.status_code)
-        
-        json_data = simplejson.load(StringIO(response.content))
-        self.assertTrue(json_data['token'])
-        self.assertEquals(32, len(json_data['token']))
-
     def test_list_publication(self):
         response = self.client.get(reverse('api_list_publication'), {'organization': 'opendream'})
         json_data = simplejson.load(StringIO(response.content))
         self.assertTrue(json_data['organization'])
         self.assertEquals('Opendream', json_data['organization']['name'])
-        self.assertEquals(1, len(json_data['shelves']))
+        self.assertEquals(2, len(json_data['shelves']))
 
     def test_admin_shelf_archive(self):
         self.shelf.archive = True
@@ -73,8 +65,9 @@ class APITest(TestCase):
         self.assertTrue(json_data['shelves'][0]['archive'])
 
     def test_user_archive_shelves(self):
-        shelves = simplejson.dumps([{'id': self.shelf.id, 'archive': True}, {'id': self.shelf2.id, 'archive': True}])
-        response = self.client.get(reverse('api_user_archive_shelves'), {'shelves': shelves})
+        shelves = '%s|%s' % (self.shelf.id, self.shelf2.id)
+
+        response = self.client.get(reverse('api_user_config_shelves'), {'archive_shelves': shelves})
         self.assertEquals(200, response.status_code)
 
         response = self.client.get(reverse('api_list_publication'), {'organization': 'opendream'})
@@ -83,8 +76,7 @@ class APITest(TestCase):
         for s in json_data['shelves']:
             self.assertTrue(s['archive'])
 
-        shelves = simplejson.dumps([{'id': self.shelf.id, 'archive': False}, {'id': self.shelf2.id, 'archive': False}])
-        response = self.client.get(reverse('api_user_archive_shelves'), {'shelves': shelves})
+        response = self.client.get(reverse('api_user_config_shelves'), {'unarchive_shelves': shelves})
         self.assertEquals(200, response.status_code)
 
         response = self.client.get(reverse('api_list_publication'), {'organization': 'opendream'})
@@ -104,5 +96,3 @@ class APITest(TestCase):
     def test_request_download_publication(self):
         response = self.client.get(reverse('api_request_download_publication', args=[self.pub.uid]))
         self.assertEquals(200, response.status_code)
-        json_data = simplejson.load(StringIO(response.content))
-        self.assertTrue(json_data[0])

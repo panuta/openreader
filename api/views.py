@@ -13,6 +13,7 @@ from django.forms.models import model_to_dict
 from django.core.urlresolvers import reverse
 from django.views.decorators.http import require_GET
 from django.utils import simplejson
+from django.utils.importlib import import_module
 
 from private_files.views import get_file as private_files_get_file
 from common.fileservers import generate_download_url
@@ -38,8 +39,6 @@ def _get_email(request):
     email, password = base64.b64decode(auth[1]).split(':')
     return email
 
-from django.utils.importlib import import_module
-
 def _extract_user(request):
     if request.user.is_authenticated():
         return request.user
@@ -50,20 +49,6 @@ def _extract_user(request):
             return UserProfile.get_instance_from_email(email).user
         except:
             return None
-
-
-# @logged_in_or_basicauth()
-# def request_access(request):
-#     #http://staff%40openreader.com:panuta@localhost:8000/api/request/access/
-#     email = _get_email(request)
-    
-#     t = datetime.now()
-#     token = md5.md5(email + t.strftime('%s') + str(t.microsecond)).hexdigest()
-#     expired = datetime.now() + timedelta(days=1)
-#     Token.objects.filter(email=email).delete()
-#     Token.objects.create(email=email, token=token, expired=expired)
-        
-    # return HttpResponse(simplejson.dumps({'token': token}))
 
 @logged_in_or_basicauth()
 def list_publication(request):
@@ -89,7 +74,7 @@ def list_publication(request):
         shelves_list = []
         for shelf in shelves:
             shelf_dict = model_to_dict(shelf)
-            shelf_dict['archive'] = UserShelfArchive.objects.is_archive(user_profile.user, shelf)
+            shelf_dict['archive'] = OrganizationShelf.objects.is_archive(user_profile.user, shelf)
             shelf_dict['publications'] = []
             for publication in shelf.publication_set.all():
                 publication_dict = model_to_dict(publication)
@@ -157,22 +142,17 @@ def request_download_publication(request, publication_uid):
 
     return private_files_get_file(request, 'domain', 'Publication', 'uploaded_file', str(publication.id), '%s.%s' % (publication.original_file_name, publication.file_ext))
 
-@require_GET
 @logged_in_or_basicauth()
-def user_archive_shelves(request):
-    if _has_required_parameters(request, ['shelves']):
-        str_shelves = request.GET.get('shelves')
-        shelves = simplejson.load(StringIO(str_shelves))
-        for s in shelves:
-            try:
-                shelf = OrganizationShelf.objects.get(id=s['id'])
-            except OrganizationShelf.DoesNotExist:
-                return HttpResponse('Fail, shelf[%s] does not exist.' % s['id'])
+def user_config_shelves(request):
 
-            if s['archive']:
-                archive, created = UserShelfArchive.objects.get_or_create(user=request.user, shelf=shelf)
-            else:
-                UserShelfArchive.objects.filter(user=request.user, shelf=shelf).delete()
-                
+    if 'archive_shelves' in request.REQUEST:
+        params = request.REQUEST.get('archive_shelves')
+        shelf_ids = params.split('|')
+        OrganizationShelf.objects.archive(user=request.user, shelf_ids=shelf_ids)
+
+    if 'unarchive_shelves' in request.REQUEST:
+        params = request.REQUEST.get('unarchive_shelves')
+        shelf_ids = params.split('|')
+        OrganizationShelf.objects.unarchive(user=request.user, shelf_ids=shelf_ids)
+
     return HttpResponse('Success')
-
