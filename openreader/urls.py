@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 
-#from django.contrib import admin
-#admin.autodiscover()
+from django.contrib import admin
+admin.autodiscover()
 
 from django.conf import settings
 
@@ -23,7 +23,7 @@ urlpatterns = patterns('',
 
     url(r'^org/(?P<organization_slug>\w+)/$', 'presentation.views.view_organization_front', name='view_organization_front'),
 
-    #url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', include(admin.site.urls)),
 
     url(r'^private_files/', include('private_files.urls')),
 

@@ -187,7 +187,7 @@ def ajax_query_publication(request, publication_uid):
         'readonly': 'true' if not permission_backend.can_edit_publication(request.user, publication.organization, {'publication':publication}) else 'false',
     })
 
-@transaction.commit_manually
+@transaction.commit_on_success
 @require_POST
 @login_required
 def upload_publication(request, organization_slug):

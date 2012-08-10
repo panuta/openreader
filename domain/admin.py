@@ -22,12 +22,12 @@ class UserOrganizationInvitationAdmin(admin.ModelAdmin):
 class UserOrganizationInvitationUserGroupAdmin(admin.ModelAdmin):
     pass
 
-admin.site.register(Organization, OrganizationAdmin)
-admin.site.register(OrganizationGroup, OrganizationGroupAdmin)
-admin.site.register(UserOrganization, UserOrganizationAdmin)
-admin.site.register(UserGroup, UserGroupAdmin)
-admin.site.register(UserOrganizationInvitation, UserOrganizationInvitationAdmin)
-admin.site.register(UserOrganizationInvitationUserGroup, UserOrganizationInvitationUserGroupAdmin)
+#admin.site.register(Organization, OrganizationAdmin)
+#admin.site.register(OrganizationGroup, OrganizationGroupAdmin)
+#admin.site.register(UserOrganization, UserOrganizationAdmin)
+#admin.site.register(UserGroup, UserGroupAdmin)
+#admin.site.register(UserOrganizationInvitation, UserOrganizationInvitationAdmin)
+#admin.site.register(UserOrganizationInvitationUserGroup, UserOrganizationInvitationUserGroupAdmin)
 
 # DOCUMENT #############################################################################################################
 
