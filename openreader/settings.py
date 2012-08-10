@@ -125,7 +125,8 @@ INSTALLED_APPS = (
     'pagination',
     'debug_toolbar',
     'djcelery',
-
+    'djkombu',
+    
     'accounts',
     'domain',
     'presentation',
@@ -185,15 +186,23 @@ DEBUG_TOOLBAR_CONFIG = {
 import djcelery
 djcelery.setup_loader()
 
-BROKER_URL = "redis://localhost:6379/0"
+# BROKER_URL = "redis://localhost:6379/0"
 
+# BROKER_HOST = "localhost"
+# BROKER_PORT = 5672
+# BROKER_USER = "guest"
+# BROKER_PASSWORD = "guest"
+# BROKER_VHOST = "/"
+
+# BROKER_TRANSPORT = 'redis'
+
+BROKER_BACKEND = "djkombu.transport.DatabaseTransport"
+#celery
 BROKER_HOST = "localhost"
 BROKER_PORT = 5672
 BROKER_USER = "guest"
 BROKER_PASSWORD = "guest"
 BROKER_VHOST = "/"
-
-BROKER_TRANSPORT = 'redis'
 
 ########## Django Private Files ##########
 

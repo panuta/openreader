@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.template.loader import render_to_string
 from django.utils.crypto import salted_hmac
+from django.core.urlresolvers import reverse
 
 from private_files import PrivateFileField
 
@@ -189,7 +190,17 @@ class OrganizationInvitation(models.Model):
 
     def send_invitation_email(self):
         try:
-            send_mail('Please confirm to create %s account in %s' % (self.organization_name, settings.WEBSITE_NAME), render_to_string('manage/emails/organization_invitation.html', {'invitation':self }), settings.EMAIL_ADDRESS_NO_REPLY, [self.admin_email], fail_silently=False)
+            # send_mail(
+            #     'Please confirm to create %s account in %s' % (self.organization_name, settings.WEBSITE_NAME), 
+            #     render_to_string(
+            #         'manage/emails/organization_invitation.html', {
+            #             'invitation':self 
+            #         }
+            #     ), 
+            #     settings.EMAIL_ADDRESS_NO_REPLY, 
+            #     [self.admin_email], 
+            #     fail_silently = False
+            # )
             return True
         except:
             return False
@@ -234,9 +245,22 @@ class UserOrganizationInvitation(models.Model):
 
     objects = UserInvitationManager()
 
+    @property
+    def activation_link(self):
+        return "%s%s" % (settings.WEBSITE_DOMAIN, reverse('claim_user_invitation', args=[self.invitation_key]))
+
     def send_invitation_email(self):
         try:
-            send_mail('You were invited to join %s account in %s' % (self.organization.name, settings.WEBSITE_NAME), render_to_string('organization/emails/user_organization_invitation.html', {'invitation':self }), settings.EMAIL_ADDRESS_NO_REPLY, [self.email], fail_silently=False)
+            send_mail(
+                u'คุณได้รับเชิญให้เข้าร่วม %s ใน %s' % (self.organization.name, settings.WEBSITE_NAME), 
+                render_to_string('organization/emails/user_organization_invitation.html', {
+                        'invitation' : self
+                    }
+                ), 
+                settings.EMAIL_ADDRESS_NO_REPLY, 
+                [self.email], 
+                fail_silently = False
+            )
             return True
         except:
             return False
