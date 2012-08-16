@@ -89,9 +89,12 @@ def list_publication(request):
                 publication_dict['large_thumbnail'] = request.build_absolute_uri(publication.get_large_thumbnail())
                 publication_dict['small_thumbnail'] = request.build_absolute_uri(publication.get_small_thumbnail())
                 
-                publication_dict['uploaded'] = publication.uploaded.strftime("%Y-%m-%d %H:%M:%S")
-                publication_dict['modified'] = publication.modified.strftime("%Y-%m-%d %H:%M:%S")
-                publication_dict['replaced'] = publication.replaced.strftime("%Y-%m-%d %H:%M:%S")
+                if publication.uploaded:
+                    publication_dict['uploaded'] = publication.uploaded.strftime("%Y-%m-%d %H:%M:%S")
+                if publication.modified:
+                    publication_dict['modified'] = publication.modified.strftime("%Y-%m-%d %H:%M:%S")
+                if publication.replaced:
+                    publication_dict['replaced'] = publication.replaced.strftime("%Y-%m-%d %H:%M:%S")
                 
                 publication_dict['filesize'] = publication.uploaded_file.size
                 
