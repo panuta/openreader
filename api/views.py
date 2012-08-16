@@ -91,6 +91,7 @@ def list_publication(request):
                 
                 publication_dict['uploaded'] = publication.uploaded.strftime("%Y-%m-%d %H:%M:%S")
                 publication_dict['modified'] = publication.modified.strftime("%Y-%m-%d %H:%M:%S")
+                publication_dict['replaced'] = publication.replaced.strftime("%Y-%m-%d %H:%M:%S")
                 
                 publication_dict['filesize'] = publication.uploaded_file.size
                 
