@@ -243,7 +243,7 @@ def upload_publication(request, organization_slug):
         return response_json_error()
 
 
-@transaction.commit_manually
+@transaction.commit_on_success
 @require_POST
 @login_required
 def replace_publication(request, organization_slug):
