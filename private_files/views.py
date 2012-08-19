@@ -13,6 +13,7 @@ from django.views.static import was_modified_since
 from django.utils.http import http_date, parse_http_date
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+from django.utils.encoding import smart_str
 
 from private_files.signals import pre_download
 
@@ -37,7 +38,7 @@ def _handle_basic(request, instance, field_name, filename):
     response["Last-Modified"] = http_date(statobj.st_mtime)
     response["Content-Length"] = statobj.st_size
     if field_file.attachment:
-        response['Content-Disposition'] = 'attachment; filename="%s"'%filename
+        response['Content-Disposition'] = 'attachment; filename="%s"'%smart_str(filename)
     if encoding:
         response["Content-Encoding"] = encoding
     field_file.close()
@@ -53,7 +54,7 @@ def _handle_nginx(request, instance, field_name, filename):
     response = HttpResponse()
     response['Content-Type'] = mimetype
     if field_file.attachment:
-        response['Content-Disposition'] = 'attachment; filename="%s"'%filename
+        response['Content-Disposition'] = 'attachment; filename="%s"'%smart_str(filename)
     response["X-Accel-Redirect"] = "/%s"%unicode(field_file)
     response['Content-Length'] = statobj.st_size
     return response
@@ -67,7 +68,7 @@ def _handle_xsendfile(request, instance, field_name, filename):
     response = HttpResponse()
     response['Content-Type'] = mimetype
     if field_file.attachment:
-        response['Content-Disposition'] = 'attachment; filename="%s"'%filename
+        response['Content-Disposition'] = 'attachment; filename="%s"'%smart_str(filename)
     response["X-Sendfile"] = field_file.path
     response['Content-Length'] = statobj.st_size
     return response
