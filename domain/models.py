@@ -11,6 +11,7 @@ from django.db import models
 from django.template.loader import render_to_string
 from django.utils.crypto import salted_hmac
 from django.core.urlresolvers import reverse
+from django.contrib import admin
 
 from private_files import PrivateFileField
 
@@ -452,3 +453,9 @@ class OrganizationUploadServer(models.Model):
     server_type = models.CharField(max_length=200) # sftp, s3
     server_address = models.CharField(max_length=300)
     parameters = models.CharField(max_length=2000)
+
+admin.site.register(UserProfile)
+admin.site.register(Organization)
+admin.site.register(OrganizationGroup)
+admin.site.register(UserOrganization)
+admin.site.register(UserGroup)
