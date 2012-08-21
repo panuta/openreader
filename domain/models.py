@@ -191,17 +191,17 @@ class OrganizationInvitation(models.Model):
 
     def send_invitation_email(self):
         try:
-            # send_mail(
-            #     'Please confirm to create %s account in %s' % (self.organization_name, settings.WEBSITE_NAME), 
-            #     render_to_string(
-            #         'manage/emails/organization_invitation.html', {
-            #             'invitation':self 
-            #         }
-            #     ), 
-            #     settings.EMAIL_ADDRESS_NO_REPLY, 
-            #     [self.admin_email], 
-            #     fail_silently = False
-            # )
+            send_mail(
+                'Please confirm to create %s account in %s' % (self.organization_name, settings.WEBSITE_NAME), 
+                render_to_string(
+                    'manage/emails/organization_invitation.html', {
+                        'invitation':self 
+                    }
+                ), 
+                settings.EMAIL_ADDRESS_NO_REPLY, 
+                [self.admin_email], 
+                fail_silently = False
+            )
             return True
         except:
             return False
