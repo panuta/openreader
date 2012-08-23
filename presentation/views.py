@@ -116,6 +116,40 @@ def view_organization_users_groups(request, organization_slug):
     )
 
 
+# Add User Directly (Not sending email invitation)
+@login_required
+def add_organization_user(request, organization_slug):
+    organization = get_object_or_404(Organization, slug=organization_slug)
+
+    if not get_permission_backend(request).can_manage_user(request.user, organization):
+        raise Http404
+
+    form = AddOrganizationUserForm(organization, request.POST) if request.method == "POST" else AddOrganizationUserForm(organization)
+    if request.method == "POST":
+        if form.is_valid():
+            user_profile = UserProfile.objects.create_user_profile(
+                form.cleaned_data['email'], 
+                form.cleaned_data['first_name'], 
+                form.cleaned_data['last_name'], 
+                form.cleaned_data['password1'],
+            )
+            user_profile.user.is_staff = True
+            user_profile.user.save()
+
+            user_organization = UserOrganization.objects.create(user=user_profile.user, organization=organization)
+            
+            for group in form.cleaned_data['groups']:
+                UserGroup.objects.create(user_organization=user_organization, group=group)
+
+            messages.success(request, u'%sได้เข้าร่วมเป็นส่วนหนึ่งของ%s %s เรียบร้อยแล้ว' % (user_profile.get_fullname(), organization.prefix, organization.name))
+            return redirect('view_organization_users_groups', organization_slug=organization_slug)
+
+    return render(request, 'organization/organization_user_add.html', {
+        'form': form,
+        'organization': organization,
+    })
+
+
 # User Invitation
 
 @require_GET

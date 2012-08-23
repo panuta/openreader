@@ -42,6 +42,35 @@ class UserProfileForm(forms.Form):
 
 # ORGANIZATION MANAGEMENT
 
+class AddOrganizationUserForm(forms.Form):
+    email = forms.EmailField(widget=forms.TextInput(attrs={'class':'input-normal'}))
+    first_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'input-normal'}))
+    last_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'input-normal'}))
+    password1 = forms.CharField(widget=forms.PasswordInput())
+    password2 = forms.CharField(widget=forms.PasswordInput())
+
+    groups = OrganizationGroupMultipleChoiceField(required=False)
+
+    def __init__(self, organization, *args, **kwargs):
+        forms.Form.__init__(self, *args, **kwargs)
+
+        self.organization = organization
+        self.fields['groups'].queryset = OrganizationGroup.objects.filter(organization=organization).order_by('name')
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email', '')
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError(u'มีผู้ใช้คนอื่นใช้อีเมลนี้แล้ว')
+        return email
+
+    def clean_password2(self):
+        password1 = self.cleaned_data.get('password1', '')
+        password2 = self.cleaned_data['password2']
+        if password1 != password2:
+            raise forms.ValidationError(_('The two password fields didn\'t match.'))
+        return password2
+
+
 class InviteOrganizationUserForm(forms.Form):
     emails = forms.CharField(widget=forms.Textarea(attrs={'class':'input-large', 'rows':'3'}))
     groups = OrganizationGroupMultipleChoiceField(required=False)
