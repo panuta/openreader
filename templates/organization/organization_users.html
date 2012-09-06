@@ -16,16 +16,15 @@
 <table class="table table-bordered">
     <thead>
     <tr>
-        <th class="edit_column"></th>
         <th>ชื่อ</th>
         <th>อีเมล</th>
         <th>สถานะ</th>
+        <th class="edit_column"></th>
     </tr>
     </thead>
     <tbody>
     {% for organization_user in organization_users %}
         <tr>
-            <td class="row_actions"><a href="{% url edit_organization_user organization_user.id %}" class="btn btn-small">แก้ไข</a></td>
             <td>{{organization_user.user.get_profile.get_fullname}}</td>
             <td>{{organization_user.user.email}}</td>
             <td>
@@ -35,6 +34,7 @@
                 <span class="label label-important">Inactive</span>
             {% endif %}
             </td>
+            <td class="row_actions"><a href="{% url edit_organization_user organization_user.id %}" class="btn btn-small">แก้ไข</a></td>
         </tr>
     {% endfor %}
     </tbody>

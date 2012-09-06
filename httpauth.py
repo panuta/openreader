@@ -46,6 +46,7 @@ and returning the view if all goes well, otherwise responding with a 401.
     #
     if 'HTTP_AUTHORIZATION' in request.META:
         auth = request.META['HTTP_AUTHORIZATION'].split()
+        print auth
         if len(auth) == 2:
             # NOTE: We are only support basic authentication for now.
             #

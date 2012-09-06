@@ -8,19 +8,19 @@
 <table class="table table-bordered">
     <thead>
     <tr>
-        <th class="edit_column"></th>
         <th>ชื่อกลุ่มผู้ใช้</th>
         <th>จำนวนผู้ใช้ในกลุ่ม</th>
         <th>คำอธิบาย</th>
+        <th class="edit_column"></th>
     </tr>
     </thead>
     <tbody>
     {% for group in organization_groups %}
         <tr>
-            <td class="row_actions"><a href="{% url edit_organization_group group.id %}" class="btn-small btn"><i class="icon edit"></i> แก้ไข</a></td>
             <td>{{ group.name }}</td>
             <td><a href="{% url view_organization_group_members group.id %}">{{ group.get_user_count }} คน</a></td>
             <td>{% if group.description %}{{ group.description }}{% else %}-{% endif %}</td>
+            <td class="row_actions"><a href="{% url edit_organization_group group.id %}" class="btn-small btn"><i class="icon edit"></i> แก้ไข</a></td>
         </tr>
     {% endfor %}
     </tbody>

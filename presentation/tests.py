@@ -50,4 +50,6 @@ class GroupMemberTest(TestCase):
         response = self.client.post(reverse("edit_organization_user", args=[2]), params, follow=True)
         self.assertEqual(200, response.status_code)
         self.assertTrue(next in response.redirect_chain[0][0])
-        
+
+class TestAccount(TestCase):
+    pass

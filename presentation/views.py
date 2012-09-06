@@ -124,8 +124,8 @@ def add_organization_user(request, organization_slug):
     if not get_permission_backend(request).can_manage_user(request.user, organization):
         raise Http404
 
-    form = AddOrganizationUserForm(organization, request.POST) if request.method == "POST" else AddOrganizationUserForm(organization)
     if request.method == "POST":
+        form = AddOrganizationUserForm(organization, request.POST)
         if form.is_valid():
             user_profile = UserProfile.objects.create_user_profile(
                 form.cleaned_data['email'], 
@@ -141,8 +141,12 @@ def add_organization_user(request, organization_slug):
             for group in form.cleaned_data['groups']:
                 UserGroup.objects.create(user_organization=user_organization, group=group)
 
-            messages.success(request, u'%sได้เข้าร่วมเป็นส่วนหนึ่งของ%s %s เรียบร้อยแล้ว' % (user_profile.get_fullname(), organization.prefix, organization.name))
+            messages.success(request, u'%sได้เข้าร่วมเป็นส่วนหนึ่งของ%s %s เรียบร้อยแล้ว' % (user_profile.get_fullname(), 
+                                                                                        organization.prefix, 
+                                                                                        organization.name))
             return redirect('view_organization_users_groups', organization_slug=organization_slug)
+    else:
+        form = AddOrganizationUserForm(organization)
 
     return render(request, 'organization/organization_user_add.html', {
         'form': form,
@@ -277,7 +281,12 @@ def edit_organization_user(request, organization_user_id):
     if request.method == 'POST':
         form = EditOrganizationUserForm(user_organization, request.POST)
         if form.is_valid():
-            user_organization.user.email = form.cleaned_data['email']
+            user_profile = user_organization.user.get_profile()
+            user_profile.user.email = form.cleaned_data['email']
+            user_profile.first_name = form.cleaned_data['first_name']
+            user_profile.last_name = form.cleaned_data['last_name']
+            user_profile.user.save()
+            user_profile.save()
 
             new_groups = set()
             for group in form.cleaned_data['groups']:
