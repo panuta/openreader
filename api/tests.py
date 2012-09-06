@@ -85,13 +85,26 @@ class APITest(TestCase):
         for s in json_data['shelves']:
             self.assertFalse(s['archive'])
 
-    def test_get_user_organization(self):
-        response = self.client.get(reverse('api_get_user_organization'))
+    def test_list_user_organization(self):
+        # admin@openreader.com has 2 organizations
+        response = self.client.get(reverse('api_list_user_organization'))
         json_data = simplejson.load(StringIO(response.content))
-        self.assertTrue(json_data['organizations'])
         self.assertEquals(2, len(json_data['organizations']))
         self.assertTrue(json_data['user_profile'])
         self.assertEquals(json_data['user_profile']['first_name'], 'Admin')
+
+        # staff@openreader.com has 1 organization
+        self.client.defaults['HTTP_AUTHORIZATION'] = 'Basic %s' % base64.b64encode('staff@openreader.com:1q2w3e4r')
+        response = self.client.get(reverse('api_list_user_organization'))
+        json_data = simplejson.load(StringIO(response.content))
+        self.assertEquals(1, len(json_data['organizations']))
+
+        # system@openreader.com has no organization
+        self.client.defaults['HTTP_AUTHORIZATION'] = 'Basic %s' % base64.b64encode('system@openreader.com:1q2w3e4r')
+        response = self.client.get(reverse('api_list_user_organization'))
+        json_data = simplejson.load(StringIO(response.content))
+        self.assertEquals(0, len(json_data['organizations']))
+
 
     def test_request_download_publication(self):
         response = self.client.get(reverse('api_request_download_publication', args=[self.pub.uid]))

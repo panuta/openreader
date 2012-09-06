@@ -108,7 +108,7 @@ def list_publication(request):
     return HttpResponse(simplejson.dumps(result))
 
 @logged_in_or_basicauth()
-def get_user_organization(request):
+def list_user_organization(request):
     #http://admin@openreader.com:panuta@10.0.1.14:8000/api/get/userorganization/
     email = _get_email(request)
     user_profile = UserProfile.objects.get(user__email=email)
