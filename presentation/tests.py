@@ -4,7 +4,6 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.core.files import File
 from domain.models import *
-from signals import generate_publication_thumbnail
 
 class GroupMemberTest(TestCase):
     fixtures = ['initial_data.json']
