@@ -1,13 +1,14 @@
 {% extends 'base_single.html' %}
+{% load i18n %}
 
-{% block head_title %}ยินดีต้อนรับเข้าสู่ระบบ{% endblock %}
+{% block head_title %}{% trans 'Welcome to the system' %}{% endblock %}
 
 {% block body_single %}
 <div class="outer-container span6 offset3">
   <div class="inner-container">
-    <h1>บัญชีผู้ใช้นี้ไม่ได้ผูกอยู่กับบริษัท</h1>
-    <p>คุณสามารถติดต่อกับผู้ดูแลในบริษัทเพื่อเพิ่มรายชื่อของคุณเข้าไปในระบบ</p>
-    <p><a href="{% url auth_logout %}?next=/" class="btn">ออกจากระบบ และกลับสู่หน้าแรก</a></p>
+    <h1>{% trans 'This account does not in an organization.' %}</h1>
+    <p>{% trans 'You can contact to admin of the organization to add you to the system.' %}</p>
+    <p><a href="{% url auth_logout %}?next=/" class="btn">{% trans 'Sign out and back to homepage' %}</a></p>
   </div>
 </div>
 {% endblock %}

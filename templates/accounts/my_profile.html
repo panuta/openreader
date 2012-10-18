@@ -1,6 +1,7 @@
 {% extends 'accounts/my_base.html' %}
+{% load i18n %}
 
-{% block head_title %}ข้อมูลผู้ใช้{% endblock %}
+{% block head_title %}{% trans 'Account profile' %}{% endblock %}
 
 {% block body_authenticated %}
 <div class="container-fluid organization_users_page"><div class="row-fluid">
@@ -8,7 +9,7 @@
         <h2>{{ user.get_profile.get_fullname }}</h2>
 
         <div class="page_actions">
-            <a href="{% url change_my_account_password %}" class="btn" data-toggle="modal"><i class="icon-lock"></i> แก้ไขรหัสผ่าน</a>
+            <a href="{% url change_my_account_password %}" class="btn" data-toggle="modal"><i class="icon-lock"></i> {% trans 'Change password' %}</a>
         </div>
 
         <form method="POST" action=".">
@@ -16,23 +17,23 @@
             {{form.non_field_errors}}
 
             <div class="control-group">
-                <label class="control-label" for="id_email">อีเมลผู้ใช้</label>
+                <label class="control-label" for="id_email">{% trans 'Email' %}</label>
                 <div class="controls">{{email}}</div>
             </div>
 
             <div class="control-group">
-                <label class="control-label" for="id_first_name">ชื่อ</label>
+                <label class="control-label" for="id_first_name">{% trans 'Firstname' %}</label>
                 <div class="controls">{{form.first_name}}{{form.first_name.errors}}</div>
             </div>
 
             <div class="control-group">
-                <label class="control-label" for="id_last_name">นามสกุล</label>
+                <label class="control-label" for="id_last_name">{% trans 'Lastname' %}</label>
                 <div class="controls">{{form.last_name}}{{form.last_name.errors}}</div>
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> บันทึกข้อมูล</button>
-                <button type="reset" class="btn">ล้างข้อมูล</button>
+                <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> {% trans 'Submit' %}</button>
+                <button type="reset" class="btn">{% trans 'Clear' %}</button>
             </div>
         </form>
     </div></div>

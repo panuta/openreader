@@ -28,6 +28,16 @@ MANAGERS = ADMINS
 TIME_ZONE = 'Asia/Bangkok'
 LANGUAGE_CODE = 'th'
 
+gettext = lambda s: s
+LANGUAGES = (
+    ('en', gettext('English')),
+    ('th', gettext('Thai')),
+)
+
+LOCALE_PATHS = (
+    os.path.join(base_path, 'locale'),
+)
+
 SITE_ID = 1
 
 USE_I18N = True
@@ -99,9 +109,10 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 MIDDLEWARE_CLASSES = (
     'openreader.middleware.AJAXSimpleExceptionResponse',
     'openreader.http.Http403Middleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.RemoteUserMiddleware',

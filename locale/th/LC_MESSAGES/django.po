@@ -1,0 +1,133 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-10-18 09:41+0700\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+
+#: accounts/forms.py:31
+msgid ""
+"Please enter a correct username and password. Note that both fields are case-"
+"sensitive."
+msgstr "กรุณาใส่ชื่อผู้ใช้และรหัสผ่านให้ถูก ทั้งสองช่องมีผลต่อตัวพิมพ์เล็กและใหญ่"
+
+#: accounts/forms.py:33
+msgid "This account is inactive."
+msgstr "ผู้ใช้งานนี้ถูกระงับ"
+
+#: accounts/forms.py:40
+msgid ""
+"Your Web browser doesn't appear to have cookies enabled. Cookies are "
+"required for logging in."
+msgstr "เว็บบาร์วเซอร์ของคุณไม่ได้เปิดคุกกี้ไว้ ซึ่งจำเป็นต้องใช้ในการเข้าสู่ระบบ"
+
+#: openreader/settings.py:33
+msgid "English"
+msgstr "อังกฤษ"
+
+#: openreader/settings.py:34
+msgid "Thai"
+msgstr "ไทย"
+
+#: presentation/forms.py:70 presentation/forms.py:122
+msgid "The two password fields didn't match."
+msgstr "รหัสผ่านทั้งสองไม่ตรงกัน"
+
+
+# ACCOUNT ##########################################################################
+msgid "Account profile"
+msgstr "ข้อมูลผู้ใช้"
+
+msgid "Back to homepage"
+msgstr "กลับไปหน้าหลัก"
+
+msgid "Change password"
+msgstr "เปลี่ยนรหัสผ่าน"
+
+msgid "Current password"
+msgstr "รหัสผ่านปัจจุบัน"
+
+msgid "New password"
+msgstr "รหัสผ่านใหม่"
+
+msgid "Retype new password"
+msgstr "กรอกรหัสผ่านใหม่อีกครั้ง"
+
+msgid "Submit"
+msgstr "บันทึกข้อมูล"
+
+msgid "Email"
+msgstr "อีเมล"
+
+msgid "Firstname"
+msgstr "ชื่อ"
+
+msgid "Lastname"
+msgstr "นามสกุล"
+
+msgid "Welcome to the system"
+msgstr "ยินดีต้อนรับเข้าสู่ระบบ"
+
+msgid "This account does not in an organization."
+msgstr "บัญชีผู้ใช้นี้ไม่ได้ผูกอยู่กับบริษัท"
+
+msgid "You can contact to admin of the organization to add you to the system."
+msgstr "คุณสามารถติดต่อกับผู้ดูแลในบริษัทเพื่อเพิ่มรายชื่อของคุณเข้าไปในระบบ"
+
+msgid "Sign out and back to homepage"
+msgstr "ออกจากระบบ และกลับสู่หน้าแรก"
+
+msgid "Change password successful"
+msgstr "เปลี่ยนรหัสผ่านเรียบร้อย"
+
+msgid "Page not found"
+msgstr "ไม่พบหน้าที่ต้องการ"
+
+msgid "System error"
+msgstr "ระบบเกิดข้อผิดพลาด"
+
+msgid "Documents"
+msgstr "ไฟล์เอกสาร"
+
+msgid "Users and groups"
+msgstr "รายชื่อและกลุ่มผู้ใช้"
+
+msgid "Organization"
+msgstr "ข้อมูลบริษัท"
+
+msgid "Logout"
+msgstr "ออกจากระบบ"
+
+msgid "Change account"
+msgstr "เปลี่ยนบัญชี"
+
+msgid "Login"
+msgstr "เข้าสู่ระบบ"
+
+msgid "Forget password"
+msgstr "ลืมรหัสผ่าน"
+
+msgid "Request new password"
+msgstr "ขอรหัสผ่านใหม่"
+
+msgid "Set new password"
+msgstr "ตั้งรหัสผ่านใหม่"
+
+msgid "Set new password successful, user can access to Openreader at"
+msgstr "ตั้งรหัสผ่านใหม่เรียบร้อย ผู้ใช้สามารถเข้าสู่ระบบได้ที่หน้า"
+
+msgid "Openreader sent the solution to set new password to your email."
+msgstr "ระบบได้ส่งขั้นตอนการตั้งรหัสผ่านใหม่ไปยังอีเมลของผู้ใช้เรียบร้อย"

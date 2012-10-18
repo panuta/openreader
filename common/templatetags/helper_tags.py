@@ -7,6 +7,7 @@ register = template.Library()
 
 from django.core.urlresolvers import reverse
 from django.template import NodeList
+from django.utils.translation import ugettext as _
 
 from common import utilities
 from accounts.permissions import get_backend as get_permission_backend
@@ -113,7 +114,7 @@ def generate_organization_menu(user):
         for user_organization in user_organizations:
             menus.append('<li><a href="%s">%s%s</a></li>' % (reverse('view_organization_front', args=[user_organization.organization.slug]), '%s ' % user_organization.organization.prefix if user_organization.organization.prefix else '', user_organization.organization.name))
 
-        return u'<li class="dropdown" id="switch_org_menu"><a class="dropdown-toggle nav_top_link" data-toggle="dropdown" href="#switch_org_menu">เปลี่ยนบัญชี <b class="caret"></b></a><ul class="dropdown-menu">%s</ul></li>' % ''.join(menus)
+        return u'<li class="dropdown" id="switch_org_menu"><a class="dropdown-toggle nav_top_link" data-toggle="dropdown" href="#switch_org_menu">%s <b class="caret"></b></a><ul class="dropdown-menu">%s</ul></li>' % (_('Change account'), ''.join(menus))
     else:
         return ''
 

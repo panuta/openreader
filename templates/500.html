@@ -1,8 +1,10 @@
+{% load i18n %}
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-  <title>Open Reader | ระบบเกิดข้อผิดพลาด</title>
+  <title>Open Reader | {% trans 'System error' %}</title>
   <meta charset="utf-8">
   <meta name="keywords" content="{% block meta_keywords %}{% endblock %}" />
   <script type="text/javascript" src="/static/libs/jquery-1.7.1.min.js"></script>
@@ -15,8 +17,8 @@
     <div class="row">
       <div class="outer-container span6 offset3">
         <div class="inner-container">
-          <h1>ระบบเกิดข้อผิดพลาด</h1>
-          <p><a href="/" class="btn">กลับไปหน้าแรก</a></p>
+          <h1>{% trans 'System error' %}</h1>
+          <p><a href="/" class="btn">{% trans 'Back to homepage' %}</a></p>
         </div>
       </div>
     </div>

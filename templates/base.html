@@ -9,5 +9,11 @@
 </head>
 <body>
 {% block body %}{% endblock %}
+<div id="select-lang">
+    <ul class="nav">
+        <li><a href="{% url set_lang %}?lang=th&next={{request.path}}"{% if LANGUAGE_CODE == 'th' %} class="active"{% endif %} title="Thai">TH</a></li> 
+        <li><a href="{% url set_lang %}?lang=en&next={{request.path}}"{% if LANGUAGE_CODE == 'en' %} class="active"{% endif %} title="English">EN</a></li>
+    </ul>
+</div>
 </body>
 </html>

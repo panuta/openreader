@@ -1,21 +1,22 @@
+{% load i18n %}
 <form method="POST" action="{% url auth_login %}">
   {% csrf_token %}
   {{form.non_field_errors}}
   <input type="hidden" name="next" value="{{next}}" />
 
   <div class="item">
-    <label for="id_email">อีเมล</label>
+    <label for="id_email">{% trans 'Email' %}</label>
     <div class="input">{{form.email}}{{form.email.errors}}</div>
   </div>
 
   <div class="item">
-    <label for="id_password">รหัสผ่าน</label>
+    <label for="id_password">{% trans 'Password' %}</label>
     <div class="input">{{form.password}}{{form.password.errors}}</div>
   </div>
 
   <div class="form_actions">
-    <button type="submit" class="btn primary login_button">เข้าสู่ระบบ</button>
-    <a href="/accounts/password_reset/">ลืมรหัสผ่าน?</a>
+    <button type="submit" class="btn primary login_button">{% trans 'Login' %}</button>
+    <a href="/accounts/password_reset/">{% trans 'Forget password' %}?</a>
   </div>
 
 </form>

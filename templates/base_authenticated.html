@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load helper_tags %}
+{% load i18n %}
 
 {% block head_title %}{% endblock %}
 
@@ -47,7 +48,7 @@ $('#message_modal').modal();
       <ul class="nav pull-right" data-dropdown="dropdown">
         {% generate_organization_menu user %}
         <li class="accounts"><a href="{% url view_my_profile %}" class="nav_top_link"><i class="icon-user icon-white"></i> {{user.get_profile.get_fullname}}</a></li>
-        <li><a href="/accounts/logout/" class="logout nav_top_link">[ ออกจากระบบ ]</a></li>
+        <li><a href="/accounts/logout/" class="logout nav_top_link">[ {% trans 'Logout' %} ]</a></li>
       </ul>
 
     </div>

@@ -21,6 +21,8 @@ urlpatterns = patterns('',
     url(r'^accounts/reset/(?P<uidb36>[0-9A-Za-z]{1,13})-(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', 'django.contrib.auth.views.password_reset_confirm', name='auth_password_reset_confirm'),
     url(r'^accounts/reset/done/$', 'django.contrib.auth.views.password_reset_complete', name='auth_password_reset_complete'),
 
+    url(r'^language/', 'common.views.set_language', name='set_lang'),
+
     url(r'^org/(?P<organization_slug>\w+)/$', 'presentation.views.view_organization_front', name='view_organization_front'),
 
     url(r'^admin/', include(admin.site.urls)),

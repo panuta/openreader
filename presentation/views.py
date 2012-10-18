@@ -13,6 +13,7 @@ from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_GET, require_POST
 
 from private_files.views import get_file as private_files_get_file
@@ -41,7 +42,7 @@ def view_my_profile(request):
             user_profile.last_name = form.cleaned_data['last_name']
             user_profile.save()
 
-            messages.success(request, u'แก้ไขข้อมูลส่วนตัวเรียบร้อย')
+            messages.success(request, _('Edit account profile successful'))
             return redirect('view_my_profile')
     else:
         form = UserProfileForm(request.user, initial={
@@ -58,7 +59,7 @@ def change_my_account_password(request):
         form = PasswordChangeForm(user=request.user, data=request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, u'เปลี่ยนรหัสผ่านเรียบร้อย')
+            messages.success(request, _('Change password successful'))
             return redirect('view_my_profile')
 
     else:

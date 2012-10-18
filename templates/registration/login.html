@@ -1,11 +1,12 @@
 {% extends 'base_single.html' %}
+{% load i18n %}
 
-{% block head_title %}เข้าสู่ระบบ{% endblock %}
+{% block head_title %}{% trans 'Login' %}{% endblock %}
 
 {% block body_single %}
 <div class="outer-container span6 offset3">
   <div class="inner-container">
-    <h1>เข้าสู่ระบบ</h1>
+    <h1>{% trans 'Login' %}</h1>
     {% include 'snippets/login_form.html' with form=form next=next %}
   </div>
 </div>
