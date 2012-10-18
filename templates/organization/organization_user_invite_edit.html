@@ -1,7 +1,8 @@
 {% extends 'base_authenticated.html' %}
 {% load helper_tags pagination_tags %}
+{% load i18n %}
 
-{% block head_title %}แก้ไขคำขอเพิ่มผู้ใช้{% endblock %}
+{% block head_title %}{% trans 'Edit user invitation' %}{% endblock %}
 {% block topnav %}{% if user.is_superuser %}{% include 'manage/snippets/manage_topnav.html' with active_menu='management' %}{% else %}{% include 'snippets/organization_topnav.html' with active_menu='user' %}{% endif %}{% endblock %}
 
 {% block extra_head %}
@@ -13,9 +14,9 @@ $(document).ready(function () {
     $.post('{% url ajax_resend_user_invitation invitation.id %}', {}, function(response) {
         if(response.status == 'success') {
             $('#resend-invitation-modal').modal('hide');
-            _showAlertBar('ส่งคำขอถึงผู้ใช้เรียบร้อย', 'success', true);
+            _showAlertBar(gettext('Sent invitation to user successful'), 'success', true);
         } else if(response.status == 'error') {
-            if(response.error == 'send-invitation-failed') _addModalMessage('resend-invitation-modal', 'ไม่สามารถส่งอีเมลได้', 'error');
+            if(response.error == 'send-invitation-failed') _addModalMessage('resend-invitation-modal', gettext('Cannot send email'), 'error');
         }
     }, 'json');
     return false;
@@ -38,16 +39,16 @@ $(document).ready(function () {
 <div class="container-fluid organization_users_page"><div class="row-fluid">
     <div class="content"><div class="inner-content">
         <ul class="breadcrumb">
-            <li><a href="{% url view_organization_users organization.slug %}">รายชื่อและกลุ่มผู้ใช้</a> <span class="divider">/</span></li>
-            <li><a href="{% url view_organization_invited_users organization.slug %}">คำขอเพิ่มผู้ใช้</a> <span class="divider">/</span></li>
-            <li class="active">แก้ไขคำขอเพิ่มผู้ใช้</li>
+            <li><a href="{% url view_organization_users organization.slug %}">{% trans 'Users and groups' %}</a> <span class="divider">/</span></li>
+            <li><a href="{% url view_organization_invited_users organization.slug %}">{% trans 'User invitation' %}</a> <span class="divider">/</span></li>
+            <li class="active">{% trans 'Edit user invitation' %}</li>
         </ul>
 
-        <h2>แก้ไขคำขอเพิ่มผู้ใช้ <span>{{ invitation.email }}</span></h2>
+        <h2>{% trans 'Edit user invitation' %} <span>{{ invitation.email }}</span></h2>
 
         <div class="page_actions">
-            <a href="#resend-invitation-modal" class="btn" data-toggle="modal"><i class="icon-envelope"></i> ส่งคำขออีกครั้ง</a>
-            <a href="#cancel-invitation-modal" class="btn" data-toggle="modal"><i class="icon-trash"></i> เพิกถอนคำขอ</a>
+            <a href="#resend-invitation-modal" class="btn" data-toggle="modal"><i class="icon-envelope"></i> {% trans 'Resend invitation' %}</a>
+            <a href="#cancel-invitation-modal" class="btn" data-toggle="modal"><i class="icon-trash"></i> {% trans 'Cancel invitation' %}</a>
         </div>
 
         <form method="POST" action=".">
@@ -55,18 +56,18 @@ $(document).ready(function () {
             {{form.non_field_errors}}
 
             <div class="control-group">
-                <label class="control-label" for="id_email">อีเมลผู้ใช้</label>
+                <label class="control-label" for="id_email">{% trans 'Email' %}</label>
                 <div class="fixed-controls controls">{{invitation.email}}</div>
             </div>
 
             <div class="control-group">
-                <label class="control-label" for="id_groups">กลุ่มผู้ใช้</label>
+                <label class="control-label" for="id_groups">{% trans 'Groups' %}</label>
                 <div class="controls">{{form.groups}}{{form.groups.errors}}</div>
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> บันทึกข้อมูล</button>
-                <button type="reset" class="btn">ล้างข้อมูล</button>
+                <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> {% trans 'Save' %}</button>
+                <button type="reset" class="btn">{% trans 'Clear' %}</button>
             </div>
         </form>
     </div></div>
@@ -75,22 +76,22 @@ $(document).ready(function () {
 <div class="modal hide" id="resend-invitation-modal">
     <div class="modal-header">
         <a class="close" data-dismiss="modal">×</a>
-        <h3>ส่งคำขออีกครั้ง</h3>
+        <h3>{% trans 'Resend invitation' %}</h3>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal">ยกเลิก</button>
-        <button type="submit" class="btn btn-primary">ยืนยันส่งคำขออีกครั้ง</button>
+        <button class="btn" data-dismiss="modal">{% trans 'Cancel' %}</button>
+        <button type="submit" class="btn btn-primary">{% trans 'Confirm' %}</button>
     </div>
 </div>
 
 <div class="modal hide" id="cancel-invitation-modal">
     <div class="modal-header">
         <a class="close" data-dismiss="modal">×</a>
-        <h3>เพิกถอนคำขอ</h3>
+        <h3>{% trans 'Cancel invitation' %}</h3>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal">ยกเลิก</button>
-        <button type="submit" class="btn btn-danger">ยืนยันเพิกถอนคำขอ</button>
+        <button class="btn" data-dismiss="modal">{% trans 'Cancel' %}</button>
+        <button type="submit" class="btn btn-danger">{% trans 'Confirm' %}</button>
     </div>
 </div>
 {% endblock %}

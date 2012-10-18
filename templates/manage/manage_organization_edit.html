@@ -1,7 +1,8 @@
 {% extends 'manage/manage_base.html' %}
 {% load helper_tags %}
+{% load i18n %}
 
-{% block manage_head_title %}แก้ไขข้อมูลบริษัท{% endblock %}
+{% block manage_head_title %}{% trans 'Edit organization' %}{% endblock %}
 {% block topnav %}{% include 'manage/snippets/manage_topnav.html' with active_menu='management' %}{% endblock %}
 
 {% block body_authenticated %}
@@ -9,23 +10,23 @@
 <div class="container-fluid container-body">
   <div class="content-full"><div class="content-inner">
     <ul class="breadcrumb">
-      <li><a href="{% url manage_organizations %}">รายชื่อบริษัท</a> <span class="divider">/</span></li>
-      <li class="active">แก้ไขข้อมูลบริษัท</li>
+      <li><a href="{% url manage_organizations %}">{% trans 'Organizations' %}</a> <span class="divider">/</span></li>
+      <li class="active">{% trans 'Edit organization' %}</li>
     </ul>
 
-    <h2>แก้ไขบริษัท</h2>
+    <h2>{% trans 'Edit organization' %}</h2>
 
     <form method="POST" action=".">
       {% csrf_token %}
       {{form.non_field_errors}}
       
-        <div class="clearfix"><label for="id_organization_name">ชื่อบริษัท</label><div class="input">{{form.organization_name}}{{form.organization_name.errors}}</div></div>
-        <div class="clearfix"><label for="id_organization_slug">ชื่อย่อบริษัท</label><div class="input">{{form.organization_slug}}<span class="help-block">ชื่อบริษัทภาษาอังกฤษที่ไม่ซ้ำกับบริษัทอื่น</span>{{form.organization_slug.errors}}</div></div>
-        <div class="clearfix"><label for="id_organization_prefix">คำนำหน้าบริษัท</label><div class="input">{{form.organization_prefix}}<span class="help-block">เช่น "บริษัท" "สำนักพิมพ์" หรือ "แผนก" เป็นต้น</span>{{form.organization_prefix.errors}}</div></div>
+        <div class="clearfix"><label for="id_organization_name">{% trans 'Organization name' %}</label><div class="input">{{form.organization_name}}{{form.organization_name.errors}}</div></div>
+        <div class="clearfix"><label for="id_organization_slug">{% trans 'Organization abbr name' %}</label><div class="input">{{form.organization_slug}}<span class="help-block">{% trans 'Organization abbr name that not duplicated with other organization' %}</span>{{form.organization_slug.errors}}</div></div>
+        <div class="clearfix"><label for="id_organization_prefix">{% trans 'Organization prefix' %}</label><div class="input">{{form.organization_prefix}}<span class="help-block">{% trans 'such as 'Company' 'Publisher' 'Department' etc.' %}</span>{{form.organization_prefix.errors}}</div></div>
 
         <div class="form-actions">
-          <button type="submit" class="btn primary">แก้ไขข้อมูลบริษัท</button>
-          <button type="reset" class="btn">ล้างข้อมูล</button>
+          <button type="submit" class="btn primary">{% trans 'Edit organization' %}</button>
+          <button type="reset" class="btn">{% trans 'Clear' %}</button>
         </div>
       
     </form>

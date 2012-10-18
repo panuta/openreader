@@ -1,24 +1,25 @@
 {% load helper_tags pagination_tags presentation_tags %}
+{% load i18n %}
 
 <div class="page_actions">
-    <a href="{% url invite_organization_user organization.slug %}" class="btn"><i class="icon-user"></i> เพิ่มผู้ใช้ระบบ</a>
-    <a href="{% url add_organization_user organization.slug %}" class="btn"><i class="icon-plus"></i> เพิ่มผู้ใช้ระบบโดยตรง</a>
+    <a href="{% url invite_organization_user organization.slug %}" class="btn"><i class="icon-user"></i> {% trans 'Invite new user' %}</a>
+    <a href="{% url add_organization_user organization.slug %}" class="btn"><i class="icon-plus"></i> {% trans 'Add new user' %}</a>
     <!--<a href="{% url invite_organization_user organization.slug %}" class="btn"><i class="icon-file"></i> เพิ่มผู้ใช้จากไฟล์ CSV</a>-->
 </div>
 
 {% return_user_invitation_count organization as invited_user_count %}
 
 {% if invited_user_count %}
-    <div class="user_invitations"><a href="{% url view_organization_invited_users organization.slug %}">มีผู้ใช้ {{ invited_user_count }} คนยังไม่ตอบรับคำขอเพิ่มผู้ใช้</a></div>
+    <div class="user_invitations"><a href="{% url view_organization_invited_users organization.slug %}">{% if invited_user_count > 1 %}{% blocktrans %}There are {{ invited_user_count }} users that not accept user invitation{% endblocktrans %}{% else %}{% blocktrans %}There is {{ invited_user_count }} user that not accept user invitation{% endblocktrans %}{% endif %}</a></div>
 {% endif %}
 
 {% autopaginate organization_users 50 %}
 <table class="table table-bordered">
     <thead>
     <tr>
-        <th>ชื่อ</th>
-        <th>อีเมล</th>
-        <th>สถานะ</th>
+        <th>{% trans 'Name' %}</th>
+        <th>{% trans 'Email' %}</th>
+        <th>{% trans 'Status' %}</th>
         <th class="edit_column"></th>
     </tr>
     </thead>
@@ -34,7 +35,7 @@
                 <span class="label label-important">Inactive</span>
             {% endif %}
             </td>
-            <td class="row_actions"><a href="{% url edit_organization_user organization_user.id %}" class="btn btn-small">แก้ไข</a></td>
+            <td class="row_actions"><a href="{% url edit_organization_user organization_user.id %}" class="btn btn-small">{% trans 'Edit' %}</a></td>
         </tr>
     {% endfor %}
     </tbody>

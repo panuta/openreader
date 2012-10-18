@@ -1,7 +1,8 @@
 {% extends 'base_authenticated.html' %}
 {% load helper_tags pagination_tags %}
+{% load i18n %}
 
-{% block head_title %}คำขอเพิ่มผู้ใช้{% endblock %}
+{% block head_title %}{% trans 'User invitation' %}{% endblock %}
 {% block topnav %}{% if user.is_superuser %}{% include 'manage/snippets/manage_topnav.html' with active_menu='management' %}{% else %}{% include 'snippets/organization_topnav.html' with active_menu='user' %}{% endif %}{% endblock %}
 
 {% block body_authenticated %}
@@ -9,19 +10,19 @@
 <div class="container-fluid organization_users_page"><div class="row-fluid">
     <div class="content"><div class="inner-content">
         <ul class="breadcrumb">
-            <li><a href="{% url view_organization_users organization.slug %}">รายชื่อและกลุ่มผู้ใช้</a> <span class="divider">/</span></li>
-            <li class="active">คำขอเพิ่มผู้ใช้</li>
+            <li><a href="{% url view_organization_users organization.slug %}">{% trans 'Users and groups' %}</a> <span class="divider">/</span></li>
+            <li class="active">{% trans 'User invitation' %}</li>
         </ul>
 
-        <h2>คำขอเพิ่มผู้ใช้</h2>
+        <h2>{% trans 'User invitation' %}</h2>
 
         {% if invited_users %}
             {% autopaginate invited_users 50 %}
             <table class="table table-bordered">
                 <thead>
                 <tr>
-                    <th>อีเมล</th>
-                    <th>ส่งเมื่อวันที่</th>
+                    <th>{% trans 'Email' %}</th>
+                    <th>{% trans 'Sent at' %}</th>
                     <th class="edit_column"></th>
                 </tr>
                 </thead>
@@ -37,7 +38,7 @@
             </table>
             {% paginate %}
         {% else %}
-            <div class="no_information">ไม่มีคำขอเพิ่มผู้ใช้</div>
+            <div class="no_information">{% trans 'No user invitations' %}</div>
         {% endif %}
 
     </div></div>

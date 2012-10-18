@@ -1,7 +1,8 @@
 {% extends 'manage/manage_base.html' %}
 {% load helper_tags pagination_tags %}
+{% load i18n %}
 
-{% block manage_head_title %}สำนักพิมพ์{% endblock %}
+{% block manage_head_title %}{% trans 'Organizions' %}{% endblock %}
 {% block topnav %}{% include 'manage/snippets/manage_topnav.html' with active_menu='management' %}{% endblock %}
 
 {% block extra_head %}
@@ -12,9 +13,9 @@ $(document).ready(function () {
     $.post('{% url ajax_resend_organization_invitation invitation.id %}', {}, function(response) {
         if(response.status == 'success') {
             $('#resend-invitation-modal').modal('hide');
-            _showAlertBar('ส่งคำขอถึงผู้ใช้เรียบร้อย', 'success', true);
+            _showAlertBar(gettext('Sent invitation to user successful'), 'success', true);
         } else if(response.status == 'error') {
-            if(response.error == 'send-invitation-failed') _addModalMessage('resend-invitation-modal', 'ไม่สามารถส่งอีเมลได้', 'error');
+            if(response.error == 'send-invitation-failed') _addModalMessage('resend-invitation-modal', gettext('Cannot send email'), 'error');
         }
     }, 'json');
     return false;
@@ -36,16 +37,16 @@ $(document).ready(function () {
 <div class="container-fluid organization_users_page"><div class="row-fluid">
     <div class="content"><div class="inner-content">
         <ul class="breadcrumb">
-            <li><a href="{% url manage_organizations %}">รายชื่อบริษัท</a> <span class="divider">/</span></li>
-            <li><a href="{% url view_organizations_invited %}">คำขอเพิ่มบริษัท</a> <span class="divider">/</span></li>
-            <li class="active">แก้ไขคำขอเพิ่มบริษัท</li>
+            <li><a href="{% url manage_organizations %}">{% trans 'Organizations' %}</a> <span class="divider">/</span></li>
+            <li><a href="{% url view_organizations_invited %}">{% trans 'Organizion invitation' %}</a> <span class="divider">/</span></li>
+            <li class="active">{% trans 'Edit organizion invitation' %}</li>
         </ul>
 
-        <h2>แก้ไขคำขอเพิ่มผู้ใช้ <span>{{ invitation.admin_email }}</span></h2>
+        <h2>{% trans 'Edit organizion invitation' %} <span>{{ invitation.organization_name }}</span></h2>
 
         <div class="page_actions">
-            <a href="#resend-invitation-modal" class="btn" data-toggle="modal"><i class="icon-envelope"></i> ส่งคำขออีกครั้ง</a>
-            <a href="#cancel-invitation-modal" class="btn" data-toggle="modal"><i class="icon-trash"></i> เพิกถอนคำขอ</a>
+            <a href="#resend-invitation-modal" class="btn" data-toggle="modal"><i class="icon-envelope"></i> {% trans 'Resend invitation' %}</a>
+            <a href="#cancel-invitation-modal" class="btn" data-toggle="modal"><i class="icon-trash"></i> {% trans 'Cancel invitation' %}</a>
         </div>
 
         <form method="POST" action=".">
@@ -53,30 +54,30 @@ $(document).ready(function () {
             {{form.non_field_errors}}
 
             <div class="control-group">
-                <label class="control-label" for="id_email">อีเมลผู้ดูแลระบบ</label>
+                <label class="control-label" for="id_email">{% trans 'Administrator email' %}</label>
                 <div class="fixed-controls controls">{{invitation.admin_email}}</div>
             </div>
 
             <div class="control-group">
-                <label class="control-label" for="id_organization_name">ชื่อบริษัท</label>
+                <label class="control-label" for="id_organization_name">{% trans 'Organization name' %}</label>
                 <div class="fixed-controls controls">{{form.organization_name}}{{form.organization_name.errors}}</div>
             </div>
 
             <div class="control-group">
-                <label class="control-label" for="id_organization_slug">ชื่อย่อบริษัท</label>
-                <div class="fixed-controls controls">{{form.organization_slug}}<span class="help-block">ชื่อบริษัทภาษาอังกฤษที่ไม่ซ้ำกับบริษัทอื่น</span>{{form.organization_slug.errors}}</div>
+                <label class="control-label" for="id_organization_slug">{% trans 'Organization abbr name' %}</label>
+                <div class="fixed-controls controls">{{form.organization_slug}}<span class="help-block">{% trans 'Organization abbr name that not duplicated with other organization' %}</span>{{form.organization_slug.errors}}</div>
                 
             </div>
 
             <div class="control-group">
-                <label class="control-label" for="id_organization_prefix">คำนำหน้าบริษัท</label>
-                <div class="fixed-controls controls">{{form.organization_prefix}}<span class="help-block">เช่น "บริษัท" "สำนักพิมพ์" หรือ "แผนก" เป็นต้น</span>{{form.organization_prefix.errors}}</div>
+                <label class="control-label" for="id_organization_prefix">{% trans 'Organization prefix' %}</label>
+                <div class="fixed-controls controls">{{form.organization_prefix}}<span class="help-block">{% trans 'such as 'Company' 'Publisher' 'Department' etc.' %}</span>{{form.organization_prefix.errors}}</div>
                 
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> บันทึกข้อมูล</button>
-                <button type="reset" class="btn">ล้างข้อมูล</button>
+                <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> {% trans 'Save' %}</button>
+                <button type="reset" class="btn">{% trans 'Clear' %}</button>
             </div>
         </form>
     </div></div>
@@ -85,22 +86,22 @@ $(document).ready(function () {
 <div class="modal hide" id="resend-invitation-modal">
     <div class="modal-header">
         <a class="close" data-dismiss="modal">×</a>
-        <h3>ส่งคำขออีกครั้ง</h3>
+        <h3>{% trans 'Resend invitation' %}</h3>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal">ยกเลิก</button>
-        <button type="submit" class="btn btn-primary">ยืนยันส่งคำขออีกครั้ง</button>
+        <button class="btn" data-dismiss="modal">{% trans 'Cancel' %}</button>
+        <button type="submit" class="btn btn-primary">{% trans 'Confirm' %}</button>
     </div>
 </div>
 
 <div class="modal hide" id="cancel-invitation-modal">
     <div class="modal-header">
         <a class="close" data-dismiss="modal">×</a>
-        <h3>เพิกถอนคำขอ</h3>
+        <h3>{% trans 'Cancel invitation' %}</h3>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal">ยกเลิก</button>
-        <button type="submit" class="btn btn-danger">ยืนยันเพิกถอนคำขอ</button>
+        <button class="btn" data-dismiss="modal">{% trans 'Cancel' %}</button>
+        <button type="submit" class="btn btn-danger">{% trans 'Confirm' %}</button>
     </div>
 </div>
 {% endblock %}

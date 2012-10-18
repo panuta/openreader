@@ -22,6 +22,7 @@ urlpatterns = patterns('',
     url(r'^accounts/reset/done/$', 'django.contrib.auth.views.password_reset_complete', name='auth_password_reset_complete'),
 
     url(r'^language/', 'common.views.set_language', name='set_lang'),
+    url(r'^jsi18n/$', 'django.views.i18n.javascript_catalog', {}),
 
     url(r'^org/(?P<organization_slug>\w+)/$', 'presentation.views.view_organization_front', name='view_organization_front'),
 

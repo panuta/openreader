@@ -1,6 +1,7 @@
 {% extends 'base_authenticated.html' %}
+{% load i18n %}
 
-{% block head_title %}แก้ไขข้อมูลผู้ใช้{% endblock %}
+{% block head_title %}{% trans 'Edit users' %}{% endblock %}
 {% block topnav %}{% if user.is_superuser %}{% include 'manage/snippets/manage_topnav.html' with active_menu='management' %}{% else %}{% include 'snippets/organization_topnav.html' with active_menu='user' %}{% endif %}{% endblock %}
 
 {% block extra_head %}
@@ -30,50 +31,50 @@ $(document).ready(function () {
 <div class="container-fluid organization_users_page"><div class="row-fluid">
     <div class="content"><div class="inner-content">
         <ul class="breadcrumb">
-            <li><a href="{% url view_organization_users organization.slug %}">รายชื่อและกลุ่มผู้ใช้</a> <span class="divider">/</span></li>
-            <li class="active">แก้ไขข้อมูลผู้ใช้</li>
+            <li><a href="{% url view_organization_users organization.slug %}">{% trans 'Users and groups' %}</a> <span class="divider">/</span></li>
+            <li class="active">{% trans 'Edit users' %}</li>
         </ul>
 
-        <h2>แก้ไขข้อมูลผู้ใช้ <span>{{ user_organization.user.email }}</span></h2>
+        <h2>{% trans 'Edit users' %} <span>{{ user_organization.user.email }}</span></h2>
 
         <form method="POST" action=".">
             {% csrf_token %}
             {{form.non_field_errors}}
 
             <div class="control-group">
-                <label class="control-label" for="id_email">อีเมลผู้ใช้</label>
+                <label class="control-label" for="id_email">{% trans 'Email' %}</label>
                 <div class="controls">{{form.email}}{{form.email.errors}}</div>
             </div>
 
             <div class="control-group">
-                <label class="control-label" for="id_first_name">ชื่อ</label>
+                <label class="control-label" for="id_first_name">{% trans 'Firstname' %}</label>
                 <div class="controls">{{form.first_name}}{{form.first_name.errors}}</div>
             </div>
 
             <div class="control-group">
-                <label class="control-label" for="id_last_name">นามสกุล</label>
+                <label class="control-label" for="id_last_name">{% trans 'Lastname' %}</label>
                 <div class="controls">{{form.last_name}}{{form.last_name.errors}}</div>
             </div>
 
             <div class="control-group">
-                <label class="control-label" for="id_groups">กลุ่มผู้ใช้</label>
+                <label class="control-label" for="id_groups">{% trans 'Groups' %}</label>
                 <div class="controls">{{form.groups}}{{form.groups.errors}}</div>
             </div>
 
             <input type="hidden" name="next" value="{{ next }}"/>
 
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> บันทึกข้อมูล</button>
-                <button type="reset" class="btn">ล้างข้อมูล</button>
+                <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> {% trans 'Save' %}</button>
+                <button type="reset" class="btn">{% trans 'Clear' %}</button>
             </div>
         </form>
 
         {% if user.id != user_organization.user.id %}
             <div class="delete-panel">
                 {% if user_organization.is_active %}
-                <a href="#remove-user-modal" class="danger" data-toggle="modal">นำผู้ใช้ออกจาก{{organization.prefix}}</a>
+                <a href="#remove-user-modal" class="danger" data-toggle="modal">{% trans 'Remove user from organization' %}</a>
                 {% else %}
-                <a href="#bringback-user-modal" data-toggle="modal">นำผู้ใช้กลับเข้า{{organization.prefix}}</a>
+                <a href="#bringback-user-modal" data-toggle="modal">{% trans 'Bring user back to organization' %}</a>
                 {% endif %}
             </div>
         {% endif %}
@@ -84,21 +85,21 @@ $(document).ready(function () {
 <div class="modal hide" id="bringback-user-modal">
     <div class="modal-header">
         <a class="close" data-dismiss="modal">×</a>
-        <h3>นำผู้ใช้กลับเข้าบริษัท</h3>
+        <h3>{% trans 'Bring user back to organization' %}</h3>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal">ยกเลิก</button>
-        <button type="submit" class="btn btn-danger">ยืนยันการนำกลับ</button>
+        <button class="btn" data-dismiss="modal">{% trans 'Cancel' %}</button>
+        <button type="submit" class="btn btn-danger">{% trans 'Confirm' %}</button>
     </div>
 </div>
 <div class="modal hide" id="remove-user-modal">
     <div class="modal-header">
         <a class="close" data-dismiss="modal">×</a>
-        <h3>ถอดผู้ใช้ออกจากบริษัท</h3>
+        <h3>{% trans 'Remove user from organization' %}</h3>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal">ยกเลิก</button>
-        <button type="submit" class="btn btn-danger">ยืนยันถอดผู้ใช้</button>
+        <button class="btn" data-dismiss="modal">{% trans 'Cancel' %}</button>
+        <button type="submit" class="btn btn-danger">{% trans 'Confirm' %}</button>
     </div>
 </div>
 {% endblock %}

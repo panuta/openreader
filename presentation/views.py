@@ -140,8 +140,7 @@ def add_organization_user(request, organization_slug):
             for group in form.cleaned_data['groups']:
                 UserGroup.objects.create(user_organization=user_organization, group=group)
 
-            messages.success(request, u'%sได้เข้าร่วมเป็นส่วนหนึ่งของ%s %s เรียบร้อยแล้ว' % (user_profile.get_fullname(), 
-                                                                                        organization.prefix, 
+            messages.success(request, _('%s has been a part of the organization %s') % (user_profile.get_fullname(), 
                                                                                         organization.name))
             return redirect('view_organization_users_groups', organization_slug=organization_slug)
     else:
@@ -184,7 +183,7 @@ def invite_organization_user(request, organization_slug):
                 invitation = UserOrganizationInvitation.objects.create_invitation(email, organization, groups, request.user)
                 invitation.send_invitation_email()
 
-            messages.success(request, u'ส่งคำขอเพิ่มผู้ใช้เรียบร้อย รอผู้ใช้ยืนยันคำขอ')
+            messages.success(request, _('Sent user invtitation successful, waiting for user accept invitation'))
             return redirect('view_organization_users', organization_slug=organization.slug)
 
     else:
@@ -206,7 +205,7 @@ def edit_user_invitation(request, invitation_id):
         if form.is_valid():
             invitation.groups = form.cleaned_data['groups']
 
-            messages.success(request, u'แก้ไขข้อมูลคำขอเรียบร้อยแล้ว')
+            messages.success(request, _('Edit user profile successful'))
             return redirect('view_organization_invited_users', organization_slug=organization.slug)
 
     else:
@@ -240,7 +239,7 @@ def claim_user_invitation(request, invitation_key):
             login(request, user)
 
         UserOrganizationInvitation.objects.claim_invitation(invitation, registered_user)
-        messages.success(request, u'คุณได้เข้าร่วมเป็นส่วนหนึ่งของ%s %s เรียบร้อยแล้ว' % (invitation.organization.prefix, invitation.organization.name))
+        messages.success(request, _('%s has been a part of the organization %s') % (user_profile.get_fullname(), organization.name))
         return redirect('view_organization_front', organization_slug=invitation.organization.slug)
 
     # Require user to submit registration form
@@ -260,7 +259,7 @@ def claim_user_invitation(request, invitation_key):
             user = authenticate(email=invitation.email, password=password1)
             login(request, user)
 
-            messages.success(request, u'คุณได้เข้าร่วมเป็นส่วนหนึ่งของ%s %s เรียบร้อยแล้ว' % (invitation.organization.prefix, invitation.organization.name))
+            messages.success(request, _('%s has been a part of the organization %s') % (user_profile.get_fullname(), organization.name))
             return redirect('view_organization_front', organization_slug=invitation.organization.slug)
 
     else:
@@ -303,7 +302,7 @@ def edit_organization_user(request, organization_user_id):
 
             UserGroup.objects.filter(user_organization=user_organization, group__in=removing_groups).delete()
 
-            messages.success(request, u'แก้ไขข้อมูลผู้ใช้เรียบร้อย')
+            messages.success(request, _('Edit user profile successful'))
 
             next = request.POST.get('next')
             
@@ -350,7 +349,7 @@ def add_organization_group(request, organization_slug):
 
             group.save()
 
-            messages.success(request, u'เพิ่มกลุ่มผู้ใช้เรียบร้อย')
+            messages.success(request, _('Add group successful'))
             return redirect('view_organization_groups', organization_slug=organization.slug)
 
     else:
@@ -393,7 +392,7 @@ def edit_organization_group(request, organization_group_id):
 
             group.save()
 
-            messages.success(request, u'แก้ไขกลุ่มผู้ใช้เรียบร้อย')
+            messages.success(request, _('Edit group successful'))
             return redirect('view_organization_groups', organization_slug=organization.slug)
 
     else:
@@ -532,7 +531,7 @@ def create_document_shelf(request, organization_slug):
             shelf = OrganizationShelf.objects.create(organization=organization, name=name, auto_sync=auto_sync, archive=archive, icon=shelf_icon, created_by=request.user)
             _persist_shelf_permissions(request, organization, shelf)
 
-            messages.success(request, u'สร้างกลุ่มเอกสารเรียบร้อย')
+            messages.success(request, _('Create shelf successful'))
             return redirect('view_documents_by_shelf', organization_slug=organization.slug, shelf_id=shelf.id)
 
     else:
@@ -560,7 +559,7 @@ def edit_document_shelf(request, organization_slug, shelf_id):
 
             _persist_shelf_permissions(request, organization, shelf)
 
-            messages.success(request, u'แก้ไขกลุ่มเอกสารเรียบร้อย')
+            messages.success(request, _('Edit shelf successful'))
             return redirect('view_documents_by_shelf', organization_slug=organization.slug, shelf_id=shelf.id)
 
     else:
@@ -586,10 +585,10 @@ def delete_document_shelf(request, organization_slug, shelf_id):
                 for publication in Publication.objects.filter(shelves__in=[shelf]):
                     domain_functions.delete_publication(publication)
 
-                messages.success(request, u'ลบกลุ่มเอกสารและไฟล์ในกลุ่มเรียบร้อย')
+                messages.success(request, _('Delete shelf and all files in group successful'))
 
             else:
-                messages.success(request, u'ลบกลุ่มเอกสารเรียบร้อย')
+                messages.success(request, _('Delete shelf successful'))
 
             PublicationShelf.objects.filter(shelf=shelf).delete()
             OrganizationShelfPermission.objects.filter(shelf=shelf).delete()

@@ -131,3 +131,487 @@ msgstr "ตั้งรหัสผ่านใหม่เรียบร้อ
 
 msgid "Openreader sent the solution to set new password to your email."
 msgstr "ระบบได้ส่งขั้นตอนการตั้งรหัสผ่านใหม่ไปยังอีเมลของผู้ใช้เรียบร้อย"
+
+
+
+# Document ####################################################################
+msgid "Upload file"
+msgstr "อัพโหลดไฟล์"
+
+msgid "Create shelf"
+msgstr "เพิ่มกลุ่มเอกสาร"
+
+msgid "Select shelf"
+msgstr "เลือกกลุ่มเอกสาร"
+
+msgid "Select file"
+msgstr "เลือกไฟล์"
+
+msgid "file"
+msgstr "ไฟล์"
+
+msgid "files"
+msgstr "ไฟล์"
+
+msgid "File"
+msgstr "ไฟล์"
+
+msgid "Shelf"
+msgstr "กลุ่มเอกสาร"
+
+msgid "Shelves"
+msgstr "กลุ่มเอกสาร"
+
+msgid "There are no shelves that you can access to."
+msgstr "ยังไม่มีกลุ่มเอกสารที่คุณสามารถเข้าถึงได้ในระบบ"
+
+msgid "You can create new shelf at"
+msgstr "คุณสามารถสร้างกลุ่มเอกสารใหม่ได้จากหน้า"
+
+msgid "There are no shelves in the system."
+msgstr "ยังไม่มีกลุ่มเอกสารในระบบ"
+
+msgid "Latest files"
+msgstr "ไฟล์ล่าสุด"
+
+msgid "No latest files"
+msgstr "ไม่มีไฟล์ล่าสุด์"
+
+msgid "Uploaded on"
+msgstr "อัพโหลดเมื่อวันที่"
+
+msgid "Add tags"
+msgstr "เพิ่มแถบป้าย"
+
+msgid "Tags name"
+msgstr "ชื่อแถบป้าย"
+
+msgid "Tags"
+msgstr "แถบป้าย"
+
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+msgid "Change file"
+msgstr "เปลี่ยนไฟล์ใหม่"
+
+msgid "Confirm deleting file"
+msgstr "ยืนยันการลบไฟล์"
+
+msgid "Confirm"
+msgstr "ยืนยัน"
+
+msgid "Size"
+msgstr "ขนาด"
+
+msgid "Document"
+msgstr "เอกสาร"
+
+msgid "Delete file"
+msgstr "ลบไฟล์"
+
+msgid "Description"
+msgstr "คำอธิบาย"
+
+msgid "Document title"
+msgstr "ชื่อเอกสาร"
+
+msgid "Save"
+msgstr "บันทึกข้อมูล"
+
+msgid "Uploaded by"
+msgstr "อัพโหลดโดย"
+
+msgid "Download file"
+msgstr "ดาวน์โหลดไฟล์"
+
+msgid "All shelves"
+msgstr "กลุ่มเอกสารทั้งหมด"
+
+msgid "Change shelf"
+msgstr "เปลี่ยนกลุ่มเอกสาร"
+
+msgid "Edit shelf"
+msgstr "แก้ไขกลุ่มเอกสาร"
+
+msgid "Choose file"
+msgstr "เลือกไฟล์"
+
+msgid "Processing"
+msgstr "กำลังประมวลผล"
+
+msgid "No files"
+msgstr "ไม่มีไฟล์"
+
+msgid "File size"
+msgstr "ขนาดไฟล์"
+
+msgid "seperate each tag name with colon"
+msgstr "คั่นแต่ละชื่อด้วยเครื่องหมายลูกน้ำ"
+
+msgid "Shelf name"
+msgstr "ชื่อกลุ่มเอกสาร"
+
+msgid "All files in this shelf will be auto downloaded to user"
+msgstr "ทุกไฟล์ในกลุ่มเอกสารนี้จะถูกดาวน์โหลดลงเครื่องผู้ใช้โดยอัตโนมัติ"
+
+msgid "All files in thie shelf will be archieved"
+msgstr "ทุกไฟล์ในกลุ่มเอกสารนี้จะถูกเก็บเข้ากรุ"
+
+msgid "Shelf icon"
+msgstr "ไอคอนกลุ่มเอกสาร"
+
+msgid "Change icon"
+msgstr "เปลี่ยนไอคอน"
+
+msgid "Shelf permission"
+msgstr "การเข้าถึงกลุ่มเอกสาร"
+
+msgid "All user"
+msgstr "ทุกคนในบริษัท"
+
+msgid "Can upload and edit files"
+msgstr "อัพโหลดและแก้ไขไฟล์ได้"
+
+msgid "Only view file"
+msgstr "ดูไฟล์ได้อย่างเดียว"
+
+msgid "Cannot access to"
+msgstr "ไม่สามารถเข้าถึงได้"
+
+msgid "Personal permission"
+msgstr "การเข้าถึงเป็นรายบุคคล"
+
+msgid "Add personal permission"
+msgstr "เพิ่มการเข้าถึงเป็นรายบุคคล"
+
+msgid "Choose user"
+msgstr "เลือกผู้ใช้"
+
+msgid "User can"
+msgstr "ผู้ใช้สามารถ"
+
+msgid "Add permission"
+msgstr "เพิ่มการเข้าถึง"
+
+msgid "Choose icon"
+msgstr "เลือกไอคอน"
+
+msgid "Delete shelf"
+msgstr "ลบกลุ่มเอกสาร"
+
+msgid "Confirm delete shelf"
+msgstr "ยืนยันการลบกลุ่มเอกสาร"
+
+msgid "Delete all files in shelf"
+msgstr "ลบไฟล์ทั้งหมดที่อยู่ในกลุ่ม"
+
+msgid "Loading"
+msgstr "กำลังโหลดข้อมูล"
+
+msgid "MB"
+msgstr "เมกะไบต์"
+
+msgid "KB"
+msgstr "กิโลไบต์"
+
+msgid "Bytes"
+msgstr "ไบต์"
+
+msgid "Unknown size"
+msgstr "ไม่สามารถหาขนาดได้"
+
+# Pagination #################################################################################
+msgid "Previous"
+msgstr "ก่อนหน้า"
+
+msgid "Next"
+msgstr "ถัดไป"
+
+# Organization ###############################################################################
+msgid "Member in group"
+msgstr "สมาชิกในกลุ่ม"
+
+msgid "Group"
+msgstr "กลุ่ม"
+
+msgid "Name"
+msgstr "ชื่อ"
+
+msgid "Confirm delete group"
+msgstr "ยืนยันลบกลุ่มผู้ใช้"
+
+msgid "Delete group"
+msgstr "ลบกลุ่มผู้ใช้"
+
+msgid "Edit group"
+msgstr "แก้ไขกลุ่มผู้ใช้"
+
+msgid "Add group"
+msgstr "เพิ่มกลุ่มผู้ใช้"
+
+msgid "Group name"
+msgstr "ชื่อกลุ่มผู้ใช้"
+
+msgid "System permission"
+msgstr "สิทธิ์การจัดการระบบ"
+
+msgid "Total members"
+msgstr "จำนวนผู้ใช้ในกลุ่ม"
+
+msgid "Users"
+msgstr "รายชื่อผู้ใช้"
+
+msgid "Groups"
+msgstr "กลุ่มผู้ใช้"
+
+msgid "Organization information"
+msgstr "ข้อมูลบริษัท"
+
+msgid "Information"
+msgstr "ข้อมูล"
+
+msgid "Edit organization information"
+msgstr "แก้ไขข้อมูลบริษัท"
+
+msgid "Total files"
+msgstr "จำนวนไฟล์"
+
+msgid "Total shelves"
+msgstr "จำนวนกลุ่มเอกสาร"
+
+msgid "groups"
+msgstr "กลุ่ม"
+
+msgid "group"
+msgstr "กลุ่ม"
+
+msgid "Statistics"
+msgstr "สถิติการใช้งาน"
+
+msgid "Invite new user"
+msgstr "ส่งคำขอเพิ่มผู้ใช้"
+
+msgid "Retype password"
+msgstr "กรอกรหัสผ่านอีกครั้ง"
+
+msgid "Edit users"
+msgstr "แก้ไขข้อมูลผู้ใช้"
+
+msgid "Remove user from organization"
+msgstr "นำผู้ใช้ออกจากบริษัท"
+
+msgid "Bring user back to organization"
+msgstr "นำผู้ใช้กลับเข้าบริษัท"
+
+msgid "Add new user"
+msgstr "เพิ่มผู้ใช้ระบบ"
+
+msgid "Seperate each email with colon"
+msgstr "คั่นแต่ละอีเมลด้วยเครื่องหมายลูกน้ำ"
+
+msgid "Agree and login"
+msgstr "ตกลงและเข้าสู่ระบบ"
+
+msgid "Accept invitation"
+msgstr "ตอบรับเข้าสู่ระบบ"
+
+msgid "This logged in account is not match to accepted invitation account"
+msgstr "บัญชีที่เข้าสู่ระบบในขณะนี้ไม่ตรงกับบัญชีที่ตอบรับเข้าสู่ระบบ"
+
+msgid "Please log out"
+msgstr "กรุณาออกจากระบบก่อน"
+
+msgid "Edit user invitation"
+msgstr "แก้ไขคำขอเพิ่มผู้ใช้"
+
+msgid "User invitation"
+msgstr "คำขอเพิ่มผู้ใช้"
+
+msgid "Resend invitation"
+msgstr "ส่งคำขออีกครั้ง"
+
+msgid "Cancel invitation"
+msgstr "เพิกถอนคำขอ"
+
+msgid "There are %s users that not accept user invitation"
+msgstr "มีผู้ใช้ %s คนยังไม่ตอบรับคำขอเพิ่มผู้ใช้"
+
+msgid "There is %s user that not accept user invitation"
+msgstr "มีผู้ใช้ %s คนยังไม่ตอบรับคำขอเพิ่มผู้ใช้"
+
+msgid "Status"
+msgstr "สถานะ"
+
+msgid "Edit"
+msgstr "แก้ไข"
+
+msgid "Sent at"
+msgstr "ส่งเมื่อวันที่"
+
+msgid "No user invitations"
+msgstr "ไม่มีคำขอเพิ่มผู้ใช้"
+
+msgid "Select group"
+msgstr "เลือกกลุ่มผู้ใช้"
+
+
+# ERROR ############################################################################
+msgid "This email is already exists."
+msgstr "มีผู้ใช้คนอื่นใช้อีเมลนี้แล้ว"
+
+msgid "%s is invalid email."
+msgstr "%s เป็นอีเมลที่ไม่ถูกต้อง"
+
+msgid "There has already invited to this user."
+msgstr "มีการส่งคำขอเพิ่มผู้ใช้ถึงผู้ใช้คนนี้ก่อนหน้านี้แล้ว"
+
+msgid "This user is already in this organization."
+msgstr "ผู้ใช้คนนี้อยู่ในระบบแล้ว"
+
+
+# MESSAGE ############################################################################
+msgid "%s has been a part of the organization %s"
+msgstr "%s ได้เข้าร่วมเป็นส่วนหนึ่งของบริษัท %s เรียบร้อยแล้ว"
+
+msgid "Sent user invtitation successful, waiting for user accept invitation"
+msgstr "ส่งคำขอเพิ่มผู้ใช้เรียบร้อย รอผู้ใช้ยืนยันคำขอ"
+
+msgid "Edit user profile successful"
+msgstr "แก้ไขข้อมูลคำขอเรียบร้อยแล้ว"
+
+msgid "Add group successful"
+msgstr "เพิ่มกลุ่มผู้ใช้เรียบร้อย"
+
+msgid "Edit group successful"
+msgstr "แก้ไขกลุ่มผู้ใช้เรียบร้อย"
+
+msgid "Create shelf successful"
+msgstr "สร้างกลุ่มเอกสารเรียบร้อย"
+
+msgid "Edit shelf successful"
+msgstr "สร้างกลุ่มเอกสารเรียบร้อย"
+
+msgid "Delete shelf and all files in group successful"
+msgstr "ลบกลุ่มเอกสารและไฟล์ในกลุ่มเรียบร้อย"
+
+msgid "Delete shelf successful"
+msgstr "ลบกลุ่มเอกสารเรียบร้อย"
+
+
+# SYSYEM ############################################################################
+msgid "System management"
+msgstr "งานจัดการระบบ"
+
+msgid "Organization management"
+msgstr "การจัดการบริษัท"
+
+msgid "Add organization"
+msgstr "เพิ่มบริษัท"
+
+msgid "Organizations"
+msgstr "รายชื่อบริษัท"
+
+msgid "Organization name"
+msgstr "ชื่อบริษัท"
+
+msgid "Organization abbr name"
+msgstr "ชื่อย่อบริษัท"
+
+msgid "Organization abbr name that not duplicated with other organization"
+msgstr "ชื่อบริษัทภาษาอังกฤษที่ไม่ซ้ำกับบริษัทอื่น"
+
+msgid "Organization prefix"
+msgstr "คำนำหน้าบริษัท"
+
+msgid "such as 'Company' 'Publisher' 'Department' etc."
+msgstr "เช่น 'บริษัท' 'สำนักพิมพ์' หรือ 'แผนก' เป็นต้น"
+
+msgid "Administrator email"
+msgstr "อีเมลผู้ดูแล"
+
+msgid "Edit organization"
+msgstr "แก้ไขข้อมูลบริษัท"
+
+msgid "There is %d organization that not accept organization invitation"
+msgstr "มีบริษัท %d บริษัทยังไม่ตอบรับคำขอเพิ่มบริษัท"
+
+msgid "There are %s organizations that not accept organization invitation"
+msgstr "มีบริษัท %d บริษัทยังไม่ตอบรับคำขอเพิ่มบริษัท"
+
+msgid "Organizion invitation"
+msgstr "คำขอเพิ่มบริษัท"
+
+msgid "No organization invitations"
+msgstr "ไม่มีคำขอเพิ่มบริษัท"
+
+msgid "Accept to be an administrator of "
+msgstr "ตอบรับเข้าเป็นผู้ดูแลระบบของ"
+
+msgid "Edit organizion invitation"
+msgstr "แก้ไขคำขอเพิ่มบริษัท"
+
+
+# JS #########################
+
+msgid "File not found"
+msgstr "ไม่พบข้อมูลไฟล์ที่ต้องการ"
+
+msgid "Choose file to replace"
+msgstr "เลือกไฟล์ที่ต้องการแทนไฟล์เก่า"
+
+msgid "File is exceed limitation"
+msgstr "ไฟล์มีขนาดใหญ่เกินกำหนด"
+
+msgid "max"
+msgstr "สูงสุด"
+
+msgid "Replace file successful"
+msgstr "เปลี่ยนไฟล์ใหม่เรียบร้อย"
+
+msgid "Cannot upload file"
+msgstr "ไม่สามารถบันทึกไฟล์ที่อัพโหลดได้"
+
+msgid "User cannot upload file in this shelf"
+msgstr "ผู้ใช้ไม่สามารถอัพโหลดไฟล์ในกลุ่มเอกสารนี้ได้"
+
+msgid "Error, cannot upload file"
+msgstr "เกิดข้อผิดพลาด ไม่สามารถอัพโหลดได้"
+
+msgid "Confirm delete file"
+msgstr "ยืนยันการลบไฟล์"
+
+msgid "Save successful"
+msgstr "บันทึกข้อมูลเรียบร้อย"
+
+msgid "Cannot save file"
+msgstr "ไม่สามารถบันทึกไฟล์ได้"
+
+msgid "File not found in system"
+msgstr "ไม่พบข้อมูลไฟล์ในระบบ"
+
+msgid "Information is not completely"
+msgstr "ข้อมูลที่ต้องการบันทึกไม่ครบถ้วน"
+
+msgid "Cancel upload file"
+msgstr "ยกเลิกการอัพโหลด"
+
+msgid "Uploading"
+msgstr "กำลังอัพโหลดไฟล์"
+
+msgid "Edit document"
+msgstr "แก้ไฟล์เอกสาร"
+
+msgid "Incomplete information to add tags"
+msgstr "ข้อมูลไม่เพียงพอที่จะเพิ่มแถบป้าย"
+
+msgid "File to add tags not found"
+msgstr "ไม่พบไฟล์ที่ต้องการเพิ่มแถบป้ายในระบบ"
+
+msgid "Sent invitation to user successful"
+msgstr "ส่งคำขอถึงผู้ใช้เรียบร้อย"
+
+msgid "Cannot send email"
+msgstr "ไม่สามารถส่งอีเมลได้"
+
+

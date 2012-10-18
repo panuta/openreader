@@ -1,41 +1,42 @@
+{% load i18n %}
 <div class="modal hide" id="publication-modal">
-    <div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>เอกสาร</h3></div>
+    <div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>{% trans 'Document' %}</h3></div>
     <div class="modal-body">
         <div class="publication">
             <div class="left">
                 <div class="thumbnail"><img src="" /></div>
-                <ul class="file_info"><li>ไฟล์ <span class="file_ext"></span></li><li>ขนาด <span class="file_size"></span></li></ul>
+                <ul class="file_info"><li>{% trans 'File' %} <span class="file_ext"></span></li><li>{% trans 'Size' %} <span class="file_size"></span></li></ul>
                 <div class="actions">
-                    <a href="#" class="btn btn-mini replace_button">เปลี่ยนไฟล์ใหม่</a>
-                    <a href="#" class="btn btn-mini delete_button">ลบไฟล์</a>
+                    <a href="#" class="btn btn-mini replace_button">{% trans 'Change file' %}</a>
+                    <a href="#" class="btn btn-mini delete_button">{% trans 'Delete file' %}</a>
                 </div>
             </div>
             <div class="right">
                 <form class="publication_form">
                     <div class="control-group">
-                        <label class="control-label" for="id_publication_title">ชื่อเอกสาร</label>
+                        <label class="control-label" for="id_publication_title">{% trans 'Document title' %}</label>
                         <div class="controls"><input type="text" id="id_publication_title"/></div>
                     </div>
                     <div class="control-group">
-                        <label class="control-label" for="id_publication_description">คำอธิบาย</label>
+                        <label class="control-label" for="id_publication_description">{% trans 'Description' %}</label>
                         <div class="controls"><textarea id="id_publication_description"></textarea></div>
                     </div>
                     <div class="control-group">
-                        <label class="control-label" for="id_publication_tags">แถบป้าย</label>
+                        <label class="control-label" for="id_publication_tags">{% trans 'Tags' %}</label>
                         <div class="controls"><input type="text" id="id_publication_tags"/></div>
                     </div>
 
-                    <button class="btn btn-primary save_button"><i class="icon-pencil icon-white"></i> บันทึกข้อมูล</button>
+                    <button class="btn btn-primary save_button"><i class="icon-pencil icon-white"></i> {% trans 'Save' %}</button>
                 </form>
             </div>
         </div>
     </div>
     <div class="modal-footer">
         <div class="publication">
-            <a href="#" class="btn pull-left download_button"><i class="icon-download"></i> ดาวน์โหลดไฟล์</a>
+            <a href="#" class="btn pull-left download_button"><i class="icon-download"></i> {% trans 'Download file' %}</a>
             <span class="uploaded">
-            อัพโหลดเมื่อวันที่ <span class="uploaded_date"></span><br/>
-            อัพโหลดโดย <span class="uploaded_by"></span>
+            {% trans 'Uploaded on' %} <span class="uploaded_date"></span><br/>
+            {% trans 'Uploaded by' %} <span class="uploaded_by"></span>
             </span>
         </div>
     </div>

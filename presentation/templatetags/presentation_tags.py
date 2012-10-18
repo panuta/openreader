@@ -4,6 +4,7 @@ from django.conf import settings
 
 from django import template
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext as _
 
 register = template.Library()
 
@@ -37,12 +38,14 @@ def shelf_organization_permission_radio(shelf):
     except OrganizationShelfPermission.DoesNotExist:
         shelf_permission = OrganizationShelf.SHELF_ACCESS['VIEW_ACCESS']
 
-    return '<label><input type="radio" name="all-permission" value="%d"%s/> อัพโหลดและแก้ไขไฟล์ได้</label>\
-        <label><input type="radio" name="all-permission" value="%d"%s/> ดูไฟล์ได้อย่างเดียว</label>'% (
+    return '<label><input type="radio" name="all-permission" value="%d"%s/> %s</label>\
+        <label><input type="radio" name="all-permission" value="%d"%s/> %s</label>'% (
         OrganizationShelf.SHELF_ACCESS['PUBLISH_ACCESS'],
         ' checked="checked"' if shelf_permission == OrganizationShelf.SHELF_ACCESS['PUBLISH_ACCESS'] else '',
+        _('Can upload and edit files'),
         OrganizationShelf.SHELF_ACCESS['VIEW_ACCESS'],
         ' checked="checked"' if shelf_permission == OrganizationShelf.SHELF_ACCESS['VIEW_ACCESS'] else '',
+        _('Only view file'),
     )
 
 
@@ -53,35 +56,41 @@ def shelf_group_permission_radio(group, shelf):
     except GroupShelfPermission.DoesNotExist:
         shelf_permission = OrganizationShelf.SHELF_ACCESS['NO_ACCESS']
 
-    return '<label><input type="radio" name="group-permission-%d" value="%d"%s/> อัพโหลดและแก้ไขไฟล์ได้</label>\
-        <label><input type="radio" name="group-permission-%d" value="%d"%s/> ดูไฟล์ได้อย่างเดียว</label>\
-        <label><input type="radio" name="group-permission-%d" value="%d"%s/> ไม่สามารถเข้าถึงได้</label>' % (
+    return '<label><input type="radio" name="group-permission-%d" value="%d"%s/> %s</label>\
+        <label><input type="radio" name="group-permission-%d" value="%d"%s/> %s</label>\
+        <label><input type="radio" name="group-permission-%d" value="%d"%s/> %s</label>' % (
         group.id,
         OrganizationShelf.SHELF_ACCESS['PUBLISH_ACCESS'],
         ' checked="checked"' if shelf_permission == OrganizationShelf.SHELF_ACCESS['PUBLISH_ACCESS'] else '',
+        _('Can upload and edit files'),
         group.id,
         OrganizationShelf.SHELF_ACCESS['VIEW_ACCESS'],
         ' checked="checked"' if shelf_permission == OrganizationShelf.SHELF_ACCESS['VIEW_ACCESS'] else '',
+        _('Only view file'),
         group.id,
         OrganizationShelf.SHELF_ACCESS['NO_ACCESS'],
         ' checked="checked"' if shelf_permission == OrganizationShelf.SHELF_ACCESS['NO_ACCESS'] else '',
+        _('Cannot access to'),
     )
 
 
 @register.simple_tag
 def shelf_user_permission_radio(user_permission):
-    return '<label><input type="radio" name="user-permission-%d" value="%d"%s/> อัพโหลดและแก้ไขไฟล์ได้</label>\
-        <label><input type="radio" name="user-permission-%d" value="%d"%s/> ดูไฟล์ได้อย่างเดียว</label>\
-        <label><input type="radio" name="user-permission-%d" value="%d"%s/> ไม่สามารถเข้าถึงได้</label>' % (
+    return '<label><input type="radio" name="user-permission-%d" value="%d"%s/> %s</label>\
+        <label><input type="radio" name="user-permission-%d" value="%d"%s/> %s</label>\
+        <label><input type="radio" name="user-permission-%d" value="%d"%s/> %s</label>' % (
         user_permission.user.id,
         OrganizationShelf.SHELF_ACCESS['PUBLISH_ACCESS'],
         ' checked="checked"' if user_permission.access_level == OrganizationShelf.SHELF_ACCESS['PUBLISH_ACCESS'] else '',
+        _('Can upload and edit files'),
         user_permission.user.id,
         OrganizationShelf.SHELF_ACCESS['VIEW_ACCESS'],
         ' checked="checked"' if user_permission.access_level == OrganizationShelf.SHELF_ACCESS['VIEW_ACCESS'] else '',
+        _('Only view file'),
         user_permission.user.id,
         OrganizationShelf.SHELF_ACCESS['NO_ACCESS'],
         ' checked="checked"' if user_permission.access_level == OrganizationShelf.SHELF_ACCESS['NO_ACCESS'] else '',
+        _('Cannot access to'),
     )
 
 

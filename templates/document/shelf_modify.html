@@ -1,7 +1,8 @@
 {% extends 'base_authenticated.html' %}
 {% load helper_tags presentation_tags %}
+{% load i18n %}
 
-{% block head_title %}{% if not shelf %}สร้างกลุ่มเอกสารใหม่{% else %}แก้ไขกลุ่มเอกสาร{% endif %}{% endblock %}
+{% block head_title %}{% if not shelf %}{% trans 'Create shelf' %}{% else %}{% trans 'Edit shelf' %}{% endif %}{% endblock %}
 {% block topnav %}{% include 'snippets/organization_topnav.html' with active_menu='document' %}{% endblock %}
 
 {% block extra_head %}
@@ -48,7 +49,7 @@ $(document).ready(function () {
             if($('.user_permissions table tr.user-permission-' + $(this).val()).length) {
                 userObject = $('.user_permissions table tr.user-permission-' + $(this).val());
             } else {
-                userObject = $('<tr class="user-permission-' + $(this).val() + '"><td class="remove"><button class="btn btn-mini">ยกเลิก</button></td><td class="group">' + $(this).text() + '</td><td class="permission"><label><input type="radio" name="user-permission-' + $(this).val() + '" value="2"/> อัพโหลดและแก้ไขไฟล์ได้</label><label><input type="radio" name="user-permission-' + $(this).val() + '" value="1"/> ดูไฟล์ได้อย่างเดียว</label><label><input type="radio" name="user-permission-' + $(this).val() + '" value="0"/> ไม่สามารถเข้าถึงได้</label></td></tr>');
+                userObject = $('<tr class="user-permission-' + $(this).val() + '"><td class="remove"><button class="btn btn-mini">'+gettext('Cancel')+'</button></td><td class="group">' + $(this).text() + '</td><td class="permission"><label><input type="radio" name="user-permission-' + $(this).val() + '" value="2"/> '+gettext('Can upload and edit files')+'</label><label><input type="radio" name="user-permission-' + $(this).val() + '" value="1"/> '+gettext('Only view file')+'</label><label><input type="radio" name="user-permission-' + $(this).val() + '" value="0"/> '+gettext('Cannot access to')+'</label></td></tr>');
                 userObject.appendTo('.user_permissions table');
             }
 
@@ -97,17 +98,17 @@ $(document).ready(function () {
 
         {% if not shelf %}
             <ul class="breadcrumb">
-                <li><a href="{% url view_documents organization.slug %}">กลุ่มเอกสารทั้งหมด</a> <span class="divider">/</span></li>
-                <li class="active">สร้างกลุ่มเอกสารใหม่</li>
+                <li><a href="{% url view_documents organization.slug %}">{% trans 'All shelves' %}</a> <span class="divider">/</span></li>
+                <li class="active">{% trans 'Create shelf' %}</li>
             </ul>
-            <h2>สร้างกลุ่มเอกสารใหม่</h2>
+            <h2>{% trans 'Create shelf' %}</h2>
         {% else %}
             <ul class="breadcrumb">
-                <li><a href="{% url view_documents organization.slug %}">กลุ่มเอกสารทั้งหมด</a> <span class="divider">/</span></li>
-                <li><a href="{% url view_documents_by_shelf organization.slug shelf.id %}">กลุ่มเอกสาร {{shelf.name}}</a> <span class="divider">/</span></li>
-                <li class="active">แก้ไขกลุ่มเอกสาร</li>
+                <li><a href="{% url view_documents organization.slug %}">{% trans 'All shelves' %}</a> <span class="divider">/</span></li>
+                <li><a href="{% url view_documents_by_shelf organization.slug shelf.id %}">{% trans 'Shelf' %} {{shelf.name}}</a> <span class="divider">/</span></li>
+                <li class="active">{% trans 'Edit shelf' %}</li>
             </ul>
-            <h2>แก้ไขกลุ่มเอกสาร</h2>
+            <h2>{% trans 'Edit shelf' %}</h2>
         {% endif %}
 
         <form method="POST" action=".">
@@ -115,40 +116,40 @@ $(document).ready(function () {
             {{form.non_field_errors}}
 
             <div class="control-group">
-                <label class="control-label" for="id_name">ชื่อกลุ่มเอกสาร</label>
+                <label class="control-label" for="id_name">{% trans 'Shelf name' %}</label>
                 <div class="controls">{{form.name}}{{form.name.errors}}</div>
             </div>
 
             <div class="control-group">
                 <label class="control-label" for="id_email">Auto-Sync</label>
-                <div class="controls row-controls"><ul><li><label>{{form.auto_sync}} ทุกไฟล์ในกลุ่มเอกสารนี้จะถูกดาวน์โหลดลงเครื่องผู้ใช้โดยอัตโนมัติ</label></li></ul>{{form.auto_sync.errors}}</div>
+                <div class="controls row-controls"><ul><li><label>{{form.auto_sync}} {% trans 'All files in this shelf will be auto downloaded to user' %}</label></li></ul>{{form.auto_sync.errors}}</div>
             </div>
 
             <div class="control-group">
                 <label class="control-label" for="id_archive">Archive</label>
-                <div class="controls row-controls"><ul><li><label>{{form.archive}} ทุกไฟล์ในกลุ่มเอกสารนี้จะถูกเก็บเข้ากรุ</label></li></ul>{{form.archive.errors}}</div>
+                <div class="controls row-controls"><ul><li><label>{{form.archive}} {% trans 'All files in thie shelf will be archieved' %}</label></li></ul>{{form.archive.errors}}</div>
             </div>
 
             <div class="control-group">
-                <label class="control-label" for="id_shelf_icon">ไอคอนกลุ่มเอกสาร</label>
+                <label class="control-label" for="id_shelf_icon">{% trans 'Shelf icon' %}</label>
                 <div class="controls shelf-icon-controls">
-                    <input type="hidden" name="shelf_icon" id="id_shelf_icon" value="{{form.shelf_icon.value}}" /><img src="{{STATIC_URL}}images/shelficons/24/{{form.shelf_icon.value}}.png" /><button class="btn btn-small" data-toggle="modal" data-target="#shelf_icons_modal">เปลี่ยนไอคอน</button>
+                    <input type="hidden" name="shelf_icon" id="id_shelf_icon" value="{{form.shelf_icon.value}}" /><img src="{{STATIC_URL}}images/shelficons/24/{{form.shelf_icon.value}}.png" /><button class="btn btn-small" data-toggle="modal" data-target="#shelf_icons_modal">{% trans 'Change icon' %}</button>
                 </div>
             </div>
 
             <div class="control-group">
-                <label class="control-label" for="id_email">การเข้าถึงกลุ่มเอกสาร</label>
+                <label class="control-label" for="id_email">{% trans 'Shelf permission' %}</label>
                 <div class="controls shelf-permission-controls">
                     <table class="table table-bordered">
                         <tbody>
                             <tr>
-                                <td class="group">ทุกคนในบริษัท</td>
+                                <td class="group">{% trans 'All user' %}</td>
                                 <td class="permission">
                                     {% if shelf %}
                                         {% shelf_organization_permission_radio shelf %}
                                     {% else %}
-                                        <label><input type="radio" name="all-permission" value="2"/> อัพโหลดและแก้ไขไฟล์ได้</label>
-                                        <label><input type="radio" name="all-permission" value="1" checked="checked"/> ดูไฟล์ได้อย่างเดียว</label>
+                                        <label><input type="radio" name="all-permission" value="2"/> {% trans 'Can upload and edit files' %}</label>
+                                        <label><input type="radio" name="all-permission" value="1" checked="checked"/> {% trans 'Only view file' %}</label>
                                     {% endif %}
                                 </td>
                             </tr>
@@ -159,9 +160,9 @@ $(document).ready(function () {
                                     {% if shelf %}
                                         {% shelf_group_permission_radio group shelf %}
                                     {% else %}
-                                        <label><input type="radio" name="group-permission-{{ group.id }}" value="2"/> อัพโหลดและแก้ไขไฟล์ได้</label>
-                                        <label><input type="radio" name="group-permission-{{ group.id }}" value="1" checked="checked"/> ดูไฟล์ได้อย่างเดียว</label>
-                                        <label><input type="radio" name="group-permission-{{ group.id }}" value="0"/> ไม่สามารถเข้าถึงได้</label>
+                                        <label><input type="radio" name="group-permission-{{ group.id }}" value="2"/> {% trans 'Can upload and edit files' %}</label>
+                                        <label><input type="radio" name="group-permission-{{ group.id }}" value="1" checked="checked"/> {% trans 'Only view file' %}</label>
+                                        <label><input type="radio" name="group-permission-{{ group.id }}" value="0"/> {% trans 'Cannot access to' %}</label>
                                     {% endif %}
                                 </td>
                             </tr>
@@ -169,26 +170,26 @@ $(document).ready(function () {
                         </tbody>
                     </table>
                     <div class="user_permissions">
-                        <h4>การเข้าถึงเป็นรายบุคคล</h4>
-                        <a href="#add-user-permission" class="btn btn-small" data-toggle="button">เพิ่มการเข้าถึงเป็นรายบุคคล</a>
+                        <h4>{% trans 'Personal permission' %}</h4>
+                        <a href="#add-user-permission" class="btn btn-small" data-toggle="button">{% trans 'Add personal permission' %}</a>
 
                         <div id="add-user-permission" class="hide permission_panel">
                             <div class="user_selection">
-                                <select multiple="multiple" data-placeholder="เลือกผู้ใช้">
+                                <select multiple="multiple" data-placeholder="{% trans 'Choose user' %}">
                                     {% for user_organization in organization.userorganization_set.all %}
                                         <option value="{{ user_organization.user.id }}">{{ user_organization.user.get_profile.get_fullname }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
-                            <div class="head">ผู้ใช้สามารถ</div>
+                            <div class="head">{% trans 'User can' %}</div>
                             <div class="input">
-                                <label><input type="radio" name="add-user-permission" value="2"/> อัพโหลดและแก้ไขไฟล์ได้</label>
-                                <label><input type="radio" name="add-user-permission" value="1"/> ดูไฟล์ได้อย่างเดียว</label>
-                                <label><input type="radio" name="add-user-permission" value="0"/> ไม่สามารถเข้าถึงได้</label>
+                                <label><input type="radio" name="add-user-permission" value="2"/> {% trans 'Can upload and edit files' %}</label>
+                                <label><input type="radio" name="add-user-permission" value="1"/> {% trans 'Only view file' %}</label>
+                                <label><input type="radio" name="add-user-permission" value="0"/> {% trans 'Cannot access to' %}</label>
                             </div>
                             <div class="permission_actions">
-                                <button class="btn add_button"><i class="icon-plus"></i> เพิ่มการเข้าถึง</button>
-                                <button class="btn cancel_button">ยกเลิก</button>
+                                <button class="btn add_button"><i class="icon-plus"></i> {% trans 'Add permission' %}</button>
+                                <button class="btn cancel_button">{% trans 'Cancel' %}</button>
                             </div>
                         </div>
 
@@ -197,7 +198,7 @@ $(document).ready(function () {
                                 <tbody>
                                     {% for user_permission in shelf.usershelfpermission_set.all %}
                                     <tr class="user-permission-{{ user_permission.user.id }}">
-                                        <td class="remove"><button class="btn btn-mini">ยกเลิก</button></td>
+                                        <td class="remove"><button class="btn btn-mini">{% trans 'Cancel' %}</button></td>
                                         <td class="group">{{ user_permission.user.get_profile.get_fullname }}</td>
                                         <td class="permission">{% shelf_user_permission_radio user_permission %}</td>
                                     </tr>
@@ -210,21 +211,21 @@ $(document).ready(function () {
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> {% if not shelf %}สร้างกลุ่มเอกสาร{% else %}แก้ไขกลุ่มเอกสาร{% endif %}</button>
-                <button type="reset" class="btn">ล้างข้อมูล</button>
+                <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> {% if not shelf %}{% trans 'Create shelf' %}{% else %}{% trans 'Edit shelf' %}{% endif %}</button>
+                <button type="reset" class="btn">{% trans 'Clear' %}</button>
             </div>
         </form>
 
         {% if shelf %}
         <div class="delete-panel">
-            <a href="{% url delete_document_shelf organization.slug shelf.id %}" class="danger">ลบกลุ่มเอกสาร</a>
+            <a href="{% url delete_document_shelf organization.slug shelf.id %}" class="danger">{% trans 'Delete shelf' %}</a>
         </div>
         {% endif %}
     </div></div>
 </div></div>
 
 <div class="modal hide" id="shelf_icons_modal">
-  <div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>เลือกไอคอน</h3></div>
+  <div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>{% trans 'Choose icon' %}</h3></div>
   <div class="modal-body">
     <ul>
       {% generate_shelf_icons %}

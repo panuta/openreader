@@ -3,7 +3,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.core.validators import email_re
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext, ugettext_lazy as _
 
 from common.forms import StrippedCharField
 
@@ -14,7 +14,7 @@ from domain.models import OrganizationGroup, UserOrganizationInvitation, UserOrg
 class OrganizationGroupMultipleChoiceField(forms.ModelMultipleChoiceField):
     def __init__(self, *args, **kwargs):
         kwargs['queryset'] = OrganizationGroup.objects.all()
-        kwargs['widget'] = forms.SelectMultiple(attrs={'data-placeholder':'เลือกกลุ่มผู้ใช้', 'style':'width:500px;'}) # Use for 'Chosen' jQuery plugin
+        kwargs['widget'] = forms.SelectMultiple(attrs={'data-placeholder':_('Select group'), 'style':'width:500px;'}) # Use for 'Chosen' jQuery plugin
         forms.ModelMultipleChoiceField.__init__(self, *args, **kwargs)
 
     def label_from_instance(self, obj):
@@ -51,7 +51,7 @@ class AddOrganizationUserForm(forms.Form):
     def clean_email(self):
         email = self.cleaned_data.get('email', '')
         if User.objects.filter(email=email).exists():
-            raise forms.ValidationError(u'มีผู้ใช้คนอื่นใช้อีเมลนี้แล้ว')
+            raise forms.ValidationError(_('This email is already exists.'))
         return email
 
     def clean_password2(self):
@@ -79,13 +79,13 @@ class InviteOrganizationUserForm(forms.Form):
         
         for email in emails:
             if not email_re.match(email):
-                raise forms.ValidationError('%s เป็นอีเมลที่ไม่ถูกต้อง.' % str(email))
+                raise forms.ValidationError(_('%s is invalid email.'))
 
             if UserOrganizationInvitation.objects.filter(email=email, organization=self.organization).exists():
-                raise forms.ValidationError(u'มีการส่งคำขอเพิ่มผู้ใช้ถึงผู้ใช้คนนี้ก่อนหน้านี้แล้ว')
+                raise forms.ValidationError(_('There has already invited to this user.'))
 
             if UserOrganization.objects.filter(organization=self.organization, user__email=email).exists():
-                raise forms.ValidationError(u'ผู้ใช้คนนี้อยู่ใน%s %s แล้ว' % (self.organization.prefix, self.organization.name))
+                raise forms.ValidationError(_('This user is already in this organization.'))
 
         return emails
 
@@ -130,7 +130,7 @@ class EditOrganizationUserForm(forms.Form):
         email = self.cleaned_data.get('email', '')
 
         if User.objects.filter(email=email).exclude(id=self.user_organization.user.id).exists():
-            raise forms.ValidationError(u'มีผู้ใช้คนอื่นใช้อีเมลนี้แล้ว')
+            raise forms.ValidationError(_('This email is already exists.'))
 
         return email
 

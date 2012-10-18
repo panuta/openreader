@@ -77,7 +77,7 @@ $(document).ready(function () {
             }
 
             $('#publication-modal .modal-body .publication').remove();
-            $('#publication-modal .modal-body').html('<div class="panel-message"><i class="loading"></i> กำลังโหลดข้อมูล</div>');
+            $('#publication-modal .modal-body').html('<div class="panel-message"><i class="loading"></i> '+ gettext('Loading') +'</div>');
             $('#publication-modal .modal-footer .publication').hide();
 
             $.get('/ajax/publication/' + uid + '/query/', {}, function(response) {
@@ -85,9 +85,9 @@ $(document).ready(function () {
                     var publication_form = '';
 
                     if(response.readonly == 'true') {
-                        publication_form = $('<div class="publication"><div class="left"><div class="thumbnail"><img src="' + response.thumbnail_url + '" /></div><ul class="file_info"><li>ไฟล์ <span class="file_ext">' + response.file_ext.toUpperCase() + '</span></li><li>ขนาด <span class="file_size">' + response.file_size_text + '</span></li></ul></div><div class="right"><form class="publication_form"><div class="control-group"><label class="control-label" for="id_publication_title">ชื่อเอกสาร</label><div class="controls"><input type="text" id="id_publication_title" readonly="readonly" value="' + response.title + '"/></div></div><div class="control-group"><label class="control-label" for="id_publication_description">คำอธิบาย</label><div class="controls"><textarea id="id_publication_description" readonly="readonly">' + response.description + '</textarea></div></div><div class="control-group"><label class="control-label" for="id_publication_tags">แถบป้าย</label><div class="controls"><input type="text" id="id_publication_tags" readonly="readonly" value="' + response.tag_names + '"/></div></div></form></div></div>')
+                        publication_form = $('<div class="publication"><div class="left"><div class="thumbnail"><img src="' + response.thumbnail_url + '" /></div><ul class="file_info"><li>'+ gettext('File') +' <span class="file_ext">' + response.file_ext.toUpperCase() + '</span></li><li>'+ gettext('Size') +' <span class="file_size">' + response.file_size_text + '</span></li></ul></div><div class="right"><form class="publication_form"><div class="control-group"><label class="control-label" for="id_publication_title">'+ gettext('Document title') +'</label><div class="controls"><input type="text" id="id_publication_title" readonly="readonly" value="' + response.title + '"/></div></div><div class="control-group"><label class="control-label" for="id_publication_description">'+ gettext('Description') +'</label><div class="controls"><textarea id="id_publication_description" readonly="readonly">' + response.description + '</textarea></div></div><div class="control-group"><label class="control-label" for="id_publication_tags">'+ gettext('Tags') +'</label><div class="controls"><input type="text" id="id_publication_tags" readonly="readonly" value="' + response.tag_names + '"/></div></div></form></div></div>')
                     } else {
-                        publication_form = $('<div class="publication"><div class="left"><div class="thumbnail"><img src="' + response.thumbnail_url + '" /></div><ul class="file_info"><li>ไฟล์ <span class="file_ext">' + response.file_ext.toUpperCase() + '</span></li><li>ขนาด <span class="file_size">' + response.file_size_text + '</span></li></ul><div class="actions"><a href="#" class="btn btn-mini replace_button">เปลี่ยนไฟล์ใหม่</a><a href="#" class="btn btn-mini delete_button">ลบไฟล์</a></div></div><div class="right"><form class="publication_form"><div class="control-group"><label class="control-label" for="id_publication_title">ชื่อเอกสาร</label><div class="controls"><input type="text" id="id_publication_title" value="' + response.title + '"/></div></div><div class="control-group"><label class="control-label" for="id_publication_description">คำอธิบาย</label><div class="controls"><textarea id="id_publication_description">' + response.description + '</textarea></div></div><div class="control-group"><label class="control-label" for="id_publication_tags">แถบป้าย</label><div class="controls"><input type="text" id="id_publication_tags" value="' + response.tag_names + '"/></div></div><button class="btn btn-primary save_button"><i class="icon-pencil icon-white"></i> บันทึกข้อมูล</button></form></div></div>')
+                        publication_form = $('<div class="publication"><div class="left"><div class="thumbnail"><img src="' + response.thumbnail_url + '" /></div><ul class="file_info"><li>'+ gettext('File') +' <span class="file_ext">' + response.file_ext.toUpperCase() + '</span></li><li>'+ gettext('Size') +' <span class="file_size">' + response.file_size_text + '</span></li></ul><div class="actions"><a href="#" class="btn btn-mini replace_button">'+ gettext('Change file') +'</a><a href="#" class="btn btn-mini delete_button">'+ gettext('Delete file') +'</a></div></div><div class="right"><form class="publication_form"><div class="control-group"><label class="control-label" for="id_publication_title">'+ gettext('Document title') +'</label><div class="controls"><input type="text" id="id_publication_title" value="' + response.title + '"/></div></div><div class="control-group"><label class="control-label" for="id_publication_description">'+ gettext('Description') +'</label><div class="controls"><textarea id="id_publication_description">' + response.description + '</textarea></div></div><div class="control-group"><label class="control-label" for="id_publication_tags">'+ gettext('Tags') +'</label><div class="controls"><input type="text" id="id_publication_tags" value="' + response.tag_names + '"/></div></div><button class="btn btn-primary save_button"><i class="icon-pencil icon-white"></i> '+ gettext('Save') +'</button></form></div></div>')
                     }
 
                     $('#publication-modal .modal-header h3').text(response.title);
@@ -102,11 +102,11 @@ $(document).ready(function () {
                     });
                 } else {
                     $('#publication-modal .panel-message').remove();
-                    $('<div class="panel-message"><i class="icon-exclamation-sign"></i> ไม่พบข้อมูลไฟล์ที่ต้องการ</div>').appendTo('#publication-modal .modal-body');
+                    $('<div class="panel-message"><i class="icon-exclamation-sign"></i> '+ gettext('File not found') +'</div>').appendTo('#publication-modal .modal-body');
                 }
             }, 'json');
         } else {
-            $('<div class="message-panel"><i class="icon-exclamation-sign"></i> ไม่พบข้อมูลไฟล์ที่ต้องการ</div>').appendTo('#publication-modal .modal-body');
+            $('<div class="message-panel"><i class="icon-exclamation-sign"></i> '+ gettext('File not found') +'</div>').appendTo('#publication-modal .modal-body');
         }
     });
 
@@ -127,7 +127,7 @@ $(document).ready(function () {
     $('#publication-modal .replace_button').live('click', function() {
         $('#publication-modal .publication_form').fadeOut('fast', function() {
             $('#publication-modal .right .panel').remove();
-            $('#publication-modal .right').append('<form class="replace_form panel"><label for="replace_file_input">เลือกไฟล์ที่ต้องการแทนไฟล์เก่า</label><input type="file" id="replace_file_input" /><div class="actions"><button class="btn cancel_button">ยกเลิก</button></div></form>');
+            $('#publication-modal .right').append('<form class="replace_form panel"><label for="replace_file_input">'+ gettext('Choose file to replace') +'</label><input type="file" id="replace_file_input" /><div class="actions"><button class="btn cancel_button">'+ gettext('Cancel') +'</button></div></form>');
 
             $('#publication-modal .replace_form .cancel_button').on('click', function() {
                 $('#publication-modal .panel').fadeOut('fast', function(){
@@ -145,11 +145,11 @@ $(document).ready(function () {
                 add: function (e, data) {
                     var file = data.files[0];
                     if(file.size > MAX_PUBLICATION_FILE_SIZE) {
-                        _addModalMessage('publication-modal', 'ไฟล์มีขนาดใหญ่เกินกำหนด (สูงสุดที่ ' + MAX_PUBLICATION_FILE_SIZE_TEXT + ')', 'error');
+                        _addModalMessage('publication-modal', gettext('File is exceed limitation') +' (' + gettext('max') + ' ' + MAX_PUBLICATION_FILE_SIZE_TEXT + ')', 'error');
 
                     } else {
                         var uid = $('#publication-modal').data('uid');
-                        $('#publication-modal .right .panel').html('<div class="uploading"><div class="upload_progressbar"></div><button class="btn">ยกเลิก</button></div>');
+                        $('#publication-modal .right .panel').html('<div class="uploading"><div class="upload_progressbar"></div><button class="btn">' + gettext('Cancel') + '</button></div>');
                         $('#publication-modal .right .panel .upload_progressbar').progressBar({width:262, height:20, boxImage:'/static/libs/progressbar/images/progressbar.png', barImage:{0:'/static/libs/progressbar/images/progressbg.png', 30:'/static/libs/progressbar/images/progressbg.png', 70:'/static/libs/progressbar/images/progressbg.png'}});
 
                         data.submit();
@@ -173,15 +173,15 @@ $(document).ready(function () {
                         $('#publication-modal .file_size').text(response.file_size);
                         $('#publication-modal .thumbnail img').attr('src', response.thumbnail_url);
 
-                        _addModalMessage('publication-modal', 'เปลี่ยนไฟล์ใหม่เรียบร้อย', 'success');
+                        _addModalMessage('publication-modal', gettext('Replace file successful'), 'success');
 
                         $('#publication-modal').trigger('panel_hide', ['not_remove_message']);
                         $('#publication-modal').trigger('publication_replaced', [response.uid, response.file_ext, response.file_size]);
 
                     } else {
-                        var error_message = 'ไม่สามารถบันทึกไฟล์ที่อัพโหลดได้';
-                        if(responseObject.error == 'file-size-exceed') error_message = 'ไฟล์มีขนาดใหญ่เกินกำหนด';
-                        if(responseObject.error == 'access-denied') error_message = 'ผู้ใช้ไม่สามารถอัพโหลดไฟล์ในกลุ่มเอกสารนี้ได้';
+                        var error_message = gettext('Cannot upload file');
+                        if(responseObject.error == 'file-size-exceed') error_message = gettext('File is exceed limitation');
+                        if(responseObject.error == 'access-denied') error_message = gettext('User cannot upload file in this shelf');
                         _addModalMessage('publication-modal', error_message, 'error');
                     }
                 },
@@ -189,7 +189,7 @@ $(document).ready(function () {
                     if (data.errorThrown == 'abort') {
                         $('#publication-modal').trigger('panel_hide');
                     } else {
-                        _addModalMessage('publication-modal', 'เกิดข้อผิดพลาด ไม่สามารถอัพโหลดได้', 'error');
+                        _addModalMessage('publication-modal', gettext('Error, cannot upload file'), 'error');
                     }
                 }
             });
@@ -200,7 +200,7 @@ $(document).ready(function () {
     $('#publication-modal .delete_button').live('click', function() {
         $('#publication-modal .publication_form').fadeOut('fast', function() {
             $('#publication-modal .right .panel').remove();
-            $('#publication-modal .right').append('<form class="delete_form panel"><div><button type="submit" class="btn btn-danger submit_delete_button">ยืนยันการลบไฟล์</button><button class="btn cancel_button">ยกเลิก</button></div></form>');
+            $('#publication-modal .right').append('<form class="delete_form panel"><div><button type="submit" class="btn btn-danger submit_delete_button">'+ gettext('Confirm delete file') +'</button><button class="btn cancel_button">'+ gettext('Cancel') +'</button></div></form>');
 
             $('#publication-modal .delete_form .submit_delete_button').on('click', function() {
                 var uid = $('#publication-modal').data('uid');
@@ -231,12 +231,12 @@ $(document).ready(function () {
 
         $.post('/ajax/' + var_organization_slug + '/publication/edit/', {uid:uid, title:title, description:description, tags:tagnames}, function(response) {
             if(response.status == 'success') {
-                _addModalMessage('publication-modal', 'บันทึกข้อมูลเรียบร้อย', 'success');
+                _addModalMessage('publication-modal', gettext('Save successful'), 'success');
                 $('#publication-modal').trigger('publication_updated', [uid, title, tagnames]);
             } else {
-                var error_message = 'ไม่สามารถบันทึกไฟล์ได้';
-                if(response.error == 'publication-notfound') error_message = 'ไม่พบข้อมูลไฟล์ในระบบ';
-                if(response.error == 'parameter-missing') error_message = 'ข้อมูลที่ต้องการบันทึกไม่ครบถ้วน';
+                var error_message = gettext('Cannot save file');
+                if(response.error == 'publication-notfound') error_message = gettext('File not found in system');
+                if(response.error == 'parameter-missing') error_message = gettext('Information is not completely');
                 _addModalMessage('publication-modal', error_message, 'error');
             }
         }, 'json');
@@ -287,11 +287,11 @@ function initializeDocumentsPage() {
 
             var file = data.files[0];
             if(file.size > MAX_PUBLICATION_FILE_SIZE) {
-                var error_row = $('<li class="uploading failed"><div class="filename"><em>' + file.name + '</em> มีขนาดใหญ่เกินกำหนด (สูงสุดที่ ' + MAX_PUBLICATION_FILE_SIZE_TEXT + ')</div><div><button class="btn btn-small js-dismiss-uploading">ยกเลิกการอัพโหลด</button></div></li>');
+                var error_row = $('<li class="uploading failed"><div class="filename"><em>' + file.name + '</em> ' + gettext('File is exceed limitation') +' (' + gettext('max') + MAX_PUBLICATION_FILE_SIZE_TEXT + ')</div><div><button class="btn btn-small js-dismiss-uploading">'+gettext('Cancel upload file')+'</button></div></li>');
                 error_row.prependTo('.js-uploading');
 
             } else {
-                var uploading_row = $('<li class="uploading"><button class="btn btn-small js-cancel-upload">ยกเลิก</button><div class="filename">กำลังอัพโหลดไฟล์ <em>' + file.name + '</em></div><div class="upload_progressbar"></div></li>');
+                var uploading_row = $('<li class="uploading"><button class="btn btn-small js-cancel-upload">'+gettext('Cancel')+'</button><div class="filename">'+gettext('Uploading')+' <em>' + file.name + '</em></div><div class="upload_progressbar"></div></li>');
                 uploading_row.find('.upload_progressbar').progressBar({width:262, height:20, boxImage:'/static/libs/progressbar/images/progressbar.png', barImage:{0:'/static/libs/progressbar/images/progressbg.png', 30:'/static/libs/progressbar/images/progressbg.png', 70:'/static/libs/progressbar/images/progressbg.png'}});
                 uploading_row.prependTo('.js-uploading');
 
@@ -310,20 +310,20 @@ function initializeDocumentsPage() {
             var responseObject = data.result;
 
             if(responseObject.status == 'success') {
-                data.context.addClass('uploaded').html('<div class="filename"><em>' + file.name + '</em> อัพโหลดเสร็จเรียบร้อยเมื่อวันที่ ' + responseObject.uploaded + '</div><div class="file_title"><button class="btn btn-small js-open-publication" title="' + responseObject.title + '" uid="' + responseObject.uid + '">แก้ไฟล์เอกสาร</button></div>');
+                data.context.addClass('uploaded').html('<div class="filename"><em>' + file.name + '</em> '+gettext('Uploaded on')+' ' + responseObject.uploaded + '</div><div class="file_title"><button class="btn btn-small js-open-publication" title="' + responseObject.title + '" uid="' + responseObject.uid + '">'+gettext('Edit document')+'</button></div>');
 
                 // Update num of files in shelf
-                $('#shelf-' + responseObject.shelf + ' .num_files').text($('#shelf-' + responseObject.shelf + ' .num_files').text().split(' ')[0] * 1 + 1 + ' ไฟล์');
+                $('#shelf-' + responseObject.shelf + ' .num_files').text($('#shelf-' + responseObject.shelf + ' .num_files').text().split(' ')[0] * 1 + 1 + ' ' + +gettext('file'));
 
                 _appendRecentDocuments(responseObject.uid, responseObject.title, responseObject.uploaded);
                 
             } else {
-                var error_message = 'ไม่สามารถบันทึกไฟล์ที่อัพโหลดได้';
+                var error_message = gettext('Cannot upload file');
 
-                if(responseObject.error == 'file-size-exceed') error_message = 'ไฟล์มีขนาดใหญ่เกินกำหนด';
-                if(responseObject.error == 'access-denied') error_message = 'ผู้ใช้ไม่สามารถอัพโหลดไฟล์ในกลุ่มเอกสารนี้ได้';
+                if(responseObject.error == 'file-size-exceed') error_message = gettext('File is exceed limitation');
+                if(responseObject.error == 'access-denied') error_message = gettext('User cannot upload file in this shelf');
 
-                data.context.addClass('failed').html('<div class="filename"><em>' + file.name + '</em> ' + error_message + '</div><div><button class="btn btn-small js-dismiss-uploading">ยกเลิกการอัพโหลด</button></div>');
+                data.context.addClass('failed').html('<div class="filename"><em>' + file.name + '</em> ' + error_message + '</div><div><button class="btn btn-small js-dismiss-uploading">'+gettext('Cancel upload file')+'</button></div>');
             }
         },
         fail: function (e, data) {
@@ -331,7 +331,7 @@ function initializeDocumentsPage() {
                 data.context.remove();
             } else {
                 var file = data.files[0];
-                data.context.addClass('failed').html('<div class="filename"><em>' + file.name + '</em> เกิดข้อผิดพลาด ไม่สามารถอัพโหลดไฟล์ได้</div><div><button class="btn btn-small js-dismiss-uploading">ยกเลิกการอัพโหลด</button></div>');
+                data.context.addClass('failed').html('<div class="filename"><em>' + file.name + '</em> '+gettext('Error, cannot upload file')+'</div><div><button class="btn btn-small js-dismiss-uploading">'+gettext('Cancel upload file')+'</button></div>');
             }
         }
     });
@@ -352,7 +352,7 @@ function initializeDocumentsPage() {
             $('.documents_sidebar h3').after('<ul></ul>');
         }
 
-        $('.documents_sidebar ul').prepend('<li><div><a href="#" class="js-open-publication" title="' + title + '" uid="' + uid + '">' + title + '</a></div><div class="uploaded">อัพโหลดเมื่อวันที่ ' + uploaded + '</div></li>');
+        $('.documents_sidebar ul').prepend('<li><div><a href="#" class="js-open-publication" title="' + title + '" uid="' + uid + '">' + title + '</a></div><div class="uploaded">'+gettext('Uploaded on')+' ' + uploaded + '</div></li>');
     }
 
     // PUBLICATION MODAL -----------------------------------------------------------------------------------------------
@@ -366,7 +366,7 @@ function initializeDocumentsPage() {
             if(response.status == 'success') {
                 for(var i=0; i<response.shelves.length; i++) {
                     var shelf = response.shelves[i];
-                    $('#shelf-' + shelf.id + ' .num_files').text(shelf.document_count + ' ไฟล์');
+                    $('#shelf-' + shelf.id + ' .num_files').text(shelf.document_count + ' '+ gettext('file'));
                 }
             }
         }, 'json');
@@ -374,7 +374,7 @@ function initializeDocumentsPage() {
         $('.documents_sidebar .js-open-publication[uid="' + uid + '"]').closest('li').remove();
         if(!$('.documents_sidebar .js-open-publication').length) {
             $('.documents_sidebar ul').remove();
-            $('.documents_sidebar h3').after('<div class="no_recent">ไม่มีไฟล์ล่าสุด</div>');
+            $('.documents_sidebar h3').after('<div class="no_recent">'+gettext('No latest files')+'</div>');
         }
     });
 }
@@ -417,11 +417,11 @@ function initializeDocumentsShelfPage(shelf_id) {
         add: function(e, data) {
             var file = data.files[0];
             if(file.size > MAX_PUBLICATION_FILE_SIZE) {
-                var error_row = $('<li class="uploading failed"><div class="filename"><em>' + file.name + '</em> มีขนาดใหญ่เกินกำหนด (สูงสุดที่ ' + MAX_PUBLICATION_FILE_SIZE_TEXT + ')</div><div><button class="btn btn-small js-dismiss-uploading">ยกเลิกการอัพโหลด</button></div></li>');
+                var error_row = $('<li class="uploading failed"><div class="filename"><em>' + file.name + '</em> ' + gettext('File is exceed limitation') +' (' + gettext('max') + MAX_PUBLICATION_FILE_SIZE_TEXT + ')</div><div><button class="btn btn-small js-dismiss-uploading">' + gettext('Cancel upload file') +'</button></div></li>');
                 error_row.prependTo('.js-uploading');
 
             } else {
-                var uploading_row = $('<li class="uploading"><button class="btn btn-small js-cancel-upload">ยกเลิก</button><div class="filename">กำลังอัพโหลดไฟล์ <em>' + file.name + '</em></div><div class="upload_progressbar"></div></li>');
+                var uploading_row = $('<li class="uploading"><button class="btn btn-small js-cancel-upload">' + gettext('Cancel') +'</button><div class="filename">' + gettext('Uploading') +' <em>' + file.name + '</em></div><div class="upload_progressbar"></div></li>');
                 uploading_row.find('.upload_progressbar').progressBar({width:262, height:20, boxImage:'/static/libs/progressbar/images/progressbar.png', barImage:{0:'/static/libs/progressbar/images/progressbg.png', 30:'/static/libs/progressbar/images/progressbg.png', 70:'/static/libs/progressbar/images/progressbg.png'}});
                 uploading_row.prependTo('.js-uploading');
 
@@ -449,7 +449,7 @@ function initializeDocumentsShelfPage(shelf_id) {
 
                 data.context.remove();
 
-                var uploaded_row = $('<tr id="' + responseObject.uid + '" class="uploaded_row"><td class="row_checkbox"><input type="checkbox" checked="checked"/></td><td class="download"><a href="' + responseObject.download_url + '" title="ดาวน์โหลดไฟล์ ' + responseObject.file_ext.toUpperCase() + '" data-content="ขนาดไฟล์ ' + responseObject.file_size_text + '">ดาวน์โหลดไฟล์</a></td><td class="file"><div class="filename"><a href="#" class="js-open-publication" uid="' + responseObject.uid + '" title="' + responseObject.title + '">' + responseObject.title + '</a></div><div class="uploaded">อัพโหลดเมื่อวันที่ ' + responseObject.uploaded + '</div><div class="tag"><ul></ul></div></td></tr>');
+                var uploaded_row = $('<tr id="' + responseObject.uid + '" class="uploaded_row"><td class="row_checkbox"><input type="checkbox" checked="checked"/></td><td class="download"><a href="' + responseObject.download_url + '" title="' + gettext('Download file') +' ' + responseObject.file_ext.toUpperCase() + '" data-content="' + gettext('File size') +' ' + responseObject.file_size_text + '">' + gettext('Download file') +'</a></td><td class="file"><div class="filename"><a href="#" class="js-open-publication" uid="' + responseObject.uid + '" title="' + responseObject.title + '">' + responseObject.title + '</a></div><div class="uploaded">' + gettext('Uploaded on') +' ' + responseObject.uploaded + '</div><div class="tag"><ul></ul></div></td></tr>');
                 uploaded_row.find('.edit_publication_button').button();
                 uploaded_row.find('.download a').popover();
                 uploaded_row.prependTo('.documents_table tbody');
@@ -458,19 +458,19 @@ function initializeDocumentsShelfPage(shelf_id) {
                 $('.checkbox_actions').addClass('checkbox_actions_selected').find('a').removeClass('disabled');
 
             } else {
-                var error_message = 'ไม่สามารถบันทึกไฟล์ที่อัพโหลดได้';
+                var error_message = gettext('Cannot upload file');
 
-                if(responseObject.error == 'file-size-exceed') error_message = 'ไฟล์มีขนาดใหญ่เกินกำหนด';
-                if(responseObject.error == 'access-denied') error_message = 'ผู้ใช้ไม่สามารถอัพโหลดไฟล์ในกลุ่มเอกสารนี้ได้';
+                if(responseObject.error == 'file-size-exceed') error_message = gettext('File is exceed limitation');
+                if(responseObject.error == 'access-denied') error_message = gettext('User cannot upload file in this shelf');
 
-                data.context.addClass('failed').html('<div class="filename"><em>' + file.name + '</em> ' + error_message + '</div><div><button class="btn btn-small js-dismiss-uploading">ยกเลิกการอัพโหลด</button></div>');
+                data.context.addClass('failed').html('<div class="filename"><em>' + file.name + '</em> ' + error_message + '</div><div><button class="btn btn-small js-dismiss-uploading">' + gettext('Cancel upload file') +'</button></div>');
             }
         },
         fail: function (e, data) {
             if (data.errorThrown == 'abort') {
                 data.context.remove();
             } else {
-                data.context.addClass('failed').html('<div class="filename"><em>' + file.name + '</em> เกิดข้อผิดพลาด ไม่สามารถอัพโหลดไฟล์ได้</div><div><button class="btn btn-small js-dismiss-uploading">ยกเลิกการอัพโหลด</button></div>');
+                data.context.addClass('failed').html('<div class="filename"><em>' + file.name + '</em> ' + gettext('Error, cannot upload file') +'</div><div><button class="btn btn-small js-dismiss-uploading">' + gettext('Cancel upload file') +'</button></div>');
             }
         }
     });
@@ -563,9 +563,9 @@ function initializeDocumentsShelfPage(shelf_id) {
 
                 } else {
                     if(response.error == 'missing-parameter') {
-                        $('#add-tags-modal .modal-header').after('<div class="modal-message">ข้อมูลไม่เพียงพอที่จะเพิ่มแถบป้าย</div>');
+                        $('#add-tags-modal .modal-header').after('<div class="modal-message">'+gettext('Incomplete information to add tags')+'</div>');
                     } else if(response.error == 'invalid-publication') {
-                        $('#add-tags-modal .modal-header').after('<div class="modal-message">ไม่พบไฟล์ที่ต้องการเพิ่มแถบป้ายในระบบ</div>');
+                        $('#add-tags-modal .modal-header').after('<div class="modal-message">'+gettext('File to add tags not found')+'</div>');
                     }
 
                 }
@@ -605,7 +605,7 @@ function initializeDocumentsShelfPage(shelf_id) {
 
             } else {
                 if(response.error == 'invalid-publication') {
-                    $('#message_modal').modal('show').find('.modal-body p').text('ไม่พบไฟล์ที่ต้องการลบในระบบ');
+                    $('#message_modal').modal('show').find('.modal-body p').text(gettext('File not found'));
                 }
             }
         }, 'json');
@@ -630,14 +630,14 @@ function initializeDocumentsShelfPage(shelf_id) {
     });
 
     $('#publication-modal').on('publication_replaced', function(e, uid, file_ext, file_size) {
-        $('#' + uid + ' .download a').attr('title', 'ดาวน์โหลดไฟล์ ' + file_ext.toUpperCase()).attr('data-content', 'ขนาดไฟล์ ' + file_size);
+        $('#' + uid + ' .download a').attr('title', gettext('Download file')+' ' + file_ext.toUpperCase()).attr('data-content', gettext('File size')+' ' + file_size);
     });
 
     $('#publication-modal').on('publication_deleted', function(e, uid) {
         $('#' + uid).remove();
 
         if(!$('.documents_table tr').length) {
-            $('.documents-content').html('<div class="no_publication">ไม่มีไฟล์</div>');
+            $('.documents-content').html('<div class="no_publication">'+ gettext('File not found') +'</div>');
         }
     });
 }

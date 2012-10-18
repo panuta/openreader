@@ -1,25 +1,26 @@
 {% extends 'base_authenticated.html' %}
 {% load helper_tags %}
+{% load i18n %}
 
-{% block head_title %}ข้อมูลบริษัท{% endblock %}
+{% block head_title %}{% trans 'Organization information' %}{% endblock %}
 {% block topnav %}{% if user.is_superuser %}{% include 'manage/snippets/manage_topnav.html' with active_menu='organization' %}{% else %}{% include 'snippets/organization_topnav.html' with active_menu='organization' %}{% endif %}{% endblock %}
 
 {% block body_authenticated %}
 {% include 'manage/snippets/manage_organization_topnav.html' %}
 <div class="container-fluid organization_profile_page"><div class="row-fluid">
     <div class="content"><div class="inner-content">
-        <h2>ข้อมูล{{ organization.prefix }} {{ organization.name }}</h2>
+        <h2>{% trans 'Information' %}{{ organization.prefix }} {{ organization.name }}</h2>
         {% if user.is_superuser %}
         <div class="page_actions">
-          <a href="{% url edit_organization organization.slug %}" class="btn">แก้ไขข้อมูลบริษัท</a>
+          <a href="{% url edit_organization organization.slug %}" class="btn">{% trans 'Edit organization information' %}</a>
         </div>
         {% endif %}
         <div class="statistics">
-            <h3>สถิติการใช้งาน</h3>
-            <h4>ไฟล์เอกสาร</h4>
+            <h3>{% trans 'Statistics' %}</h3>
+            <h4>{% trans 'Documents' %}</h4>
             <ul>
-                <li>จำนวนไฟล์ <strong>{{ statistics.publication_count }} ไฟล์</strong></li>
-                <li>จำนวนกลุ่มเอกสาร <strong>{{ statistics.shelf_count }} กลุ่ม</strong></li>
+                <li>{% trans 'Total file' %} <strong>{{ statistics.publication_count }} {% if statistics.publication_count %}{% trans 'files' %}{% else %}{% trans 'files' %}{% endif %}</strong></li>
+                <li>{% trans 'Total shelves' %} <strong>{{ statistics.shelf_count }} {% if statistics.shelf_count %}{% trans 'groups' %}{% else %}{% trans 'group' %}{% endif %}</strong></li>
             </ul>
         </div>
     </div></div>

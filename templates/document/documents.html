@@ -1,5 +1,6 @@
 {% extends 'base_authenticated.html' %}
 {% load helper_tags pagination_tags presentation_tags %}
+{% load i18n %}
 
 {% block head_title %}ไฟล์เอกสาร{% endblock %}
 {% block topnav %}{% include 'snippets/organization_topnav.html' with active_menu='document' %}{% endblock %}
@@ -21,26 +22,26 @@ $(document).ready(function () {
 
         {% if shelves %}
             <div class="page_actions">
-                {% if uploadable_shelves %}<button class="btn btn-primary js-upload-publication" data-toggle="button"><i class="icon-upload icon-white"></i> อัพโหลดไฟล์</button>{% endif %}
-                {% can user 'can_manage_shelf' organization %}<a href="{% url create_document_shelf organization.slug %}" class="btn"><i class="icon-plus-sign"></i> เพิ่มกลุ่มเอกสาร</a>{% endcan %}
+                {% if uploadable_shelves %}<button class="btn btn-primary js-upload-publication" data-toggle="button"><i class="icon-upload icon-white"></i> {% trans 'Upload file' %}</button>{% endif %}
+                {% can user 'can_manage_shelf' organization %}<a href="{% url create_document_shelf organization.slug %}" class="btn"><i class="icon-plus-sign"></i> {% trans 'Create shelf' %}</a>{% endcan %}
             </div>
 
             <div class="upload_tool hide">
                 <form>
-                    <label for="id_upload_shelf">เลือกกลุ่มเอกสาร</label>
+                    <label for="id_upload_shelf">{% trans 'Select shelf' %}</label>
                     <select id="id_upload_shelf" class="js-upload-tool-shelf-input"><option></option>{% for shelf in uploadable_shelves %}<option value="{{ shelf.id }}">{{ shelf.name }}</option>{% endfor %}</select>
-                    <span class="js-upload-tool-file-input"><label for="id_upload_file">เลือกไฟล์</label><input type="file" id="id_upload_file" multiple="" /></span>
+                    <span class="js-upload-tool-file-input"><label for="id_upload_file">{% trans 'Select file' %}</label><input type="file" id="id_upload_file" multiple="" /></span>
                 </form>
             </div>
 
             <ul class="js-uploading"></ul>
 
-            <h3><em>กลุ่มเอกสาร</em> ({{ shelves|length }} กลุ่มเอกสาร)</h3>
+            <h3><em>{% trans 'Shelf' %}</em> ({{ shelves|length }} {% if shelves|length %}{% trans 'Shelf' %}{% else %}{% trans 'Shelves' %}{% endif %})</h3>
             <ul>
                 {% for shelf in shelves %}
                 <li class="shelf {{ shelf.icon|default:settings.DEFAULT_SHELF_ICON }}" id="shelf-{{ shelf.id }}">
                     <div class="shelf_name"><a href="{% url view_documents_by_shelf organization.slug shelf.id %}">{{ shelf.name }}</a></div>
-                    <div class="details"><span class="num_files">{{ shelf.num_of_documents }} ไฟล์</span></div>
+                    <div class="details"><span class="num_files">{{ shelf.num_of_documents }} {% if shelf.num_of_documents %}{% trans 'file' %}{% else %}{% trans 'files' %}{% endif %}</span></div>
                 </li>
                 {% endfor %}
             </ul>
@@ -48,13 +49,13 @@ $(document).ready(function () {
         {% else %}
             {% if organization.shelf_count %}
                 <div class="no_shelf">
-                    <div class="notice">ยังไม่มีกลุ่มเอกสารที่คุณสามารถเข้าถึงได้ในระบบ{% can user 'can_manage_shelf' organization %} คุณสามารถสร้างกลุ่มเอกสารใหม่ได้จากหน้า 'สร้างกลุ่มเอกสาร'{% endcan %}</div>
-                    {% can user 'can_manage_shelf' organization %}<a href="{% url create_document_shelf organization.slug %}" class="btn"><i class="icon-plus-sign"></i> สร้างกลุ่มเอกสาร</a>{% endcan %}
+                    <div class="notice">{% trans 'There are no shelves that you can access to.' %}{% can user 'can_manage_shelf' organization %} {% trans 'You can create new shelf at' %} '{% trans 'Create shelf' %}'{% endcan %}</div>
+                    {% can user 'can_manage_shelf' organization %}<a href="{% url create_document_shelf organization.slug %}" class="btn"><i class="icon-plus-sign"></i> {% trans 'Create shelf' %}</a>{% endcan %}
                 </div>
             {% else %}
                 <div class="no_shelf">
-                    <div class="notice">ยังไม่มีกลุ่มเอกสารในระบบ{% can user 'can_manage_shelf' organization %} คุณสามารถสร้างกลุ่มเอกสารใหม่ได้จากหน้า 'สร้างกลุ่มเอกสาร'{% endcan %}</div>
-                    {% can user 'can_manage_shelf' organization %}<a href="{% url create_document_shelf organization.slug %}" class="btn"><i class="icon-plus-sign"></i> สร้างกลุ่มเอกสาร</a>{% endcan %}
+                    <div class="notice">{% trans 'There are no shelves in the system.' %}{% can user 'can_manage_shelf' organization %} {% trans 'You can create new shelf at' %} '{% trans 'Create shelf' %}'{% endcan %}</div>
+                    {% can user 'can_manage_shelf' organization %}<a href="{% url create_document_shelf organization.slug %}" class="btn"><i class="icon-plus-sign"></i> {% trans 'Create shelf' %}</a>{% endcan %}
                 </div>
             {% endif %}
         {% endif %}
@@ -62,15 +63,15 @@ $(document).ready(function () {
     </div></div></div>
 
     <div class="span3 documents_sidebar"><div class="content"><div class="inner-content">
-        <h3><i class="icon-list-alt"></i> ไฟล์ล่าสุด</h3>
+        <h3><i class="icon-list-alt"></i> {% trans 'Latest files' %}</h3>
 
-        {% if not recent_publications %}<div class="no_recent">ไม่มีไฟล์ล่าสุด</div>{% endif %}
+        {% if not recent_publications %}<div class="no_recent">{% trans 'No latest files' %}</div>{% endif %}
 
         <ul>
             {% for publication in recent_publications %}
             <li>
                 <div><a href="#" class="js-open-publication" title="{{ publication.title }}" uid="{{ publication.uid }}">{{ publication.title }}</a></div>
-                <div class="uploaded">อัพโหลดเมื่อวันที่ {{ publication.uploaded|format_abbr_datetime }}</div>
+                <div class="uploaded">{% trans 'Uploaded on' %} {{ publication.uploaded|format_abbr_datetime }}</div>
             </li>
             {% endfor %}
         </ul>
@@ -84,42 +85,42 @@ $(document).ready(function () {
 
 
 <div class="modal fade hide" id="add_tag_modal">
-  <div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>เพิ่มแถบป้าย</h3></div>
+  <div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>{% trans 'Add tags' %}</h3></div>
   <div class="modal-body">
     <form method="POST" action=".">
       {% csrf_token %}
-      <div class="item"><label for="id_tag">ชื่อแถบป้าย</label><div class="input"><input type="text" name="tag" /></div></div>
+      <div class="item"><label for="id_tag">{% trans 'Tags name' %}</label><div class="input"><input type="text" name="tag" /></div></div>
     </form>
   </div>
   <div class="modal-footer">
-    <button class="btn" data-dismiss="modal">ยกเลิก</button>
-    <button class="btn btn-primary"><i class="icon-tag icon-white"></i> เพิ่มแถบป้าย</button>
+    <button class="btn" data-dismiss="modal">{% trans 'Cancel' %}</button>
+    <button class="btn btn-primary"><i class="icon-tag icon-white"></i> {% trans 'Add tags' %}</button>
   </div>
 </div>
 
 <div class="modal fade hide" id="replace_publication_modal">
-  <div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>เปลี่ยนไฟล์ใหม่</h3></div>
+  <div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>{% trans 'Change file' %}</h3></div>
   <div class="modal-body">
     <form method="POST" action=".">
       {% csrf_token %}
-      <div class="item"><label for="id_replace_file">เลือกไฟล์</label><div class="input"><input type="file" class="replace_file_input"/></div></div>
+      <div class="item"><label for="id_replace_file">{% trans 'Select file' %}</label><div class="input"><input type="file" class="replace_file_input"/></div></div>
     </form>
   </div>
 </div>
 
 <div class="modal fade hide" id="delete_confirmation_modal">
-  <div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>ยืนยันการลบไฟล์</h3></div>
+  <div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>{% trans 'Confirm deleting file' %}</h3></div>
   <div class="modal-footer">
-    <button class="btn" data-dismiss="modal">ยกเลิก</button>
-    <button class="btn btn-danger" type="submit">ยืนยันการลบไฟล์</button>
+    <button class="btn" data-dismiss="modal">{% trans 'Cancel' %}</button>
+    <button class="btn btn-danger" type="submit">{% trans 'Confirm deleting file' %}</button>
   </div>
 </div>
 
 <div class="modal fade hide" id="delete_files_confirmation_modal">
-  <div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>ยืนยันการลบไฟล์</h3></div>
+  <div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>{% trans 'Confirm deleting file' %}</h3></div>
   <div class="modal-footer">
-    <button class="btn" data-dismiss="modal">ยกเลิก</button>
-    <button class="btn btn-danger" type="submit">ยืนยันการลบไฟล์ <span></span> ไฟล์</button>
+    <button class="btn" data-dismiss="modal">{% trans 'Cancel' %}</button>
+    <button class="btn btn-danger" type="submit">{% trans 'Confirm deleting file' %} <span></span> {% trans 'file' %}</button>
   </div>
 </div>
 
