@@ -440,6 +440,22 @@ msgstr "มีผู้ใช้ %s คนยังไม่ตอบรับ�
 msgid "There is %s user that not accept user invitation"
 msgstr "มีผู้ใช้ %s คนยังไม่ตอบรับคำขอเพิ่มผู้ใช้"
 
+msgctxt "there are user"
+msgid "There are"
+msgstr "มีผู้ใช้"
+
+msgctxt "there is user"
+msgid "There is"
+msgstr "มีผู้ใช้"
+
+msgctxt "users invitation"
+msgid "users that not accept user invitation"
+msgstr "คนยังไม่ตอบรับคำขอเพิ่มผู้ใช้"
+
+msgctxt "user invitation"
+msgid "user that not accept user invitation"
+msgstr "คนยังไม่ตอบรับคำขอเพิ่มผู้ใช้"
+
 msgid "Status"
 msgstr "สถานะ"
 
@@ -538,6 +554,22 @@ msgstr "มีบริษัท %d บริษัทยังไม่ตอ�
 
 msgid "There are %s organizations that not accept organization invitation"
 msgstr "มีบริษัท %d บริษัทยังไม่ตอบรับคำขอเพิ่มบริษัท"
+
+msgctxt "there are org"
+msgid "There are"
+msgstr "มีบริษัท"
+
+msgctxt "there is org"
+msgid "There is"
+msgstr "มีบริษัท"
+
+msgctxt "orgs invitation"
+msgid "organizations that not accept organization invitation"
+msgstr "คนยังไม่ตอบรับคำขอเพิ่มผู้ใช้"
+
+msgctxt "org invitation"
+msgid "organization that not accept organization invitation"
+msgstr "คนยังไม่ตอบรับคำขอเพิ่มผู้ใช้"
 
 msgid "Organizion invitation"
 msgstr "คำขอเพิ่มบริษัท"

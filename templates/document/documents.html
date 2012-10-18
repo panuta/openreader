@@ -36,12 +36,12 @@ $(document).ready(function () {
 
             <ul class="js-uploading"></ul>
 
-            <h3><em>{% trans 'Shelf' %}</em> ({{ shelves|length }} {% if shelves|length %}{% trans 'Shelf' %}{% else %}{% trans 'Shelves' %}{% endif %})</h3>
+            <h3><em>{% trans 'Shelf' %}</em> ({{ shelves|length }} {% if shelves|length > 1 %}{% trans 'Shelves' %}{% else %}{% trans 'Shelf' %}{% endif %})</h3>
             <ul>
                 {% for shelf in shelves %}
                 <li class="shelf {{ shelf.icon|default:settings.DEFAULT_SHELF_ICON }}" id="shelf-{{ shelf.id }}">
                     <div class="shelf_name"><a href="{% url view_documents_by_shelf organization.slug shelf.id %}">{{ shelf.name }}</a></div>
-                    <div class="details"><span class="num_files">{{ shelf.num_of_documents }} {% if shelf.num_of_documents %}{% trans 'file' %}{% else %}{% trans 'files' %}{% endif %}</span></div>
+                    <div class="details"><span class="num_files">{{ shelf.num_of_documents }} {% if shelf.num_of_documents > 1 %}{% trans 'files' %}{% else %}{% trans 'file' %}{% endif %}</span></div>
                 </li>
                 {% endfor %}
             </ul>

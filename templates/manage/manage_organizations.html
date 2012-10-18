@@ -14,9 +14,9 @@
     {% if organizations_invited_count > 0 %}
       <div class="user_invitations"><a href="{% url view_organizations_invited %}">
         {% if organizations_invited_count > 1 %}
-        {% blocktrans %}There are {{ organizations_invited_count }} organizations that not accept organization invitation{% endblocktrans %}
+        {% trans 'There are' context 'there are org' %} {{ organizations_invited_count }} {% trans 'organizations that not accept organization invitation' context 'org invitation' %}
         {% else %}
-        {% blocktrans %}There is {{ organizations_invited_count }} organization that not accept organization invitation{% endblocktrans %}
+        {% trans 'There is' context 'there is org' %} {{ organizations_invited_count }} {% trans 'organization that not accept organization invitation' context 'org invitation' %}
         {% endif %}
         </a></div>
     {% endif %}

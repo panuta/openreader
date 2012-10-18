@@ -10,7 +10,12 @@
 {% return_user_invitation_count organization as invited_user_count %}
 
 {% if invited_user_count %}
-    <div class="user_invitations"><a href="{% url view_organization_invited_users organization.slug %}">{% if invited_user_count > 1 %}{% blocktrans %}There are {{ invited_user_count }} users that not accept user invitation{% endblocktrans %}{% else %}{% blocktrans %}There is {{ invited_user_count }} user that not accept user invitation{% endblocktrans %}{% endif %}</a></div>
+    <div class="user_invitations"><a href="{% url view_organization_invited_users organization.slug %}">
+        {% if invited_user_count > 1 %}
+        {% trans 'There are' context 'there are user' %} {{ invited_user_count }} {% trans 'users that not accept user invitation' context 'users invitation' %}
+        {% else %}
+        {% trans 'There is' context 'there is user' %} {{invited_user_count}} {% trans 'user that not accept user invitation' context 'user invitation' %}
+        {% endif %}</a></div>
 {% endif %}
 
 {% autopaginate organization_users 50 %}

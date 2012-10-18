@@ -20,7 +20,7 @@
 
             {% if shelf_documents_count %}
                 <div class="delete_documents">
-                    <input type="checkbox" name="delete_documents" id="id_delete_documents" /><label for="id_delete_documents">{% trans 'Delete all files in shelf' %} {{shelf.name}} ({{shelf_documents_count}} {% if shelf_documents_count %}{% trans 'files' %}{% else %}{% trans 'files' %}{% endif %})</label>
+                    <input type="checkbox" name="delete_documents" id="id_delete_documents" /><label for="id_delete_documents">{% trans 'Delete all files in shelf' %} {{shelf.name}} ({{shelf_documents_count}} {% if shelf_documents_count > 1 %}{% trans 'files' %}{% else %}{% trans 'file' %}{% endif %})</label>
                 </div>
             {% endif %}
 
