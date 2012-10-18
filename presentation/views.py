@@ -37,7 +37,6 @@ def view_my_profile(request):
         form = UserProfileForm(request.user, request.POST)
         if form.is_valid():
             user_profile = request.user.get_profile()
-            user_profile.email = form.cleaned_data['email']
             user_profile.first_name = form.cleaned_data['first_name']
             user_profile.last_name = form.cleaned_data['last_name']
             user_profile.save()
@@ -46,12 +45,11 @@ def view_my_profile(request):
             return redirect('view_my_profile')
     else:
         form = UserProfileForm(request.user, initial={
-            'email': request.user.email,
             'first_name': request.user.get_profile().first_name,
             'last_name': request.user.get_profile().last_name,
         })
 
-    return render(request, 'accounts/my_profile.html', {'form':form})
+    return render(request, 'accounts/my_profile.html', {'form':form, 'email': request.user.email})
 
 
 @login_required

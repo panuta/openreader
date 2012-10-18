@@ -22,7 +22,6 @@ class OrganizationGroupMultipleChoiceField(forms.ModelMultipleChoiceField):
 
 
 class UserProfileForm(forms.Form):
-    email = forms.EmailField(widget=forms.TextInput(attrs={'class':'input-normal'}))
     first_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'input-normal'}))
     last_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'input-normal'}))
 
@@ -30,14 +29,6 @@ class UserProfileForm(forms.Form):
         forms.Form.__init__(self, *args, **kwargs)
 
         self.user = user
-
-    def clean_email(self):
-        email = self.cleaned_data.get('email', '')
-
-        if User.objects.filter(email=email).exclude(id=self.user.id).exists():
-            raise forms.ValidationError(u'มีผู้ใช้คนอื่นใช้อีเมลนี้แล้ว')
-
-        return email
 
 
 # ORGANIZATION MANAGEMENT
