@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-
+import datetime
 import logging
 
 from paypal.standard.forms import PayPalPaymentsForm
@@ -162,7 +162,7 @@ def organization_make_payment(request, organization_slug):
 
     # FOR-TEST
     invoice, created = OrganizationInvoice.objects.get_or_create(
-        organization = models.ForeignKey(Organization),
+        organization = organization,
         invoice_code = 'ABCDEFGHT',
         people = 2,
         price = 20,
@@ -189,6 +189,7 @@ def organization_make_payment(request, organization_slug):
     return render(request, 'organization/organization_payment.html', {
         'organization': organization,
         'form': form,
+        'payments': OrganizationPaypalPayment.objects.filter(invoice__organization__slug=organization_slug),
     })
 
 @csrf_exempt
@@ -210,7 +211,6 @@ def organization_notify_from_paypal(request):
         protection_eligibility = request.POST.get('protection_eligibility'),
         payment_date = payment_date,
         payer_id = request.POST.get('payer_id'),
-        payer_email = request.POST.get('payer_id'),
         verify_sign = request.POST.get('verify_sign'),
         ipn_track_id = request.POST.get('ipn_track_id'),
     )
@@ -221,7 +221,10 @@ def organization_notify_from_paypal(request):
 def organization_return_from_paypal(request):
     print request
     print 'return--------------------------'
-    return redirect('organization_make_payment', organization_slug='opendream')
+
+    transaction_id = request.GET.get('tx')
+    payment = get_object_or_404(OrganizationPaypalPayment, transaction_id=transaction_id)
+    return redirect('organization_make_payment', organization_slug=payment.invitation.organization.slug)
 
 # User Invitation
 
