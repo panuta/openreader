@@ -224,7 +224,7 @@ def organization_return_from_paypal(request):
 
     transaction_id = request.GET.get('tx')
     payment = get_object_or_404(OrganizationPaypalPayment, transaction_id=transaction_id)
-    return redirect('organization_make_payment', organization_slug=payment.invitation.organization.slug)
+    return redirect('organization_make_payment', organization_slug=payment.invoice.organization.slug)
 
 # User Invitation
 
