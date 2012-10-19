@@ -6,3 +6,6 @@ media/cache
 openreader.log
 .idea
 openreader/settings_local.py
+
+#Translations
+*.mo
