@@ -2,6 +2,8 @@
 
 import logging
 
+from paypal.standard.forms import PayPalPaymentsForm
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
@@ -14,6 +16,7 @@ from django.db import transaction
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import ugettext as _
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 
 from private_files.views import get_file as private_files_get_file
@@ -151,6 +154,74 @@ def add_organization_user(request, organization_slug):
         'organization': organization,
     })
 
+# PAYMENT
+# ----------------------------------------------------------------------------------------------------------------------
+@login_required
+def organization_make_payment(request, organization_slug):
+    organization = get_object_or_404(Organization, slug=organization_slug)
+
+    # FOR-TEST
+    invoice, created = OrganizationInvoice.objects.get_or_create(
+        organization = models.ForeignKey(Organization),
+        invoice_code = 'ABCDEFGHT',
+        people = 2,
+        price = 20,
+        price_unit = 'EUR',
+        total = 40,
+    )
+
+    paypal_dict = {
+        "cmd": "_xclick",
+        "business": settings.PAYPAL_RECEIVER_EMAIL,
+        "amount": invoice.price,
+        "quantity": invoice.people,
+        "currency_code": invoice.price_unit,
+        "item_name": "Billing Month",
+        "invoice": invoice.invoice_code,
+        "notify_url": request.build_absolute_uri(reverse('organization_notify_from_paypal')),
+        "return_url": request.build_absolute_uri(reverse('organization_return_from_paypal')),
+        "cancel_return": request.build_absolute_uri(reverse('organization_make_payment', args=[organization_slug])),
+    }
+
+    # Create the instance.
+    form = PayPalPaymentsForm(initial=paypal_dict, button_type="buy")
+
+    return render(request, 'organization/organization_payment.html', {
+        'organization': organization,
+        'form': form,
+    })
+
+@csrf_exempt
+def organization_notify_from_paypal(request):
+    print request
+    print 'notify--------------------------'
+
+    invoice_code = request.POST.get('invoice')
+    invoice = get_object_or_404(OrganizationInvoice, invoice_code=invoice_code)
+
+    payment_date = datetime.datetime.strptime(request.POST.get('payment_date'), '%H:%M:%S %b %d, %Y PDT')
+
+    OrganizationPaypalPayment.objects.create(
+        invoice = invoice,
+        transaction_id = request.POST.get('txn_id'),
+        amt = request.POST.get('payment_gross'),
+        payment_status = request.POST.get('payment_status'),
+        pending_reason = request.POST.get('pending_reason'),
+        protection_eligibility = request.POST.get('protection_eligibility'),
+        payment_date = payment_date,
+        payer_id = request.POST.get('payer_id'),
+        payer_email = request.POST.get('payer_id'),
+        verify_sign = request.POST.get('verify_sign'),
+        ipn_track_id = request.POST.get('ipn_track_id'),
+    )
+
+    return HttpResponse('success')
+
+
+def organization_return_from_paypal(request):
+    print request
+    print 'return--------------------------'
+    return redirect('organization_make_payment', organization_slug='opendream')
 
 # User Invitation
 

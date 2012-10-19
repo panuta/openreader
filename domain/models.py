@@ -135,6 +135,43 @@ class UserGroup(models.Model):
     def __unicode__(self):
         return '%s:%s' % (self.user_organization.user.get_profile().get_fullname(), self.group.name)
 
+
+CURRENCY_CHOICES = (
+    ('EUR', '€ - Euro'),
+)
+
+CURRENCY_CHOICES_WITH_BLANK = [('', '')] + list(CURRENCY_CHOICES)
+
+PAYMENT_STATUS_CHOICES = (
+    ('PENDING', 'Pending'),
+    ('PAID', 'Paid'),
+    ('REFUNDED', 'Refunded'),
+)
+
+class OrganizationInvoice(models.Model):
+    organization = models.ForeignKey(Organization)
+    invoice_code = models.CharField(max_length=20)
+    people = models.PositiveIntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price_unit = models.CharField(max_length=20, default='EUR', choices=CURRENCY_CHOICES_WITH_BLANK)
+    total = models.DecimalField(max_digits=10, decimal_places=2)
+    created = models.DateTimeField(auto_now_add=True)
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='PENDING')
+
+
+class OrganizationPaypalPayment(models.Model):
+    invoice = models.ForeignKey(OrganizationInvoice)
+    transaction_id = models.CharField(max_length=100)
+    amt = models.CharField(max_length=100)
+    payment_status = models.CharField(max_length=100)
+    pending_reason = models.CharField(max_length=100)
+    protection_eligibility = models.CharField(max_length=100)
+    payment_date = models.DateTimeField()
+    payer_id = models.CharField(max_length=100)
+    verify_sign = models.CharField(max_length=100)
+    ipn_track_id = models.CharField(max_length=100)
+
+
 # Organization Invitation
 
 class OrganizationInvitationManager(models.Manager):

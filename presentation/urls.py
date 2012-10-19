@@ -21,6 +21,11 @@ urlpatterns = patterns('presentation.views',
     # Add User Directly
     url(r'^org/(?P<organization_slug>\w+)/manage/users/add/$', 'add_organization_user', name='add_organization_user'),
 
+    # Payment
+    url(r'^org/(?P<organization_slug>\w+)/payment/$', 'organization_make_payment', name='organization_make_payment'),
+    url(r'^org/payment/paypal/notify/$', 'organization_notify_from_paypal', name='organization_notify_from_paypal'),
+    url(r'^org/payment/paypal/return/$', 'organization_return_from_paypal', name='organization_return_from_paypal'),
+
     # User Invitation
     url(r'^org/(?P<organization_slug>\w+)/manage/users/invited/$', 'view_organization_invited_users', name='view_organization_invited_users'),
     url(r'^org/(?P<organization_slug>\w+)/manage/users/invite/$', 'invite_organization_user', name='invite_organization_user'),

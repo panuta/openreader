@@ -1,0 +1,17 @@
+{% extends 'base_authenticated.html' %}
+{% load i18n %}
+
+{% block head_title %}{% trans 'Organization information' %}{% endblock %}
+{% block topnav %}{% include 'snippets/organization_topnav.html' with active_menu='organization' %}{% endblock %}
+
+{% block body_authenticated %}
+{% include 'manage/snippets/manage_organization_topnav.html' %}
+<div class="container-fluid organization_profile_page"><div class="row-fluid">
+    <div class="content"><div class="inner-content">
+        <h2>Payment: {{ organization.prefix }} {{ organization.name }}</h2>
+        <div class="page_actions">
+            Haroro: {{form.sandbox}}
+        </div>
+    </div></div>
+</div></div>
+{% endblock %}
