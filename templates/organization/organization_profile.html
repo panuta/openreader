@@ -22,6 +22,10 @@
                 <li>{% trans 'Total file' %} <strong>{{ statistics.publication_count }} {% if statistics.publication_count > 1 %}{% trans 'files' %}{% else %}{% trans 'files' %}{% endif %}</strong></li>
                 <li>{% trans 'Total shelves' %} <strong>{{ statistics.shelf_count }} {% if statistics.shelf_count > 1 %}{% trans 'groups' %}{% else %}{% trans 'group' %}{% endif %}</strong></li>
             </ul>
+            <h4>User</h4>
+            <ul>
+                <li>Total active user <strong>{{ statistics.active_user_count }} users</strong></li>
+            </ul>
         </div>
     </div></div>
 </div></div>

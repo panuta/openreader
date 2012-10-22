@@ -89,7 +89,8 @@ def view_organization_profile(request, organization_slug):
 
     statistics = {
         'publication_count': Publication.objects.filter(organization=organization).count(),
-        'shelf_count': OrganizationShelf.objects.filter(organization=organization).count()
+        'shelf_count': OrganizationShelf.objects.filter(organization=organization).count(),
+        'active_user_count': UserOrganization.objects.filter(organization=organization, is_active=True).count(),
     }
 
     return render(request, 'organization/organization_profile.html', {'organization':organization, 'statistics':statistics})
