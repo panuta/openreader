@@ -1,3 +1,9 @@
+a {
+  color: #725228;
+}
+a:hover {
+  color: #BB8C54;
+}
 /* DEFAULT
 ==================================================================================================== */
 ul {
@@ -29,7 +35,11 @@ a.danger:hover {
 /* PAGE
 ==================================================================================================== */
 body {
-  background: url(/static/images/bg.png);
+  background: url(/static/images/bg-wood.jpg);
+}
+.navbar .nav .active > a,
+.navbar .nav .active > a:hover {
+  background-color: transparent;
 }
 .navbar {
   height: 50px;
@@ -38,10 +48,13 @@ body {
 .navbar .navbar-inner {
   background: url(/static/images/bg-topbar.png);
   padding-top: 5px;
+  padding-bottom: 5px;
 }
 .navbar .navbar-inner .container {
   margin: 0px;
   width: auto;
+  border-bottom: 1px dashed #696161;
+  border-top: 1px dashed #696161;
 }
 .navbar h1 {
   margin-left: 10px;
@@ -54,6 +67,13 @@ body {
   font-size: 20px;
   font-weight: normal;
   line-height: 1;
+  background: url(/static/images/logo-small.png) no-repeat 10px 3px;
+  width: 40px;
+  height: 20px;
+  text-indent: -9999em;
+}
+.navbar h1 a:hover {
+  color: #999;
 }
 .navbar h1 span {
   color: #CCC;
@@ -64,11 +84,11 @@ body {
   padding: 12px 10px 8px;
 }
 .navbar li.active a.nav_top_link {
-  color: #FFF;
-  background-color: #272e34;
+  background-color: transparent;
+  color: #999;
 }
 .navbar li a.nav_top_link:hover {
-  background-color: #272e34;
+  color: #999;
 }
 .navbar a.logout {
   color: #CCC !important;
@@ -91,13 +111,19 @@ body {
 }
 .container-fluid .content {
   padding: 1px;
-  border: 1px solid #EEE;
-  background-color: #DDD;
+  border-radius: 10px;
+  background: -moz-linear-gradient(90deg, #efece0 0%, #fdfaed 66%);
+  background: -webkit-linear-gradient(90deg, #efece0 0%, #fdfaed 66%);
+  background: -o-linear-gradient(90deg, #efece0 0%, #fdfaed 66%);
+  background: -ms-linear-gradient(90deg, #efece0 0%, #fdfaed 66%);
+  background: linear-gradient(90deg, #efece0 0%, #fdfaed 66%);
+  box-shadow: 0 0 6px #B6B6B6;
+  -webkit-box-shadow: 0 0 6px #B6B6B6;
+  border-radius: 3px;
+  -webkit-border-radius: 3px;
 }
 .container-fluid .content .inner-content {
-  border: 1px solid #BBB;
   padding: 15px;
-  background-color: #FFF;
 }
 .container-fluid h2 {
   margin-bottom: 20px;
@@ -127,11 +153,10 @@ body {
 .container-fluid .breadcrumb a:active,
 .container-fluid .breadcrumb a:visited {
   text-decoration: underline;
-  color: #0088cc;
+  color: #725228;
 }
 .container-fluid .breadcrumb a:hover {
-  background-color: #0088cc !important;
-  color: #FFF !important;
+  color: #bb8c54 !important;
   text-shadow: none;
 }
 .container-fluid .page_actions {
@@ -144,6 +169,14 @@ body {
 }
 .container-fluid .page_actions a.btn-primary {
   color: #FFF;
+  background-color: #796346;
+  background-image: -ms-linear-gradient(top, #796346, #352c20);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#796346), to(#352c20));
+  background-image: -webkit-linear-gradient(top, #796346, #352c20);
+  background-image: -o-linear-gradient(top, #796346, #352c20);
+  background-image: -moz-linear-gradient(top, #796346, #352c20);
+  background-image: linear-gradient(top, #796346, #352c20);
+  background-repeat: repeat-x;
 }
 .container-fluid .page_actions a.btn-primary:visited,
 .container-fluid .page_actions a.btn-primary:active {
@@ -259,11 +292,10 @@ form .form-actions a:link,
 form .form-actions a:active,
 form .form-actions a:visited {
   text-decoration: underline;
-  color: #0088cc;
+  color: #725228;
 }
 form .form-actions a:hover {
-  background-color: #0088cc !important;
-  color: #FFF !important;
+  color: #bb8c54 !important;
   text-shadow: none;
 }
 form .form-actions a.danger {
@@ -324,11 +356,10 @@ table td.row_actions a.link:link,
 table td.row_actions a.link:active,
 table td.row_actions a.link:visited {
   text-decoration: underline;
-  color: #0088cc;
+  color: #725228;
 }
 table td.row_actions a.link:hover {
-  background-color: #0088cc !important;
-  color: #FFF !important;
+  color: #bb8c54 !important;
   text-shadow: none;
 }
 table tr.checked td {
@@ -364,7 +395,6 @@ table tr.checked td {
 #select-lang ul li a {
   display: inline;
   padding: 3px 8px 1px;
-  background: #CCC;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   border-radius: 4px;
@@ -704,11 +734,10 @@ table tr.checked td {
 .documents_page .documents_sidebar li a:active,
 .documents_page .documents_sidebar li a:visited {
   text-decoration: underline;
-  color: #0088cc;
+  color: #725228;
 }
 .documents_page .documents_sidebar li a:hover {
-  background-color: #0088cc !important;
-  color: #FFF !important;
+  color: #bb8c54 !important;
   text-shadow: none;
 }
 .documents_page .documents_shelves h3 {
@@ -744,15 +773,13 @@ table tr.checked td {
 .documents_page .documents_shelves li.shelf .shelf_name a:active,
 .documents_page .documents_shelves li.shelf .shelf_name a:visited {
   text-decoration: underline;
-  color: #0088cc;
+  color: #725228;
 }
 .documents_page .documents_shelves li.shelf .shelf_name a:hover {
-  background-color: #0088cc !important;
-  color: #FFF !important;
+  color: #bb8c54 !important;
   text-shadow: none;
 }
 .documents_page .documents_shelves li.shelf .num_files {
-  background-color: #dae6eb;
   margin-right: 15px;
   padding: 0px 5px;
 }
@@ -767,11 +794,10 @@ table tr.checked td {
 .documents_page .documents_shelves li.shelf .latest_file a:active,
 .documents_page .documents_shelves li.shelf .latest_file a:visited {
   text-decoration: underline;
-  color: #0088cc;
+  color: #725228;
 }
 .documents_page .documents_shelves li.shelf .latest_file a:hover {
-  background-color: #0088cc !important;
-  color: #FFF !important;
+  color: #bb8c54 !important;
   text-shadow: none;
 }
 .documents_page .documents_shelves .no_shelf {
@@ -811,11 +837,10 @@ table tr.checked td {
 .documents_page .documents_table td.file .filename a:active,
 .documents_page .documents_table td.file .filename a:visited {
   text-decoration: underline;
-  color: #0088cc;
+  color: #725228;
 }
 .documents_page .documents_table td.file .filename a:hover {
-  background-color: #0088cc !important;
-  color: #FFF !important;
+  color: #bb8c54 !important;
   text-shadow: none;
 }
 .documents_page .documents_table td.file .uploaded {
@@ -1248,11 +1273,10 @@ table tr.checked td {
 .modify_shelf_page .shelf-permission-controls .permissions li span a:active,
 .modify_shelf_page .shelf-permission-controls .permissions li span a:visited {
   text-decoration: underline;
-  color: #0088cc;
+  color: #725228;
 }
 .modify_shelf_page .shelf-permission-controls .permissions li span a:hover {
-  background-color: #0088cc !important;
-  color: #FFF !important;
+  color: #bb8c54 !important;
   text-shadow: none;
 }
 .modify_shelf_page .shelf-permission-controls .permissions li em {
@@ -1313,11 +1337,10 @@ table tr.checked td {
 .organization_users_page .user_invitations a:active,
 .organization_users_page .user_invitations a:visited {
   text-decoration: underline;
-  color: #0088cc;
+  color: #725228;
 }
 .organization_users_page .user_invitations a:hover {
-  background-color: #0088cc !important;
-  color: #FFF !important;
+  color: #bb8c54 !important;
   text-shadow: none;
 }
 /* *************** UI *************** */
@@ -1371,7 +1394,7 @@ table tr.checked td {
 .pagination_bar a:visited,
 .pagination_bar a:active {
   text-decoration: none;
-  color: #0088cc;
+  color: #725228;
 }
 .pagination_bar a.page:hover {
   background-position: center bottom;
