@@ -740,6 +740,12 @@ table tr.checked td {
   color: #bb8c54 !important;
   text-shadow: none;
 }
+.documents_page .documents_sidebar .content {
+  margin-bottom: 15px;
+}
+.documents_page .documents_sidebar .decide-on-first-month p {
+  text-align: justify;
+}
 .documents_page .documents_shelves h3 {
   border: none;
   color: #666;

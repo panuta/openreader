@@ -64,13 +64,13 @@ $(document).ready(function () {
 
     <div class="span3 documents_sidebar">
         {% if is_decide_on_first_month %}
-        <div class="content"><div class="inner-content">
+        <div class="content decide-on-first-month"><div class="inner-content clearfix">
             <h3><i class="icon-star"></i> {% trans 'Notify' %}</h3>
                 <p>
                 {% trans 'The free trial will expire on' %} {{organization.next_paid|format_date}}. 
                 {% trans 'You can continue to use Openreader by pay the service with PAYPAL at the link below' %}
                 </p>
-                <a class="btn" href="{% url organization_make_payment organization.slug %}">Pay now</a>
+                <a class="btn pull-right" href="{% url organization_make_payment organization.slug %}">Pay now</a>
         </div></div>
         {% endif %}
 
