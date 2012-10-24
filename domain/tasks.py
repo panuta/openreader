@@ -80,7 +80,8 @@ def prepare_publication(publication_uid):
 @task(name='tasks.send_notification_email_to_decide_on_first_month')
 def send_notification_email_to_decide_on_first_month():
     from domain.models import Organization, UserOrganization
-    organizations = Organization.objects.filter(created=datetime.date.today()-datetime.timedelta(days=21))
+    notify_day = datetime.date.today()-datetime.timedelta(days=21)
+    organizations = Organization.objects.filter(created__year=notify_day.year, created__month=notify_day.month, created__day=notify_day.day)
     # organizations = Organization.objects.filter(is_first_month=True)
 
     for organization in organizations:
