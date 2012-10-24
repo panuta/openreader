@@ -1,10 +1,15 @@
+import datetime
 import logging, sys, traceback
 
 from celery.task import task
 
 from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 logger = logging.getLogger(settings.OPENREADER_LOGGER)
+
 
 @task(name='tasks.generate_thumbnails')
 def generate_thumbnails(publication_uid):
@@ -71,3 +76,33 @@ def prepare_publication(publication_uid):
 
     return publication_uid
 
+
+@task(name='tasks.send_notification_email_to_decide_on_first_month')
+def send_notification_email_to_decide_on_first_month():
+    from domain.models import Organization, UserOrganization
+    organizations = Organization.objects.filter(created=datetime.date.today()-datetime.timedelta(days=21))
+    # organizations = Organization.objects.filter(is_first_month=True)
+
+    for organization in organizations:
+        html_email_body = render_to_string('organization/emails/decide_on_first_month.html', {
+            'organization': organization, 
+            'settings': settings,
+        })
+        text_email_body = strip_tags(html_email_body)
+        subject = 'Dicision for %s on Openreader' % organization.name
+        send_to_emails = UserOrganization.objects.filter(organization=organization, is_admin=True).values_list('user__email', flat=True)
+        
+        msg = EmailMultiAlternatives(
+            subject, 
+            text_email_body, 
+            settings.EMAIL_ADDRESS_NO_REPLY, 
+            send_to_emails
+        )
+        msg.attach_alternative(html_email_body, "text/html")
+
+        try:
+            msg.send()
+            print True
+        except:
+            import sys
+            print sys.exc_info()

@@ -1,0 +1,13 @@
+{% spaceless %}
+
+The free trial will expire on {{organization.next_paid}}
+
+You can continue to use Openreader by pay the service with PAYPAL at the link below
+
+http://{{ settings.WEBSITE_DOMAIN }}/org/{{ organization.organization_slug }})/payment/
+
+Sincery,
+
+{{settings.WEBSITE_NAME}}
+
+{% endspaceless %}

@@ -1,5 +1,7 @@
 # -*- encoding: utf-8 -*-
 
+import datetime
+from dateutil.relativedelta import relativedelta
 import re
 import shortuuid
 import uuid
@@ -78,10 +80,18 @@ class OrganizationAdminPermission(models.Model):
 
 # Organization
 
+CONTRACT_TYPE_CHOICES = (
+    (1, 'MONTLY'),
+    (2, 'YEARLY'),
+)
+
 class Organization(models.Model):
     name = models.CharField(max_length=200)
-    prefix = models.CharField(max_length=200, default='บริษัท')
+    prefix = models.CharField(max_length=200, blank=True)
     slug = models.CharField(max_length=200, unique=True, db_index=True)
+    contract_type = models.IntegerField(default=1, choices=CONTRACT_TYPE_CHOICES)
+    contract_month_remain = models.IntegerField(default=1)
+    next_paid = models.DateField(default=datetime.date.today()+relativedelta(month=+1))
     status = models.IntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='created_organizations')
@@ -157,6 +167,7 @@ class OrganizationInvoice(models.Model):
     total = models.DecimalField(max_digits=10, decimal_places=2)
     created = models.DateTimeField(auto_now_add=True)
     payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='PENDING')
+    attempt = models.IntegerField(default=0)
 
 
 class OrganizationPaypalPayment(models.Model):

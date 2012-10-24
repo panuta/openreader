@@ -321,6 +321,16 @@ msgstr "ไบต์"
 msgid "Unknown size"
 msgstr "ไม่สามารถหาขนาดได้"
 
+msgid "Notify"
+msgstr "แจ้งเตือน"
+
+msgid "The free trial will expire on"
+msgstr "ระยะเวลาทดลองใช้งานจะหมดเมื่อวันที่"
+
+msgid "You can continue to use Openreader by pay the service with PAYPAL at the link below"
+msgstr "คุณสามารถใช้งาน Openreader ต่อได้โดยการจ่ายค่าบริการผ่าน Paypal ตามลิงค์ข้างล่าง"
+
+
 # Pagination #################################################################################
 msgid "Previous"
 msgstr "ก่อนหน้า"

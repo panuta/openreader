@@ -6,6 +6,7 @@ media/cache
 openreader.log
 .idea
 openreader/settings_local.py
+celerybeat-schedule
 
 #Translations
 *.mo

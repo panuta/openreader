@@ -216,6 +216,20 @@ BROKER_USER = "guest"
 BROKER_PASSWORD = "guest"
 BROKER_VHOST = "/"
 
+from datetime import timedelta
+from domain import tasks
+
+CELERYBEAT_SCHEDULE = {
+    # 'decide-on-first-month-everydays': {
+    #     'task': 'tasks.send_notification_email_to_decide_on_first_month',
+    #     'schedule': timedelta(days=1),
+    # },
+    'decide-on-first-month-test-every-10-seconds': {
+        'task': 'tasks.send_notification_email_to_decide_on_first_month',
+        'schedule': timedelta(seconds=10),
+    },
+}
+
 ########## Django Private Files ##########
 
 FILE_PROTECTION_METHOD = 'basic'

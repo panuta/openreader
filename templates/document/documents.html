@@ -62,11 +62,21 @@ $(document).ready(function () {
 
     </div></div></div>
 
-    <div class="span3 documents_sidebar"><div class="content"><div class="inner-content">
+    <div class="span3 documents_sidebar">
+        {% if is_decide_on_first_month %}
+        <div class="content"><div class="inner-content">
+            <h3><i class="icon-star"></i> {% trans 'Notify' %}</h3>
+                <p>
+                {% trans 'The free trial will expire on' %} {{organization.next_paid|format_date}}. 
+                {% trans 'You can continue to use Openreader by pay the service with PAYPAL at the link below' %}
+                </p>
+                <a class="btn" href="{% url organization_make_payment organization.slug %}">Pay now</a>
+        </div></div>
+        {% endif %}
+
+        <div class="content"><div class="inner-content">
         <h3><i class="icon-list-alt"></i> {% trans 'Latest files' %}</h3>
-
         {% if not recent_publications %}<div class="no_recent">{% trans 'No latest files' %}</div>{% endif %}
-
         <ul>
             {% for publication in recent_publications %}
             <li>
@@ -75,7 +85,8 @@ $(document).ready(function () {
             </li>
             {% endfor %}
         </ul>
-    </div></div></div>
+        </div></div>
+    </div>
 </div></div>
 
 {% include 'document/snippets/publication_modal.html' %}
