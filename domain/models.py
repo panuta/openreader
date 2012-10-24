@@ -91,7 +91,6 @@ class Organization(models.Model):
     slug = models.CharField(max_length=200, unique=True, db_index=True)
     contract_type = models.IntegerField(default=1, choices=CONTRACT_TYPE_CHOICES)
     contract_month_remain = models.IntegerField(default=1)
-    next_paid = models.DateField(default=datetime.date.today()+relativedelta(month=+1))
     status = models.IntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='created_organizations')
@@ -104,7 +103,18 @@ class Organization(models.Model):
     def _get_organization_shelf_count(self):
         return OrganizationShelf.objects.filter(organization=self).count()
 
+    def get_latest_invoice(self):
+        return OrganizationInvoice.objects.latest('created')
+
+    def update_latest_invoice(self):
+        invoice = OrganizationInvoice.objects.latest('created')
+        invoice.new_people = UserOrganization.objects.filter(organization=self, is_active=True).count()
+        invoice.total = invoice.new_people * invoice.price
+        invoice.save()
+        return invoice
+
     shelf_count = property(_get_organization_shelf_count)
+
 
 class OrganizationGroup(models.Model):
     organization = models.ForeignKey(Organization)
@@ -161,13 +171,16 @@ PAYMENT_STATUS_CHOICES = (
 class OrganizationInvoice(models.Model):
     organization = models.ForeignKey(Organization)
     invoice_code = models.CharField(max_length=20)
-    people = models.PositiveIntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     price_unit = models.CharField(max_length=20, default='EUR', choices=CURRENCY_CHOICES_WITH_BLANK)
     total = models.DecimalField(max_digits=10, decimal_places=2)
     created = models.DateTimeField(auto_now_add=True)
     payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='PENDING')
     attempt = models.IntegerField(default=0)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    current_people = models.PositiveIntegerField(default=1)
+    new_people = models.PositiveIntegerField(default=1)
 
 
 class OrganizationPaypalPayment(models.Model):
@@ -175,7 +188,7 @@ class OrganizationPaypalPayment(models.Model):
     transaction_id = models.CharField(max_length=100)
     amt = models.CharField(max_length=100)
     payment_status = models.CharField(max_length=100)
-    pending_reason = models.CharField(max_length=100)
+    pending_reason = models.CharField(max_length=100, blank=True)
     protection_eligibility = models.CharField(max_length=100)
     payment_date = models.DateTimeField()
     payer_id = models.CharField(max_length=100)
@@ -278,6 +291,7 @@ class UserInvitationManager(models.Manager):
                 UserGroup.objects.create(user_organization=user_organization, group=group)
 
         invitation.delete()
+        invitation.organization.update_latest_invoice()
         return user_organization
 
 class UserOrganizationInvitation(models.Model):

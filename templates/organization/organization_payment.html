@@ -1,4 +1,5 @@
 {% extends 'base_authenticated.html' %}
+{% load helper_tags %}
 {% load i18n %}
 
 {% block head_title %}{% trans 'Organization information' %}{% endblock %}
@@ -8,29 +9,54 @@
 {% include 'manage/snippets/manage_organization_topnav.html' %}
 <div class="container-fluid organization_profile_page"><div class="row-fluid">
     <div class="content"><div class="inner-content">
-        <h2>Payment: {{ organization.prefix }} {{ organization.name }}</h2>
+        <h2>{% trans 'Payment' %}: {{ organization.prefix }} {{ organization.name }}</h2>
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <th>{% trans 'Invoice' %}</th>
+                    <td>{{ invoice.start_date|format_date }} {% trans 'to' %} {{ invoice.end_date|format_date }}</td>
+                </tr>
+                <tr>
+                    <th>{% trans 'Invoice Code' %}</th>
+                    <td>{{ invoice.invoice_code }}</td>
+                </tr>
+                <tr>
+                    <th>{% trans 'Users' %}</th>
+                    <td>{{ invoice.new_people }}</td>
+                </tr>
+                <tr>
+                    <th>{% trans 'Price rate' %}</th>
+                    <td>{{ invoice.price }} {{ invoice.price_unit }} / {% trans 'users' %}</td>
+                </tr>
+                <tr>
+                    <th>{% trans 'Total' %}</th>
+                    <td>{{ invoice.total }} {{ invoice.price_unit }}</td>
+                </tr>
+            </tbody>
+        </table>
+
         <div class="page_actions">
-            Haroro: {{form.sandbox}}
+            {{form.sandbox}}
         </div>
 
         <table class="table table-bordered">
-        <thead>
-        <tr>
-            <th>Organization name</th>
-            <th>Invoice code</th>
-            <th>Paid</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for payment in payments %}
+            <thead>
             <tr>
-                <td>{{ payment.invoice.organization.name }}</td>
-                <td>{{ payment.invoice.invoice_code }}</td>
-                <td>{{ payment.payment_date }}</td>    
+                <th>Organization name</th>
+                <th>Invoice code</th>
+                <th>Paid</th>
             </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            {% for payment in payments %}
+                <tr>
+                    <td>{{ payment.invoice.organization.name }}</td>
+                    <td>{{ payment.invoice.invoice_code }}</td>
+                    <td>{{ payment.payment_date }}</td>    
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     </div></div>
 </div></div>
 {% endblock %}

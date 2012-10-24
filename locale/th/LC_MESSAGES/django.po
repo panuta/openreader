@@ -330,6 +330,28 @@ msgstr "ระยะเวลาทดลองใช้งานจะหมด
 msgid "You can continue to use Openreader by pay the service with PAYPAL at the link below"
 msgstr "คุณสามารถใช้งาน Openreader ต่อได้โดยการจ่ายค่าบริการผ่าน Paypal ตามลิงค์ข้างล่าง"
 
+msgid "Your organization user has been changed. Please reconfirm subscription at the link below"
+msgstr "จำนวนผู้ใช้ในองค์กรของคุณมีการเปลี่ยนแปลง กรุณายืนยันการชำระเงินอีกครั้งตามลิงค์ข้างล่าง"
+
+# PAYMENT ####################################################################################
+msgid "Invoice"
+msgstr "ใบแจ้งหนี้"
+
+msgid "Invoice code"
+msgstr "รหัสใบแจ้งหนี้"
+
+msgid "Price rate"
+msgstr "อัตราค่าบริการ"
+
+msgid "Total"
+msgstr "รวม"
+
+msgid "to"
+msgstr "ถึง"
+
+msgid "Payment"
+msgstr "ชำระเงิน"
+
 
 # Pagination #################################################################################
 msgid "Previous"
@@ -524,6 +546,17 @@ msgstr "ลบกลุ่มเอกสารและไฟล์ในกล
 msgid "Delete shelf successful"
 msgstr "ลบกลุ่มเอกสารเรียบร้อย"
 
+msgid "Cancelled user invitation successful"
+msgstr "เพิกถอนคำขอผู้ใช้เรียบร้อย"
+
+msgid "Removed user from organization successful"
+msgstr "ถอดผู้ใช้ออกจากบริษัทเรียบร้อย"
+
+msgid "Brought user back to organization successful"
+msgstr "นำผู้ใช้กลับเข้าบริษัทเรียบร้อย"
+
+msgid "Deleted user groups successful"
+msgstr "ลบกลุ่มผู้ใช้เรียบร้อย"
 
 # SYSYEM ############################################################################
 msgid "System management"

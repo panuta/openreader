@@ -161,21 +161,13 @@ def add_organization_user(request, organization_slug):
 def organization_make_payment(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
-    # FOR-TEST
-    invoice, created = OrganizationInvoice.objects.get_or_create(
-        organization = organization,
-        invoice_code = 'ABCDEFGHT',
-        people = 2,
-        price = 20,
-        price_unit = 'EUR',
-        total = 40,
-    )
+    invoice = organization.get_latest_invoice()
 
     paypal_dict = {
         "cmd": "_xclick",
         "business": settings.PAYPAL_RECEIVER_EMAIL,
         "amount": invoice.price,
-        "quantity": invoice.people,
+        "quantity": invoice.new_people,
         "currency_code": invoice.price_unit,
         "item_name": "Billing Month",
         "invoice": invoice.invoice_code,
@@ -190,6 +182,7 @@ def organization_make_payment(request, organization_slug):
     return render(request, 'organization/organization_payment.html', {
         'organization': organization,
         'form': form,
+        'invoice': invoice,
         'payments': OrganizationPaypalPayment.objects.filter(invoice__organization__slug=organization_slug),
     })
 
@@ -206,7 +199,7 @@ def organization_notify_from_paypal(request):
     OrganizationPaypalPayment.objects.create(
         invoice = invoice,
         transaction_id = request.POST.get('txn_id'),
-        amt = request.POST.get('payment_gross'),
+        amt = request.POST.get('mc_gross'),
         payment_status = request.POST.get('payment_status'),
         pending_reason = request.POST.get('pending_reason'),
         protection_eligibility = request.POST.get('protection_eligibility'),
@@ -215,6 +208,26 @@ def organization_notify_from_paypal(request):
         verify_sign = request.POST.get('verify_sign'),
         ipn_track_id = request.POST.get('ipn_track_id'),
     )
+
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+
+    if request.POST.get('payment_status') == 'Completed' and \
+       ip == '173.0.82.126' and \
+       float(request.POST.get('mc_gross', '0')) == reservation.total:
+
+        invoice.payment_status = 'PAID'
+        invoice.save()
+
+        # TODO: CREATE NEW INVOICE FOR NEXT MONTH
+    elif ip == '173.0.82.126':
+        invoice.attempt = invoice.attempt + 1
+        invoice.save()
+
+        # TODO: CHECK LIMIT ATTEMP == 5
 
     return HttpResponse('success')
 
@@ -334,7 +347,7 @@ def claim_user_invitation(request, invitation_key):
             user = authenticate(email=invitation.email, password=password1)
             login(request, user)
 
-            messages.success(request, _('%s has been a part of the organization %s') % (user_profile.get_fullname(), organization.name))
+            messages.success(request, _('%s has been a part of the organization %s') % (user_profile.get_fullname(), invitation.organization.name))
             return redirect('view_organization_front', organization_slug=invitation.organization.slug)
 
     else:
@@ -504,7 +517,9 @@ def view_documents(request, organization_slug):
         'shelves': shelves,
         'uploadable_shelves': uploadable_shelves,
         'recent_publications': recent_publications,
-        'is_decide_on_first_month': is_decide_on_first_month
+        'is_decide_on_first_month': is_decide_on_first_month,
+        'invoice': organization.get_latest_invoice(),
+        'is_organization_admin': is_organization_admin,
     })
 
 

@@ -82,7 +82,6 @@ def send_notification_email_to_decide_on_first_month():
     from domain.models import Organization, UserOrganization
     notify_day = datetime.date.today()-datetime.timedelta(days=21)
     organizations = Organization.objects.filter(created__year=notify_day.year, created__month=notify_day.month, created__day=notify_day.day)
-    # organizations = Organization.objects.filter(is_first_month=True)
 
     for organization in organizations:
         html_email_body = render_to_string('organization/emails/decide_on_first_month.html', {

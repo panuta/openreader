@@ -14,6 +14,7 @@ from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_GET, require_POST
 from django.utils import simplejson
 from django.utils.timezone import now
+from django.utils.translation import ugettext as _
 
 from common.shortcuts import response_json_success, response_json_error
 from common.utilities import format_abbr_datetime, humanize_file_size
@@ -58,7 +59,7 @@ def ajax_cancel_user_invitation(request, invitation_id):
 
         invitation.delete()
 
-        messages.success(request, u'เพิกถอนคำขอผู้ใช้เรียบร้อย')
+        messages.success(request, _('Cancelled user invitation successful'))
         return response_json_success({'redirect_url':reverse('view_organization_invited_users', args=[organization.slug])})
     else:
         raise Http404
@@ -77,7 +78,9 @@ def ajax_remove_organization_user(request, organization_user_id):
         user_organization.is_active = False
         user_organization.save()
 
-        messages.success(request, u'ถอดผู้ใช้ออกจากบริษัทเรียบร้อย')
+        organization.update_latest_invoice()
+
+        messages.success(request, _('Removed user from organization successful'))
         return response_json_success({'redirect_url':reverse('view_organization_users', args=[organization.slug])})
     else:
         raise Http404
@@ -95,7 +98,9 @@ def ajax_bringback_organization_user(request, organization_user_id):
         user_organization.is_active = True
         user_organization.save()
 
-        messages.success(request, u'นำผู้ใช้กลับเข้าบริษัทเรียบร้อย')
+        organization.update_latest_invoice()
+
+        messages.success(request, _('Brought user back to organization successful'))
         return response_json_success({'redirect_url':reverse('view_organization_users', args=[organization.slug])})
     else:
         raise Http404
@@ -115,7 +120,7 @@ def ajax_remove_organization_group(request, organization_group_id):
         UserGroup.objects.filter(group=group).delete()
         group.delete()
 
-        messages.success(request, u'ลบกลุ่มผู้ใช้เรียบร้อย')
+        messages.success(request, _('Deleted user groups successful'))
         return response_json_success({'redirect_url':reverse('view_organization_groups', args=[organization.slug])})
     else:
         raise Http404
