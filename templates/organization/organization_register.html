@@ -1,0 +1,169 @@
+{% load i18n %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Create your company account</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link id="page_favicon" href="{{STATIC_URL}}images/icons/favicon.ico" rel="icon" type="image/x-icon" />
+    <link rel="stylesheet" href="{{STATIC_URL}}css/style.market.css">
+    <script type="text/javascript" src="{{STATIC_URL}}libs/jquery.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('button[name="submitRegister"]').prop('disabled', true);
+            $('#register-action :checkbox').click(function(){
+                if ($('#register-action :checkbox').is(':checked'))
+                    $('button[name="submitRegister"]').prop('disabled', false);
+                else
+                    $('button[name="submitRegister"]').prop('disabled', true);
+            });
+        })
+    </script>
+    </head> 
+    <body>
+    <!-- START: Header -->
+        <div id="header"><div id="headerWrap">
+            <div id="logo">
+                <a href="/" title="OpenReader"><h1>OpenReader</h1></a>
+            </div>
+            <div id="nav">
+                <ul class="menu-big">
+                    <li><a href="/" title="Introduction"  class="nav-item-1">Introduction</a></li>
+                    <li><a href="/#features" title="Features" class="nav-item-2">Features</a></li>
+                    <li><a href="/#price-plan" title="Price & Plan" class="nav-item-3">Price & Plan</a></li>
+                    <li><a href="/#contact-us" title="Contact us" class="nav-item-4">Contact us</a></li>
+                </ul>
+            </div>
+        </div></div>
+    <!-- END: Header -->
+        <div class="register">
+            <div class="register-wrapper">
+            <h2>Create your company account</h2>
+            <form id="register-form" method="post">
+                {% csrf_token %}
+                <div class="gradient-box">
+                    <div class="title">
+                        <span>Company name</span><br />{{ form.organization_name }}
+                        <span class="error-text">{{ form.organization_name.errors }}</span>
+                    </div>
+                    <div class="title">
+                        <span>Company abbreviate name</span><br />{{ form.organization_slug }}
+                        <span class="help-block">{% trans 'Organization abbreviate name that not duplicated with other organization' %}</span>
+                        <span class="error-text">{{ form.organization_slug.errors }}</span>
+                    </div>
+                    <div class="title">
+                        <span>Company address</span><br />{{ form.organization_address }}
+                        <span class="error-text">{{ form.organization_address.errors }}</span>
+                    </div>
+                    <div class="title">
+                        <span>Country</span><br />{{ form.organization_country }}
+                        <span class="error-text">{{ form.organization_country.errors }}</span>
+                    </div>
+                    <div class="title">
+                        <span>Contact telephone number</span><br />{{ form.organization_tel }}
+                        <span class="error-text">{{ form.organization_tel.errors }}</span>
+                    </div>
+                </div>  
+                <div class="gradient-box">
+                    <div class="title">
+                        <span>Adminstrator firstname</span><br />{{ form.admin_first_name }}
+                        <span class="error-text">{{ form.admin_first_name.errors }}</span>
+                    </div>
+                    <div class="title">
+                        <span>Adminstrator lastname</span><br />{{ form.admin_last_name }}
+                        <span class="error-text">{{ form.admin_last_name.errors }}</span>
+                    </div>
+                    <div class="title">
+                        <span>Adminstrator email</span><br />{{ form.admin_email }}
+                        <span class="error-text">{{ form.admin_email.errors }}</span>
+                    </div>
+                    <div class="title">
+                        <span>Passport / ID Number</span><br />{{ form.admin_id_no }}
+                        <span class="error-text">{{ form.admin_id_no.errors }}</span>
+                    </div>
+                    <div class="title">
+                        <span>Passport / ID Number Country</span><br />{{ form.admin_country }}
+                        <span class="error-text">{{ form.admin_country.errors }}</span>
+                    </div>
+                    <div class="title">
+                        <span>Adminstrator password</span><br />{{ form.admin_password1 }}
+                        <span class="error-text">{{ form.admin_password1.errors }}</span>
+                    </div>
+                    <div class="title">
+                        <span>Adminstrator retype password</span><br />{{ form.admin_password2 }}
+                        <span class="error-text">{{ form.admin_password2.errors }}</span>
+                    </div>
+                </div>
+                <div class="gradient-box" id="register-action">
+                    <div class="title">
+                        <input type="checkbox" name="agree" value="yes"> I accept the terms of service and pricing conditions</input><br />
+                    </div>
+                    <button name="submitRegister" type="submit">Complete</button>
+                </div>
+                </form>
+
+                <div class="desc-contract">
+                    <div class="title">
+                        <span>Selected Contract</span><br />
+                        <span class="desc"> {{ contract_type.title }}</span><br />
+                    </div>
+                    <div class="title">
+                        <span>Price per month</span><br />
+                        <span class="desc"> &#8364; {{ contract_type.price|floatformat:2 }}</span><br />
+                    </div>
+                    <div class="title">
+                        <span>List features</span><br />
+                        <ol class="list-feature">
+                            <li> Wide range document support</li>
+                            <li> Banking industry grade security</li>
+                            <li> Hierarchical document permission</li>
+                            <li> Automatic document synchronization</li>
+                            <li> Offline document usage</li>
+                        </ol>   
+                    </div>
+                </div>
+                <div class="desc-free">
+                    <h3>Try it for free!</h3>
+                    <p>
+                    The first month you can try out the Open-Reader platform. If you don't like it you can stop it without any costs!
+                    </p>
+                    <br />
+                    <p>
+                    When you decide you want to continue to use it, payment will follow. Only then we will need your company's billing information
+                    </p>
+                </div>
+            </div>
+        </div>
+
+<!-- START Section 4: Contact -->
+<div id="contact-us" class="sec sec4">
+    <div class="sec-wrapper">
+    <ul>
+        <li>
+            <a href="#">
+                <span  class="keep-up-date-img">&nbsp</span>
+                <h4>Keep up date</h4>
+                <p class="desc">News & Announcement</p>
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <span  class="get-help-img">&nbsp</span>
+                <h4>Get help</h4>
+                <p class="desc">Tutorial Tip Support</p>
+            </a>        
+        </li>
+        <li>
+            <a href="#">
+                <span  class="follow-us">&nbsp</span>                       
+                <h4>Follow us</h4>
+                <p class="desc">Ask question & geek out</p>
+            </a> 
+        </li>
+    </ul>     
+    <p class="contact-us">Contact us : +66.2.274.8534</p>
+    <span>299/92 Areeya Mandarina, Suttisan Winijchai Rd. <br />Samsennok, Huaykwang Bangkok 10310</span>
+    </div>
+</div>
+<!-- END: Section 4 -->
+    </body>
+</html>

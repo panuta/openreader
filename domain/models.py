@@ -26,7 +26,7 @@ SHA1_RE = re.compile('^[a-f0-9]{40}$')
 
 class UserProfileManager(models.Manager):
 
-    def create_user_profile(self, email, first_name, last_name, password, update_if_exists=False):
+    def create_user_profile(self, email, first_name, last_name, password, id_no, country, update_if_exists=False):
         try:
             user = User.objects.get(email=email)
             user_profile = user.get_profile()
@@ -38,6 +38,8 @@ class UserProfileManager(models.Manager):
 
                 user_profile.first_name = first_name
                 user_profile.last_name = last_name
+                user_profile.id_no = id_no
+                user_profile.country = country
                 user_profile.save()
 
         except User.DoesNotExist:
@@ -52,6 +54,8 @@ class UserProfile(models.Model):
     first_name = models.CharField(max_length=100) # first_name and last_name in contrib.auth.User is too short
     last_name = models.CharField(max_length=100)
     is_first_time = models.BooleanField(default=True)
+    id_no = models.CharField(max_length=30)
+    country = models.CharField(max_length=3)
 
     def __unicode__(self):
         return '%s %s' % (self.first_name, self.last_name)
@@ -81,7 +85,7 @@ class OrganizationAdminPermission(models.Model):
 # Organization
 
 CONTRACT_TYPE_CHOICES = (
-    (1, 'MONTLY'),
+    (1, 'MONTHLY'),
     (2, 'YEARLY'),
 )
 
@@ -89,6 +93,10 @@ class Organization(models.Model):
     name = models.CharField(max_length=200)
     prefix = models.CharField(max_length=200, blank=True)
     slug = models.CharField(max_length=200, unique=True, db_index=True)
+    address = models.TextField()
+    country = models.CharField(max_length=3)
+    tel = models.CharField(max_length=20)
+
     contract_type = models.IntegerField(default=1, choices=CONTRACT_TYPE_CHOICES)
     contract_month_remain = models.IntegerField(default=1)
     status = models.IntegerField(default=0)

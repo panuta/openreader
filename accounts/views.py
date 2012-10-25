@@ -14,11 +14,13 @@ def auth_login(request):
 
 
 @require_GET
-@login_required
 def view_user_home(request):
+    if not request.user.is_authenticated():
+        return render(request, 'index.html')
+
     if request.user.is_superuser:
         return redirect('/management/')
-    
+
     user_organizations = UserOrganization.objects.filter(user=request.user, is_active=True).order_by('-is_default', 'created')
     if user_organizations:
         user_organization = user_organizations[0]

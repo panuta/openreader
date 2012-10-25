@@ -5,9 +5,10 @@ from django.contrib.auth.models import User
 from django.core.validators import email_re
 from django.utils.translation import ugettext, ugettext_lazy as _
 
+from common.countries import COUNTRY_CHOICES_WITH_BLANK
 from common.forms import StrippedCharField
 
-from domain.models import OrganizationGroup, UserOrganizationInvitation, UserOrganization, OrganizationAdminPermission, OrganizationShelf
+from domain.models import OrganizationGroup, UserOrganizationInvitation, UserOrganization, OrganizationAdminPermission, OrganizationShelf, Organization
 
 # USER ACCOUNT #########################################################################################################
 
@@ -32,6 +33,43 @@ class UserProfileForm(forms.Form):
 
 
 # ORGANIZATION MANAGEMENT
+
+class OrganizationRegisterForm(forms.Form):
+    organization_name = StrippedCharField(max_length=200)
+    organization_slug = StrippedCharField(max_length=200)
+    organization_address = StrippedCharField(max_length=500, widget=forms.Textarea(attrs={'class':'input-large', 'rows':'10', 'cols': '60'}))
+    organization_country = forms.ChoiceField(choices=COUNTRY_CHOICES_WITH_BLANK, widget=forms.Select(attrs={'style':'width:110px;'}))
+    organization_tel = StrippedCharField(max_length=30)
+
+    admin_email = forms.EmailField(widget=forms.TextInput(attrs={'class':'span6'}))
+    admin_first_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'input-normal'}))
+    admin_last_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'input-normal'}))
+    admin_id_no = StrippedCharField(max_length=30, widget=forms.TextInput(attrs={'class':'input-normal'}))
+    admin_password1 = forms.CharField(widget=forms.PasswordInput())
+    admin_password2 = forms.CharField(widget=forms.PasswordInput())
+    admin_country = forms.ChoiceField(choices=COUNTRY_CHOICES_WITH_BLANK, widget=forms.Select(attrs={'style':'width:110px;'}))
+
+    def clean_admin_email(self):
+        email = self.cleaned_data.get('admin_email', '')
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError(_('This email is already exists.'))
+        return email
+
+    def clean_admin_password2(self):
+        password1 = self.cleaned_data.get('admin_password1', '')
+        password2 = self.cleaned_data['admin_password2']
+        if password1 != password2:
+            raise forms.ValidationError(_('The two password fields didn\'t match.'))
+        return password2
+
+    def clean_organization_slug(self):
+        organization_slug = self.cleaned_data['organization_slug']
+
+        if Organization.objects.filter(slug=organization_slug).exists():
+            raise forms.ValidationError(u'ชื่อย่อบริษัทนี้ซ้ำกับชื่ออื่นๆ ในระบบ')
+
+        return organization_slug
+
 
 class AddOrganizationUserForm(forms.Form):
     email = forms.EmailField(widget=forms.TextInput(attrs={'class':'input-normal'}))

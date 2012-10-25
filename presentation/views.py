@@ -1,6 +1,8 @@
 # -*- encoding: utf-8 -*-
 import datetime
 import logging
+import shortuuid
+from dateutil.relativedelta import relativedelta
 
 from paypal.standard.forms import PayPalPaymentsForm
 
@@ -95,6 +97,83 @@ def view_organization_profile(request, organization_slug):
 
     return render(request, 'organization/organization_profile.html', {'organization':organization, 'statistics':statistics})
 
+
+# Organization Register
+# ----------------------------------------------------------------------------------------------------------------------
+
+def plan_organization(request):
+    return render(request, 'organization/organization_plan.html')
+
+def register_organization(request):
+    contract_type_get = request.GET.get('contract-length')
+    if contract_type_get == 'MONTHLY':
+        contract_type = {
+            'title': '1 Month contract',
+            'price': 7.50,
+            'contract_month_remain': 1,
+            'contract_type_code': 1,
+        }
+    elif contract_type_get == 'YEARLY':
+        contract_type = {
+            'title': '1 Year contract',
+            'price': 6.00,
+            'contract_month_remain': 12,
+            'contract_type_code': 2,
+        }
+    else:
+        return redirect(reverse('register_organization') + '?contract-length=YEARLY')
+
+    if request.method == 'POST':
+        form = OrganizationRegisterForm(request.POST)
+        if form.is_valid():
+            profile = UserProfile.objects.create_user_profile(
+                email = form.cleaned_data['admin_email'],
+                first_name = form.cleaned_data['admin_first_name'],
+                last_name = form.cleaned_data['admin_last_name'],
+                password = form.cleaned_data['admin_password1'],
+                id_no = form.cleaned_data['admin_id_no'],
+                country = form.cleaned_data['admin_country'],
+            )
+            organization = Organization.objects.create(
+                name = form.cleaned_data['organization_name'],
+                slug = form.cleaned_data['organization_slug'],
+                address = form.cleaned_data['organization_address'],
+                country = form.cleaned_data['organization_country'],
+                tel = form.cleaned_data['organization_tel'],
+                contract_type = contract_type['contract_type_code'],
+                contract_month_remain = contract_type['contract_month_remain'],
+                created_by = profile.user,
+            )
+
+            user_organization = UserOrganization.objects.create(user=profile.user, organization=organization, is_default=True)
+            user_organization.is_admin = True
+            user_organization.save()
+            # TODO CREATE INVOICE
+
+            shortuuid.set_alphabet('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+            temp_uuid = shortuuid.uuid()[0:10]
+            while OrganizationInvoice.objects.filter(invoice_code=temp_uuid).exists():
+                temp_uuid = shortuuid.uuid()[0:10]
+
+            OrganizationInvoice.objects.create(
+                organization = organization,
+                invoice_code = temp_uuid,
+                price = contract_type['price'],
+                total = contract_type['price'],
+                start_date = organization.created.date(),
+                end_date = organization.created.date() + relativedelta(months=+1, days=-1),
+            )
+            user = authenticate(email=profile.user.email, password=form.cleaned_data['admin_password1'])
+            login(request, user)
+            return redirect('view_user_home')
+    else:
+        form = OrganizationRegisterForm()
+    return render(request, 'organization/organization_register.html', {
+        'form': form,
+        'contract_type': contract_type,
+    })
+
+
 # Organization Users
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -135,6 +214,8 @@ def add_organization_user(request, organization_slug):
                 form.cleaned_data['first_name'], 
                 form.cleaned_data['last_name'], 
                 form.cleaned_data['password1'],
+                '12341234',
+                'KOR',
             )
             user_profile.user.is_staff = True
             user_profile.user.save()
@@ -338,7 +419,7 @@ def claim_user_invitation(request, invitation_key):
             last_name = form.cleaned_data['last_name']
             password1 = form.cleaned_data['password1']
 
-            user_profile = UserProfile.objects.create_user_profile(invitation.email, first_name, last_name, password1)
+            user_profile = UserProfile.objects.create_user_profile(invitation.email, first_name, last_name, password1, '12341234', 'KOR')
             user_profile.user.is_staff = True
             user_profile.user.save()
             UserOrganizationInvitation.objects.claim_invitation(invitation, user_profile.user, True)

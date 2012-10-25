@@ -175,7 +175,7 @@ msgid "Latest files"
 msgstr "ไฟล์ล่าสุด"
 
 msgid "No latest files"
-msgstr "ไม่มีไฟล์ล่าสุด์"
+msgstr "ไม่มีไฟล์ล่าสุด"
 
 msgid "Uploaded on"
 msgstr "อัพโหลดเมื่อวันที่"
@@ -574,10 +574,10 @@ msgstr "รายชื่อบริษัท"
 msgid "Organization name"
 msgstr "ชื่อบริษัท"
 
-msgid "Organization abbr name"
+msgid "Organization abbreviate name"
 msgstr "ชื่อย่อบริษัท"
 
-msgid "Organization abbr name that not duplicated with other organization"
+msgid "Organization abbreviate name that not duplicated with other organization"
 msgstr "ชื่อบริษัทภาษาอังกฤษที่ไม่ซ้ำกับบริษัทอื่น"
 
 msgid "Organization prefix"

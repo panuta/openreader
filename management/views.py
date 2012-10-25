@@ -94,7 +94,7 @@ def claim_organization_invitation(request, invitation_key):
             last_name = form.cleaned_data['last_name']
             password1 = form.cleaned_data['password1']
 
-            user_profile = UserProfile.objects.create_user_profile(invitation.admin_email, first_name, last_name, password1)
+            user_profile = UserProfile.objects.create_user_profile(invitation.admin_email, first_name, last_name, password1, '12341234', 'KOR')
             user_profile.user.is_staff = True
             user_profile.user.save()
             OrganizationInvitation.objects.claim_invitation(invitation, user_profile.user, True)
