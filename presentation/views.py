@@ -95,7 +95,30 @@ def view_organization_profile(request, organization_slug):
         'active_user_count': UserOrganization.objects.filter(organization=organization, is_active=True).count(),
     }
 
-    return render(request, 'organization/organization_profile.html', {'organization':organization, 'statistics':statistics})
+    return render(request, 'organization/organization_profile.html', {
+        'organization':organization,
+        'statistics':statistics,
+        'is_organization_admin': UserOrganization.objects.filter(organization=organization, user=request.user, is_admin=True).exists(),
+    })
+
+
+def remove_organization(request, organization_slug):
+    organization = get_object_or_404(Organization, slug=organization_slug)
+
+    if not UserOrganization.objects.filter(organization=organization, user=request.user, is_admin=True).exists():
+        raise Http404
+
+    if organization.contract_type != Organization.MONTHLY_CONTRACT:
+        raise Http404
+
+    if request.method == 'POST':
+        domain_functions.remove_organization(organization)
+        return redirect('view_user_home')
+
+    return render(request, 'organization/organization_remove.html', {
+        'organization': organization,
+    })
+
 
 
 # Organization Register
@@ -111,14 +134,14 @@ def register_organization(request):
             'title': '1 Month contract',
             'price': 7.50,
             'contract_month_remain': 1,
-            'contract_type_code': 1,
+            'contract_type_code': Organization.MONTHLY_CONTRACT,
         }
     elif contract_type_get == 'YEARLY':
         contract_type = {
             'title': '1 Year contract',
             'price': 6.00,
             'contract_month_remain': 12,
-            'contract_type_code': 2,
+            'contract_type_code': Organization.YEARLY_CONTRACT,
         }
     else:
         return redirect(reverse('register_organization') + '?contract-length=YEARLY')

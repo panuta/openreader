@@ -509,6 +509,15 @@ msgstr "ไม่มีคำขอเพิ่มผู้ใช้"
 msgid "Select group"
 msgstr "เลือกกลุ่มผู้ใช้"
 
+msgid "Remove organization"
+msgstr "ลบบริษัท"
+
+msgid "Do you want to remove this organization with all shelves and document ?"
+msgstr "คุณต้องการที่จะลบบริษัทนี้ พร้อมทั้งเอกสารและกลุ่มเอกสารทั้งหมด ?"
+
+msgid "Remove"
+msgstr "ลบ"
+
 
 # ERROR ############################################################################
 msgid "This email is already exists."

@@ -6,7 +6,7 @@ from common.thumbnails import delete_thumbnails
 from common.utilities import split_filepath
 from django.utils.timezone import now
 
-from domain.models import Publication, PublicationShelf
+from domain.models import Publication, PublicationShelf, OrganizationShelf, OrganizationShelfPermission, GroupShelfPermission, UserShelfPermission, UserOrganizationInvitation, OrganizationGroup, UserOrganization
 
 logger = logging.getLogger(settings.OPENREADER_LOGGER)
 
@@ -57,3 +57,26 @@ def delete_publication(publication):
 def delete_publications(publications):
     for publication in publications:
         delete_publication(publication)
+
+
+def _remove_all_shelves(organization):
+    shelves = OrganizationShelf.objects.filter(organization=organization)
+
+    for shelf in shelves:
+        for publication in Publication.objects.filter(shelves__in=[shelf]):
+            delete_publication(publication)
+
+        PublicationShelf.objects.filter(shelf=shelf).delete()
+        OrganizationShelfPermission.objects.filter(shelf=shelf).delete()
+        GroupShelfPermission.objects.filter(shelf=shelf).delete()
+        UserShelfPermission.objects.filter(shelf=shelf).delete()
+        shelf.delete()
+
+
+def remove_organization(organization):
+    _remove_all_shelves(organization)
+
+    UserOrganizationInvitation.objects.filter(organization=organization).delete()
+    OrganizationGroup.objects.filter(organization=organization).delete()
+    UserOrganization.objects.filter(organization=organization).delete()
+    organization.delete()

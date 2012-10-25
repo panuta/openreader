@@ -15,6 +15,7 @@ urlpatterns = patterns('presentation.views',
     # Manage Organization
 
     url(r'^org/(?P<organization_slug>\w+)/profile/$', 'view_organization_profile', name='view_organization_profile'),
+    url(r'^org/(?P<organization_slug>\w+)/remove/$', 'remove_organization', name='remove_organization'),
 
     url(r'^org/(?P<organization_slug>\w+)/manage/users-groups/$', 'view_organization_users_groups', name='view_organization_users_groups'),
     url(r'^org/(?P<organization_slug>\w+)/manage/users-groups/#users', RedirectView.as_view(), name='view_organization_users'),

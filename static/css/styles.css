@@ -291,7 +291,6 @@ form .form-actions a {
 form .form-actions a:link,
 form .form-actions a:active,
 form .form-actions a:visited {
-  text-decoration: underline;
   color: #725228;
 }
 form .form-actions a:hover {

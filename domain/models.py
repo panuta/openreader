@@ -84,12 +84,13 @@ class OrganizationAdminPermission(models.Model):
 
 # Organization
 
-CONTRACT_TYPE_CHOICES = (
-    (1, 'MONTHLY'),
-    (2, 'YEARLY'),
-)
-
 class Organization(models.Model):
+    MONTHLY_CONTRACT = 1
+    YEARLY_CONTRACT = 2
+    CONTRACT_TYPE_CHOICES = (
+        (MONTHLY_CONTRACT, 'MONTHLY'),
+        (YEARLY_CONTRACT, 'YEARLY'),
+    )
     name = models.CharField(max_length=200)
     prefix = models.CharField(max_length=200, blank=True)
     slug = models.CharField(max_length=200, unique=True, db_index=True)
@@ -97,7 +98,7 @@ class Organization(models.Model):
     country = models.CharField(max_length=3)
     tel = models.CharField(max_length=20)
 
-    contract_type = models.IntegerField(default=1, choices=CONTRACT_TYPE_CHOICES)
+    contract_type = models.IntegerField(default=MONTHLY_CONTRACT, choices=CONTRACT_TYPE_CHOICES)
     contract_month_remain = models.IntegerField(default=1)
     status = models.IntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True)
