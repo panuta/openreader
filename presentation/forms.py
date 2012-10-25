@@ -52,21 +52,21 @@ class OrganizationRegisterForm(forms.Form):
     def clean_admin_email(self):
         email = self.cleaned_data.get('admin_email', '')
         if User.objects.filter(email=email).exists():
-            raise forms.ValidationError(_('This email is already exists.'))
+            raise forms.ValidationError(ugettext('This email is already exists.'))
         return email
 
     def clean_admin_password2(self):
         password1 = self.cleaned_data.get('admin_password1', '')
         password2 = self.cleaned_data['admin_password2']
         if password1 != password2:
-            raise forms.ValidationError(_('The two password fields didn\'t match.'))
+            raise forms.ValidationError(ugettext('The two password fields didn\'t match.'))
         return password2
 
     def clean_organization_slug(self):
         organization_slug = self.cleaned_data['organization_slug']
 
         if Organization.objects.filter(slug=organization_slug).exists():
-            raise forms.ValidationError(u'ชื่อย่อบริษัทนี้ซ้ำกับชื่ออื่นๆ ในระบบ')
+            raise forms.ValidationError(ugettext('This company abbreviate name is already exists in the system.'))
 
         return organization_slug
 
@@ -91,14 +91,14 @@ class AddOrganizationUserForm(forms.Form):
     def clean_email(self):
         email = self.cleaned_data.get('email', '')
         if User.objects.filter(email=email).exists():
-            raise forms.ValidationError(_('This email is already exists.'))
+            raise forms.ValidationError(ugettext('This email is already exists.'))
         return email
 
     def clean_password2(self):
         password1 = self.cleaned_data.get('password1', '')
         password2 = self.cleaned_data['password2']
         if password1 != password2:
-            raise forms.ValidationError(_('The two password fields didn\'t match.'))
+            raise forms.ValidationError(ugettext('The two password fields didn\'t match.'))
         return password2
 
 
@@ -122,10 +122,10 @@ class InviteOrganizationUserForm(forms.Form):
                 raise forms.ValidationError(_('%s is invalid email.'))
 
             if UserOrganizationInvitation.objects.filter(email=email, organization=self.organization).exists():
-                raise forms.ValidationError(_('There has already invited to this user.'))
+                raise forms.ValidationError(ugettext('There has already invited to this user.'))
 
             if UserOrganization.objects.filter(organization=self.organization, user__email=email).exists():
-                raise forms.ValidationError(_('This user is already in this organization.'))
+                raise forms.ValidationError(ugettext('This user is already in this organization.'))
 
         return emails
 
@@ -152,7 +152,7 @@ class ClaimOrganizationUserForm(forms.Form):
         password1 = self.cleaned_data.get('password1', '')
         password2 = self.cleaned_data['password2']
         if password1 != password2:
-            raise forms.ValidationError(_('The two password fields didn\'t match.'))
+            raise forms.ValidationError(ugettext('The two password fields didn\'t match.'))
         return password2
 
 
@@ -172,7 +172,7 @@ class EditOrganizationUserForm(forms.Form):
         email = self.cleaned_data.get('email', '')
 
         if User.objects.filter(email=email).exclude(id=self.user_organization.user.id).exists():
-            raise forms.ValidationError(_('This email is already exists.'))
+            raise forms.ValidationError(ugettext('This email is already exists.'))
 
         return email
 

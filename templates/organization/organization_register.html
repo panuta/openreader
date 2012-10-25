@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>Create your company account</title>
+        <title>{% trans 'Create your company account' %}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link id="page_favicon" href="{{STATIC_URL}}images/icons/favicon.ico" rel="icon" type="image/x-icon" />
     <link rel="stylesheet" href="{{STATIC_URL}}css/style.market.css">
@@ -37,67 +37,67 @@
     <!-- END: Header -->
         <div class="register">
             <div class="register-wrapper">
-            <h2>Create your company account</h2>
+            <h2>{% trans 'Create your company account' %}</h2>
             <form id="register-form" method="post">
                 {% csrf_token %}
                 <div class="gradient-box">
                     <div class="title">
-                        <span>Company name</span><br />{{ form.organization_name }}
+                        <span>{% trans 'Company name' %}</span><br />{{ form.organization_name }}
                         <span class="error-text">{{ form.organization_name.errors }}</span>
                     </div>
                     <div class="title">
-                        <span>Company abbreviate name</span><br />{{ form.organization_slug }}
+                        <span>{% trans 'Company abbreviate name' %}</span><br />{{ form.organization_slug }}
                         <span class="help-block">{% trans 'Organization abbreviate name that not duplicated with other organization' %}</span>
                         <span class="error-text">{{ form.organization_slug.errors }}</span>
                     </div>
                     <div class="title">
-                        <span>Company address</span><br />{{ form.organization_address }}
+                        <span>{% trans 'Company address' %}</span><br />{{ form.organization_address }}
                         <span class="error-text">{{ form.organization_address.errors }}</span>
                     </div>
                     <div class="title">
-                        <span>Country</span><br />{{ form.organization_country }}
+                        <span>{% trans 'Country' %}</span><br />{{ form.organization_country }}
                         <span class="error-text">{{ form.organization_country.errors }}</span>
                     </div>
                     <div class="title">
-                        <span>Contact telephone number</span><br />{{ form.organization_tel }}
+                        <span>{% trans 'Contact telephone number' %}</span><br />{{ form.organization_tel }}
                         <span class="error-text">{{ form.organization_tel.errors }}</span>
                     </div>
                 </div>  
                 <div class="gradient-box">
                     <div class="title">
-                        <span>Adminstrator firstname</span><br />{{ form.admin_first_name }}
+                        <span>{% trans 'Adminstrator firstname' %}</span><br />{{ form.admin_first_name }}
                         <span class="error-text">{{ form.admin_first_name.errors }}</span>
                     </div>
                     <div class="title">
-                        <span>Adminstrator lastname</span><br />{{ form.admin_last_name }}
+                        <span>{% trans 'Adminstrator lastname' %}</span><br />{{ form.admin_last_name }}
                         <span class="error-text">{{ form.admin_last_name.errors }}</span>
                     </div>
                     <div class="title">
-                        <span>Adminstrator email</span><br />{{ form.admin_email }}
+                        <span>{% trans 'Adminstrator email' %}</span><br />{{ form.admin_email }}
                         <span class="error-text">{{ form.admin_email.errors }}</span>
                     </div>
                     <div class="title">
-                        <span>Passport / ID Number</span><br />{{ form.admin_id_no }}
+                        <span>{% trans 'Passport / ID Number' %}</span><br />{{ form.admin_id_no }}
                         <span class="error-text">{{ form.admin_id_no.errors }}</span>
                     </div>
                     <div class="title">
-                        <span>Passport / ID Number Country</span><br />{{ form.admin_country }}
+                        <span>{% trans 'Passport / ID Number Country' %}</span><br />{{ form.admin_country }}
                         <span class="error-text">{{ form.admin_country.errors }}</span>
                     </div>
                     <div class="title">
-                        <span>Adminstrator password</span><br />{{ form.admin_password1 }}
+                        <span>{% trans 'Adminstrator password' %}</span><br />{{ form.admin_password1 }}
                         <span class="error-text">{{ form.admin_password1.errors }}</span>
                     </div>
                     <div class="title">
-                        <span>Adminstrator retype password</span><br />{{ form.admin_password2 }}
+                        <span>{% trans 'Retype password' %}</span><br />{{ form.admin_password2 }}
                         <span class="error-text">{{ form.admin_password2.errors }}</span>
                     </div>
                 </div>
                 <div class="gradient-box" id="register-action">
                     <div class="title">
-                        <input type="checkbox" name="agree" value="yes"> I accept the terms of service and pricing conditions</input><br />
+                        <input type="checkbox" name="agree" value="yes"> {% trans 'I accept the terms of service and pricing conditions' %}</input><br />
                     </div>
-                    <button name="submitRegister" type="submit">Complete</button>
+                    <button name="submitRegister" type="submit">{% trans 'Complete' %}</button>
                 </div>
                 </form>
 
@@ -165,5 +165,11 @@
     </div>
 </div>
 <!-- END: Section 4 -->
+<div id="select-lang">
+    <ul class="nav">
+        <li><a href="{% url set_lang %}?lang=th&next={{request.path}}"{% if LANGUAGE_CODE == 'th' %} class="active"{% endif %} title="Thai">TH</a></li> 
+        <li><a href="{% url set_lang %}?lang=en&next={{request.path}}"{% if LANGUAGE_CODE == 'en' %} class="active"{% endif %} title="English">EN</a></li>
+    </ul>
+</div>
     </body>
 </html>

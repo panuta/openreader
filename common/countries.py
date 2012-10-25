@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+from django.utils.translation import ugettext as _
 
 COUNTRY_CHOICES = (
     ('US', 'United States'),
@@ -252,4 +253,4 @@ COUNTRY_CHOICES = (
     ('ZW', 'Zimbabwe'),
 )
 
-COUNTRY_CHOICES_WITH_BLANK = [('', 'Select Country')] + list(COUNTRY_CHOICES)
+COUNTRY_CHOICES_WITH_BLANK = [('', _('Select Country'))] + list(COUNTRY_CHOICES)

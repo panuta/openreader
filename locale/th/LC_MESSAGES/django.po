@@ -518,6 +518,45 @@ msgstr "คุณต้องการที่จะลบบริษัทน
 msgid "Remove"
 msgstr "ลบ"
 
+msgid "Create your company account"
+msgstr "สร้างบัญชีบริษัทของคุณ"
+
+msgid "Company name"
+msgstr "ชื่อบริษัท"
+
+msgid "Company abbreviate name"
+msgstr "ชื่อย่อบริษัท"
+
+msgid "Company address"
+msgstr "ที่อยู่บริษัท"
+
+msgid "Country"
+msgstr "ประเทศ"
+
+msgid "Contact telephone number"
+msgstr "เบอร์โทรศัพท์ติดต่อ"
+
+msgid "Adminstrator firstname"
+msgstr "ชื่อผู้ดูแลระบบ"
+
+msgid "Adminstrator lastname"
+msgstr "นามสกุลผู้ดูแลระบบ"
+
+msgid "Adminstrator email"
+msgstr "อีเมลผู้ดูแลระบบ"
+
+msgid "Adminstrator password"
+msgstr "รหัสผ่านผู้ดูแลระบบ"
+
+msgid "I accept the terms of service and pricing conditions"
+msgstr "ฉันยอมรับเงื่อนไขและข้อตกลงในการใช้บริการ"
+
+msgid "Complete"
+msgstr "สร้างบริษัท"
+
+msgid "Select Country"
+msgstr "เลือกประเทศ"
+
 
 # ERROR ############################################################################
 msgid "This email is already exists."
@@ -531,6 +570,9 @@ msgstr "มีการส่งคำขอเพิ่มผู้ใช้ถ
 
 msgid "This user is already in this organization."
 msgstr "ผู้ใช้คนนี้อยู่ในระบบแล้ว"
+
+msgid "This company abbreviate name is already exists in the system."
+msgstr "ชื่อย่อบริษัทนี้ซ้ำกับชื่ออื่นๆ ในระบบ"
 
 
 # MESSAGE ############################################################################
