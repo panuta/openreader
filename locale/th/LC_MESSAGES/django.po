@@ -78,6 +78,12 @@ msgstr "ชื่อ"
 msgid "Lastname"
 msgstr "นามสกุล"
 
+msgid "Passport / ID Number"
+msgstr "เลขที่พาสปอร์ต / เลขที่บัตรประชาชน"
+
+msgid "Passport / ID Number Country"
+msgstr "ประเทศ"
+
 msgid "Welcome to the system"
 msgstr "ยินดีต้อนรับเข้าสู่ระบบ"
 

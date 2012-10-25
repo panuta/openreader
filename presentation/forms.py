@@ -77,6 +77,8 @@ class AddOrganizationUserForm(forms.Form):
     last_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'input-normal'}))
     password1 = forms.CharField(widget=forms.PasswordInput())
     password2 = forms.CharField(widget=forms.PasswordInput())
+    id_no = StrippedCharField(max_length=30, widget=forms.TextInput(attrs={'class':'input-normal'}))
+    country = forms.ChoiceField(choices=COUNTRY_CHOICES_WITH_BLANK, widget=forms.Select(attrs={'style':'width:200px;'}))
 
     groups = OrganizationGroupMultipleChoiceField(required=False)
 
@@ -143,6 +145,8 @@ class ClaimOrganizationUserForm(forms.Form):
     last_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'input-normal'}))
     password1 = forms.CharField(widget=forms.PasswordInput())
     password2 = forms.CharField(widget=forms.PasswordInput())
+    id_no = StrippedCharField(max_length=30, widget=forms.TextInput(attrs={'class':'input-normal'}))
+    country = forms.ChoiceField(choices=COUNTRY_CHOICES_WITH_BLANK, widget=forms.Select(attrs={'style':'width:200px;'}))
 
     def clean_password2(self):
         password1 = self.cleaned_data.get('password1', '')

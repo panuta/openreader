@@ -148,7 +148,6 @@ def register_organization(request):
             user_organization = UserOrganization.objects.create(user=profile.user, organization=organization, is_default=True)
             user_organization.is_admin = True
             user_organization.save()
-            # TODO CREATE INVOICE
 
             shortuuid.set_alphabet('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ')
             temp_uuid = shortuuid.uuid()[0:10]
@@ -214,8 +213,8 @@ def add_organization_user(request, organization_slug):
                 form.cleaned_data['first_name'], 
                 form.cleaned_data['last_name'], 
                 form.cleaned_data['password1'],
-                '12341234',
-                'KOR',
+                form.cleaned_data['id_no'],
+                form.cleaned_data['country'],
             )
             user_profile.user.is_staff = True
             user_profile.user.save()
@@ -418,8 +417,10 @@ def claim_user_invitation(request, invitation_key):
             first_name = form.cleaned_data['first_name']
             last_name = form.cleaned_data['last_name']
             password1 = form.cleaned_data['password1']
+            id_no = form.cleaned_data['id_no']
+            country = form.cleaned_data['country']
 
-            user_profile = UserProfile.objects.create_user_profile(invitation.email, first_name, last_name, password1, '12341234', 'KOR')
+            user_profile = UserProfile.objects.create_user_profile(invitation.email, first_name, last_name, password1, id_no, country)
             user_profile.user.is_staff = True
             user_profile.user.save()
             UserOrganizationInvitation.objects.claim_invitation(invitation, user_profile.user, True)
