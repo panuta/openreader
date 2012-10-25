@@ -585,6 +585,9 @@ def view_documents(request, organization_slug):
     if not get_permission_backend(request).can_view_organization(request.user, organization):
         raise Http404
 
+    UserOrganization.objects.filter(user=request.user).update(is_default=False)
+    UserOrganization.objects.filter(organization=organization, user=request.user).update(is_default=True)
+
     shelves = get_permission_backend(request).get_viewable_shelves(request.user, organization)
     uploadable_shelves = get_permission_backend(request).get_uploadable_shelves(request.user, organization)
     recent_publications = Publication.objects.filter(shelves__in=shelves).order_by('-uploaded')[:10]
