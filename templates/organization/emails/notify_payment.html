@@ -1,0 +1,11 @@
+{% load helper_tags %}
+
+Billing for the organization {{ organization.name }} service on Openreader from {{ invoice.start_date|format_date }} to {{ invoice.end_date|format_date }}.
+
+You can continue to use Openreader by pay the service with PAYPAL at the link below
+
+http://{{ settings.WEBSITE_DOMAIN }}/org/{{ organization.slug }}/payment/
+
+Sincery,
+
+{{settings.WEBSITE_NAME}}

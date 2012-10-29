@@ -424,9 +424,27 @@ def organization_notify_from_paypal(request):
         invoice.save()
 
         # TODO: CREATE NEW INVOICE FOR NEXT MONTH
+        shortuuid.set_alphabet('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+        temp_uuid = shortuuid.uuid()[0:10]
+        while OrganizationInvoice.objects.filter(invoice_code=temp_uuid).exists():
+            temp_uuid = shortuuid.uuid()[0:10]
+
+        OrganizationInvoice.objects.create(
+            organization = invoice.organization,
+            invoice_code = temp_uuid,
+            price = invoice.price,
+            total = invoice.total,
+            start_date = invoice.end_date + relativedelta(days=+1),
+            end_date = invoice.end_date + relativedelta(months=+1),
+            current_people = invoice.new_people,
+            new_people = invoice.new_people,
+        )
     elif ip == '173.0.82.126':
-        invoice.attempt = invoice.attempt + 1
-        invoice.save()
+        pass
+
+        # TODO: SAVE ATTEMPT FOR RECURRING SYSTEM
+        # invoice.attempt = invoice.attempt + 1
+        # invoice.save()
 
         # TODO: CHECK LIMIT ATTEMP == 5
 

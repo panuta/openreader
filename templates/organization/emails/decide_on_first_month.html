@@ -1,10 +1,10 @@
 {% spaceless %}
 
-The free trial will expire on {{organization.next_paid}}
+The free trial will expire on {{ expire_date }}
 
 You can continue to use Openreader by pay the service with PAYPAL at the link below
 
-http://{{ settings.WEBSITE_DOMAIN }}/org/{{ organization.organization_slug }})/payment/
+http://{{ settings.WEBSITE_DOMAIN }}/org/{{ organization.slug }}/payment/
 
 Sincery,
 

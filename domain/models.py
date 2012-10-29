@@ -113,7 +113,7 @@ class Organization(models.Model):
         return OrganizationShelf.objects.filter(organization=self).count()
 
     def get_latest_invoice(self):
-        return OrganizationInvoice.objects.latest('created')
+        return OrganizationInvoice.objects.filter(organization=self).latest('created')
 
     def update_latest_invoice(self):
         invoice = OrganizationInvoice.objects.latest('created')
@@ -530,3 +530,4 @@ admin.site.register(Organization)
 admin.site.register(OrganizationGroup)
 admin.site.register(UserOrganization)
 admin.site.register(UserGroup)
+admin.site.register(OrganizationInvoice)

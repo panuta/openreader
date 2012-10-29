@@ -216,17 +216,26 @@ BROKER_USER = "guest"
 BROKER_PASSWORD = "guest"
 BROKER_VHOST = "/"
 
+from celery.schedules import crontab
 from datetime import timedelta
 from domain import tasks
 
 CELERYBEAT_SCHEDULE = {
     'decide-on-first-month-everydays': {
         'task': 'tasks.send_notification_email_to_decide_on_first_month',
-        'schedule': timedelta(days=1),
+        'schedule': crontab(hour=0, minute=0),
     },
     # 'decide-on-first-month-test-every-10-seconds': {
     #     'task': 'tasks.send_notification_email_to_decide_on_first_month',
-    #     'schedule': timedelta(seconds=10),
+    #     'schedule': timedelta(seconds=30),
+    # },
+    'pay-service-everydays': {
+        'task': 'tasks.send_notification_email_to_pay_service',
+        'schedule': crontab(hour=0, minute=0),
+    },
+    # 'pay-service-test-every-30-seconds': {
+    #     'task': 'tasks.send_notification_email_to_pay_service',
+    #     'schedule': timedelta(seconds=30),
     # },
 }
 
