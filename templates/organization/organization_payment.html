@@ -35,9 +35,11 @@
             </tbody>
         </table>
 
+        {% if is_paymentable %}
         <div class="page_actions">
             {{form.sandbox}}
         </div>
+        {% endif %}
 
         <table class="table table-bordered">
             <thead>

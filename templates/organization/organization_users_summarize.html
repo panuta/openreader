@@ -34,7 +34,7 @@
             </ul>
 
             <h4>Total current user</h4>
-            <p>{{ invoice.new_people }}</p>
+            <p>{{ total_users }}</p>
             {% if invited_users %}
             <h4>Total invited user</h4>
             <p>{{ invited_users }}</p>
@@ -45,6 +45,8 @@
             <p>&#8364; {{ invoice.price }}</p>
             <h4>Expected total service price</h4>
             <p>&#8364; {{ new_price }}</p>
+            <span class="help-text">*Price will have effect on this billing.</span>
+            <span class="help-text">**Only price after remove user will have effect on the next billing.</span>
             
             <input type="hidden" name="emails" value="{{emails}}"/>
             <input type="hidden" name="groups" value="{{groups}}"/>

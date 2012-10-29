@@ -78,8 +78,6 @@ def ajax_remove_organization_user(request, organization_user_id):
         user_organization.is_active = False
         user_organization.save()
 
-        organization.update_latest_invoice()
-
         messages.success(request, _('Removed user from organization successful'))
         return response_json_success({'redirect_url':reverse('view_organization_users', args=[organization.slug])})
     else:

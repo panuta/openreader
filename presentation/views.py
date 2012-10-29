@@ -24,7 +24,7 @@ from django.views.decorators.http import require_GET, require_POST
 from private_files.views import get_file as private_files_get_file
 
 from common.shortcuts import response_json_success, response_json_error
-from common.utilities import format_abbr_datetime, humanize_file_size
+from common.utilities import format_abbr_datetime, humanize_file_size, format_abbr_date
 
 from domain import functions as domain_functions
 from domain.models import *
@@ -229,6 +229,7 @@ def summarize_organization_users(request, organization_slug, action=None, contex
     groups = []
     user_organization_id = None
     invited_users = UserOrganizationInvitation.objects.filter(organization=organization).count()
+    total_users = UserOrganization.objects.filter(organization=organization, is_active=True).count()
 
     # LINK FROM OTHER ACTION
     if action == 'invite':
@@ -248,7 +249,7 @@ def summarize_organization_users(request, organization_slug, action=None, contex
         action_title = 'Bringback user'
         emails = request.POST['emails']
         emails = [ request.POST['emails'].lstrip("[u'").rstrip("']") ]
-        new_user_count = invoice.new_people + invited_users + 1
+        new_user_count = invoice.new_people + invited_users
         action = 'bringback-user-confirm'
         user_organization_id = request.POST['user_organization_id']
 
@@ -281,8 +282,6 @@ def summarize_organization_users(request, organization_slug, action=None, contex
         user_organization.is_active = False
         user_organization.save()
 
-        organization.update_latest_invoice()
-
         messages.success(request, _('Removed user from organization successful'))
         return redirect('view_organization_users', organization_slug=organization.slug)
     elif action == 'bringback-user-confirm':
@@ -314,6 +313,7 @@ def summarize_organization_users(request, organization_slug, action=None, contex
         'invoice': invoice,
         'new_price': new_user_count * invoice.price,
         'invited_users': invited_users,
+        'total_users': total_users,
     })
 
 
@@ -369,7 +369,7 @@ def organization_make_payment(request, organization_slug):
         "amount": invoice.price,
         "quantity": invoice.new_people,
         "currency_code": invoice.price_unit,
-        "item_name": "Billing Month",
+        "item_name": "Service price for Openreader from %s to %s" % (format_abbr_date(invoice.start_date), format_abbr_date(invoice.end_date)),
         "invoice": invoice.invoice_code,
         "notify_url": request.build_absolute_uri(reverse('organization_notify_from_paypal')),
         "return_url": request.build_absolute_uri(reverse('organization_return_from_paypal')),
@@ -383,6 +383,7 @@ def organization_make_payment(request, organization_slug):
         'organization': organization,
         'form': form,
         'invoice': invoice,
+        'is_paymentable': datetime.date.today() > invoice.end_date,
         'payments': OrganizationPaypalPayment.objects.filter(invoice__organization__slug=organization_slug),
     })
 
