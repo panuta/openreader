@@ -220,6 +220,103 @@ def view_organization_users_groups(request, organization_slug):
     )
 
 
+@login_required
+def summarize_organization_users(request, organization_slug, action=None, context={}):
+    organization = get_object_or_404(Organization, slug=organization_slug)
+    invoice = organization.get_latest_invoice()
+
+    action = action or request.POST.get('action')
+    groups = []
+    user_organization_id = None
+    invited_users = UserOrganizationInvitation.objects.filter(organization=organization).count()
+
+    # LINK FROM OTHER ACTION
+    if action == 'invite':
+        action_title = 'Invite user'
+        emails = context['emails']
+        groups_queryset = context['groups']
+        groups = ','.join(str(group.id) for group in groups_queryset)
+        new_user_count = invoice.new_people + invited_users + len(emails)
+        action = 'invite-confirm'
+    elif action == 'remove-user':
+        action_title = 'Remove user'
+        emails = [ request.POST['emails'].lstrip("[u'").rstrip("']") ]
+        new_user_count = invoice.new_people + invited_users - 1
+        action = 'remove-user-confirm'
+        user_organization_id = request.POST['user_organization_id']
+    elif action == 'bringback-user':
+        action_title = 'Bringback user'
+        emails = request.POST['emails']
+        emails = [ request.POST['emails'].lstrip("[u'").rstrip("']") ]
+        new_user_count = invoice.new_people + invited_users + 1
+        action = 'bringback-user-confirm'
+        user_organization_id = request.POST['user_organization_id']
+
+    # CONFIRM ACTION
+    elif action == 'invite-confirm':
+        emails = request.POST['emails'].lstrip('[').rstrip(']')
+        group_list = request.POST['groups']
+
+        groups = []
+        if group_list:
+            for group_id in group_list.split(','):
+                group = get_object_or_404(OrganizationGroup, id=group_id)
+                groups.append(group)
+
+        for email in emails.split(','):
+            email = email.strip().lstrip('u\'').rstrip('\'')
+            invitation = UserOrganizationInvitation.objects.create_invitation(email, organization, groups, request.user)
+            invitation.send_invitation_email()
+
+        messages.success(request, _('Sent user invtitation successful, waiting for user accept invitation'))
+        return redirect('view_organization_users', organization_slug=organization.slug)
+    elif action == 'remove-user-confirm':
+        emails = request.POST['emails']
+        emails = emails.lstrip('[u\'').rstrip('\']')
+        user_organization = get_object_or_404(UserOrganization, organization=organization, user__email=emails)
+
+        if not get_permission_backend(request).can_manage_user(request.user, organization):
+            raise Http404
+
+        user_organization.is_active = False
+        user_organization.save()
+
+        organization.update_latest_invoice()
+
+        messages.success(request, _('Removed user from organization successful'))
+        return redirect('view_organization_users', organization_slug=organization.slug)
+    elif action == 'bringback-user-confirm':
+        emails = request.POST['emails']
+        emails = emails.lstrip('[u\'').rstrip('\']')
+        user_organization = get_object_or_404(UserOrganization, organization=organization, user__email=emails)
+
+        if not get_permission_backend(request).can_manage_user(request.user, organization):
+            raise Http404
+
+        user_organization.is_active = True
+        user_organization.save()
+
+        organization.update_latest_invoice()
+
+        messages.success(request, _('Brought user back to organization successful'))
+        return redirect('view_organization_users', organization_slug=organization.slug)
+    else:
+        raise Http404
+
+
+    return render(request, 'organization/organization_users_summarize.html', {
+        'organization': organization,
+        'action': action,
+        'action_title': action_title,
+        'emails': emails,
+        'groups': groups,
+        'user_organization_id': user_organization_id,
+        'invoice': invoice,
+        'new_price': new_user_count * invoice.price,
+        'invited_users': invited_users,
+    })
+
+
 # Add User Directly (Not sending email invitation)
 @login_required
 def add_organization_user(request, organization_slug):
@@ -367,16 +464,7 @@ def invite_organization_user(request, organization_slug):
     if request.method == 'POST':
         form = InviteOrganizationUserForm(organization, request.POST)
         if form.is_valid():
-            emails = form.cleaned_data['emails']
-            groups = form.cleaned_data['groups']        
-
-            for email in ','.join(emails).split(','):
-                invitation = UserOrganizationInvitation.objects.create_invitation(email, organization, groups, request.user)
-                invitation.send_invitation_email()
-
-            messages.success(request, _('Sent user invtitation successful, waiting for user accept invitation'))
-            return redirect('view_organization_users', organization_slug=organization.slug)
-
+            return summarize_organization_users(request, organization_slug=organization_slug, action='invite', context={'emails': form.cleaned_data['emails'], 'groups': form.cleaned_data['groups']})
     else:
         form = InviteOrganizationUserForm(organization)
 
