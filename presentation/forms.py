@@ -119,7 +119,7 @@ class InviteOrganizationUserForm(forms.Form):
         
         for email in emails:
             if not email_re.match(email):
-                raise forms.ValidationError(_('%s is invalid email.'))
+                raise forms.ValidationError(_('%s is invalid email.') % email)
 
             if UserOrganizationInvitation.objects.filter(email=email, organization=self.organization).exists():
                 raise forms.ValidationError(ugettext('There has already invited to this user.'))

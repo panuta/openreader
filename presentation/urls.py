@@ -23,8 +23,9 @@ urlpatterns = patterns('presentation.views',
 
     url(r'^user/(?P<organization_user_id>\d+)/edit/$', 'edit_organization_user', name='edit_organization_user'),
 
-    # Add User Directly
+    # Manage User
     url(r'^org/(?P<organization_slug>\w+)/manage/users/add/$', 'add_organization_user', name='add_organization_user'),
+    url(r'^org/(?P<organization_slug>\w+)/manage/users/summarize/$', 'summarize_organization_users', name='summarize_organization_users'),
 
     # Payment
     url(r'^org/(?P<organization_slug>\w+)/payment/$', 'organization_make_payment', name='organization_make_payment'),
