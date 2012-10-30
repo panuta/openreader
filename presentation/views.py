@@ -429,10 +429,10 @@ def organization_notify_from_paypal(request):
         # REDUCE MONTLY REMAIN
         price_rate = invoice.price
         organization = invoice.organization
-        if organization.contract_type == Organization.MONTHLY_CONTRACT:
+        if organization.contract_type == Organization.YEARLY_CONTRACT:
             organization.contract_month_remain -= 1
             if organization.contract_month_remain == 1:
-                organization.contract_type = Organization.YEARLY_CONTRACT
+                organization.contract_type = Organization.MONTHLY_CONTRACT
                 price_rate = 6.00
             organization.save()
 
