@@ -402,17 +402,56 @@ table tr.checked td {
   margin-bottom: 0;
   border: none;
 }
-.organization_users_page .nav-tabs li.active a {
+.organization_users_page .nav-tabs ul {
+  border-bottom: none;
+}
+.organization_users_page .nav-tabs ul li.active a {
   border: none;
-  background-color: rgba(252, 251, 250, 0.27);
+  background-color: rgba(252, 251, 250, 0.27) !important;
+}
+.organization_users_page .nav-tabs ul li.active a:hover {
+  border: none;
+  background-color: rgba(252, 251, 250, 0.27) !important;
 }
 .organization_users_page .tab-content {
+  border: 1px dashed rgba(150, 124, 82, 0.19);
   background-color: rgba(252, 251, 250, 0.27);
   padding: 20px 10px 0;
+}
+.organization_users_page .tab-content table {
+  border: none;
 }
 .organization_users_page .tab-content table thead {
   background-color: #30281E;
   color: white;
+}
+.organization_users_page .tab-content table thead tr th {
+  text-align: center;
+}
+.organization_users_page .tab-content table tbody tr,
+.organization_users_page .tab-content table td {
+  border-top: none;
+  border-left: none;
+  padding: 13px 40px;
+}
+.organization_users_page .tab-content table tbody tr:hover td,
+.organization_users_page .tab-content table td:hover td,
+.organization_users_page .tab-content table tbody tr:hover tr,
+.organization_users_page .tab-content table td:hover tr {
+  background-color: rgba(150, 124, 82, 0.19);
+  cursor: pointer;
+}
+.nav-tabs > .active > a,
+.nav-tabs > .active > a:hover {
+  border: 1px dashed rgba(150, 124, 82, 0.19);
+  border-bottom: none;
+  background-color: rgba(252, 251, 250, 0.27) !important;
+}
+.nav-tabs > li > a {
+  border: none;
+}
+.nav-tabs > li > a:hover {
+  background-color: rgba(252, 251, 250, 0.27);
 }
 /* Sidebar */
 .content-sidebar .buttons {

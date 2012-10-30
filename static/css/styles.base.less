@@ -535,26 +535,55 @@ table {
     .nav-tabs { 
         margin-bottom: 0; 
         border: none;
-        li { 
-            &.active {
-                a {
-                    border: none;
-                    background-color:  rgba(252, 251, 250, 0.27);
+        ul {
+            border-bottom: none;
+            li { 
+                &.active {
+                    a {
+                        border: none;
+                        background-color:  rgba(252, 251, 250, 0.27) !important;
+                        &:hover {
+                            border: none;
+                            background-color:  rgba(252, 251, 250, 0.27) !important;
+                        }
+                    }
                 }
             }
-            
-
         }
     }
     .tab-content {
+        border: 1px dashed rgba(150, 124, 82, 0.19);
         background-color: rgba(252, 251, 250, 0.27);
         padding: 20px 10px 0;
         table {
+            border: none;
             thead {
                 background-color: #30281E;
                 color: white;
+                tr th { text-align: center; }
+            }
+            tbody tr, td {
+                border-top: none;
+                border-left: none;
+                padding: 13px 40px;
+                &:hover {
+                    td, tr {
+                        background-color: rgba(150, 124, 82, 0.19);
+                        cursor: pointer;
+                    }
+                }
             }
         }
     }
-
+}
+.nav-tabs > .active > a, .nav-tabs > .active > a:hover {
+    border: 1px dashed rgba(150, 124, 82, 0.19);
+    border-bottom: none;
+    background-color:  rgba(252, 251, 250, 0.27) !important;
+}
+.nav-tabs > li > a {
+    border: none;
+    &:hover {
+        background-color: rgba(252, 251, 250, 0.27);
+    }
 }
