@@ -85,15 +85,13 @@ body {
 
 }
 .navbar {
-    height:50px;
     position:relative;
     .navbar-inner {
         background:url(/static/images/bg-topbar.png);
-        padding-top:5px;
-        padding-bottom: 5px;
-
+        padding: 10px 0;
         .container {
             margin:0px;
+            padding: 5px 0;
             width:auto;
             border-bottom: 1px dashed #696161;
             border-top: 1px dashed #696161;
@@ -170,30 +168,26 @@ body {
 .container-fluid {
     .content {
         padding:1px;
-        // border:1px solid #EEE;
-        // background-color:#FFF;
         border-radius: 10px;
-        background: -moz-linear-gradient(90deg, #EFECE0 0%, #FDFAED 66%);
-        background: -webkit-linear-gradient(90deg, #EFECE0 0%, #FDFAED 66%);
-        background: -o-linear-gradient(90deg, #EFECE0 0%, #FDFAED 66%);
-        background: -ms-linear-gradient(90deg, #EFECE0 0%, #FDFAED 66%);
-        background: linear-gradient(90deg, #EFECE0 0%, #FDFAED 66%);
-        box-shadow: 0 0 6px #B6B6B6;
-        -webkit-box-shadow: 0 0 6px #B6B6B6;
+        background: -moz-linear-gradient(90deg, rgba(239, 236, 224, 0.37) 0%, rgba(253, 250, 237, 0.44) 66%);
+        background: -webkit-linear-gradient(90deg, rgba(239, 236, 224, 0.37) 0%, rgba(253, 250, 237, 0.44) 66%);
+        background: -o-linear-gradient(90deg,rgba(239, 236, 224, 0.37) 0%, rgba(253, 250, 237, 0.44) 66%);
+        background: -ms-linear-gradient(90deg,rgba(239, 236, 224, 0.37) 0%, rgba(253, 250, 237, 0.44) 66%);
+        background: linear-gradient(90deg, rgba(239, 236, 224, 0.37) 0%, rgba(253, 250, 237, 0.44) 66%);
+        box-shadow: 0 0 6px rgba(117, 111, 111, 0.68);
+        -webkit-box-shadow: 0 0 6px 0 rgba(117, 111, 111, 0.68);
         border-radius: 3px;
         -webkit-border-radius: 3px;
 
         .inner-content {
-            // border:1px solid #BBB;
             padding:15px;
-            // background-color:#FFF;
+            background-color: rgba(252, 251, 250, 0.27);
         }
     }
 
     h2 {
         margin-bottom:20px;
         padding-bottom:7px;
-        border-bottom:3px double #BBB;
         font-size:1.8em;
 
         span {
@@ -536,4 +530,31 @@ table {
             }
         }
     }
+}
+.organization_users_page {
+    .nav-tabs { 
+        margin-bottom: 0; 
+        border: none;
+        li { 
+            &.active {
+                a {
+                    border: none;
+                    background-color:  rgba(252, 251, 250, 0.27);
+                }
+            }
+            
+
+        }
+    }
+    .tab-content {
+        background-color: rgba(252, 251, 250, 0.27);
+        padding: 20px 10px 0;
+        table {
+            thead {
+                background-color: #30281E;
+                color: white;
+            }
+        }
+    }
+
 }
