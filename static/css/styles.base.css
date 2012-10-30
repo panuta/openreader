@@ -42,16 +42,15 @@ body {
   background-color: transparent;
 }
 .navbar {
-  height: 50px;
   position: relative;
 }
 .navbar .navbar-inner {
   background: url(/static/images/bg-topbar.png);
-  padding-top: 5px;
-  padding-bottom: 5px;
+  padding: 10px 0;
 }
 .navbar .navbar-inner .container {
   margin: 0px;
+  padding: 5px 0;
   width: auto;
   border-bottom: 1px dashed #696161;
   border-top: 1px dashed #696161;
@@ -112,23 +111,23 @@ body {
 .container-fluid .content {
   padding: 1px;
   border-radius: 10px;
-  background: -moz-linear-gradient(90deg, #efece0 0%, #fdfaed 66%);
-  background: -webkit-linear-gradient(90deg, #efece0 0%, #fdfaed 66%);
-  background: -o-linear-gradient(90deg, #efece0 0%, #fdfaed 66%);
-  background: -ms-linear-gradient(90deg, #efece0 0%, #fdfaed 66%);
-  background: linear-gradient(90deg, #efece0 0%, #fdfaed 66%);
-  box-shadow: 0 0 6px #B6B6B6;
-  -webkit-box-shadow: 0 0 6px #B6B6B6;
+  background: -moz-linear-gradient(90deg, rgba(239, 236, 224, 0.37) 0%, rgba(253, 250, 237, 0.44) 66%);
+  background: -webkit-linear-gradient(90deg, rgba(239, 236, 224, 0.37) 0%, rgba(253, 250, 237, 0.44) 66%);
+  background: -o-linear-gradient(90deg, rgba(239, 236, 224, 0.37) 0%, rgba(253, 250, 237, 0.44) 66%);
+  background: -ms-linear-gradient(90deg, rgba(239, 236, 224, 0.37) 0%, rgba(253, 250, 237, 0.44) 66%);
+  background: linear-gradient(90deg, rgba(239, 236, 224, 0.37) 0%, rgba(253, 250, 237, 0.44) 66%);
+  box-shadow: 0 0 6px rgba(117, 111, 111, 0.68);
+  -webkit-box-shadow: 0 0 6px 0 rgba(117, 111, 111, 0.68);
   border-radius: 3px;
   -webkit-border-radius: 3px;
 }
 .container-fluid .content .inner-content {
   padding: 15px;
+  background-color: rgba(252, 251, 250, 0.27);
 }
 .container-fluid h2 {
   margin-bottom: 20px;
   padding-bottom: 7px;
-  border-bottom: 3px double #BBB;
   font-size: 1.8em;
 }
 .container-fluid h2 span {
@@ -398,4 +397,59 @@ table tr.checked td {
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   border-radius: 4px;
+}
+.organization_users_page .nav-tabs {
+  margin-bottom: 0;
+  border: none;
+}
+.organization_users_page .nav-tabs ul {
+  border-bottom: none;
+}
+.organization_users_page .nav-tabs ul li.active a {
+  border: none;
+  background-color: rgba(252, 251, 250, 0.27) !important;
+}
+.organization_users_page .nav-tabs ul li.active a:hover {
+  border: none;
+  background-color: rgba(252, 251, 250, 0.27) !important;
+}
+.organization_users_page .tab-content {
+  border: 1px dashed rgba(150, 124, 82, 0.19);
+  background-color: rgba(252, 251, 250, 0.27);
+  padding: 20px 10px 0;
+}
+.organization_users_page .tab-content table {
+  border: none;
+}
+.organization_users_page .tab-content table thead {
+  background-color: #30281E;
+  color: white;
+}
+.organization_users_page .tab-content table thead tr th {
+  text-align: center;
+}
+.organization_users_page .tab-content table tbody tr,
+.organization_users_page .tab-content table td {
+  border-top: none;
+  border-left: none;
+  padding: 13px 40px;
+}
+.organization_users_page .tab-content table tbody tr:hover td,
+.organization_users_page .tab-content table td:hover td,
+.organization_users_page .tab-content table tbody tr:hover tr,
+.organization_users_page .tab-content table td:hover tr {
+  background-color: rgba(150, 124, 82, 0.19);
+  cursor: pointer;
+}
+.nav-tabs > .active > a,
+.nav-tabs > .active > a:hover {
+  border: 1px dashed rgba(150, 124, 82, 0.19);
+  border-bottom: none;
+  background-color: rgba(252, 251, 250, 0.27) !important;
+}
+.nav-tabs > li > a {
+  border: none;
+}
+.nav-tabs > li > a:hover {
+  background-color: rgba(252, 251, 250, 0.27);
 }
