@@ -1,0 +1,11 @@
+{% load helper_tags %}
+
+Receipt for the organization {{ organization.name }} service on Openreader from {{ invoice.start_date|format_date }} to {{ invoice.end_date|format_date }}.
+
+Price rate: {{ invoice.price }}
+Users: {{ invoice.new_people }}
+Total: {{ invoice.total }}
+
+Thank you for using Openreader,
+
+{{ settings.WEBSITE_NAME }}

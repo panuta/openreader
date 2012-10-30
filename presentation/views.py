@@ -439,6 +439,31 @@ def organization_notify_from_paypal(request):
             current_people = invoice.new_people,
             new_people = invoice.new_people,
         )
+
+        # TODO: SEND RECIEPT EMAIL
+        html_email_body = render_to_string('organization/emails/payment_receipt.html', {
+            'organization': organization,
+            'settings': settings,
+            'invoice': invoice,
+        })
+        text_email_body = strip_tags(html_email_body)
+        subject = 'Reciept for %s on Openreader from %s to %s' % (organization.name, format_abbr_date(invoice.start_date), format_abbr_date(invoice.end_date))
+        send_to_emails = UserOrganization.objects.filter(organization=organization, is_admin=True).values_list('user__email', flat=True)
+
+        msg = EmailMultiAlternatives(
+            subject,
+            text_email_body,
+            settings.EMAIL_ADDRESS_NO_REPLY,
+            send_to_emails
+        )
+        msg.attach_alternative(html_email_body, "text/html")
+
+        try:
+            msg.send()
+            print True
+        except:
+            import sys
+            print sys.exc_info()
     elif ip == '173.0.82.126':
         pass
 
