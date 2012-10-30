@@ -65,6 +65,9 @@ def list_publication(request):
             user_organization = UserOrganization.objects.get(organization__slug=organization, user=user_profile.user)
         except:
             raise Http404
+
+        if not user_organization.is_active:
+            raise Http403
         
         result['user_profile'] = model_to_dict(user_profile)
         result['organization'] = model_to_dict(user_organization.organization)
@@ -113,7 +116,7 @@ def list_user_organization(request):
     email = _get_email(request)
     user_profile = UserProfile.objects.get(user__email=email)
     user = user_profile.user
-    user_organization = UserOrganization.objects.filter(user=user)
+    user_organization = UserOrganization.objects.filter(user=user, is_active=True)
     
     result = {}
     result['user_profile'] = model_to_dict(user_profile)
@@ -132,6 +135,11 @@ def list_user_organization(request):
 def request_download_publication(request, publication_uid):
     publication = get_object_or_404(Publication, uid=publication_uid)
     user = _extract_user(request)
+
+    try:
+        user_organization = UserOrganization.objects.get(organization=publication.organization, user=user_profile.user, is_active=True)
+    except:
+        raise Http403
 
     if not get_permission_backend(request).get_publication_access(user, publication):
         raise Http403
@@ -160,3 +168,26 @@ def user_config_shelves(request):
         OrganizationShelf.objects.unarchive(user=request.user, shelf_ids=shelf_ids)
 
     return HttpResponse('Success')
+
+
+@logged_in_or_basicauth()
+def api_request_secret_key(request):
+    email = _get_email(request)
+    user_profile = UserProfile.objects.get(user__email=email)
+
+    result = {}
+    result['user_profile'] = model_to_dict(user_profile)
+
+    from Crypto.Cipher import AES
+    SECRET_KEY = 'STOPCUTTINGTREESAVETHEWORLDWORLD'
+    IV_KEY = 'DJANGO14ISBETTER'
+    obj = AES.new(SECRET_KEY, AES.MODE_CBC, IV_KEY)
+    message = user_profile.user.username
+    while len(message) < 16:
+        message += message
+    message = message[:16]
+    ciphertext = obj.encrypt(message)
+
+    result['key'] = unicode(ciphertext, 'utf-16')
+
+    return HttpResponse(simplejson.dumps(result))
