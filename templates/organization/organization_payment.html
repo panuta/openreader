@@ -40,25 +40,6 @@
             {{form.sandbox}}
         </div>
         {% endif %}
-
-        <table class="table table-bordered">
-            <thead>
-            <tr>
-                <th>Organization name</th>
-                <th>Invoice code</th>
-                <th>Paid</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for payment in payments %}
-                <tr>
-                    <td>{{ payment.invoice.organization.name }}</td>
-                    <td>{{ payment.invoice.invoice_code }}</td>
-                    <td>{{ payment.payment_date }}</td>    
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
     </div></div>
 </div></div>
 {% endblock %}

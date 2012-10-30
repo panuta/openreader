@@ -20,7 +20,7 @@
 
         <h2>Summarize user</h2>
         
-        <h4>{{ action_title }}</h4>
+        <h4 class="action_title">{{ action_title }}</h4>
 
         <form method="POST" action="{% url summarize_organization_users organization.slug %}">
             {% csrf_token %}
@@ -33,20 +33,19 @@
                 {% endfor %}
             </ul>
 
-            <h4>Total current user</h4>
-            <p>{{ total_users }}</p>
+            <h4 class="total_current_user_title">Total current user</h4>
+            <p class="total_current_user">{{ total_users }}</p>
             {% if invited_users %}
-            <h4>Total invited user</h4>
-            <p>{{ invited_users }}</p>
+            <h4 class="total_invited_user">Total invited user</h4>
+            <p class="total_invited_user">{{ invited_users }}</p>
             {% endif %}
-            <h4>Change</h4>
-            <p>{% if action == 'remove-user-confirm' %}-{% else %}+{% endif %}{{ emails|length }}</p>
-            <h4>Current total service price</h4>
-            <p>&#8364; {{ invoice.price }}</p>
-            <h4>Expected total service price</h4>
-            <p>&#8364; {{ new_price }}</p>
-            <span class="help-text">*Price will have effect on this billing.</span>
-            <span class="help-text">**Only price after remove user will have effect on the next billing.</span>
+            <h4 class="total_changed">Change</h4>
+            <p class="total_changed">{% if action == 'remove-user-confirm' %}-{% else %}+{% endif %}{{ emails|length }}</p>
+            <h4 class="total_current_price">Current total service price</h4>
+            <p class="total_current_price">&#8364; {{ invoice.price }}</p>
+            <h4 class="total_expected_price">Expected total service price</h4>
+            <p class="total_expected_price">&#8364; {{ new_price }}</p>
+            <span class="help-text">*Price will have effect on this billing according to the <a href="{{STATIC_URL}}pdf/privacy-policy.pdf">Terms and Conditions.</a></span>
             
             <input type="hidden" name="emails" value="{{emails}}"/>
             <input type="hidden" name="groups" value="{{groups}}"/>
