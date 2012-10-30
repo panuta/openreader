@@ -445,13 +445,13 @@ def organization_notify_from_paypal(request):
 
         # TODO: SEND RECIEPT EMAIL
         html_email_body = render_to_string('organization/emails/payment_receipt.html', {
-            'organization': organization,
+            'organization': invoice.organization,
             'settings': settings,
             'invoice': invoice,
         })
         text_email_body = strip_tags(html_email_body)
-        subject = 'Reciept for %s on Openreader from %s to %s' % (organization.name, format_abbr_date(invoice.start_date), format_abbr_date(invoice.end_date))
-        send_to_emails = UserOrganization.objects.filter(organization=organization, is_admin=True).values_list('user__email', flat=True)
+        subject = 'Receipt for %s on Openreader from %s to %s' % (invoice.organization.name, format_abbr_date(invoice.start_date), format_abbr_date(invoice.end_date))
+        send_to_emails = UserOrganization.objects.filter(organization=invoice.organization, is_admin=True).values_list('user__email', flat=True)
 
         msg = EmailMultiAlternatives(
             subject,
