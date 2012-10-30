@@ -12,11 +12,14 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.models import User
+from django.core.mail import EmailMultiAlternatives
 from django.core.files.uploadedfile import UploadedFile
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
@@ -418,7 +421,7 @@ def organization_notify_from_paypal(request):
 
     if request.POST.get('payment_status') == 'Completed' and \
        ip == '173.0.82.126' and \
-       float(request.POST.get('mc_gross', '0')) == reservation.total:
+       float(request.POST.get('mc_gross', '0')) == invoice.total:
 
         invoice.payment_status = 'PAID'
         invoice.save()
