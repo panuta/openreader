@@ -9,7 +9,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 WEBSITE_NAME = 'OpenReader'
-WEBSITE_DOMAIN = 'https://127.0.0.1:9001'
+WEBSITE_DOMAIN = 'http://127.0.0.1:8000'
 
 DATABASES = {
     'default': {
@@ -43,11 +43,6 @@ SITE_ID = 1
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
-
-# SSL
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'https')
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
 
 MEDIA_ROOT = os.path.join(base_path, 'media/')
 MEDIA_URL = '/media/'
