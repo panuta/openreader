@@ -233,10 +233,11 @@ CELERYBEAT_SCHEDULE = {
         'task': 'tasks.send_notification_email_to_pay_service',
         'schedule': crontab(hour=0, minute=0),
     },
-    # 'pay-service-test-every-30-seconds': {
-    #     'task': 'tasks.send_notification_email_to_pay_service',
-    #     'schedule': timedelta(seconds=30),
-    # },
+    'pay-service-test-everyhour': {
+        'task': 'tasks.send_notification_email_to_pay_service',
+        'schedule': crontab(hour='*/1', minute=0),
+        'args': (True,),
+    },
 }
 
 ########## Django Private Files ##########

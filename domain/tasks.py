@@ -114,14 +114,17 @@ def send_notification_email_to_decide_on_first_month():
 
 
 @task(name='tasks.send_notification_email_to_pay_service')
-def send_notification_email_to_pay_service():
+def send_notification_email_to_pay_service(is_test=False):
     from domain.models import Organization, UserOrganization
     organizations = Organization.objects.all()
 
     for organization in organizations:
         invoice = organization.get_latest_invoice()
 
-        diff_date_days = (datetime.date.today() - invoice.end_date).days
+        if is_test:
+            diff_date_days = datetime.datetime.now().hour - invoice.attempt
+        else:
+            diff_date_days = (datetime.date.today() - invoice.end_date).days
         if diff_date_days in [1, 4, 7, 10, 13, 16]:
             html_email_body = render_to_string('organization/emails/notify_payment.html', {
                 'organization': organization,
