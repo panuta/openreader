@@ -143,7 +143,7 @@ def register_organization(request):
         contract_type = {
             'title': '1 Year contract',
             'price': 6.00,
-            'contract_month_remain': 12,
+            'contract_month_remain': 13,
             'contract_type_code': Organization.YEARLY_CONTRACT,
         }
     else:
@@ -426,6 +426,16 @@ def organization_notify_from_paypal(request):
         invoice.payment_status = 'PAID'
         invoice.save()
 
+        # REDUCE MONTLY REMAIN
+        price_rate = invoice.price
+        organization = invoice.organization
+        if organization.contract_type == Organization.MONTHLY_CONTRACT:
+            organization.contract_month_remain -= 1
+            if organization.contract_month_remain == 1:
+                organization.contract_type = Organization.YEARLY_CONTRACT
+                price_rate = 6.00
+            organization.save()
+
         # TODO: CREATE NEW INVOICE FOR NEXT MONTH
         shortuuid.set_alphabet('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ')
         temp_uuid = shortuuid.uuid()[0:10]
@@ -435,7 +445,7 @@ def organization_notify_from_paypal(request):
         OrganizationInvoice.objects.create(
             organization = invoice.organization,
             invoice_code = temp_uuid,
-            price = invoice.price,
+            price = price_rate,
             total = invoice.total,
             start_date = invoice.end_date + relativedelta(days=+1),
             end_date = invoice.end_date + relativedelta(months=+1),

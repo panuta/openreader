@@ -191,6 +191,9 @@ class OrganizationInvoice(models.Model):
     current_people = models.PositiveIntegerField(default=1)
     new_people = models.PositiveIntegerField(default=1)
 
+    def __unicode__(self):
+        return '%s : %s' % (self.organization.slug, self.invoice_code)
+
 
 class OrganizationPaypalPayment(models.Model):
     invoice = models.ForeignKey(OrganizationInvoice)
