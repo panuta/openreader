@@ -26,7 +26,7 @@
 
 
 {"pk": 1, "model": "domain.organizationinvoice", "fields": {"organization": 1, "invoice_code": "ABCDEFGH", "price": 7.5, "price_unit": "EUR", "total": 15.0, "current_people": 2, "new_people": 2, "start_date": "2011-12-01", "end_date": "2011-12-31", "created": "2011-12-01 00:00:00+07:00"}},
-{"pk": 1, "model": "domain.organizationinvoice", "fields": {"organization": 2, "invoice_code": "QWERTYUI", "price": 7.5, "price_unit": "EUR", "total": 7.5, "current_people": 1, "new_people": 1, "start_date": "2011-12-01", "end_date": "2011-12-31", "created": "2011-12-01 00:00:00+07:00"}},
+{"pk": 2, "model": "domain.organizationinvoice", "fields": {"organization": 2, "invoice_code": "QWERTYUI", "price": 7.5, "price_unit": "EUR", "total": 7.5, "current_people": 1, "new_people": 1, "start_date": "2011-12-01", "end_date": "2011-12-31", "created": "2011-12-01 00:00:00+07:00"}},
 
 
 {"pk": 1, "model": "domain.organizationgroup", "fields": {"organization": 1, "name": "Administrator", "description": ""}},
