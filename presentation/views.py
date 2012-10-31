@@ -323,6 +323,9 @@ def summarize_organization_users(request, organization_slug, action=None, contex
 # Add User Directly (Not sending email invitation)
 @login_required
 def add_organization_user(request, organization_slug):
+    if not settings.DEBUG:
+        raise Http404
+
     organization = get_object_or_404(Organization, slug=organization_slug)
 
     if not get_permission_backend(request).can_manage_user(request.user, organization):
