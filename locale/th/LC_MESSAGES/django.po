@@ -548,8 +548,11 @@ msgstr "อีเมลผู้ดูแลระบบ"
 msgid "Adminstrator password"
 msgstr "รหัสผ่านผู้ดูแลระบบ"
 
-msgid "I accept the terms of service and pricing conditions"
-msgstr "ฉันยอมรับเงื่อนไขและข้อตกลงในการใช้บริการ"
+msgid "I accept "
+msgstr "ฉันยอมรับ"
+
+msgid "the terms of service and pricing conditions"
+msgstr "เงื่อนไขและข้อตกลงในการใช้บริการ"
 
 msgid "Complete"
 msgstr "สร้างบริษัท"

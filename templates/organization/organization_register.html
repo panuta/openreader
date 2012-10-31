@@ -95,7 +95,7 @@
                 </div>
                 <div class="gradient-box" id="register-action">
                     <div class="title">
-                        <input type="checkbox" name="agree" value="yes"> {% trans 'I accept the terms of service and pricing conditions' %}</input><br />
+                        <input type="checkbox" name="agree" value="yes"> {% trans 'I accept ' %}<a href="{{STATIC_URL}}pdf/privacy-policy.pdf">{% trans 'the terms of service and pricing conditions' %}</a></input><br />
                     </div>
                     <button name="submitRegister" type="submit">{% trans 'Complete' %}</button>
                 </div>
