@@ -465,15 +465,18 @@ def organization_notify_from_paypal(request):
         while OrganizationInvoice.objects.filter(invoice_code=temp_uuid).exists():
             temp_uuid = shortuuid.uuid()[0:10]
 
+        new_billing_scope_date = invoice.end_date + relativedelta(days=1)
+        new_user_count = UserOrganization.objects.filter(organization=organization, is_active=True).count() + UserOrganization.objects.filter(organization=organization, is_active=False, modified__gt=new_billing_scope_date).count()
+
         OrganizationInvoice.objects.create(
             organization = invoice.organization,
             invoice_code = temp_uuid,
             price = price_rate,
-            total = invoice.total,
+            total = new_user_count * price_rate,
             start_date = invoice.end_date + relativedelta(days=+1),
             end_date = invoice.end_date + relativedelta(months=+1),
             current_people = invoice.new_people,
-            new_people = invoice.new_people,
+            new_people = new_user_count,
         )
 
         # TODO: SEND RECIEPT EMAIL
