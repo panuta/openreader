@@ -585,7 +585,7 @@ msgstr "ชื่อย่อบริษัทนี้ซ้ำกับชื
 msgid "%s has been a part of the organization %s"
 msgstr "%s ได้เข้าร่วมเป็นส่วนหนึ่งของบริษัท %s เรียบร้อยแล้ว"
 
-msgid "Sent user invtitation successful, waiting for user accept invitation"
+msgid "Sent user invitation successful, waiting for user accept invitation"
 msgstr "ส่งคำขอเพิ่มผู้ใช้เรียบร้อย รอผู้ใช้ยืนยันคำขอ"
 
 msgid "Edit user profile successful"

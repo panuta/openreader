@@ -272,7 +272,7 @@ def summarize_organization_users(request, organization_slug, action=None, contex
             invitation = UserOrganizationInvitation.objects.create_invitation(email, organization, groups, request.user)
             invitation.send_invitation_email()
 
-        messages.success(request, _('Sent user invtitation successful, waiting for user accept invitation'))
+        messages.success(request, _('Sent user invitation successful, waiting for user accept invitation'))
         return redirect('view_organization_users', organization_slug=organization.slug)
     elif action == 'remove-user-confirm':
         emails = request.POST['emails']

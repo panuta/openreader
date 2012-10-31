@@ -11,6 +11,7 @@ $(document).ready(function () {
   $("#id_groups").chosen();
 
   $('#resend-invitation-modal button[type="submit"]').on('click', function(e) {
+    $('#resend-invitation-modal button[type="submit"]').prop('disabled', true)
     $.post('{% url ajax_resend_user_invitation invitation.id %}', {}, function(response) {
         if(response.status == 'success') {
             $('#resend-invitation-modal').modal('hide');
@@ -18,6 +19,7 @@ $(document).ready(function () {
         } else if(response.status == 'error') {
             if(response.error == 'send-invitation-failed') _addModalMessage('resend-invitation-modal', gettext('Cannot send email'), 'error');
         }
+        $('#resend-invitation-modal button[type="submit"]').removeProp('disabled');
     }, 'json');
     return false;
   });
