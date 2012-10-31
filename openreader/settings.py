@@ -220,6 +220,8 @@ from celery.schedules import crontab
 from datetime import timedelta
 from domain import tasks
 
+TEST_PAYMENT_REMIND_EVERY_HOUR = True
+
 CELERYBEAT_SCHEDULE = {
     'decide-on-first-month-everydays': {
         'task': 'tasks.send_notification_email_to_decide_on_first_month',
@@ -233,12 +235,15 @@ CELERYBEAT_SCHEDULE = {
         'task': 'tasks.send_notification_email_to_pay_service',
         'schedule': crontab(hour=0, minute=0),
     },
-    'pay-service-test-everyhour': {
-        'task': 'tasks.send_notification_email_to_pay_service',
-        'schedule': crontab(hour='*/1', minute=0),
-        'args': (True,),
-    },
 }
+
+if TEST_PAYMENT_REMIND_EVERY_HOUR:
+    CELERYBEAT_SCHEDULE.update({
+        'pay-service-test-everyhour': {
+            'task': 'tasks.send_notification_email_to_pay_service',
+            'schedule': crontab(hour='*/1', minute=0),
+        },
+    })
 
 ########## Django Private Files ##########
 
