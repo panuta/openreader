@@ -149,6 +149,9 @@ body {
             font-size: 1.1em;
             padding-bottom: 10px;
             padding-top: 10px;
+            &:hover {
+                background-color: rgba(29, 25, 18, 0.81);
+            }
         }
     }
 
@@ -522,11 +525,19 @@ table {
             margin-left: 20px;
             a {
                 display: inline;
-                padding: 3px 8px 1px;
-                // background: #CCC;
+                padding: 5px 10px;
                 -webkit-border-radius: 4px;
                 -moz-border-radius: 4px;
                 border-radius: 4px;
+                &:hover {
+                    background-color: #BBA57C;
+                    color: white;
+                }
+                &.active { 
+                    background-color: #927543;
+                    color: white;
+                }
+                
             }
         }
     }

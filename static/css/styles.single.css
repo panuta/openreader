@@ -99,6 +99,9 @@ body {
   padding-bottom: 10px;
   padding-top: 10px;
 }
+.navbar .dropdown-menu a:hover {
+  background-color: rgba(29, 25, 18, 0.81);
+}
 .navbar .accounts {
   padding: 12px 0px 8px;
 }
@@ -393,10 +396,18 @@ table tr.checked td {
 }
 #select-lang ul li a {
   display: inline;
-  padding: 3px 8px 1px;
+  padding: 5px 10px;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   border-radius: 4px;
+}
+#select-lang ul li a:hover {
+  background-color: #BBA57C;
+  color: white;
+}
+#select-lang ul li a.active {
+  background-color: #927543;
+  color: white;
 }
 .organization_users_page .nav-tabs {
   margin-bottom: 0;

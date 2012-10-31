@@ -137,7 +137,7 @@ def request_download_publication(request, publication_uid):
     user = _extract_user(request)
 
     try:
-        user_organization = UserOrganization.objects.get(organization=publication.organization, user=user_profile.user, is_active=True)
+        user_organization = UserOrganization.objects.get(organization=publication.organization, user=user, is_active=True)
     except:
         raise Http403
 
