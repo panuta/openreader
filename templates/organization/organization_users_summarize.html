@@ -41,10 +41,12 @@
             {% endif %}
             <h4 class="total_changed">Change</h4>
             <p class="total_changed">{% if action == 'remove-user-confirm' %}-{% else %}+{% endif %}{{ emails|length }}</p>
-            <h4 class="total_current_price">Current total service price</h4>
-            <p class="total_current_price">&#8364; {{ invoice.price }}</p>
-            <h4 class="total_expected_price">Expected total service price</h4>
-            <p class="total_expected_price">&#8364; {{ new_price }}</p>
+            <h4 class="total_current_price">Last total service price</h4>
+            <p class="total_current_price">&#8364; {{ last_total_price }}</p>
+            <h4 class="total_current_price">Expected current total service price</h4>
+            <p class="total_current_price">&#8364; {{ current_total_price }}</p>
+            <h4 class="total_expected_price">Expected next total service price</h4>
+            <p class="total_expected_price">&#8364; {{ next_total_price }}</p>
             <span class="help-text">*Price will have effect on this billing according to the <a href="{{STATIC_URL}}pdf/privacy-policy.pdf">Terms and Conditions.</a></span>
             
             <input type="hidden" name="emails" value="{{emails}}"/>

@@ -240,21 +240,28 @@ def summarize_organization_users(request, organization_slug, action=None, contex
         emails = context['emails']
         groups_queryset = context['groups']
         groups = ','.join(str(group.id) for group in groups_queryset)
-        new_user_count = invoice.new_people + invited_users + len(emails)
+        current_user_count = invoice.new_people + invited_users + len(emails)
+        new_user_count = total_users + invited_users + len(emails)
         action = 'invite-confirm'
     elif action == 'remove-user':
         action_title = 'Remove user'
         emails = [ request.POST['emails'].lstrip("[u'").rstrip("']") ]
-        new_user_count = invoice.new_people + invited_users - 1
+        current_user_count = invoice.new_people + invited_users
+        new_user_count = total_users + invited_users - 1
         action = 'remove-user-confirm'
         user_organization_id = request.POST['user_organization_id']
     elif action == 'bringback-user':
         action_title = 'Bringback user'
         emails = request.POST['emails']
         emails = [ request.POST['emails'].lstrip("[u'").rstrip("']") ]
-        new_user_count = invoice.new_people + invited_users
+        current_user_count = invoice.new_people + invited_users
+        new_user_count = total_users + invited_users + 1
         action = 'bringback-user-confirm'
         user_organization_id = request.POST['user_organization_id']
+        user_organization = get_object_or_404(UserOrganization, organization=organization, user__email=emails[0])
+
+        if (user_organization.modified + relativedelta(months=+1)).date() < invoice.end_date:
+            current_user_count += 1
 
     # CONFIRM ACTION
     elif action == 'invite-confirm':
@@ -283,6 +290,7 @@ def summarize_organization_users(request, organization_slug, action=None, contex
             raise Http404
 
         user_organization.is_active = False
+        user_organization.modified = datetime.datetime.now()
         user_organization.save()
 
         messages.success(request, _('Removed user from organization successful'))
@@ -295,16 +303,24 @@ def summarize_organization_users(request, organization_slug, action=None, contex
         if not get_permission_backend(request).can_manage_user(request.user, organization):
             raise Http404
 
-        user_organization.is_active = True
-        user_organization.save()
+        # REACTIVATE USER FROM OLD INVOICE
+        if (user_organization.modified + relativedelta(months=+1)).date() < invoice.end_date:
+            organization.update_latest_invoice()
 
-        organization.update_latest_invoice()
+        user_organization.is_active = True
+        user_organization.modified = datetime.datetime.now()
+        user_organization.save()
 
         messages.success(request, _('Brought user back to organization successful'))
         return redirect('view_organization_users', organization_slug=organization.slug)
     else:
         raise Http404
 
+    all_invoice = OrganizationInvoice.objects.filter(organization=organization).order_by('-end_date')
+    if all_invoice.count() > 2:
+        last_total_price = all_invoice[1].total
+    else:
+        last_total_price = invoice.price
 
     return render(request, 'organization/organization_users_summarize.html', {
         'organization': organization,
@@ -314,9 +330,13 @@ def summarize_organization_users(request, organization_slug, action=None, contex
         'groups': groups,
         'user_organization_id': user_organization_id,
         'invoice': invoice,
-        'new_price': new_user_count * invoice.price,
+
         'invited_users': invited_users,
         'total_users': total_users,
+
+        'last_total_price': last_total_price,
+        'current_total_price': current_user_count * invoice.price,
+        'next_total_price': new_user_count * invoice.price,
     })
 
 

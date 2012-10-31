@@ -117,7 +117,7 @@ class Organization(models.Model):
 
     def update_latest_invoice(self):
         invoice = OrganizationInvoice.objects.latest('created')
-        invoice.new_people = UserOrganization.objects.filter(organization=self, is_active=True).count()
+        invoice.new_people += 1
         invoice.total = invoice.new_people * invoice.price
         invoice.save()
         return invoice
@@ -147,6 +147,7 @@ class UserOrganization(models.Model):
     is_default = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(null=True)
 
     groups = models.ManyToManyField(OrganizationGroup, through='UserGroup')
 

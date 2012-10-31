@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 
+import datetime
 import logging
 
 from django.conf import settings
@@ -76,6 +77,7 @@ def ajax_remove_organization_user(request, organization_user_id):
             raise Http404
 
         user_organization.is_active = False
+        user_organization.modified = datetime.datetime.now()
         user_organization.save()
 
         messages.success(request, _('Removed user from organization successful'))
@@ -93,10 +95,13 @@ def ajax_bringback_organization_user(request, organization_user_id):
         if not get_permission_backend(request).can_manage_user(request.user, organization):
             raise Http404
 
-        user_organization.is_active = True
-        user_organization.save()
+        invoice = organization.get_latest_invoice()
+        if (user_organization.modified + relativedelta(months=+1)).date() < invoice.end_date:
+            organization.update_latest_invoice()
 
-        organization.update_latest_invoice()
+        user_organization.is_active = True
+        user_organization.modified = datetime.datetime.now()
+        user_organization.save()
 
         messages.success(request, _('Brought user back to organization successful'))
         return response_json_success({'redirect_url':reverse('view_organization_users', args=[organization.slug])})
