@@ -560,6 +560,9 @@ msgstr "สร้างบริษัท"
 msgid "Select Country"
 msgstr "เลือกประเทศ"
 
+msgid "or"
+msgstr "หรือ"
+
 
 # ERROR ############################################################################
 msgid "This email is already exists."

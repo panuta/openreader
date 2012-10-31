@@ -575,7 +575,7 @@ def claim_user_invitation(request, invitation_key):
             login(request, user)
 
         UserOrganizationInvitation.objects.claim_invitation(invitation, registered_user)
-        messages.success(request, _('%s has been a part of the organization %s') % (user_profile.get_fullname(), organization.name))
+        messages.success(request, _('%s has been a part of the organization %s') % (registered_user.get_profile().get_fullname(), invitation.organization.name))
         return redirect('view_organization_front', organization_slug=invitation.organization.slug)
 
     # Require user to submit registration form
