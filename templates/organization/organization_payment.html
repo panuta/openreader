@@ -17,20 +17,20 @@
                     <td>{{ invoice.start_date|format_date }} {% trans 'to' %} {{ invoice.end_date|format_date }}</td>
                 </tr>
                 <tr>
-                    <th>{% trans 'Invoice Code' %}</th>
+                    <th>{% trans 'Invoice code' %}</th>
                     <td>{{ invoice.invoice_code }}</td>
                 </tr>
                 <tr>
-                    <th>{% trans 'Users' %}</th>
+                    <th>{% trans 'Total users' %}</th>
                     <td>{{ invoice.new_people }}</td>
                 </tr>
                 <tr>
                     <th>{% trans 'Price rate' %}</th>
-                    <td>{{ invoice.price }} {{ invoice.price_unit }} / {% trans 'users' %}</td>
+                    <td>&#8364; {{ invoice.price }} / {% trans 'users' %}</td>
                 </tr>
                 <tr>
                     <th>{% trans 'Total' %}</th>
-                    <td>{{ invoice.total }} {{ invoice.price_unit }}</td>
+                    <td>&#8364; {{ invoice.total }}</td>
                 </tr>
             </tbody>
         </table>

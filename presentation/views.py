@@ -236,7 +236,7 @@ def summarize_organization_users(request, organization_slug, action=None, contex
 
     # LINK FROM OTHER ACTION
     if action == 'invite':
-        action_title = 'Invite user'
+        action_title = _('Invite new user')
         emails = context['emails']
         groups_queryset = context['groups']
         groups = ','.join(str(group.id) for group in groups_queryset)
@@ -244,14 +244,14 @@ def summarize_organization_users(request, organization_slug, action=None, contex
         new_user_count = total_users + invited_users + len(emails)
         action = 'invite-confirm'
     elif action == 'remove-user':
-        action_title = 'Remove user'
+        action_title = _('Remove user from organization')
         emails = [ request.POST['emails'].lstrip("[u'").rstrip("']") ]
         current_user_count = invoice.new_people + invited_users
         new_user_count = total_users + invited_users - 1
         action = 'remove-user-confirm'
         user_organization_id = request.POST['user_organization_id']
     elif action == 'bringback-user':
-        action_title = 'Bringback user'
+        action_title = _('Bring user back to organization')
         emails = request.POST['emails']
         emails = [ request.POST['emails'].lstrip("[u'").rstrip("']") ]
         current_user_count = invoice.new_people + invited_users

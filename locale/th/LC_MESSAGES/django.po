@@ -353,6 +353,9 @@ msgstr "ใบแจ้งหนี้"
 msgid "Invoice code"
 msgstr "รหัสใบแจ้งหนี้"
 
+msgid "Total users"
+msgstr "จำนวนผู้ใช้"
+
 msgid "Price rate"
 msgstr "อัตราค่าบริการ"
 
@@ -569,6 +572,30 @@ msgstr "เลือกประเทศ"
 
 msgid "or"
 msgstr "หรือ"
+
+msgid "Summarize users"
+msgstr "สรุปจำนวนผู้ใช้"
+
+msgid "Total current users"
+msgstr "จำนวนผู้ใช้ปัจจุบัน"
+
+msgid "Total invited users"
+msgstr "จำนวนผู้ใช้ที่ส่งคำขอ"
+
+msgid "Total change users"
+msgstr "จำนวนผู้ใช้ที่เปลี่ยนแปลง"
+
+msgid "Last total service price"
+msgstr "ราคาค่าบริการเดือนที่ผ่านมา"
+
+msgid "Expected current total service price"
+msgstr "ราคาค่าบริการเดือนนี้ที่คาดว่า"
+
+msgid "Expected next total service price"
+msgstr "ราคาค่าบริการเดือนถัดไปที่คาดว่า"
+
+msgid "Price will have effect on the billing according to "
+msgstr "ราคาค่าบริการจะมีผลกับใบแจ้งชำระค่าบริการตาม"
 
 
 # ERROR ############################################################################
