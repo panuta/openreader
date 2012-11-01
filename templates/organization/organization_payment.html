@@ -9,7 +9,7 @@
 {% include 'manage/snippets/manage_organization_topnav.html' %}
 <div class="container-fluid organization_profile_page"><div class="row-fluid">
     <div class="content"><div class="inner-content">
-        <h2>{% trans 'Payment' %}: {{ organization.prefix }} {{ organization.name }}</h2>
+        <h2>{% trans 'Payment' %}: {% if organization.prefix %}{{ organization.prefix }}{% endif %} {{ organization.name }}</h2>
         <table class="table table-bordered">
             <tbody>
                 <tr>
