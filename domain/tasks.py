@@ -10,7 +10,6 @@ from django.utils.html import strip_tags
 
 from common.utilities import format_abbr_date
 
-from domain import functions as domain_functions
 
 logger = logging.getLogger(settings.OPENREADER_LOGGER)
 
@@ -152,4 +151,5 @@ def send_notification_email_to_pay_service():
                 import sys
                 print sys.exc_info()
         elif diff_date_days == 17:
+            from domain import functions as domain_functions
             domain_functions.remove_organization(organization)
