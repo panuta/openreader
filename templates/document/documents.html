@@ -63,13 +63,23 @@ $(document).ready(function () {
     </div></div></div>
 
     <div class="span3 documents_sidebar">
+        {% if is_ready_to_pay %}
+        <div class="content decide-on-first-month"><div class="inner-content clearfix">
+            <h3><i class="icon-star"></i> {% trans 'Notify' %}</h3>
+                <p>
+                {% trans 'Please pay your service for the last month at the link below.' %}
+                </p>
+                <a class="btn pull-right" href="{% url organization_make_payment organization.slug %}">{% trans 'Pay now' %}</a>
+        </div></div>
+        {% endif %}
+
         {% if is_organization_admin and invoice.current_people != invoice.new_people %}
         <div class="content decide-on-first-month"><div class="inner-content clearfix">
             <h3><i class="icon-star"></i> {% trans 'Notify' %}</h3>
                 <p>
                 {% trans 'Your organization user has been changed. Please reconfirm subscription at the link below' %}.
                 </p>
-                <a class="btn pull-right" href="{% url organization_make_payment organization.slug %}">Pay now</a>
+                <a class="btn pull-right" href="{% url organization_make_payment organization.slug %}">{% trans 'Pay now' %}</a>
         </div></div>
         {% endif %}
 
@@ -80,7 +90,7 @@ $(document).ready(function () {
                 {% trans 'The free trial will expire on' %} {{invoice.end_date|format_date}}. 
                 {% trans 'You can continue to use Openreader by pay the service with PAYPAL at the link below' %}.
                 </p>
-                <a class="btn pull-right" href="{% url organization_make_payment organization.slug %}">Pay now</a>
+                <a class="btn pull-right" href="{% url organization_make_payment organization.slug %}">{% trans 'Pay now' %}</a>
         </div></div>
         {% endif %}
 

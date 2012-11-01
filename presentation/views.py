@@ -787,9 +787,11 @@ def view_documents(request, organization_slug):
     uploadable_shelves = get_permission_backend(request).get_uploadable_shelves(request.user, organization)
     recent_publications = Publication.objects.filter(shelves__in=shelves).order_by('-uploaded')[:10]
 
+    invoice = organization.get_latest_invoice()
     is_organization_admin = UserOrganization.objects.filter(organization=organization, user=request.user, is_admin=True).exists()
     is_in_range_decide_first_month = organization.created.date() <= datetime.date.today()-datetime.timedelta(days=21)
     is_decide_on_first_month = is_organization_admin and is_in_range_decide_first_month and not OrganizationInvoice.objects.filter(organization=organization, payment_status='PAID')
+    is_ready_to_pay = datetime.date.today() > invoice.end_date
 
     return render(request, 'document/documents.html', {
         'organization': organization,
@@ -797,8 +799,9 @@ def view_documents(request, organization_slug):
         'uploadable_shelves': uploadable_shelves,
         'recent_publications': recent_publications,
         'is_decide_on_first_month': is_decide_on_first_month,
-        'invoice': organization.get_latest_invoice(),
+        'invoice': invoice,
         'is_organization_admin': is_organization_admin,
+        'is_ready_to_pay': is_ready_to_pay,
     })
 
 

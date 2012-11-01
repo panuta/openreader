@@ -339,6 +339,13 @@ msgstr "คุณสามารถใช้งาน Openreader ต่อได
 msgid "Your organization user has been changed. Please reconfirm subscription at the link below"
 msgstr "จำนวนผู้ใช้ในองค์กรของคุณมีการเปลี่ยนแปลง กรุณายืนยันการชำระเงินอีกครั้งตามลิงค์ข้างล่าง"
 
+msgid "Please pay your service for the last month at the link below."
+msgstr "กรุณาชำระเงินค่าบริการสำหรับเดือนที่ผ่านมาตามลิงค์ข้างล่าง"
+
+msgid "Pay now"
+msgstr "ชำระเงิน"
+
+
 # PAYMENT ####################################################################################
 msgid "Invoice"
 msgstr "ใบแจ้งหนี้"
