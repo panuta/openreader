@@ -6,8 +6,8 @@ from StringIO import StringIO
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate
-from django.http import HttpResponse, HttpResponseServerError, Http404
-from django.shortcuts import get_object_or_404, redirect, render
+from django.http import HttpResponse, HttpResponseServerError
+from django.shortcuts import redirect, render
 from django.core import serializers
 from django.forms.models import model_to_dict
 from django.core.urlresolvers import reverse
@@ -25,11 +25,11 @@ from domain.models import *
 
 def _has_required_parameters(request, names):
     if request.method != 'GET':
-        raise Http404
+        return HttpResponse('Wrong method', status=404)
         
     for name in names:
         if name not in request.GET:
-            raise Http404
+            return HttpResponse('Page not found', status=404)
     return True
     
 def _get_email(request):
@@ -64,10 +64,10 @@ def list_publication(request):
         try:
             user_organization = UserOrganization.objects.get(organization__slug=organization, user=user_profile.user)
         except:
-            raise Http404
+            return HttpResponse('Page not found', status=404)
 
         if not user_organization.is_active:
-            raise Http403
+            return HttpResponse('No permissions', status=403)
         
         result['user_profile'] = model_to_dict(user_profile)
         result['organization'] = model_to_dict(user_organization.organization)
@@ -133,16 +133,20 @@ def list_user_organization(request):
 @require_GET
 @logged_in_or_basicauth()
 def request_download_publication(request, publication_uid):
-    publication = get_object_or_404(Publication, uid=publication_uid)
+    try:
+        publication = Publication.objects.get(uid=publication_uid)
+    except Publication.DoesNotExists:
+        return HttpResponse('Page not found', status=404)
+
     user = _extract_user(request)
 
     try:
         user_organization = UserOrganization.objects.get(organization=publication.organization, user=user, is_active=True)
     except:
-        raise Http403
+        return HttpResponse('No permissions', status=403)
 
     if not get_permission_backend(request).get_publication_access(user, publication):
-        raise Http403
+        return HttpResponse('No permissions', status=403)
 
     # ----- CDN support is not available for NBTC -----
     # server_urls = []
