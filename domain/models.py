@@ -328,7 +328,7 @@ class UserOrganizationInvitation(models.Model):
     def send_invitation_email(self):
         try:
             send_mail(
-                u'คุณได้รับเชิญให้เข้าร่วม %s ใน %s' % (self.organization.name, settings.WEBSITE_NAME), 
+                u'You are invited to join %s in %s' % (self.organization.name, settings.WEBSITE_NAME), 
                 render_to_string('organization/emails/user_organization_invitation.html', {
                         'invitation' : self
                     }
