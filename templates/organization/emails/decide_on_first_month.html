@@ -1,13 +1,41 @@
-{% spaceless %}
 
-The free trial will expire on {{ expire_date }}
 
-You can continue to use Openreader by pay the service with PAYPAL at the link below
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Decide on first month</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link id="page_favicon" href="/favicon.ico" rel="icon" type="image/x-icon" />
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+	  <div class="wrapper">
+	  
+		  <div class="body-wrapper">
+		  <div class="header">
+				<div id="logo">
+					<a href="#introduction" title="OpenReader"><h1>OpenReader</h1></a>
+				</div>
+			</div>
 
-http://{{ settings.WEBSITE_DOMAIN }}/org/{{ organization.slug }}/payment/
-
-Sincery,
-
-{{settings.WEBSITE_NAME}}
-
-{% endspaceless %}
+		  			<div class="content">
+				<div class="content-wrapper">
+							{% spaceless %}
+							
+					The free trial will expire on {{ expire_date }}
+					
+					You can continue to use Openreader by pay the service with PAYPAL at the link below
+					
+					http://{{ settings.WEBSITE_DOMAIN }}/org/{{ organization.slug }}/payment/
+					
+					Sincery,
+					
+					{{settings.WEBSITE_NAME}}
+					
+					{% endspaceless %}
+				</div>
+			</div>
+		  </div>
+    </div>
+  </body>
+</html>
