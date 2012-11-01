@@ -4,6 +4,16 @@
 {% block head_title %}Summarize user{% endblock %}
 {% block topnav %}{% if user.is_superuser %}{% include 'manage/snippets/manage_topnav.html' with active_menu='management' %}{% else %}{% include 'snippets/organization_topnav.html' with active_menu='user' %}{% endif %}{% endblock %}
 
+{% block extra_head %}
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.summarize-form').submit(function(){
+            $('.summarize-form button[type="submit"]').prop('disabled', true);
+        });
+    });
+</script>
+{% endblock %}
+
 {% block body_authenticated %}
 {% include 'manage/snippets/manage_organization_topnav.html' %}
 <div class="container-fluid organization_users_page"><div class="row-fluid">
@@ -22,7 +32,7 @@
         
         <h4 class="action_title">{{ action_title }}</h4>
 
-        <form method="POST" action="{% url summarize_organization_users organization.slug %}">
+        <form class="summarize-form" method="POST" action="{% url summarize_organization_users organization.slug %}">
             {% csrf_token %}
             {{form.non_field_errors}}
 

@@ -260,6 +260,7 @@ def summarize_organization_users(request, organization_slug, action=None, contex
         user_organization_id = request.POST['user_organization_id']
         user_organization = get_object_or_404(UserOrganization, organization=organization, user__email=emails[0])
 
+        user_organization.modified = user_organization.modified or datetime.datetime.now()
         if (user_organization.modified + relativedelta(months=+1)).date() < invoice.end_date:
             current_user_count += 1
 
@@ -304,6 +305,7 @@ def summarize_organization_users(request, organization_slug, action=None, contex
             raise Http404
 
         # REACTIVATE USER FROM OLD INVOICE
+        user_organization.modified = user_organization.modified or datetime.datetime.now()
         if (user_organization.modified + relativedelta(months=+1)).date() < invoice.end_date:
             organization.update_latest_invoice()
 
