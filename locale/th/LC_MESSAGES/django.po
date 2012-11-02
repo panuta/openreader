@@ -723,6 +723,9 @@ msgstr "ตอบรับเข้าเป็นผู้ดูแลระบ
 msgid "Edit organizion invitation"
 msgstr "แก้ไขคำขอเพิ่มบริษัท"
 
+msgid "You are an administrator of %s successful."
+msgstr "คุณได้เป็นผู้ดูแลระบบของ %s เรียบร้อยแล้ว"
+
 
 # JS #########################
 

@@ -11,6 +11,7 @@ urlpatterns = patterns('presentation.views',
     # ORGANIZATION REGISTER #####################################################################################################
     url(r'^org/plan/$', 'plan_organization', name='plan_organization'),
     url(r'^org/register/$', 'register_organization', name='register_organization'),
+    url(r'^org/register/done/$', 'register_organization_done', name='register_organization_done'),
 
     # Manage Organization
 

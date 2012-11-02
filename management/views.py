@@ -5,9 +5,10 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.translation import ugettext as _
 
 from domain.models import User, UserProfile, Organization, OrganizationAdminPermission, OrganizationGroup, OrganizationInvitation
-from presentation.forms import ClaimOrganizationUserForm
+from presentation.forms import ClaimOrganizationUserAdminForm, ClaimOrganizationExistUserAdminForm
 
 from forms import *
 
@@ -77,39 +78,66 @@ def claim_organization_invitation(request, invitation_key):
         return render(request, 'manage/organization_invite_claim.html', {'invitation':invitation, 'logout_first':True})
 
     # Log user in automatically if invited user is already registered
-    if registered_user:
+    if registered_user and registered_user.get_profile().id_no:
         if not request.user.is_authenticated():
             user = authenticate(invitation_key=invitation.invitation_key)
             login(request, user)
 
         OrganizationInvitation.objects.claim_invitation(invitation, registered_user)
-        messages.success(request, u'คุณได้เป็นผู้ดูแลระบบของ%s %s เรียบร้อยแล้ว' % (invitation.organization_prefix, invitation.organization_name))
+        messages.success(request, _('You are an administrator of %s successful.') % (invitation.organization_name))
         return redirect('view_organization_front', organization_slug=invitation.organization_slug)
 
     # Require user to submit registration form
     if request.method == 'POST':
-        form = ClaimOrganizationUserForm(request.POST)
+        if registered_user:
+            form = ClaimOrganizationExistUserAdminForm(request.POST)
+        else:
+            form = ClaimOrganizationUserAdminForm(request.POST)
         if form.is_valid():
-            first_name = form.cleaned_data['first_name']
-            last_name = form.cleaned_data['last_name']
-            password1 = form.cleaned_data['password1']
+            if registered_user:
+                profile = registered_user.get_profile()
+                profile.first_name = form.cleaned_data['first_name']
+                profile.last_name = form.cleaned_data['last_name']
+                profile.id_no = form.cleaned_data['id_no']
+                profile.country = form.cleaned_data['country']
+                profile.save()
 
-            user_profile = UserProfile.objects.create_user_profile(invitation.admin_email, first_name, last_name, password1, '12341234', 'KOR')
-            user_profile.user.is_staff = True
-            user_profile.user.save()
-            OrganizationInvitation.objects.claim_invitation(invitation, user_profile.user, True)
+                user = authenticate(invitation_key=invitation.invitation_key)
+                OrganizationInvitation.objects.claim_invitation(invitation, registered_user)
+            else:
+                password = form.cleaned_data['password1']
+                user_profile = UserProfile.objects.create_user_profile(
+                    email = invitation.admin_email,
+                    first_name = form.cleaned_data['first_name'],
+                    last_name = form.cleaned_data['last_name'],
+                    password = password,
+                    id_no = form.cleaned_data['id_no'],
+                    country = form.cleaned_data['country'],
+                )
+                OrganizationInvitation.objects.claim_invitation(invitation, user_profile.user, True)
+                user = authenticate(email=invitation.admin_email, password=password)
 
             # Automatically log user in
-            user = authenticate(email=invitation.admin_email, password=password1)
             login(request, user)
 
-            messages.success(request, u'คุณได้เป็นผู้ดูแลระบบของ%s %s เรียบร้อยแล้ว' % (invitation.organization_prefix, invitation.organization_name))
+            messages.success(request, _('You are an administrator of %s successful.') % (invitation.organization_name))
             return redirect('view_organization_front', organization_slug=invitation.organization_slug)
 
     else:
-        form = ClaimOrganizationUserForm()
+        if registered_user:
+            form = ClaimOrganizationExistUserAdminForm(initial={
+                'first_name': registered_user.get_profile().first_name,
+                'last_name': registered_user.get_profile().first_name,
+            })
+        else:
+            form = ClaimOrganizationUserAdminForm()
 
-    return render(request, 'manage/organization_invite_claim.html', {'invitation':invitation, 'form':form, 'first_time':True})
+    return render(request, 'manage/organization_invite_claim.html', {
+        'invitation':invitation,
+        'form':form,
+        'first_time':True,
+        'registered_user': registered_user,
+    })
 
 
 @login_required

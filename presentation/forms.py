@@ -42,31 +42,14 @@ class OrganizationRegisterForm(forms.Form):
     organization_tel = StrippedCharField(max_length=30)
 
     admin_email = forms.EmailField(widget=forms.TextInput(attrs={'class':'span6'}))
-    admin_first_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'input-normal'}))
-    admin_last_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'input-normal'}))
-    admin_id_no = StrippedCharField(max_length=30, widget=forms.TextInput(attrs={'class':'input-normal'}))
-    admin_password1 = forms.CharField(widget=forms.PasswordInput())
-    admin_password2 = forms.CharField(widget=forms.PasswordInput())
-    admin_country = forms.ChoiceField(choices=COUNTRY_CHOICES_WITH_BLANK, widget=forms.Select(attrs={'style':'width:110px;'}))
-
-    def clean_admin_email(self):
-        email = self.cleaned_data.get('admin_email', '')
-        if User.objects.filter(email=email).exists():
-            raise forms.ValidationError(ugettext('This email is already exists.'))
-        return email
-
-    def clean_admin_password2(self):
-        password1 = self.cleaned_data.get('admin_password1', '')
-        password2 = self.cleaned_data['admin_password2']
-        if password1 != password2:
-            raise forms.ValidationError(ugettext('The two password fields didn\'t match.'))
-        return password2
 
     def clean_organization_slug(self):
         organization_slug = self.cleaned_data['organization_slug']
 
         if Organization.objects.filter(slug=organization_slug).exists():
             raise forms.ValidationError(ugettext('This company abbreviate name is already exists in the system.'))
+
+        organization_slug = organization_slug.replace(' ', '')
 
         return organization_slug
 
@@ -145,6 +128,20 @@ class ClaimOrganizationUserForm(forms.Form):
     last_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'input-normal'}))
     password1 = forms.CharField(widget=forms.PasswordInput())
     password2 = forms.CharField(widget=forms.PasswordInput())
+
+    def clean_password2(self):
+        password1 = self.cleaned_data.get('password1', '')
+        password2 = self.cleaned_data['password2']
+        if password1 != password2:
+            raise forms.ValidationError(ugettext('The two password fields didn\'t match.'))
+        return password2
+
+
+class ClaimOrganizationUserAdminForm(forms.Form):
+    first_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'input-normal'}))
+    last_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'input-normal'}))
+    password1 = forms.CharField(widget=forms.PasswordInput(), required=False)
+    password2 = forms.CharField(widget=forms.PasswordInput(), required=False)
     id_no = StrippedCharField(max_length=30, widget=forms.TextInput(attrs={'class':'input-normal'}))
     country = forms.ChoiceField(choices=COUNTRY_CHOICES_WITH_BLANK, widget=forms.Select(attrs={'style':'width:200px;'}))
 
@@ -154,6 +151,13 @@ class ClaimOrganizationUserForm(forms.Form):
         if password1 != password2:
             raise forms.ValidationError(ugettext('The two password fields didn\'t match.'))
         return password2
+
+
+class ClaimOrganizationExistUserAdminForm(forms.Form):
+    first_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'input-normal'}))
+    last_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'input-normal'}))
+    id_no = StrippedCharField(max_length=30, widget=forms.TextInput(attrs={'class':'input-normal'}))
+    country = forms.ChoiceField(choices=COUNTRY_CHOICES_WITH_BLANK, widget=forms.Select(attrs={'style':'width:200px;'}))
 
 
 class EditOrganizationUserForm(forms.Form):

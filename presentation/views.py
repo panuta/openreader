@@ -152,51 +152,53 @@ def register_organization(request):
     if request.method == 'POST':
         form = OrganizationRegisterForm(request.POST)
         if form.is_valid():
-            profile = UserProfile.objects.create_user_profile(
-                email = form.cleaned_data['admin_email'],
-                first_name = form.cleaned_data['admin_first_name'],
-                last_name = form.cleaned_data['admin_last_name'],
-                password = form.cleaned_data['admin_password1'],
-                id_no = form.cleaned_data['admin_id_no'],
-                country = form.cleaned_data['admin_country'],
-            )
-            organization = Organization.objects.create(
-                name = form.cleaned_data['organization_name'],
-                slug = form.cleaned_data['organization_slug'],
-                address = form.cleaned_data['organization_address'],
-                country = form.cleaned_data['organization_country'],
-                tel = form.cleaned_data['organization_tel'],
-                contract_type = contract_type['contract_type_code'],
-                contract_month_remain = contract_type['contract_month_remain'],
-                created_by = profile.user,
-            )
+            admin_email = form.cleaned_data['admin_email']
 
-            user_organization = UserOrganization.objects.create(user=profile.user, organization=organization, is_default=True)
-            user_organization.is_admin = True
-            user_organization.save()
+            # Send invitation
+            try:
+                user = User.objects.get(email=admin_email)
+            except User.DoesNotExist:
+                invitation = OrganizationInvitation.objects.create_invitation(
+                    organization_prefix = '',
+                    organization_name = form.cleaned_data['organization_name'],
+                    organization_slug = form.cleaned_data['organization_slug'],
+                    admin_email = admin_email,
+                    created_by = request.user,
+                    organization_address = form.cleaned_data['organization_address'],
+                    organization_country = form.cleaned_data['organization_country'],
+                    organization_tel = form.cleaned_data['organization_tel'],
+                    organization_contract_type = contract_type['contract_type_code'],
+                    organization_contract_month_remain = contract_type['contract_month_remain'],
+                )
+            else:
+                invitation = OrganizationInvitation.objects.create_invitation(
+                    organization_prefix = '',
+                    organization_name = form.cleaned_data['organization_name'],
+                    organization_slug = form.cleaned_data['organization_slug'],
+                    admin_email = user.email,
+                    created_by = request.user,
+                    organization_address = form.cleaned_data['organization_address'],
+                    organization_country = form.cleaned_data['organization_country'],
+                    organization_tel = form.cleaned_data['organization_tel'],
+                    organization_contract_type = contract_type['contract_type_code'],
+                    organization_contract_month_remain = contract_type['contract_month_remain'],
+                )
 
-            shortuuid.set_alphabet('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ')
-            temp_uuid = shortuuid.uuid()[0:10]
-            while OrganizationInvoice.objects.filter(invoice_code=temp_uuid).exists():
-                temp_uuid = shortuuid.uuid()[0:10]
-
-            OrganizationInvoice.objects.create(
-                organization = organization,
-                invoice_code = temp_uuid,
-                price = contract_type['price'],
-                total = contract_type['price'],
-                start_date = organization.created.date(),
-                end_date = organization.created.date() + relativedelta(months=+1, days=-1),
-            )
-            user = authenticate(email=profile.user.email, password=form.cleaned_data['admin_password1'])
-            login(request, user)
-            return redirect('view_user_home')
+            try:
+                invitation.send_invitation_email()
+                return redirect('register_organization_done')
+            except:
+                import sys
+                print sys.exc_info()
     else:
         form = OrganizationRegisterForm()
     return render(request, 'organization/organization_register.html', {
         'form': form,
         'contract_type': contract_type,
     })
+
+def register_organization_done(request):
+    return render(request, 'organization/organization_register_done.html')
 
 
 # Organization Users
