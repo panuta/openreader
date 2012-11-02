@@ -345,6 +345,18 @@ msgstr "กรุณาชำระเงินค่าบริการสำ
 msgid "Pay now"
 msgstr "ชำระเงิน"
 
+msgid "Summarize"
+msgstr "สรุปผล"
+
+msgid "Waiting for accept"
+msgstr "รอการตอบรับ"
+
+msgid "Service price"
+msgstr "ราคาค่าบริการ"
+
+msgid "Total current user"
+msgstr "จำนวนผู้ใช้ปัจจุบัน"
+
 
 # PAYMENT ####################################################################################
 msgid "Invoice"

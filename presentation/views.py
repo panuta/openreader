@@ -806,6 +806,7 @@ def view_documents(request, organization_slug):
         'invoice': invoice,
         'is_organization_admin': is_organization_admin,
         'is_ready_to_pay': is_ready_to_pay,
+        'invited_users': UserOrganizationInvitation.objects.filter(organization=organization).count(),
     })
 
 
