@@ -57,7 +57,7 @@ def list_publication(request):
         result = {}
         
         email = _get_email(request)
-        organization = request.GET.get('organization')
+        organization = request.GET.get('organization') or 'opendream'
         
         user_profile = UserProfile.objects.get(user__email=email)
         
