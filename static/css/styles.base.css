@@ -150,6 +150,12 @@ body {
 }
 .container-fluid .breadcrumb {
   margin-bottom: 10px;
+  border: none;
+  box-shadow: none;
+  -moz-border-radius: none;
+  -webkit-border-radius: none;
+  background: transparent;
+  padding-left: 0;
 }
 .container-fluid .breadcrumb a:link,
 .container-fluid .breadcrumb a:active,
@@ -284,6 +290,8 @@ form label.checkbox {
 }
 form .form-actions {
   margin-top: 30px;
+  border-top: none;
+  background-color: transparent;
 }
 form .form-actions button,
 form .form-actions a {

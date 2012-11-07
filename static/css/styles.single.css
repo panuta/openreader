@@ -150,6 +150,12 @@ body {
 }
 .container-fluid .breadcrumb {
   margin-bottom: 10px;
+  border: none;
+  box-shadow: none;
+  -moz-border-radius: none;
+  -webkit-border-radius: none;
+  background: transparent;
+  padding-left: 0;
 }
 .container-fluid .breadcrumb a:link,
 .container-fluid .breadcrumb a:active,
@@ -284,6 +290,8 @@ form label.checkbox {
 }
 form .form-actions {
   margin-top: 30px;
+  border-top: none;
+  background-color: transparent;
 }
 form .form-actions button,
 form .form-actions a {
@@ -467,15 +475,25 @@ table tr.checked td {
 body {
   background: url(/static/images/bg-wood.jpg);
 }
-.single-container .outer-container {
-  padding: 1px;
-  border: 1px solid #EEE;
-  background-color: #DDD;
-}
 .single-container .outer-container .inner-container {
-  border: 1px solid #BBB;
-  padding: 15px;
-  background-color: #FFF;
+  padding: 20px 5px;
+  background: -moz-linear-gradient(90deg, rgba(239, 236, 224, 0.37) 0%, rgba(253, 250, 237, 0.44) 66%);
+  background: -webkit-linear-gradient(90deg, rgba(239, 236, 224, 0.37) 0%, rgba(253, 250, 237, 0.44) 66%);
+  background: -o-linear-gradient(90deg, rgba(239, 236, 224, 0.37) 0%, rgba(253, 250, 237, 0.44) 66%);
+  background: -ms-linear-gradient(90deg, rgba(239, 236, 224, 0.37) 0%, rgba(253, 250, 237, 0.44) 66%);
+  background: linear-gradient(90deg, rgba(239, 236, 224, 0.37) 0%, rgba(253, 250, 237, 0.44) 66%);
+  box-shadow: 0 0 6px rgba(117, 111, 111, 0.68);
+  -webkit-box-shadow: 0 0 6px 0 rgba(117, 111, 111, 0.68);
+  border-radius: 3px;
+  -webkit-border-radius: 3px;
+}
+.single-container h1 {
+  border-bottom: none;
+  color: #776050;
+}
+.single-container .item label {
+  color: #776050;
+  font-weight: bold;
 }
 .logo {
   font-size: 3em;
@@ -483,6 +501,9 @@ body {
   color: #777;
   text-align: center;
   margin: 80px 0px 40px;
+  background: url(/static/images/logo.png) no-repeat top center;
+  text-indent: -999em;
+  height: 60px;
 }
 .logo a:link,
 .logo a:visited,

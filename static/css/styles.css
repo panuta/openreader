@@ -150,6 +150,12 @@ body {
 }
 .container-fluid .breadcrumb {
   margin-bottom: 10px;
+  border: none;
+  box-shadow: none;
+  -moz-border-radius: none;
+  -webkit-border-radius: none;
+  background: transparent;
+  padding-left: 0;
 }
 .container-fluid .breadcrumb a:link,
 .container-fluid .breadcrumb a:active,
@@ -284,6 +290,8 @@ form label.checkbox {
 }
 form .form-actions {
   margin-top: 30px;
+  border-top: none;
+  background-color: transparent;
 }
 form .form-actions button,
 form .form-actions a {
@@ -832,6 +840,7 @@ table tr.checked td {
   background-color: white;
   margin-bottom: 15px;
   padding: 15px 15px 15px 45px;
+  box-shadow: 0px 1px 3px #999;
 }
 .documents_page .documents_shelves li.shelf .shelf_name {
   font-size: 1.2em;
@@ -1393,8 +1402,7 @@ table tr.checked td {
   margin: 0px 0px 6px 20px;
 }
 .organization_users_page .user_invitations {
-  background-color: #FCF8E3;
-  border: 1px solid #dcd08f;
+  border: 1px dashed;
   border-radius: 5px;
   padding: 10px 15px;
   margin-bottom: 20px;
@@ -1490,4 +1498,11 @@ table tr.checked td {
   border-radius: 3px;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
+}
+.summarize-form h4 {
+  margin-top: 20px;
+}
+.summarize-form li,
+.summarize-form p {
+  color: #555;
 }

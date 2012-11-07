@@ -6,14 +6,28 @@ body {
 
 .single-container {
     .outer-container {
-        padding:1px;
-        border:1px solid #EEE;
-        background-color:#DDD;
+        // padding:1px;
+        // border:1px solid #EEE;
+        // background-color:#DDD;
 
         .inner-container {
-            border:1px solid #BBB;
-            padding:15px;
-            background-color:#FFF;
+            padding: 20px 5px;
+            background: -moz-linear-gradient(90deg, rgba(239, 236, 224, 0.37) 0%, rgba(253, 250, 237, 0.44) 66%);
+            background: -webkit-linear-gradient(90deg, rgba(239, 236, 224, 0.37) 0%, rgba(253, 250, 237, 0.44) 66%);
+            background: -o-linear-gradient(90deg,rgba(239, 236, 224, 0.37) 0%, rgba(253, 250, 237, 0.44) 66%);
+            background: -ms-linear-gradient(90deg,rgba(239, 236, 224, 0.37) 0%, rgba(253, 250, 237, 0.44) 66%);
+            background: linear-gradient(90deg, rgba(239, 236, 224, 0.37) 0%, rgba(253, 250, 237, 0.44) 66%);
+            box-shadow: 0 0 6px rgba(117, 111, 111, 0.68);
+            -webkit-box-shadow: 0 0 6px 0 rgba(117, 111, 111, 0.68);
+            border-radius: 3px;
+            -webkit-border-radius: 3px;
+        }
+    }
+    h1 { border-bottom: none; color: #776050; }
+    .item { 
+        label { 
+            color: #776050;
+            font-weight: bold;
         }
     }
 }
@@ -24,6 +38,11 @@ body {
     color:#777;
     text-align:center;
     margin:80px 0px 40px;
+    background:url(/static/images/logo.png) no-repeat top center;
+    text-indent: -999em;
+    height: 60px;
+
+
 
     a:link, a:visited, a:active {
         color:#555;
