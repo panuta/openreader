@@ -127,7 +127,7 @@ def claim_organization_invitation(request, invitation_key):
         if registered_user:
             form = ClaimOrganizationExistUserAdminForm(initial={
                 'first_name': registered_user.get_profile().first_name,
-                'last_name': registered_user.get_profile().first_name,
+                'last_name': registered_user.get_profile().last_name,
             })
         else:
             form = ClaimOrganizationUserAdminForm()
