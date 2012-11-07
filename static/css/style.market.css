@@ -34,7 +34,7 @@ h2 {
   position: fixed;
   width: 100%;
   height: 135px;
-  background: white;
+  background: #f9f9f4;
   z-index: 9999; }
 
 #headerWrap {
@@ -74,7 +74,7 @@ h2 {
 /* ---------------------- Introduction  ----------------------*/
 .sec1, .plan {
   padding-top: 90px;
-  background-color: white;
+  background-color: #f9f9f4;
   position: relative;
   z-index: 99; }
   .sec1 h3, .plan h3 {
@@ -96,13 +96,13 @@ h2 {
 /* ---------------------- Features ----------------------*/
 .sec2 {
   background: url("../images/homepage/feature-head-border.png") repeat-x center top;
-  background-color: white; }
+  background-color: #f9f9f4; }
   .sec2 .sec-wrapper {
     padding-top: 140px; }
 
 .feature-desc {
   overflow: hidden;
-  width: 750px;
+  width: 510px;
   margin-left: 30px;
   background: url("../images/homepage/feature-list-bottom.png") no-repeat center bottom;
   padding-bottom: 100px;
@@ -114,13 +114,15 @@ h2 {
     padding-left: 23px;
     font-size: 1.2em;
     margin-right: 20px; }
+    .feature-desc li.nav-item-3 {
+      margin-right: 0; }
     .feature-desc li.nav-item-4 {
-      margin-left: 155px; }
+      margin-left: 25px; }
 
 .features, .enterprise-features, .feature-item {
   overflow: hidden;
   width: 960px;
-  margin: 0 auto 20px; }
+  margin: 0 auto 0; }
   .features h3, .enterprise-features h3, .feature-item h3 {
     font-size: 1.4em;
     font-weight: normal;
@@ -135,24 +137,16 @@ h2 {
     width: 314px;
     margin-bottom: 20px;
     padding: 10px 0 0;
-    text-align: center;
-    /*
-     	 .showr-4, .showr-7 { 
-    	 	 background-position: 0 0;
-    		  &:hover, &.active {
-    			  background-position: -150px 0;
-    		  }
-    	 }
-    */ }
+    text-align: center; }
     .features li .showr, .enterprise-features li .showr, .feature-item li .showr {
       background: url("../images/homepage/feature1_3.png") no-repeat 0px 0px;
       display: block;
-      width: 133px;
+      width: 134px;
       height: 100px;
       color: #725228;
       padding-top: 140px;
       margin: 0 auto; }
-      .features li .showr:hover, .enterprise-features li .showr:hover, .feature-item li .showr:hover {
+      .features li .showr:hover, .features li .showr.active, .enterprise-features li .showr:hover, .enterprise-features li .showr.active, .feature-item li .showr:hover, .feature-item li .showr.active {
         background-position: -230px 0; }
     .features li .showr-4, .features li .showr-5, .features li .showr-6, .enterprise-features li .showr-4, .enterprise-features li .showr-5, .enterprise-features li .showr-6, .feature-item li .showr-4, .feature-item li .showr-5, .feature-item li .showr-6 {
       background: url("../images/homepage/feature4_6.png") no-repeat 0 0; }
@@ -163,9 +157,9 @@ h2 {
       .features li .showr-2:hover, .features li .showr-2.active, .features li .showr-5:hover, .features li .showr-5.active, .features li .showr-8:hover, .features li .showr-8.active, .enterprise-features li .showr-2:hover, .enterprise-features li .showr-2.active, .enterprise-features li .showr-5:hover, .enterprise-features li .showr-5.active, .enterprise-features li .showr-8:hover, .enterprise-features li .showr-8.active, .feature-item li .showr-2:hover, .feature-item li .showr-2.active, .feature-item li .showr-5:hover, .feature-item li .showr-5.active, .feature-item li .showr-8:hover, .feature-item li .showr-8.active {
         background-position: -230px -246px; }
     .features li .showr-3, .features li .showr-6, .features li .showr-9, .enterprise-features li .showr-3, .enterprise-features li .showr-6, .enterprise-features li .showr-9, .feature-item li .showr-3, .feature-item li .showr-6, .feature-item li .showr-9 {
-      background-position: -2px -495px; }
+      background-position: -1px -492px; }
       .features li .showr-3:hover, .features li .showr-3.active, .features li .showr-6:hover, .features li .showr-6.active, .features li .showr-9:hover, .features li .showr-9.active, .enterprise-features li .showr-3:hover, .enterprise-features li .showr-3.active, .enterprise-features li .showr-6:hover, .enterprise-features li .showr-6.active, .enterprise-features li .showr-9:hover, .enterprise-features li .showr-9.active, .feature-item li .showr-3:hover, .feature-item li .showr-3.active, .feature-item li .showr-6:hover, .feature-item li .showr-6.active, .feature-item li .showr-9:hover, .feature-item li .showr-9.active {
-        background-position: -232px -495px; }
+        background-position: -231px -492px; }
     .features li .showr-7, .features li .showr-8, .features li .showr-9, .enterprise-features li .showr-7, .enterprise-features li .showr-8, .enterprise-features li .showr-9, .feature-item li .showr-7, .feature-item li .showr-8, .feature-item li .showr-9 {
       background-image: url("../images/homepage/feature-7-9.png");
       background-repeat: no-repeat; }
@@ -179,11 +173,12 @@ h2 {
 
 .feature1_3 {
   border-bottom: 1px solid white;
-  /* 	ul {border-bottom: 1px solid #D4CCAC;} */ }
+  background: url("../images/homepage/border-header.png") no-repeat center bottom;
+  /*  ul {border-bottom: 1px solid #D4CCAC;} */ }
 
-.feature7_9 {
-  /* 	border-bottom: 1px solid #D4CCAC; */
-  margin-bottom: 0px; }
+.feature4_6 {
+  /*  border-bottom: 1px solid #D4CCAC; */
+  margin-top: 50px; }
 
 /* ---------------------- Features item 1-9  ----------------------*/
 .pop-wrapper {
@@ -221,6 +216,10 @@ h2 {
   box-shadow: inset 0px 1px 8px #7E7979; }
   .after-click.feature-7, .after-click.feature-8, .after-click.feature-9 {
     margin-bottom: 0; }
+  .after-click.privacy {
+    height: 480px; }
+    .after-click.privacy li {
+      list-style-position: inside; }
 
 .hidr {
   display: block;
@@ -251,7 +250,7 @@ h2 {
 
 /* ---------------------- Price & Plan  ----------------------*/
 .sec3 {
-  background: white;
+  background: #f9f9f4;
   padding: 0px 0 30px; }
   .sec3 .sec-wrapper {
     padding-top: 60px; }
@@ -267,14 +266,14 @@ h2 {
       background: -o-linear-gradient(90deg, #efece0 0%, #fdfaed 66%);
       background: -ms-linear-gradient(90deg, #efece0 0%, #fdfaed 66%);
       background: linear-gradient(90deg, #efece0 0%, #fdfaed 66%);
-      /* 			background-color: #f7f3e7; */
+      /*      background-color: #f7f3e7; */
       overflow: hidden;
       box-shadow: 0 0 6px #B6B6B6;
       -webkit-box-shadow: 0 0 6px #B6B6B6;
       border-radius: 3px;
       -webkit-border-radius: 3px;
       -moz-border-radius: 3px;
-      width: 303px;
+      width: 302px;
       margin: 2px 22px 2px 2px;
       float: left; }
       .sec3 ul li.last {
@@ -284,26 +283,113 @@ h2 {
         padding: 15px 30px; }
       .sec3 ul li.peryear h3 {
         background-color: #90a900; }
+      .sec3 ul li.peryear .more {
+        color: white;
+        background-color: #798D07;
+        background-repeat: repeat-x;
+        background-image: -khtml-gradient(linear, left top, left bottom, from(#b7d510), to(#798d07));
+        background-image: -moz-linear-gradient(top, #b7d510, #798d07);
+        background-image: -ms-linear-gradient(top, #b7d510, #798d07);
+        background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #b7d510), color-stop(100%, #798d07));
+        background-image: -webkit-linear-gradient(top, #b7d510, #798d07);
+        background-image: -o-linear-gradient(top, #b7d510, #798d07);
+        background-image: linear-gradient(top, #b7d510, #798d07);
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#B7D510',endColorstr='#798D07',GradientType=0);
+        text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+        border-color: #B7D510 #798D07 #546107;
+        border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25); }
+        .sec3 ul li.peryear .more:hover {
+          background-image: -khtml-gradient(linear, left top, left bottom, from(#b4cf16), to(#798d07));
+          background-image: -moz-linear-gradient(top, #b4cf16, #798d07);
+          background-image: -ms-linear-gradient(top, #b4cf16, #798d07);
+          background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #b4cf16), color-stop(100%, #798d07));
+          background-image: -webkit-linear-gradient(top, #b4cf16, #798d07);
+          background-image: -o-linear-gradient(top, #b4cf16, #798d07);
+          background-image: linear-gradient(top, #b4cf16, #798d07); }
       .sec3 ul li.permonth .price {
         padding: 15px; }
       .sec3 ul li.permonth h3 {
         background-color: #448b0b; }
+      .sec3 ul li.permonth .more {
+        color: white;
+        background-color: #448B0B;
+        background-repeat: repeat-x;
+        background-image: -khtml-gradient(linear, left top, left bottom, from(#54aa0f), to(#316d02));
+        background-image: -moz-linear-gradient(top, #54aa0f, #316d02);
+        background-image: -ms-linear-gradient(top, #54aa0f, #316d02);
+        background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #54aa0f), color-stop(100%, #316d02));
+        background-image: -webkit-linear-gradient(top, #54aa0f, #316d02);
+        background-image: -o-linear-gradient(top, #54aa0f, #316d02);
+        background-image: linear-gradient(top, #54aa0f, #316d02);
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#54AA0F',endColorstr='#316D02',GradientType=0);
+        text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+        border-color: #54AA0F #316D02 #546107;
+        border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25); }
+        .sec3 ul li.permonth .more:hover {
+          background-image: -webkit-linear-gradient(top, #569b1e, #316d02); }
       .sec3 ul li.terms {
-        height: 217px;
         margin-right: 0;
-        background: #dfdfdf;
-        background: -moz-linear-gradient(90deg, #dfdfdf 0%, #e8e8e8 29%);
-        background: -webkit-linear-gradient(90deg, #dfdfdf 0%, #e8e8e8 29%);
-        background: -o-linear-gradient(90deg, #dfdfdf 0%, #e8e8e8 29%);
-        background: -ms-linear-gradient(90deg, #dfdfdf 0%, #e8e8e8 29%);
-        background: linear-gradient(90deg, #dfdfdf 0%, #e8e8e8 29%); }
+                /*
+        height: 255px;
+                margin-right: 0;
+                background: rgb(223, 223, 223);
+                background: -moz-linear-gradient(90deg, rgb(223, 223, 223) 0%, rgb(232, 232, 232) 29%);
+                background: -webkit-linear-gradient(90deg, rgb(223, 223, 223) 0%, rgb(232, 232, 232) 29%);
+                background: -o-linear-gradient(90deg, rgb(223, 223, 223) 0%, rgb(232, 232, 232) 29%);
+                background: -ms-linear-gradient(90deg, rgb(223, 223, 223) 0%, rgb(232, 232, 232) 29%);
+                background: linear-gradient(90deg, rgb(223, 223, 223) 0%, rgb(232, 232, 232) 29%);
+                h3 { background-color: #ffa004; }
+                .desc { margin: 26px 10px; text-align: center; }
+                .more { 
+                  margin-top: 45px;
+                  color: white;
+                  background-color: #ffa004;
+                  background-repeat: repeat-x;
+                  background-image: -khtml-gradient(linear,left top,left bottom,from(#ffa004),to(#F77632));
+                  background-image: -moz-linear-gradient(top,#ffa004,#F77632);
+                  background-image: -ms-linear-gradient(top,#ffa004,#F77632);
+                  background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0%,#ffa004),color-stop(100%,#F77632));
+                  background-image: -webkit-linear-gradient(top,#ffa004,#F77632);
+                  background-image: -o-linear-gradient(top,#ffa004,#F77632);
+                  background-image: linear-gradient(top,#ffa004,#F77632);
+                  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffa004',endColorstr='#F77632',GradientType=0);
+                  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+                  border-color: #ffa004 #F77632 #546107;
+                  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+                  &:hover { 
+                    background-image: -webkit-linear-gradient(top,#ffa004,#F77632);
+                  }
+                }
+                
+        */ }
         .sec3 ul li.terms h3 {
-          color: #636363;
+          color: #8A673B;
           text-shadow: 0 1px 0 #DBD6D6;
           margin-bottom: 0;
-          padding: 70px 0 0; }
+          padding: 70px 0 0;
+          margin-bottom: 20px;
+          font-size: 25px;
+          padding-top: 39px; }
+        .sec3 ul li.terms .more {
+          margin-top: 45px;
+          color: white;
+          background-color: #F87631;
+          background-repeat: repeat-x;
+          background-image: -khtml-gradient(linear, left top, left bottom, from(#fca374), to(#f77632));
+          background-image: -moz-linear-gradient(top, #fca374, #f77632);
+          background-image: -ms-linear-gradient(top, #fca374, #f77632);
+          background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #fca374), color-stop(100%, #f77632));
+          background-image: -webkit-linear-gradient(top, #fca374, #f77632);
+          background-image: -o-linear-gradient(top, #fca374, #f77632);
+          background-image: linear-gradient(top, #fca374, #f77632);
+          filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FCA374',endColorstr='#F77632',GradientType=0);
+          text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+          border-color: #FCA374 #F77632 #546107;
+          border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25); }
+          .sec3 ul li.terms .more:hover {
+            background-image: -webkit-linear-gradient(top, #f19e71, #f77632); }
   .sec3 .desc {
-    padding: 10px 40px 25px;
+    padding: 10px 40px 15px;
     margin: 0;
     text-align: left;
     color: #8a673b;
@@ -336,6 +422,14 @@ h2 {
     text-shadow: 0 1px 0 #7C7373;
     font-size: 1.3em;
     margin-bottom: 0; }
+  .sec3 .more {
+    display: block;
+    width: 150px;
+    margin: 0 auto 20px;
+    padding: 5px 10px;
+    background-color: #90A900;
+    border-radius: 5px;
+    color: white; }
 
 .want, .need, .sign-up {
   font-weight: bold;
@@ -440,8 +534,9 @@ h2 {
     #plan-form .input input {
       border: 6px solid #DDD8C4;
       border-radius: 10px;
-      padding: 10px 30px;
-      font-size: 0.8em; }
+      padding: 4px 0;
+      font-size: 0.8em;
+      text-align: center; }
     #plan-form .input .amount {
       margin-bottom: 20px; }
   #plan-form .radio input {
@@ -459,10 +554,10 @@ h2 {
     #plan-form .register-box input {
       border: 4px solid #dd9325;
       border-radius: 10px;
-      padding: 15px 20px;
-      font-size: 0.8em;
-      text-align: center;
-      margin: 20px; }
+      padding: 5px 10px;
+      font-size: 1.2em;
+      margin: 20px;
+      text-align: center; }
     #plan-form .register-box .register {
       background: #BE7D1C;
       padding: 5px 60px;
@@ -498,15 +593,15 @@ h2 {
           height: 89px;
           margin-bottom: 15px; }
         .plan ul li a .privacy {
-          background-position-x: -407px; }
+          background-position: -407px 0; }
         .plan ul li a .faq {
-          background-position-x: 0; }
+          background-position: 0 0; }
         .plan ul li a:hover .terms, .plan ul li a:hover .privacy, .plan ul li a:hover .faq {
-          background-position-y: -180px; }
+          background-position: -814px -180px; }
         .plan ul li a:hover .privacy {
-          background-position-x: -407px; }
+          background-position: -407px -180px; }
         .plan ul li a:hover .faq {
-          background-position-x: 0; }
+          background-position: 0 -180px; }
     .plan ul .first {
       margin-left: 3px; }
     .plan ul .last {
@@ -534,26 +629,15 @@ h2 {
   text-align: left;
   line-height: 3em;
   text-shadow: 0 1px 1px white; }
-  #register-form input[type="text"], #register-form input[type="password"] {
+  #register-form input[type="text"] {
     width: 300px;
     padding: 5px 10px; }
-  #register-form .help-block{
-    display: block;
-    font-size: 0.8em;
-    color: #555;
-  }
-  #register-form textarea{
-    resize: none;
-  }
-  #register-form span.error-text{
-    color: #D11;
-    opacity: 0.7;
-  }
-  #register-form span.error-text ul li{
-    list-style-type: none;
-  }
+  #register-form select {
+    font-size: 16px; }
 
 .desc-contract, .desc-free {
+  width: 285px;
+  margin-right: 3px;
   text-shadow: none;
   border-radius: 5px;
   float: right;
@@ -573,10 +657,19 @@ h2 {
 
 .desc-free {
   text-shadow: none;
-  width: 285px;
   background-color: #f7f6f6;
   box-shadow: 0 0 6px #B6B6B6;
   -webkit-box-shadow: 0 0 6px #B6B6B6;
   margin-right: 3px;
   color: #5f5f5f;
   font-size: 0.9em; }
+
+.feature-desc-list {
+  position: relative;
+  height: 400px;
+  overflow: hidden; }
+
+.after-click {
+  position: absolute;
+  top: 0;
+  left: 0; }

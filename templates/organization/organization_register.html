@@ -71,9 +71,9 @@
                 </div>
                 <div class="gradient-box" id="register-action">
                     <div class="title">
-                        <input type="checkbox" name="agree" value="yes"> {% trans 'I accept ' %}<a href="{{STATIC_URL}}pdf/privacy-policy.pdf">{% trans 'the terms of service and pricing conditions' %}</a></input><br />
+                        <input type="checkbox" name="agree" value="yes" class="agreement"> I accept the <a href="{{STATIC_URL}}pdf/privacy-policy.pdf">terms of agreement</a></input><br />
                     </div>
-                    <button name="submitRegister" type="submit">{% trans 'Complete' %}</button>
+                    <button name="submitRegister" type="submit">Complete</button>
                 </div>
                 </form>
 
@@ -110,42 +110,36 @@
             </div>
         </div>
 
-<!-- START Section 4: Contact -->
-<div id="contact-us" class="sec sec4">
-    <div class="sec-wrapper">
-    <ul>
-        <li>
-            <a href="#">
-                <span  class="keep-up-date-img">&nbsp</span>
-                <h4>Keep up date</h4>
-                <p class="desc">News & Announcement</p>
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                <span  class="get-help-img">&nbsp</span>
-                <h4>Get help</h4>
-                <p class="desc">Tutorial Tip Support</p>
-            </a>        
-        </li>
-        <li>
-            <a href="#">
-                <span  class="follow-us">&nbsp</span>                       
-                <h4>Follow us</h4>
-                <p class="desc">Ask question & geek out</p>
-            </a> 
-        </li>
-    </ul>     
-    <p class="contact-us">Contact us : +66.2.274.8534</p>
-    <span>299/92 Areeya Mandarina, Suttisan Winijchai Rd. <br />Samsennok, Huaykwang Bangkok 10310</span>
-    </div>
-</div>
-<!-- END: Section 4 -->
-<div id="select-lang">
-    <ul class="nav">
-        <li><a href="{% url set_lang %}?lang=th&next={{request.path}}"{% if LANGUAGE_CODE == 'th' %} class="active"{% endif %} title="Thai">TH</a></li> 
-        <li><a href="{% url set_lang %}?lang=en&next={{request.path}}"{% if LANGUAGE_CODE == 'en' %} class="active"{% endif %} title="English">EN</a></li>
-    </ul>
-</div>
+        <!-- START Section 4: Contact -->
+        <div id="contact-us" class="sec sec4">
+            <div class="sec-wrapper">
+            <ul>
+                <li>
+                    <a href="#">
+                        <span  class="keep-up-date-img">&nbsp</span>
+                        <h4>Keep up date</h4>
+                        <p class="desc">News & Announcement</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <span  class="get-help-img">&nbsp</span>
+                        <h4>Get help</h4>
+                        <p class="desc">Tutorial Tip Support</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <span  class="follow-us">&nbsp</span>
+                        <h4>Follow us</h4>
+                        <p class="desc">Ask question & geek out</p>
+                    </a>
+                </li>
+            </ul>
+            <p class="contact-us">Contact us : +66.2.274.8534</p>
+            <span>299/92 Areeya Mandarina, Suttisan Winijchai Rd. <br />Samsennok, Huaykwang Bangkok 10310</span>
+            </div>
+        </div>
+        <!-- END: Section 4 -->
     </body>
 </html>

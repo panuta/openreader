@@ -1,99 +1,227 @@
-$(document).ready( function () {
-  $(window).bind('hashchange', hashCheck);
-  hashCheck();
+$(document).ready(function() {
+    var $html = $('html');
+    var $window = $(window);
+    var $header = $('#header');
+    var $features = $('#features');
+    var $price = $('#price-plan');
+    var $contact = $('#contact-us');
+    var $navItems = $('#nav li a');
+    var $featureList = $('.feature-desc-list');
+    var $featureDesc = $('.feature');
+    var $featureItems = $('.feature-icon a');
+    var $featureClose = $('a.hidr');
+    var $question = $('.question');
+    var $answer = $('.answer');
+    var heightList = {};
 
-	hide_all_after_click();
-  //Add active class on Intruduction menu
-  $(".nav-item-1").addClass("active");
-  //Find position of each menu
-  var position_feature = $("#features").position();
-  var position_price = $("#price-plan").position();
-  var position_contact = $("#contact-us").position();
-  //Check scroll position
-  $(window).scroll(function(){
-    //$("#position").text($(window).scrollTop());
-    if ($(window).scrollTop() >= 330) {
-      $("#header").addClass("small-header");
-    } else {
-      $("#header").addClass("header");
-      $("#header").removeClass("small-header");
+    $featureDesc.each(function() {
+        var dataId = $(this).attr('id');
+        var id = parseInt(dataId.split('-')[2]);
+        heightList[id] = $(this).height();
+    });
+
+    var getHeight = function(index) {
+        return heightList[index] || 0;
+    };
+
+    var $scrollElement = (function() {
+        var $html = $(document.documentElement),
+            $body = $(document.body),
+            bodyScrollTop;
+        if ($html.scrollTop()) {
+            return $html;
+        }
+        else {
+            bodyScrollTop = $body.scrollTop();
+            if ($body.scrollTop(bodyScrollTop + 1).scrollTop() == bodyScrollTop) {
+                return $html;
+            } else {
+                // We actually scrolled, so undo it
+                return $body.scrollTop(bodyScrollTop);
+            }
+        }
+    }());
+
+    var setActiveNav = function(index) {
+        $navItems.removeClass('active');
+        $('.nav-item-' + index).addClass('active');
+    };
+
+    var onHashChange = function() {
+        var hash = location.hash;
+        $navItems.removeClass("active");
+        $('a[href=' + hash  + ']').addClass("active");
+    };
+
+    var showFeatureDesc = function(feature, id) {
+        var scrollTop = 0;
+        if (id <= 3) {
+            scrollTop = $featureList.offset().top - 430;
+        }
+        else {
+            scrollTop = $featureList.offset().top - 150;
+            feature.css('top', -360);
+        }
+        $scrollElement.animate({ 'scrollTop': scrollTop }, 500);
+
+        $featureDesc.hide();
+        feature.show();
+
+        feature.animate({ 'top': 0 });
+        $featureList.animate({ 'height': getHeight(id) });
+
+        // Set selected.
+        selectedFeature = id;
+    };
+
+    var closeFeatureDesc = function(feature, id, newFeature, newId) {
+        var scrollTop = 0;
+        if (id > 3) {
+            scrollTop = feature.offset().top - 430;
+            $scrollElement.animate({ 'scrollTop': scrollTop }, 500);
+        }
+
+        $featureList.animate({ 'height': 0 }, 500, function() {
+            selectedFeature = 0;
+            $('.feature-item-' + id + ' a').removeClass('active');
+            if (typeof newFeature !== 'undefined' && id !== newId) {
+                showFeatureDesc(newFeature, newId);
+            }
+        });
+    };
+
+    if (window.front) {
+        $window.scroll(function() {
+            var featuresTop = $features.position().top;
+            var priceTop = $price.position().top - 50;
+            var contactTop = $contact.position().top;
+            var winTop = $window.scrollTop();
+
+            // Active navigation.
+            if (winTop < featuresTop) {
+                setActiveNav(1);
+            }
+            else if (winTop < priceTop) {
+                setActiveNav(2);
+            }
+            else if (winTop < contactTop) {
+                setActiveNav(3);
+            }
+            else {
+                setActiveNav(4);
+            }
+
+            // Change header when scroll down .
+            if ($window.scrollTop() >= 330) {
+                $header.addClass("small-header");
+            } else {
+                $header.addClass("header");
+                $header.removeClass("small-header");
+            }
+        });
     }
 
-    if (position_feature){
-      if ($(window).scrollTop() >= 0 && $(window).scrollTop() < position_feature.top) {
-        remove_class_active_nav();
-        $(".nav-item-1").addClass("active");
-      } else if ($(window).scrollTop() >= position_feature.top && $(window).scrollTop() < position_price.top-50) {
-        remove_class_active_nav();
-        $(".nav-item-2").addClass("active");
-      } else if ($(window).scrollTop() >= position_price.top-50 && $(window).scrollTop() < position_price.top+150) {
-        remove_class_active_nav();
-        $(".nav-item-3").addClass("active");
-      } else if ($(window).scrollTop() >= position_price.top+150) {
-        remove_class_active_nav();
-        $(".nav-item-4").addClass("active");
-      } else {
-        remove_class_active_nav();
-      }
-    }
-  });
+    // Features effect.
+    var selectedFeature = 0;
+    $featureItems.click(function(e) {
+        var that = $(this);
+        var dataId = that.attr('data-id');
+        var id = parseInt(dataId.split('-')[2]);
+        var $feature = $('#'+ dataId);
+        var $selectedFeature = null;
 
-  /** Show & Hide effect **/
-  $(".showr").click(function (event) {
-    $(".showr").removeClass("active");
-    event.preventDefault();
-  	class_name = $(this).attr("class");
-  	var class_name_part = class_name.split("-");
-  	if (class_name_part[1]) {
-  		var after_click_class_name = "feature-"+class_name_part[1];
-      var dp = $(".feature-"+class_name_part[1]).css("display");
-      if (dp != 'block') {
-        $(this).addClass("active");
-        show_only_after_click(after_click_class_name);
-      }
-  	}
-  });
+        // Set active.
+        $featureItems.removeClass('active'); 
+        that.addClass('active');
 
-  $(".hidr").click(function (event) {
-    event.preventDefault();
-    class_name = $(this).attr("class");
-    var class_name_part = class_name.split("-");
-    var class_name_part2 = class_name_part[1].split(" ");
-    if (class_name_part2[0]) {
-      hide_with_effect();
-    }
-  });
+        if (selectedFeature > 0) {
+            $selectedFeature = $('#feature-desc-' + selectedFeature);
+            closeFeatureDesc($selectedFeature, selectedFeature, $feature, id);
+        }
+        else {
+            showFeatureDesc($feature, id);
+        }
 
+        e.preventDefault();
+    });
+    
+    $featureItems.mouseenter(function(e) {
+        if (selectedFeature > 0) return;
+
+        var that = $(this);
+        var dataId = that.attr('data-id');
+        var id = parseInt(dataId.split('-')[2]);
+        var $feature = $('#'+ dataId);
+
+        $featureDesc.hide();
+        $feature.show();
+        if (id <= 3) {
+            
+        }
+        else {
+            $feature.css('top', -360);
+        }
+        $featureList.stop().animate({ 'height': 40 }, { 'queue': false, 'duration': 300, 'complete': function() {
+            // $featureList.css('overflow', 'visible');
+        }});
+    });
+    
+    $featureItems.mouseleave(function(e) {
+        if (selectedFeature > 0) return;
+
+        var that = $(this);
+        var dataId = that.attr('data-id');
+        var id = parseInt(dataId.split('-')[2]);
+        var $feature = $('#'+ dataId);
+
+        $featureList.stop().animate({ 'height': 0 }, { 'queue': false, 'duration': 300, 'complete': function() {
+            $feature.css('top', 0);
+            // $featureList.css('overflow', 'visible');
+        }});
+    });
+
+    // Hide description.
+    $featureClose.click(function(e) {
+        var that = $(this);
+        var dataId = that.attr('data-id');
+        var id = parseInt(dataId.split('-')[2]);
+        var $feature = $('#'+ dataId);
+
+        closeFeatureDesc($feature, id);
+
+        e.preventDefault();
+    });
+    
+    // Hide all description.
+    $featureList.css('height', 0);
+    $featureDesc.hide();
+
+    // Handle hash.
+    $window.bind('hashchange', onHashChange);
+    $window.trigger('hashchange');
+
+    // FAQ
+    var selectedQuestion = 0;
+    $question.click(function(e) {
+        if (selectedQuestion > 0) {
+            $answer.each(function() {
+                $(this).slideUp();
+            });
+        }
+
+        var answer = $(this).siblings('.answer');
+        if (answer.is(':visible')) {
+            answer.slideUp();
+            selectedQuestion = 0;
+        }
+        else {
+            answer.slideDown();
+            selectedQuestion = $(this).attr('data-id');
+        }
+
+        e.preventDefault();
+    });
+
+    // Hide FAQ answer.
+    $answer.hide();
 });
-
-function hide_only_after_click(show_class) {
-  hide_all_after_click();
-  $("."+show_class).slideDown(800);
-}
-
-function show_only_after_click(show_class) {
-	hide_all_after_click();
-  $("."+show_class).slideDown(800);
-  $('html, body').animate({ scrollTop: $("."+show_class).offset().top - 430 }, 500);
-}
-
-function hide_with_effect() {
-  $(".after-click").slideUp(800);
-}
-
-function hide_all_after_click() {
-	$(".after-click").hide();
-}
-//Remove all active class on Header Menu.
-function remove_class_active_nav() {
-  $("#nav li a").removeClass("active");
-}
-
-/**
- * Remove & add active class on Header Menu.
- */
-function hashCheck() {
-  var hash = location.hash;
-  $("#nav li a").removeClass("active");
-  $("#nav li a[href$='" + hash  + "']").addClass("active");
-}
