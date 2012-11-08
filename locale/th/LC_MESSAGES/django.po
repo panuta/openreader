@@ -626,6 +626,12 @@ msgstr "ผู้ใช้คนนี้อยู่ในระบบแล้
 msgid "This company abbreviate name is already exists in the system."
 msgstr "ชื่อย่อบริษัทนี้ซ้ำกับชื่ออื่นๆ ในระบบ"
 
+msgid "Company url name must contains only characters and numbers."
+msgstr "ชื่อลิงค์ url ของบริษัทต้องมีแค่ตัวอักษรภาษาอังกฤษและตัวเลขเท่านั้น"
+
+msgid "This company url name is already exists in the system."
+msgstr "ชื่อลิงค์ url นี้มีอยู่ในระบบแล้ว"
+
 
 # MESSAGE ############################################################################
 msgid "%s has been a part of the organization %s"

@@ -1,5 +1,7 @@
 # -*- encoding: utf-8 -*-
 
+import re
+
 from django import forms
 from django.contrib.auth.models import User
 from django.core.validators import email_re
@@ -8,7 +10,7 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from common.countries import COUNTRY_CHOICES_WITH_BLANK
 from common.forms import StrippedCharField
 
-from domain.models import OrganizationGroup, UserOrganizationInvitation, UserOrganization, OrganizationAdminPermission, OrganizationShelf, Organization
+from domain.models import OrganizationGroup, UserOrganizationInvitation, UserOrganization, OrganizationAdminPermission, OrganizationShelf, Organization, OrganizationInvitation
 
 # USER ACCOUNT #########################################################################################################
 
@@ -36,20 +38,22 @@ class UserProfileForm(forms.Form):
 
 class OrganizationRegisterForm(forms.Form):
     organization_name = StrippedCharField(max_length=200)
-    organization_slug = StrippedCharField(max_length=200)
+    organization_slug = forms.CharField(max_length=200)
     organization_address = StrippedCharField(max_length=500, widget=forms.Textarea(attrs={'class':'input-large', 'rows':'10', 'cols': '60'}))
     organization_country = forms.ChoiceField(choices=COUNTRY_CHOICES_WITH_BLANK, widget=forms.Select(attrs={'style':'width:110px;'}))
     organization_tel = StrippedCharField(max_length=30)
+    organization_email = forms.EmailField(widget=forms.TextInput(attrs={'class':'span6'}))
 
     admin_email = forms.EmailField(widget=forms.TextInput(attrs={'class':'span6'}))
 
     def clean_organization_slug(self):
         organization_slug = self.cleaned_data['organization_slug']
 
-        if Organization.objects.filter(slug=organization_slug).exists():
-            raise forms.ValidationError(ugettext('This company abbreviate name is already exists in the system.'))
+        if not re.match('^[A-Za-z0-9]*$', organization_slug):
+            raise forms.ValidationError(ugettext('Company url name must contains only characters and numbers.'))
 
-        organization_slug = organization_slug.replace(' ', '')
+        if Organization.objects.filter(slug=organization_slug).exists() or OrganizationInvitation.objects.filter(organization_slug=organization_slug).exists():
+            raise forms.ValidationError(ugettext('This company url name is already exists in the system.'))
 
         return organization_slug
 

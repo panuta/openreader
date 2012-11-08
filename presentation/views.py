@@ -19,6 +19,7 @@ from django.db import transaction
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
+from django.utils import translation
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
@@ -131,6 +132,7 @@ def plan_organization(request):
     return render(request, 'organization/organization_plan.html')
 
 def register_organization(request):
+    translation.activate('en')
     contract_type_get = request.GET.get('contract-length')
     if contract_type_get == 'MONTHLY':
         contract_type = {
@@ -169,6 +171,7 @@ def register_organization(request):
                     organization_tel = form.cleaned_data['organization_tel'],
                     organization_contract_type = contract_type['contract_type_code'],
                     organization_contract_month_remain = contract_type['contract_month_remain'],
+                    organization_email = form.cleaned_data['organization_email'],
                 )
             else:
                 invitation = OrganizationInvitation.objects.create_invitation(
@@ -182,6 +185,7 @@ def register_organization(request):
                     organization_tel = form.cleaned_data['organization_tel'],
                     organization_contract_type = contract_type['contract_type_code'],
                     organization_contract_month_remain = contract_type['contract_month_remain'],
+                    organization_email = form.cleaned_data['organization_email'],
                 )
 
             try:

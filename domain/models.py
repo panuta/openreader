@@ -97,6 +97,7 @@ class Organization(models.Model):
     address = models.TextField()
     country = models.CharField(max_length=3)
     tel = models.CharField(max_length=20)
+    email = models.CharField(max_length=100)
 
     contract_type = models.IntegerField(default=MONTHLY_CONTRACT, choices=CONTRACT_TYPE_CHOICES)
     contract_month_remain = models.IntegerField(default=1)
@@ -213,7 +214,7 @@ class OrganizationPaypalPayment(models.Model):
 
 class OrganizationInvitationManager(models.Manager):
 
-    def create_invitation(self, organization_prefix, organization_name, organization_slug, admin_email, created_by, organization_address, organization_country, organization_tel, organization_contract_type, organization_contract_month_remain):
+    def create_invitation(self, organization_prefix, organization_name, organization_slug, admin_email, created_by, organization_address, organization_country, organization_tel, organization_contract_type, organization_contract_month_remain, organization_email):
         key_salt = 'domain.models.OrganizationInvitationManager' + settings.SECRET_KEY
         encode_key = (admin_email+organization_slug).encode('utf-8')
         invitation_key = salted_hmac(key_salt, encode_key).hexdigest()
@@ -229,6 +230,7 @@ class OrganizationInvitationManager(models.Manager):
             organization_tel = organization_tel,
             organization_contract_type = organization_contract_type,
             organization_contract_month_remain = organization_contract_month_remain,
+            organization_email = organization_email,
         )
 
     def claim_invitation(self, invitation, user, is_default=False):
@@ -242,6 +244,7 @@ class OrganizationInvitationManager(models.Manager):
             contract_type = invitation.organization_contract_type,
             contract_month_remain = invitation.organization_contract_month_remain,
             created_by = user,
+            email = invitation.organization_email,
         )
         
         # TODO Create UserOrganization
@@ -284,6 +287,7 @@ class OrganizationInvitation(models.Model):
     organization_tel = models.CharField(max_length=20)
     organization_contract_type = models.IntegerField(default=Organization.MONTHLY_CONTRACT, choices=Organization.CONTRACT_TYPE_CHOICES)
     organization_contract_month_remain = models.IntegerField(default=1)
+    organization_email = models.CharField(max_length=100)
 
     def __unicode__(self):
         return '%s' % (self.organization_name)
