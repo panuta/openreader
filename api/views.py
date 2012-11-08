@@ -57,14 +57,17 @@ def list_publication(request):
         result = {}
         
         email = _get_email(request)
-        organization = request.GET.get('organization') or 'opendream'
-        
         user_profile = UserProfile.objects.get(user__email=email)
+
+        organization = request.GET.get('organization')
         
         try:
             user_organization = UserOrganization.objects.get(organization__slug=organization, user=user_profile.user)
         except:
-            return HttpResponse('Page not found', status=404)
+            try:
+                user_organization = UserOrganization.objects.filter(user=user_profile.user).order_by('is_default')[0]
+            except:
+                return HttpResponse('Page not found', status=404)
 
         if not user_organization.is_active:
             return HttpResponse('No permissions', status=403)
