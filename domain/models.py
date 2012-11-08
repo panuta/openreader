@@ -26,7 +26,7 @@ SHA1_RE = re.compile('^[a-f0-9]{40}$')
 
 class UserProfileManager(models.Manager):
 
-    def create_user_profile(self, email, first_name, last_name, password, id_no, country, update_if_exists=False):
+    def create_user_profile(self, email, first_name, last_name, password, id_no=None, country=None, update_if_exists=False):
         try:
             user = User.objects.get(email=email)
             user_profile = user.get_profile()
@@ -38,8 +38,10 @@ class UserProfileManager(models.Manager):
 
                 user_profile.first_name = first_name
                 user_profile.last_name = last_name
-                user_profile.id_no = id_no
-                user_profile.country = country
+                if id_no:
+                    user_profile.id_no = id_no
+                if country:
+                    user_profile.country = country
                 user_profile.save()
 
         except User.DoesNotExist:
@@ -54,8 +56,8 @@ class UserProfile(models.Model):
     first_name = models.CharField(max_length=100) # first_name and last_name in contrib.auth.User is too short
     last_name = models.CharField(max_length=100)
     is_first_time = models.BooleanField(default=True)
-    id_no = models.CharField(max_length=30)
-    country = models.CharField(max_length=3)
+    id_no = models.CharField(max_length=30, blank=True)
+    country = models.CharField(max_length=3, blank=True)
 
     def __unicode__(self):
         return '%s %s' % (self.first_name, self.last_name)
