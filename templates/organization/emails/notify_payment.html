@@ -17,9 +17,8 @@
 					<div style="padding: 20px 50px; border-radius: 5px;">
 						<img src="{{ settings.WEBSITE_DOMAIN }}/static/images/logo-email.png" alt="Openreader" />
 						<p style="background: rgba(255, 255, 255, 0.49); padding: 10px 20px;border-radius: 5px; font-size: 14px; line-height: 20px;">
-						{% load helper_tags %}
 
-Billing for the organization {{ organization.name }} service on Openreader from {{ invoice.start_date|format_date }} to {{ invoice.end_date|format_date }}.
+Billing for the organization {{ organization.name }} service on Openreader from {{ invoice.start_date|date:"F j, Y" }} to {{ invoice.end_date|date:"F j, Y" }}.
 
 You can continue to use Openreader by pay the service with PAYPAL at the link below
 
