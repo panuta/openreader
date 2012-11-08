@@ -1,8 +1,8 @@
 [
 
-{"pk": 1, "model": "domain.organizationadminpermission", "fields": {"name": "การจัดการผู้ใช้ระบบ (เพิ่ม แก้ไข และถอดรายชื่อผู้ใช้ระบบ)", "code_name": "manage_user"}},
-{"pk": 2, "model": "domain.organizationadminpermission", "fields": {"name": "การจัดการกลุ่มผู้ใช้ (สร้าง แก้ไข และลบกลุ่มผู้ใช้)", "code_name": "manage_group"}},
-{"pk": 3, "model": "domain.organizationadminpermission", "fields": {"name": "การจัดการกลุ่มเอกสาร (สร้าง แก้ไข และลบกลุ่มเอกสาร)", "code_name": "manage_shelf"}},
+{"pk": 1, "model": "domain.organizationadminpermission", "fields": {"name_en": "Users management (Add, edit and remove users)", "name_th": "การจัดการผู้ใช้ระบบ (เพิ่ม แก้ไข และถอดรายชื่อผู้ใช้ระบบ)", "code_name": "manage_user"}},
+{"pk": 2, "model": "domain.organizationadminpermission", "fields": {"name_en": "Groups management (Add, edit and remove groups)", "name_th": "การจัดการกลุ่มผู้ใช้ (สร้าง แก้ไข และลบกลุ่มผู้ใช้)", "code_name": "manage_group"}},
+{"pk": 3, "model": "domain.organizationadminpermission", "fields": {"name_en": "Shelves management (Create, edit and remove shelves)", "name_th": "การจัดการกลุ่มเอกสาร (สร้าง แก้ไข และลบกลุ่มเอกสาร)", "code_name": "manage_shelf"}},
 
 
 {"pk": 1, "model": "auth.user", "fields": {"username": "system", "email": "system@openreader.com", "is_active": true, "is_superuser": true, "is_staff": true, "last_login": "2011-12-01 00:00:00+07:00", "groups": [], "user_permissions": [], "password": "pbkdf2_sha256$10000$KnKQnW8UwRGT$M6im7byfvTcA38ABP3WS5245FbSGt+3Sn7CGKzSYtTc=", "date_joined": "2011-12-01 00:00:00+07:00"}},
@@ -17,8 +17,8 @@
 {"pk": 3, "model": "domain.userprofile", "fields": {"first_name": "Staff", "last_name": "Openreader", "is_first_time": true, "user": 3}},
 {"pk": 4, "model": "domain.userprofile", "fields": {"first_name": "User", "last_name": "Openreader", "is_first_time": true, "user": 4}},
 
-{"pk": 1, "model": "domain.organization", "fields": {"status": 0, "modified_by": 2, "name": "Opendream", "slug":"opendream", "prefix":"บริษัท", "created_by": 2, "created": "2011-12-01 00:00:00+07:00", "modified": "2011-12-01 00:00:00+07:00", "contract_type": 2, "contract_month_remain": 13}},
-{"pk": 2, "model": "domain.organization", "fields": {"status": 0, "modified_by": 2, "name": "OpendreamTwo", "slug":"OpendreamTwo", "prefix":"บริษัท", "created_by": 2, "created": "2011-12-01 00:00:00+07:00", "modified": "2011-12-01 00:00:00+07:00"}},
+{"pk": 1, "model": "domain.organization", "fields": {"status": 0, "modified_by": 2, "name": "Opendream", "slug":"opendream", "prefix":"บริษัท", "created_by": 2, "created": "2011-12-01 00:00:00+07:00", "modified": "2011-12-01 00:00:00+07:00", "contract_type": 2, "contract_month_remain": 13, "address": "Bangkok", "country": "THA", "tel": "0871234567", "email": "admin@openreader.com"}},
+{"pk": 2, "model": "domain.organization", "fields": {"status": 0, "modified_by": 2, "name": "OpendreamTwo", "slug":"OpendreamTwo", "prefix":"บริษัท", "created_by": 2, "created": "2011-12-01 00:00:00+07:00", "modified": "2011-12-01 00:00:00+07:00", "address": "Bangkok", "country": "THA", "tel": "0871234567", "email": "admin@openreader.com"}},
 
 {"pk": 1, "model": "domain.userorganization", "fields": {"is_default": true, "organization": 1, "user": 2, "is_admin":true, "created": "2011-12-01 00:00:00+07:00"}},
 {"pk": 2, "model": "domain.userorganization", "fields": {"is_default": true, "organization": 1, "user": 3, "is_admin":false, "created": "2011-12-01 00:00:00+07:00"}},

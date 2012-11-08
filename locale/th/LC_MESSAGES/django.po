@@ -261,7 +261,7 @@ msgstr "ชื่อกลุ่มเอกสาร"
 msgid "All files in this shelf will be auto downloaded to user"
 msgstr "ทุกไฟล์ในกลุ่มเอกสารนี้จะถูกดาวน์โหลดลงเครื่องผู้ใช้โดยอัตโนมัติ"
 
-msgid "All files in thie shelf will be archieved"
+msgid "All files in this shelf will be archieved"
 msgstr "ทุกไฟล์ในกลุ่มเอกสารนี้จะถูกเก็บเข้ากรุ"
 
 msgid "Shelf icon"

@@ -7,13 +7,14 @@ import shortuuid
 import uuid
 
 from django.conf import settings
-from django.core.mail import send_mail
+from django.contrib import admin
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.template.loader import render_to_string
+from django.utils import translation
 from django.utils.crypto import salted_hmac
-from django.core.urlresolvers import reverse
-from django.contrib import admin
 
 from private_files import PrivateFileField
 
@@ -78,11 +79,19 @@ class UserProfile(models.Model):
 
 # Admin Permissions
 class OrganizationAdminPermission(models.Model):
-    name = models.CharField(max_length=200)
+    name_en = models.CharField(max_length=200)
+    name_th = models.CharField(max_length=200)
     code_name = models.CharField(max_length=200)
 
     def __unicode__(self):
         return self.name
+
+    @property
+    def name(self):
+        if translation.get_language() == 'th':
+            return self.name_th
+        else:
+            return self.name_en
 
 # Organization
 

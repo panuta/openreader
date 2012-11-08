@@ -127,7 +127,7 @@ $(document).ready(function () {
 
             <div class="control-group">
                 <label class="control-label" for="id_archive">Archive</label>
-                <div class="controls row-controls"><ul><li><label>{{form.archive}} {% trans 'All files in thie shelf will be archieved' %}</label></li></ul>{{form.archive.errors}}</div>
+                <div class="controls row-controls"><ul><li><label>{{form.archive}} {% trans 'All files in this shelf will be archieved' %}</label></li></ul>{{form.archive.errors}}</div>
             </div>
 
             <div class="control-group">
@@ -155,7 +155,7 @@ $(document).ready(function () {
                             </tr>
                             {% for group in organization.organizationgroup_set.all %}
                             <tr>
-                                <td class="group">กลุ่มผู้ใช้ <em>{{ group.name }}</em></td>
+                                <td class="group">{% trans 'Group' %} <em>{{ group.name }}</em></td>
                                 <td class="permission">
                                     {% if shelf %}
                                         {% shelf_group_permission_radio group shelf %}
