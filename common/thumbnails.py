@@ -30,7 +30,7 @@ def get_thumbnail_url(publication, size):
 def delete_thumbnails(publication):
     for thumbnail_size in settings.THUMBNAIL_SIZES:
         try:
-            os.remove('%s%s/%s.%s.jpg' % (settings.THUMBNAIL_ROOT, publication.get_parent_folder(), file_name, thumbnail_size[0]))
+            os.remove('%s%s/%s.%s.jpg' % (settings.THUMBNAIL_ROOT, publication.get_parent_folder(), publication.uid, thumbnail_size[0]))
         except:
             logger.error(traceback.format_exc(sys.exc_info()[2]))
 
