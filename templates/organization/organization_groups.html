@@ -21,7 +21,7 @@
             <td>{{ group.name }}</td>
             <td><a href="{% url view_organization_group_members group.id %}">{{ group.get_user_count }} {% if group.get_user_count > 1 %}{% trans 'users' %}{% else %}{% trans 'user' %}{% endif %}</a></td>
             <td>{% if group.description %}{{ group.description }}{% else %}-{% endif %}</td>
-            <td class="row_actions"><a href="{% url edit_organization_group group.id %}" class="btn-small btn"><i class="icon edit"></i> {% trans 'edit' %}</a></td>
+            <td class="row_actions"><a href="{% url edit_organization_group group.id %}" class="btn-small btn"><i class="icon edit"></i> {% trans 'Edit' %}</a></td>
         </tr>
     {% endfor %}
     </tbody>
