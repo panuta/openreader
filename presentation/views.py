@@ -134,17 +134,18 @@ def plan_organization(request):
 def register_organization(request):
     translation.activate('en')
     contract_type_get = request.GET.get('contract-length')
+    amount = int(request.GET.get('amount')) or 1
     if contract_type_get == 'MONTHLY':
         contract_type = {
             'title': '1 Month contract',
-            'price': 7.50,
+            'price': 7.50 * amount,
             'contract_month_remain': 1,
             'contract_type_code': Organization.MONTHLY_CONTRACT,
         }
     elif contract_type_get == 'YEARLY':
         contract_type = {
             'title': '1 Year contract',
-            'price': 6.00,
+            'price': 6.00 * amount,
             'contract_month_remain': 13,
             'contract_type_code': Organization.YEARLY_CONTRACT,
         }
@@ -199,6 +200,7 @@ def register_organization(request):
     return render(request, 'organization/organization_register.html', {
         'form': form,
         'contract_type': contract_type,
+        'amount': amount,
     })
 
 def register_organization_done(request):
