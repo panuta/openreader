@@ -174,10 +174,10 @@ h2 {
 .feature1_3 {
   border-bottom: 1px solid white;
   background: url("../images/homepage/border-header.png") no-repeat center bottom;
-  /*  ul {border-bottom: 1px solid #D4CCAC;} */ }
+  /* 	ul {border-bottom: 1px solid #D4CCAC;} */ }
 
 .feature4_6 {
-  /*  border-bottom: 1px solid #D4CCAC; */
+  /* 	border-bottom: 1px solid #D4CCAC; */
   margin-top: 50px; }
 
 /* ---------------------- Features item 1-9  ----------------------*/
@@ -266,7 +266,7 @@ h2 {
       background: -o-linear-gradient(90deg, #efece0 0%, #fdfaed 66%);
       background: -ms-linear-gradient(90deg, #efece0 0%, #fdfaed 66%);
       background: linear-gradient(90deg, #efece0 0%, #fdfaed 66%);
-      /*      background-color: #f7f3e7; */
+      /* 			background-color: #f7f3e7; */
       overflow: hidden;
       box-shadow: 0 0 6px #B6B6B6;
       -webkit-box-shadow: 0 0 6px #B6B6B6;
@@ -329,38 +329,38 @@ h2 {
           background-image: -webkit-linear-gradient(top, #569b1e, #316d02); }
       .sec3 ul li.terms {
         margin-right: 0;
-                /*
+        				/*
         height: 255px;
-                margin-right: 0;
-                background: rgb(223, 223, 223);
-                background: -moz-linear-gradient(90deg, rgb(223, 223, 223) 0%, rgb(232, 232, 232) 29%);
-                background: -webkit-linear-gradient(90deg, rgb(223, 223, 223) 0%, rgb(232, 232, 232) 29%);
-                background: -o-linear-gradient(90deg, rgb(223, 223, 223) 0%, rgb(232, 232, 232) 29%);
-                background: -ms-linear-gradient(90deg, rgb(223, 223, 223) 0%, rgb(232, 232, 232) 29%);
-                background: linear-gradient(90deg, rgb(223, 223, 223) 0%, rgb(232, 232, 232) 29%);
-                h3 { background-color: #ffa004; }
-                .desc { margin: 26px 10px; text-align: center; }
-                .more { 
-                  margin-top: 45px;
-                  color: white;
-                  background-color: #ffa004;
-                  background-repeat: repeat-x;
-                  background-image: -khtml-gradient(linear,left top,left bottom,from(#ffa004),to(#F77632));
-                  background-image: -moz-linear-gradient(top,#ffa004,#F77632);
-                  background-image: -ms-linear-gradient(top,#ffa004,#F77632);
-                  background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0%,#ffa004),color-stop(100%,#F77632));
-                  background-image: -webkit-linear-gradient(top,#ffa004,#F77632);
-                  background-image: -o-linear-gradient(top,#ffa004,#F77632);
-                  background-image: linear-gradient(top,#ffa004,#F77632);
-                  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffa004',endColorstr='#F77632',GradientType=0);
-                  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-                  border-color: #ffa004 #F77632 #546107;
-                  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-                  &:hover { 
-                    background-image: -webkit-linear-gradient(top,#ffa004,#F77632);
-                  }
-                }
-                
+        				margin-right: 0;
+        				background: rgb(223, 223, 223);
+        				background: -moz-linear-gradient(90deg, rgb(223, 223, 223) 0%, rgb(232, 232, 232) 29%);
+        				background: -webkit-linear-gradient(90deg, rgb(223, 223, 223) 0%, rgb(232, 232, 232) 29%);
+        				background: -o-linear-gradient(90deg, rgb(223, 223, 223) 0%, rgb(232, 232, 232) 29%);
+        				background: -ms-linear-gradient(90deg, rgb(223, 223, 223) 0%, rgb(232, 232, 232) 29%);
+        				background: linear-gradient(90deg, rgb(223, 223, 223) 0%, rgb(232, 232, 232) 29%);
+        				h3 { background-color: #ffa004;	}
+        				.desc { margin: 26px 10px; text-align: center; }
+        				.more { 
+        					margin-top: 45px;
+        					color: white;
+        					background-color: #ffa004;
+        					background-repeat: repeat-x;
+        					background-image: -khtml-gradient(linear,left top,left bottom,from(#ffa004),to(#F77632));
+        					background-image: -moz-linear-gradient(top,#ffa004,#F77632);
+        					background-image: -ms-linear-gradient(top,#ffa004,#F77632);
+        					background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0%,#ffa004),color-stop(100%,#F77632));
+        					background-image: -webkit-linear-gradient(top,#ffa004,#F77632);
+        					background-image: -o-linear-gradient(top,#ffa004,#F77632);
+        					background-image: linear-gradient(top,#ffa004,#F77632);
+        					filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffa004',endColorstr='#F77632',GradientType=0);
+        					text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+        					border-color: #ffa004 #F77632 #546107;
+        					border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+        					&:hover { 
+        						background-image: -webkit-linear-gradient(top,#ffa004,#F77632);
+        					}
+        				}
+        				
         */ }
         .sec3 ul li.terms h3 {
           color: #8A673B;
@@ -566,10 +566,9 @@ h2 {
       font-family: HelveticaNeue-Light, "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; }
       #plan-form .register-box .register:hover {
         background: #966722; }
-    #plan-form .register-box button.register {
+    #plan-form .register-box button .register {
       border: none;
-      font-size: 14px;
-    }
+      font-size: 14px; }
 
 .plan {
   font-family: Helvetica Neue, HelveticaNeue-Light, "Helvetica Neue Light", Arial, "Lucida Grande", sans-serif; }
@@ -673,3 +672,11 @@ h2 {
   position: absolute;
   top: 0;
   left: 0; }
+
+.help-block {
+  font-size: 12px;
+  line-height: 20px;
+  font-style: italic; }
+  .help-block .example {
+    color: #FFAE35;
+    font-size: 15px; }
