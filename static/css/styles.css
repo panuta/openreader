@@ -1507,3 +1507,19 @@ table tr.checked td {
 .summarize-form p {
   color: #555;
 }
+.summarize-form .summarize_total {
+  box-shadow: 0 1px 9px #ccc;
+  width: 500px;
+  background-color: white;
+  padding: 5px 20px 20px;
+  margin-top: 20px;
+}
+.summarize-form .summarize_total .help-text {
+  font-style: italic;
+  font-size: 12px;
+  margin-top: 20px;
+  display: block;
+}
+.summarize-form .form-actions {
+  padding-left: 0;
+}

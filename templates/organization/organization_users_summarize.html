@@ -42,7 +42,7 @@
                 <li>{{ email }}</li>
                 {% endfor %}
             </ul>
-
+				<div class="summarize_total">
             <h4 class="total_current_user_title">{% trans 'Total current users' %}</h4>
             <p class="total_current_user">{{ total_users }}</p>
             {% if invited_users %}
@@ -58,7 +58,8 @@
             <h4 class="total_expected_price">{% trans 'Expected next total service price' %}</h4>
             <p class="total_expected_price">&#8364; {{ next_total_price }}</p>
             <span class="help-text">*{% trans 'Price will have effect on the billing according to '%}<a href="{{STATIC_URL}}pdf/privacy-policy.pdf">{% trans 'the terms of service and pricing conditions' %}</a></span>
-            
+        </div>
+        
             <input type="hidden" name="emails" value="{{emails}}"/>
             <input type="hidden" name="groups" value="{{groups}}"/>
             <input type="hidden" name="action" value="{{action}}"/>
