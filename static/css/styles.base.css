@@ -449,6 +449,7 @@ table tr.checked td {
 }
 .organization_users_page .tab-content table tbody tr,
 .organization_users_page .tab-content table td {
+  background-color: white;
   border-top: none;
   border-left: none;
   padding: 13px 40px;
