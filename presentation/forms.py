@@ -39,7 +39,7 @@ class UserProfileForm(forms.Form):
 class OrganizationRegisterForm(forms.Form):
     organization_name = StrippedCharField(max_length=200)
     organization_slug = forms.CharField(max_length=200)
-    organization_address = StrippedCharField(max_length=500, widget=forms.Textarea(attrs={'class':'input-large', 'rows':'10', 'cols': '60'}))
+    organization_address = StrippedCharField(max_length=500)
     organization_country = forms.ChoiceField(choices=COUNTRY_CHOICES_WITH_BLANK, widget=forms.Select(attrs={'style':'width:110px;'}))
     organization_tel = StrippedCharField(max_length=30)
     organization_email = forms.EmailField(widget=forms.TextInput(attrs={'class':'span6'}))
