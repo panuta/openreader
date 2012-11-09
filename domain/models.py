@@ -10,11 +10,14 @@ from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.template.loader import render_to_string
+from django.template.loader import render_to_string
 from django.utils import translation
 from django.utils.crypto import salted_hmac
+from django.utils.html import strip_tags
 
 from private_files import PrivateFileField
 
@@ -306,20 +309,29 @@ class OrganizationInvitation(models.Model):
     objects = OrganizationInvitationManager()
 
     def send_invitation_email(self):
+        html_email_body = render_to_string('manage/emails/organization_invitation.html', {
+            'invitation' : self,
+            'settings': settings,
+        })
+        text_email_body = strip_tags(html_email_body)
+        subject = 'Please confirm to create %s account in %s' % (self.organization_name, settings.WEBSITE_NAME)
+        send_to_emails = [self.admin_email]
+
+        msg = EmailMultiAlternatives(
+            subject,
+            text_email_body,
+            settings.EMAIL_ADDRESS_NO_REPLY,
+            send_to_emails
+        )
+        msg.attach_alternative(html_email_body, "text/html")
+
         try:
-            send_mail(
-                'Please confirm to create %s account in %s' % (self.organization_name, settings.WEBSITE_NAME), 
-                render_to_string(
-                    'manage/emails/organization_invitation.html', {
-                        'invitation':self 
-                    }
-                ), 
-                settings.EMAIL_ADDRESS_NO_REPLY, 
-                [self.admin_email], 
-                fail_silently = False
-            )
+            msg.send()
+            print True
             return True
         except:
+            import sys
+            print sys.exc_info()
             return False
 
 # User Invitation
@@ -368,19 +380,29 @@ class UserOrganizationInvitation(models.Model):
         return "%s%s" % (settings.WEBSITE_DOMAIN, reverse('claim_user_invitation', args=[self.invitation_key]))
 
     def send_invitation_email(self):
+        html_email_body = render_to_string('organization/emails/user_organization_invitation.html', {
+            'invitation' : self,
+            'settings': settings,
+        })
+        text_email_body = strip_tags(html_email_body)
+        subject = 'You are invited to join %s in %s' % (self.organization.name, settings.WEBSITE_NAME)
+        send_to_emails = [self.email]
+
+        msg = EmailMultiAlternatives(
+            subject,
+            text_email_body,
+            settings.EMAIL_ADDRESS_NO_REPLY,
+            send_to_emails
+        )
+        msg.attach_alternative(html_email_body, "text/html")
+
         try:
-            send_mail(
-                u'You are invited to join %s in %s' % (self.organization.name, settings.WEBSITE_NAME), 
-                render_to_string('organization/emails/user_organization_invitation.html', {
-                        'invitation' : self
-                    }
-                ), 
-                settings.EMAIL_ADDRESS_NO_REPLY, 
-                [self.email], 
-                fail_silently = False
-            )
+            msg.send()
+            print True
             return True
         except:
+            import sys
+            print sys.exc_info()
             return False
 
 """

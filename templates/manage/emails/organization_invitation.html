@@ -19,7 +19,17 @@
 					<div style="padding: 20px 50px;">
 						<img src="{{ settings.WEBSITE_DOMAIN }}/static/images/logo-email.png" alt="Openreader" />
 							<p style="background: rgba(255, 255, 255, 0.49); padding: 10px 20px;border-radius: 5px; font-size: 14px; line-height: 20px;">
-									{% url claim_organization_invitation invitation.invitation_key %}
+								Dear, <br /><br />
+
+								Thank you for use OpenReader,
+								you can activate your company by clicking the link below.
+								<br /><br />
+
+								{{settings.WEBSITE_DOMAIN}}{% url claim_organization_invitation invitation.invitation_key %}
+								<br /><br />
+								Welcome to OpenReader, we hope you enjoy it!
+								<br /><br />
+								Sincerely,<br />OpenReader team
 							</p>
 					</div>
 				</td>
