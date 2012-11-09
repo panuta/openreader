@@ -38,8 +38,6 @@ h2 {
 	letter-spacing: 2px;
 	font-weight: bold;
 }
-.sec {
-}
 
 @font-face {
     font-family: 'db_moment_xregular';
@@ -779,4 +777,14 @@ h3 {
  position: absolute;
  top: 0;
  left: 0;
+}
+
+.help-block {
+	font-size: 12px;
+	line-height: 20px;
+	font-style: italic;
+	.example {
+		color: #FFAE35;
+		font-size: 15px;
+	}
 }
