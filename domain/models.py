@@ -128,7 +128,7 @@ class Organization(models.Model):
         return OrganizationInvoice.objects.filter(organization=self).latest('created')
 
     def update_latest_invoice(self):
-        invoice = OrganizationInvoice.objects.latest('created')
+        invoice = OrganizationInvoice.objects.filter(organization=self).latest('created')
         invoice.new_people += 1
         invoice.total = invoice.new_people * invoice.price
         invoice.save()
@@ -345,8 +345,8 @@ class UserInvitationManager(models.Manager):
             for group in invitation.groups.all():
                 UserGroup.objects.create(user_organization=user_organization, group=group)
 
-        invitation.delete()
         invitation.organization.update_latest_invoice()
+        invitation.delete()
         return user_organization
 
 class UserOrganizationInvitation(models.Model):
