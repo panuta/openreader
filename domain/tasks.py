@@ -96,8 +96,11 @@ def send_notification_email_to_decide_on_first_month():
         })
         text_email_body = strip_tags(html_email_body)
         subject = 'Decision for %s on Openreader' % organization.name
-        send_to_emails = UserOrganization.objects.filter(organization=organization, is_admin=True).values_list('user__email', flat=True)
+        send_to_emails = list(UserOrganization.objects.filter(organization=organization, is_admin=True).values_list('user__email', flat=True))
         
+        if organization.email not in send_to_emails:
+            send_to_emails.append(organization.email)
+
         msg = EmailMultiAlternatives(
             subject, 
             text_email_body, 
@@ -134,7 +137,10 @@ def send_notification_email_to_pay_service():
             })
             text_email_body = strip_tags(html_email_body)
             subject = 'Invoice for %s on Openreader from %s to %s' % (organization.name, format_abbr_date(invoice.start_date), format_abbr_date(invoice.end_date))
-            send_to_emails = UserOrganization.objects.filter(organization=organization, is_admin=True).values_list('user__email', flat=True)
+            send_to_emails = list(UserOrganization.objects.filter(organization=organization, is_admin=True).values_list('user__email', flat=True))
+
+            if organization.email not in send_to_emails:
+                send_to_emails.append(organization.email)
 
             msg = EmailMultiAlternatives(
                 subject,
