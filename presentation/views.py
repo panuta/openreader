@@ -797,7 +797,7 @@ def view_documents(request, organization_slug):
     is_organization_admin = UserOrganization.objects.filter(organization=organization, user=request.user, is_admin=True).exists()
     is_in_range_decide_first_month = organization.created.date() <= datetime.date.today()-datetime.timedelta(days=21)
     is_decide_on_first_month = is_organization_admin and is_in_range_decide_first_month and not OrganizationInvoice.objects.filter(organization=organization, payment_status='PAID')
-    is_ready_to_pay = datetime.date.today() > invoice.end_date
+    is_ready_to_pay = is_organization_admin and datetime.date.today() > invoice.end_date
 
     return render(request, 'document/documents.html', {
         'organization': organization,
