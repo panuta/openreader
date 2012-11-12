@@ -497,7 +497,10 @@ def organization_notify_from_paypal(request):
         })
         text_email_body = strip_tags(html_email_body)
         subject = 'Receipt for %s on Openreader from %s to %s' % (invoice.organization.name, format_abbr_date(invoice.start_date), format_abbr_date(invoice.end_date))
-        send_to_emails = UserOrganization.objects.filter(organization=invoice.organization, is_admin=True).values_list('user__email', flat=True)
+        send_to_emails = list(UserOrganization.objects.filter(organization=invoice.organization, is_admin=True).values_list('user__email', flat=True))
+
+        if organization.email not in send_to_emails:
+            send_to_emails.append(organization.email)
 
         msg = EmailMultiAlternatives(
             subject,
