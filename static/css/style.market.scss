@@ -213,12 +213,18 @@ h2 {
 			  background-position: -230px -246px;
 		  }
 	  }
- 	 .showr-3, .showr-6, .showr-9 { 
-			background-position: 0px -492px;
+ 	 .showr-3 { 
+			background-position: 1px -492px;
 		  &:hover, &.active {
 			  background-position: -229px -492px;
 		  }
 		}
+	  .showr-6 { 
+		  background-position: 0 -492px;
+		  &:hover, &.active {
+			  background-position: -229px -492px;
+		  } 
+	  }
 	.showr-7, .showr-8, .showr-9 {
 		background-image: url('../images/homepage/feature-7-9.png');
 		background-repeat: no-repeat;
