@@ -187,7 +187,7 @@ h2 {
 	 .showr {
 		background: url('../images/homepage/feature1_3.png') no-repeat 0px 0px;
 		display: block;
-		width: 134px;
+		width: 136px;
 		height: 100px;
 		color: #725228;
 		padding-top: 140px;
@@ -199,7 +199,7 @@ h2 {
  	 .showr-4, .showr-5, .showr-6 {
 	 	 background: url('../images/homepage/feature4_6.png') no-repeat 0 0;
 	 	  &:hover, &.active {
-			  background-position: -230px 0;
+			  background-position: -228px 0;
 		  }
 		}
 	 .showr-2, .showr-5, .showr-8 {
@@ -209,9 +209,9 @@ h2 {
 		  }
 	  }
  	 .showr-3, .showr-6, .showr-9 { 
-			background-position: -1px -492px;
+			background-position: 1px -492px;
 		  &:hover, &.active {
-			  background-position: -231px -492px;
+			  background-position: -229px -492px;
 		  }
 		}
 	.showr-7, .showr-8, .showr-9 {
@@ -230,13 +230,13 @@ h2 {
 	margin-bottom: 40px;
 }
 .feature1_3 {
-	border-bottom: 1px solid white;
+/* 	border-bottom: 1px solid white; */
 	background: url('../images/homepage/border-header.png') no-repeat center bottom;
 /* 	ul {border-bottom: 1px solid #D4CCAC;} */
 }
 .feature4_6 {
-/* 	border-bottom: 1px solid #D4CCAC; */
-	margin-top: 50px;
+	border-top: 1px solid white;
+	padding-top: 50px;
 }
 
 /* ---------------------- Features item 1-9  ----------------------*/
@@ -633,6 +633,9 @@ h2 {
 			text-align: center;
 		}
 		.register {
+			box-shadow: none;
+			border: none;
+			cursor: pointer;
 			background: #BE7D1C;
 			padding: 5px 60px;
 			border-radius: 5px;
