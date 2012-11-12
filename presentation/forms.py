@@ -52,7 +52,7 @@ class OrganizationRegisterForm(forms.Form):
         if not re.match('^[A-Za-z0-9]*$', organization_slug):
             raise forms.ValidationError(ugettext('Company url name must contains only characters and numbers.'))
 
-        if Organization.objects.filter(slug=organization_slug).exists() or OrganizationInvitation.objects.filter(organization_slug=organization_slug).exists():
+        if Organization.objects.filter(slug__iexact=organization_slug).exists() or OrganizationInvitation.objects.filter(organization_slug=organization_slug).exists():
             raise forms.ValidationError(ugettext('This company url name is already exists in the system.'))
 
         return organization_slug
