@@ -134,7 +134,11 @@ def plan_organization(request):
 def register_organization(request):
     translation.activate('en')
     contract_type_get = request.GET.get('contract-length')
-    amount = int(request.GET.get('amount')) or 1
+    amount = request.GET.get('amount')
+    try:
+        amount = int(amount)
+    except:
+        amount = 1
     if contract_type_get == 'MONTHLY':
         contract_type = {
             'title': '1 Month contract',
