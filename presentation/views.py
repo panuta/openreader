@@ -435,7 +435,8 @@ def organization_notify_from_paypal(request):
     invoice_code = request.POST.get('invoice')
     invoice = get_object_or_404(OrganizationInvoice, invoice_code=invoice_code)
 
-    payment_date = datetime.datetime.strptime(request.POST.get('payment_date'), '%H:%M:%S %b %d, %Y PDT')
+    payment_date = request.POST.get('payment_date').rsplit(' ', 1)[0]
+    payment_date = datetime.datetime.strptime(payment_date, '%H:%M:%S %b %d, %Y')
 
     OrganizationPaypalPayment.objects.create(
         invoice = invoice,
