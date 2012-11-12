@@ -16,6 +16,15 @@
         };
 
         $(document).ready(function(){
+            $(window).scroll(function() {
+                if ($(window).scrollTop() >= 330) {
+                    $('#header').addClass("small-header");
+                } else {
+                    $('#header').addClass("header");
+                    $('#header').removeClass("small-header");
+                }
+            });
+
             $('#amount-user').change(function(e){
                 var price = 0;
                 var type = $('input[name=contract-length]:checked').val();
