@@ -461,66 +461,68 @@ def organization_notify_from_paypal(request):
        ip == '173.0.82.126' and \
        float(request.POST.get('mc_gross', '0')) == invoice.total:
 
-        invoice.payment_status = 'PAID'
-        invoice.save()
+        if invoice.payment_status != 'PAID':
 
-        # REDUCE MONTLY REMAIN
-        price_rate = invoice.price
-        organization = invoice.organization
-        if organization.contract_type == Organization.YEARLY_CONTRACT:
-            organization.contract_month_remain -= 1
-            if organization.contract_month_remain == 1:
-                organization.contract_type = Organization.MONTHLY_CONTRACT
-                price_rate = 6.00
-            organization.save()
+            invoice.payment_status = 'PAID'
+            invoice.save()
 
-        # TODO: CREATE NEW INVOICE FOR NEXT MONTH
-        shortuuid.set_alphabet('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ')
-        temp_uuid = shortuuid.uuid()[0:10]
-        while OrganizationInvoice.objects.filter(invoice_code=temp_uuid).exists():
+            # REDUCE MONTLY REMAIN
+            price_rate = invoice.price
+            organization = invoice.organization
+            if organization.contract_type == Organization.YEARLY_CONTRACT:
+                organization.contract_month_remain -= 1
+                if organization.contract_month_remain == 1:
+                    organization.contract_type = Organization.MONTHLY_CONTRACT
+                    price_rate = 6.00
+                organization.save()
+
+            # TODO: CREATE NEW INVOICE FOR NEXT MONTH
+            shortuuid.set_alphabet('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ')
             temp_uuid = shortuuid.uuid()[0:10]
+            while OrganizationInvoice.objects.filter(invoice_code=temp_uuid).exists():
+                temp_uuid = shortuuid.uuid()[0:10]
 
-        new_billing_scope_date = invoice.end_date + relativedelta(days=1)
-        new_user_count = UserOrganization.objects.filter(organization=organization, is_active=True).count() + UserOrganization.objects.filter(organization=organization, is_active=False, modified__gt=new_billing_scope_date).count()
+            new_billing_scope_date = invoice.end_date + relativedelta(days=1)
+            new_user_count = UserOrganization.objects.filter(organization=organization, is_active=True).count() + UserOrganization.objects.filter(organization=organization, is_active=False, modified__gt=new_billing_scope_date).count()
 
-        OrganizationInvoice.objects.create(
-            organization = invoice.organization,
-            invoice_code = temp_uuid,
-            price = price_rate,
-            total = new_user_count * price_rate,
-            start_date = invoice.end_date + relativedelta(days=+1),
-            end_date = invoice.end_date + relativedelta(months=+1),
-            current_people = invoice.new_people,
-            new_people = new_user_count,
-        )
+            OrganizationInvoice.objects.create(
+                organization = invoice.organization,
+                invoice_code = temp_uuid,
+                price = price_rate,
+                total = new_user_count * price_rate,
+                start_date = invoice.end_date + relativedelta(days=+1),
+                end_date = invoice.end_date + relativedelta(months=+1),
+                current_people = invoice.new_people,
+                new_people = new_user_count,
+            )
 
-        # TODO: SEND RECIEPT EMAIL
-        html_email_body = render_to_string('organization/emails/payment_receipt.html', {
-            'organization': invoice.organization,
-            'settings': settings,
-            'invoice': invoice,
-        })
-        text_email_body = strip_tags(html_email_body)
-        subject = 'Receipt for %s on Openreader from %s to %s' % (invoice.organization.name, format_abbr_date(invoice.start_date), format_abbr_date(invoice.end_date))
-        send_to_emails = list(UserOrganization.objects.filter(organization=invoice.organization, is_admin=True).values_list('user__email', flat=True))
+            # TODO: SEND RECIEPT EMAIL
+            html_email_body = render_to_string('organization/emails/payment_receipt.html', {
+                'organization': invoice.organization,
+                'settings': settings,
+                'invoice': invoice,
+            })
+            text_email_body = strip_tags(html_email_body)
+            subject = 'Receipt for %s on Openreader from %s to %s' % (invoice.organization.name, format_abbr_date(invoice.start_date), format_abbr_date(invoice.end_date))
+            send_to_emails = list(UserOrganization.objects.filter(organization=invoice.organization, is_admin=True).values_list('user__email', flat=True))
 
-        if organization.email not in send_to_emails:
-            send_to_emails.append(organization.email)
+            if organization.email not in send_to_emails:
+                send_to_emails.append(organization.email)
 
-        msg = EmailMultiAlternatives(
-            subject,
-            text_email_body,
-            settings.EMAIL_ADDRESS_NO_REPLY,
-            send_to_emails
-        )
-        msg.attach_alternative(html_email_body, "text/html")
+            msg = EmailMultiAlternatives(
+                subject,
+                text_email_body,
+                settings.EMAIL_ADDRESS_NO_REPLY,
+                send_to_emails
+            )
+            msg.attach_alternative(html_email_body, "text/html")
 
-        try:
-            msg.send()
-            print True
-        except:
-            import sys
-            print sys.exc_info()
+            try:
+                msg.send()
+                print True
+            except:
+                import sys
+                print sys.exc_info()
     elif ip == '173.0.82.126':
         pass
 
