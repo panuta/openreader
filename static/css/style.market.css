@@ -96,9 +96,14 @@ h2 {
 .intro-images {
   position: relative; }
   .intro-images .app-store {
+    display: block;
     position: absolute;
     right: 70px;
-    bottom: 33px; }
+    bottom: 33px;
+    width: 187px;
+    height: 61px;
+    background: url("../images/homepage/app-store.png") no-repeat;
+    text-indent: -9999em; }
 
 /* ---------------------- Features ----------------------*/
 /* body, .bg-pattern, .sec1, .sec3, #header, .feature-item { background: url('../images/homepage/bg-repeat.png') repeat; } */
@@ -170,7 +175,7 @@ h2 {
       .features li .showr-2:hover, .features li .showr-2.active, .features li .showr-5:hover, .features li .showr-5.active, .features li .showr-8:hover, .features li .showr-8.active, .enterprise-features li .showr-2:hover, .enterprise-features li .showr-2.active, .enterprise-features li .showr-5:hover, .enterprise-features li .showr-5.active, .enterprise-features li .showr-8:hover, .enterprise-features li .showr-8.active, .feature-item li .showr-2:hover, .feature-item li .showr-2.active, .feature-item li .showr-5:hover, .feature-item li .showr-5.active, .feature-item li .showr-8:hover, .feature-item li .showr-8.active {
         background-position: -230px -246px; }
     .features li .showr-3, .features li .showr-6, .features li .showr-9, .enterprise-features li .showr-3, .enterprise-features li .showr-6, .enterprise-features li .showr-9, .feature-item li .showr-3, .feature-item li .showr-6, .feature-item li .showr-9 {
-      background-position: 1px -492px; }
+      background-position: 0px -492px; }
       .features li .showr-3:hover, .features li .showr-3.active, .features li .showr-6:hover, .features li .showr-6.active, .features li .showr-9:hover, .features li .showr-9.active, .enterprise-features li .showr-3:hover, .enterprise-features li .showr-3.active, .enterprise-features li .showr-6:hover, .enterprise-features li .showr-6.active, .enterprise-features li .showr-9:hover, .enterprise-features li .showr-9.active, .feature-item li .showr-3:hover, .feature-item li .showr-3.active, .feature-item li .showr-6:hover, .feature-item li .showr-6.active, .feature-item li .showr-9:hover, .feature-item li .showr-9.active {
         background-position: -229px -492px; }
     .features li .showr-7, .features li .showr-8, .features li .showr-9, .enterprise-features li .showr-7, .enterprise-features li .showr-8, .enterprise-features li .showr-9, .feature-item li .showr-7, .feature-item li .showr-8, .feature-item li .showr-9 {

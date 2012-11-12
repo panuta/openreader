@@ -125,9 +125,14 @@ h2 {
 .intro-images {
 	position: relative;
 	.app-store {
+		display: block;
 		position: absolute;
 		right: 70px;
 		bottom: 33px;
+		width: 187px;
+		height: 61px;
+		background: url('../images/homepage/app-store.png') no-repeat;
+		text-indent: -9999em;
 	}
 }
 
@@ -209,7 +214,7 @@ h2 {
 		  }
 	  }
  	 .showr-3, .showr-6, .showr-9 { 
-			background-position: 1px -492px;
+			background-position: 0px -492px;
 		  &:hover, &.active {
 			  background-position: -229px -492px;
 		  }
