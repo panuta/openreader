@@ -35,15 +35,13 @@
         <form class="summarize-form" method="POST" action="{% url summarize_organization_users organization.slug %}">
             {% csrf_token %}
             {{form.non_field_errors}}
-					<div class="invite-email">
+					<div class="summarize_total">
             <h4>{% trans 'Email' %}</h4>
             <ul>
                 {% for email in emails %}
                 <li>{{ email }}</li>
                 {% endfor %}
             </ul>
-          </div>
-				<div class="summarize_total">
             <h4 class="total_current_user_title">{% trans 'Total current users' %}</h4>
             <p class="total_current_user">{{ total_users }}</p>
             {% if invited_users %}
