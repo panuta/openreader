@@ -719,6 +719,7 @@ h2 {
 	}
 	select {
 		font-size: 16px;
+		width: 320px !important;
 	}
 }
 .desc-contract, .desc-free {
@@ -767,8 +768,17 @@ h2 {
 	font-size: 12px;
 	line-height: 20px;
 	font-style: italic;
-	.example {
+	.highlight {
 		color: #FFAE35;
 		font-size: 15px;
+	}
+}
+
+/* Error-Text  */
+.error-text {
+	color: red;
+	font-size: 13px;
+	.errorlist {
+		li { list-style: none; }
 	}
 }
