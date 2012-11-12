@@ -154,7 +154,7 @@ h2 {
     .features li .showr, .enterprise-features li .showr, .feature-item li .showr {
       background: url("../images/homepage/feature1_3.png") no-repeat 0px 0px;
       display: block;
-      width: 134px;
+      width: 136px;
       height: 100px;
       color: #725228;
       padding-top: 140px;
@@ -164,15 +164,15 @@ h2 {
     .features li .showr-4, .features li .showr-5, .features li .showr-6, .enterprise-features li .showr-4, .enterprise-features li .showr-5, .enterprise-features li .showr-6, .feature-item li .showr-4, .feature-item li .showr-5, .feature-item li .showr-6 {
       background: url("../images/homepage/feature4_6.png") no-repeat 0 0; }
       .features li .showr-4:hover, .features li .showr-4.active, .features li .showr-5:hover, .features li .showr-5.active, .features li .showr-6:hover, .features li .showr-6.active, .enterprise-features li .showr-4:hover, .enterprise-features li .showr-4.active, .enterprise-features li .showr-5:hover, .enterprise-features li .showr-5.active, .enterprise-features li .showr-6:hover, .enterprise-features li .showr-6.active, .feature-item li .showr-4:hover, .feature-item li .showr-4.active, .feature-item li .showr-5:hover, .feature-item li .showr-5.active, .feature-item li .showr-6:hover, .feature-item li .showr-6.active {
-        background-position: -230px 0; }
+        background-position: -228px 0; }
     .features li .showr-2, .features li .showr-5, .features li .showr-8, .enterprise-features li .showr-2, .enterprise-features li .showr-5, .enterprise-features li .showr-8, .feature-item li .showr-2, .feature-item li .showr-5, .feature-item li .showr-8 {
       background-position: 0 -246px; }
       .features li .showr-2:hover, .features li .showr-2.active, .features li .showr-5:hover, .features li .showr-5.active, .features li .showr-8:hover, .features li .showr-8.active, .enterprise-features li .showr-2:hover, .enterprise-features li .showr-2.active, .enterprise-features li .showr-5:hover, .enterprise-features li .showr-5.active, .enterprise-features li .showr-8:hover, .enterprise-features li .showr-8.active, .feature-item li .showr-2:hover, .feature-item li .showr-2.active, .feature-item li .showr-5:hover, .feature-item li .showr-5.active, .feature-item li .showr-8:hover, .feature-item li .showr-8.active {
         background-position: -230px -246px; }
     .features li .showr-3, .features li .showr-6, .features li .showr-9, .enterprise-features li .showr-3, .enterprise-features li .showr-6, .enterprise-features li .showr-9, .feature-item li .showr-3, .feature-item li .showr-6, .feature-item li .showr-9 {
-      background-position: -1px -492px; }
+      background-position: 1px -492px; }
       .features li .showr-3:hover, .features li .showr-3.active, .features li .showr-6:hover, .features li .showr-6.active, .features li .showr-9:hover, .features li .showr-9.active, .enterprise-features li .showr-3:hover, .enterprise-features li .showr-3.active, .enterprise-features li .showr-6:hover, .enterprise-features li .showr-6.active, .enterprise-features li .showr-9:hover, .enterprise-features li .showr-9.active, .feature-item li .showr-3:hover, .feature-item li .showr-3.active, .feature-item li .showr-6:hover, .feature-item li .showr-6.active, .feature-item li .showr-9:hover, .feature-item li .showr-9.active {
-        background-position: -231px -492px; }
+        background-position: -229px -492px; }
     .features li .showr-7, .features li .showr-8, .features li .showr-9, .enterprise-features li .showr-7, .enterprise-features li .showr-8, .enterprise-features li .showr-9, .feature-item li .showr-7, .feature-item li .showr-8, .feature-item li .showr-9 {
       background-image: url("../images/homepage/feature-7-9.png");
       background-repeat: no-repeat; }
@@ -185,13 +185,13 @@ h2 {
   margin-bottom: 40px; }
 
 .feature1_3 {
-  border-bottom: 1px solid white;
+  /* 	border-bottom: 1px solid white; */
   background: url("../images/homepage/border-header.png") no-repeat center bottom;
   /* 	ul {border-bottom: 1px solid #D4CCAC;} */ }
 
 .feature4_6 {
-  /* 	border-bottom: 1px solid #D4CCAC; */
-  margin-top: 50px; }
+  border-top: 1px solid white;
+  padding-top: 50px; }
 
 /* ---------------------- Features item 1-9  ----------------------*/
 .pop-wrapper {
@@ -541,6 +541,9 @@ h2 {
       margin: 20px;
       text-align: center; }
     #plan-form .register-box .register {
+      box-shadow: none;
+      border: none;
+      cursor: pointer;
       background: #BE7D1C;
       padding: 5px 60px;
       border-radius: 5px;
