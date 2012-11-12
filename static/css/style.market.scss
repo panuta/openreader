@@ -122,14 +122,28 @@ h2 {
 		margin-bottom: 20px;
 	}
 }
+.intro-images {
+	position: relative;
+	.app-store {
+		position: absolute;
+		right: 70px;
+		bottom: 33px;
+	}
+}
 
 /* ---------------------- Features ----------------------*/
+/* body, .bg-pattern, .sec1, .sec3, #header, .feature-item { background: url('../images/homepage/bg-repeat.png') repeat; } */
+/* body, #header, .bg-pattern { background: url('../images/homepage/bg-repeat.png') repeat; } */
 .sec2 {
-	background: url('../images/homepage/feature-head-border.png') repeat-x center top;
+	background: url('../images/homepage/feature-head-border.png') no-repeat center -20px;
 	background-color: #f9f9f4;
 	.sec-wrapper {
 		padding-top: 140px;
 	}
+/*
+	width: 960px;
+	margin: 0 auto;
+*/
 }
 .feature-desc {
 	overflow: hidden;
@@ -336,7 +350,7 @@ h2 {
 					width: 200px;
 					padding: 15px 30px;
 				}
-				h3 { background-color: #90a900; }
+				h3 { background-color: #90a900; border-bottom: 1px solid #6b760e; }
 				.more {
 					color: white;
 					background-color: #798D07;
@@ -365,7 +379,7 @@ h2 {
 			}
 			&.permonth {
 				.price { padding: 15px; }
-				h3 { background-color: #448b0b; }		
+				h3 { background-color: #448b0b; border-bottom: 1px solid #2a5607; }		
 				.more { 
 					color: white;
 					background-color: #448B0B;
@@ -388,40 +402,7 @@ h2 {
 			}
 			&.terms {
 			margin-right: 0;
-				/*
-height: 255px;
-				margin-right: 0;
-				background: rgb(223, 223, 223);
-				background: -moz-linear-gradient(90deg, rgb(223, 223, 223) 0%, rgb(232, 232, 232) 29%);
-				background: -webkit-linear-gradient(90deg, rgb(223, 223, 223) 0%, rgb(232, 232, 232) 29%);
-				background: -o-linear-gradient(90deg, rgb(223, 223, 223) 0%, rgb(232, 232, 232) 29%);
-				background: -ms-linear-gradient(90deg, rgb(223, 223, 223) 0%, rgb(232, 232, 232) 29%);
-				background: linear-gradient(90deg, rgb(223, 223, 223) 0%, rgb(232, 232, 232) 29%);
-				h3 { background-color: #ffa004;	}
-				.desc { margin: 26px 10px; text-align: center; }
-				.more { 
-					margin-top: 45px;
-					color: white;
-					background-color: #ffa004;
-					background-repeat: repeat-x;
-					background-image: -khtml-gradient(linear,left top,left bottom,from(#ffa004),to(#F77632));
-					background-image: -moz-linear-gradient(top,#ffa004,#F77632);
-					background-image: -ms-linear-gradient(top,#ffa004,#F77632);
-					background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0%,#ffa004),color-stop(100%,#F77632));
-					background-image: -webkit-linear-gradient(top,#ffa004,#F77632);
-					background-image: -o-linear-gradient(top,#ffa004,#F77632);
-					background-image: linear-gradient(top,#ffa004,#F77632);
-					filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffa004',endColorstr='#F77632',GradientType=0);
-					text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-					border-color: #ffa004 #F77632 #546107;
-					border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-					&:hover { 
-						background-image: -webkit-linear-gradient(top,#ffa004,#F77632);
-					}
-				}
-				
-*/
-h3 { 
+				h3 { 
 					color: #8A673B;
 					text-shadow: 0 1px 0 #DBD6D6;
 					margin-bottom: 0;
@@ -555,7 +536,7 @@ h3 {
 
 /* ---------------------- Small Header ----------------------*/
 #header.small-header {
-	height: 60px;
+	height: 55px;
 	#headerWrap {
 		margin-top: 0;
 		height: 55px;
