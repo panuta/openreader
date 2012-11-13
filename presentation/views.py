@@ -473,7 +473,7 @@ def organization_notify_from_paypal(request):
                 organization.contract_month_remain -= 1
                 if organization.contract_month_remain == 1:
                     organization.contract_type = Organization.MONTHLY_CONTRACT
-                    price_rate = 6.00
+                    price_rate = 7.50
                 organization.save()
 
             # TODO: CREATE NEW INVOICE FOR NEXT MONTH
