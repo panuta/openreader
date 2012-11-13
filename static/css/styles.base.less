@@ -585,12 +585,14 @@ table {
                 border-top: none;
                 border-left: none;
                 padding: 13px 40px;
+                text-align: center;
                 &:hover {
                     td, tr {
                         background-color: rgba(150, 124, 82, 0.19);
                         cursor: pointer;
                     }
                 }
+                &.row_actions { padding: 5px 40px 8px; }
             }
         }
     }
@@ -605,4 +607,10 @@ table {
     &:hover {
         background-color: rgba(252, 251, 250, 0.27);
     }
+}
+/*
+* Forget Password
+*/
+#id_email, #id_password {
+	width: 400px;
 }

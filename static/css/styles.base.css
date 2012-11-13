@@ -453,6 +453,7 @@ table tr.checked td {
   border-top: none;
   border-left: none;
   padding: 13px 40px;
+  text-align: center;
 }
 .organization_users_page .tab-content table tbody tr:hover td,
 .organization_users_page .tab-content table td:hover td,
@@ -460,6 +461,10 @@ table tr.checked td {
 .organization_users_page .tab-content table td:hover tr {
   background-color: rgba(150, 124, 82, 0.19);
   cursor: pointer;
+}
+.organization_users_page .tab-content table tbody tr.row_actions,
+.organization_users_page .tab-content table td.row_actions {
+  padding: 5px 40px 8px;
 }
 .nav-tabs > .active > a,
 .nav-tabs > .active > a:hover {
@@ -472,4 +477,11 @@ table tr.checked td {
 }
 .nav-tabs > li > a:hover {
   background-color: rgba(252, 251, 250, 0.27);
+}
+/*
+* Forget Password
+*/
+#id_email,
+#id_password {
+  width: 400px;
 }
