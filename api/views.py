@@ -138,7 +138,7 @@ def list_user_organization(request):
 def request_download_publication(request, publication_uid):
     try:
         publication = Publication.objects.get(uid=publication_uid)
-    except Publication.DoesNotExists:
+    except Publication.DoesNotExist:
         return HttpResponse('Page not found', status=404)
 
     user = _extract_user(request)

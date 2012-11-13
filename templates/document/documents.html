@@ -2,7 +2,7 @@
 {% load helper_tags pagination_tags presentation_tags %}
 {% load i18n %}
 
-{% block head_title %}ไฟล์เอกสาร{% endblock %}
+{% block head_title %}{% trans 'Documents' %}{% endblock %}
 {% block topnav %}{% include 'snippets/organization_topnav.html' with active_menu='document' %}{% endblock %}
 
 {% block extra_head %}
