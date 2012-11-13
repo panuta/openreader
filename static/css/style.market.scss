@@ -55,18 +55,22 @@ h2 {
 	position: fixed;
 	width: 100%;
 	height: 135px;
-	background: #f9f9f4;
+/* 	background: #f9f9f4; */
+	background: url('../images/homepage/bg-repeat.png') repeat;
 	z-index: 9999;
 }
 #headerWrap {
+	position: relative;
 	overflow: hidden;
 	width: 960px;
-	margin: 20px auto 0;
+	margin: 0 auto;
 	background: url('../images/homepage/border-header.png') no-repeat center bottom;
+	
 }
 #logo {
 	float: left;
 	margin-bottom: 10px;
+	margin-top: 20px;
 	h1 {
 		background: url('../images/logo.png') no-repeat;
 		display: block;
@@ -80,9 +84,9 @@ h2 {
 /* ---------------------- Navigation  ----------------------*/
 #nav {
 	float: right;
-	margin-top: 40px;
+	margin-top: 60px;
 	.menu-big {
-		width: 600px;
+		width: 560px;
 		overflow: hidden;
 		li {
 			list-style: none;
@@ -102,7 +106,7 @@ h2 {
 }
 .login {
 	position: absolute;
-  right: 290px;
+  right: 5px;
   top: 0px;
   a {
 	  color: white; text-shadow: 0 1px 1px #CCC;
@@ -116,7 +120,8 @@ h2 {
 /* ---------------------- Introduction  ----------------------*/
 .sec1, .plan {
 	padding-top: 90px;
-	background-color: #f9f9f4;		
+/* 	background-color: #f9f9f4;		 */
+	background: url('../images/homepage/bg-repeat.png') repeat;
 	position: relative;
 	z-index: 99;
 	h3 { font-style: italic; }
@@ -153,9 +158,14 @@ h2 {
 /* ---------------------- Features ----------------------*/
 /* body, .bg-pattern, .sec1, .sec3, #header, .feature-item { background: url('../images/homepage/bg-repeat.png') repeat; } */
 /* body, #header, .bg-pattern { background: url('../images/homepage/bg-repeat.png') repeat; } */
+.bg {
+	background: url('../images/homepage/bg-repeat.png') repeat 0 -860px;
+}
+.bg-desc {
+	background: url('../images/homepage/feature-head-border.png') repeat center -550px;
+}
 .sec2 {
 	background: url('../images/homepage/feature-head-border.png') no-repeat center -20px;
-	background-color: #f9f9f4;
 	.sec-wrapper {
 		padding-top: 140px;
 	}
@@ -342,7 +352,8 @@ h2 {
 
 /* ---------------------- Price & Plan  ----------------------*/
 .sec3 {
-	background: #f9f9f4;
+/* 	background: #f9f9f4; */
+/* 	background: url('../images/homepage/bg-repeat.png') repeat; */
 	padding: 0px 0 30px;
 	.sec-wrapper {
 		padding-top: 60px;
@@ -562,6 +573,7 @@ h2 {
 /* ---------------------- Small Header ----------------------*/
 #header.small-header {
 	height: 55px;
+	background: #f9f9f4;
 	#headerWrap {
 		margin-top: 0;
 		height: 55px;
@@ -576,7 +588,7 @@ h2 {
 		}
 	}
 	#nav {
-		margin-top: 15px;
+		margin-top: 20px !important;
 		ul {
 			li {
 				a {
