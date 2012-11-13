@@ -482,8 +482,7 @@ def organization_notify_from_paypal(request):
             while OrganizationInvoice.objects.filter(invoice_code=temp_uuid).exists():
                 temp_uuid = shortuuid.uuid()[0:10]
 
-            new_billing_scope_date = invoice.end_date + relativedelta(days=1)
-            new_user_count = UserOrganization.objects.filter(organization=organization, is_active=True).count() + UserOrganization.objects.filter(organization=organization, is_active=False, modified__gt=new_billing_scope_date).count()
+            new_user_count = UserOrganization.objects.filter(organization=organization, is_active=True).count() + UserOrganization.objects.filter(organization=organization, is_active=False, modified__gt=invoice.end_date).count()
 
             OrganizationInvoice.objects.create(
                 organization = invoice.organization,
