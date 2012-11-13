@@ -82,6 +82,8 @@ h2 {
 	float: right;
 	margin-top: 40px;
 	.menu-big {
+		width: 600px;
+		overflow: hidden;
 		li {
 			list-style: none;
 			float: left;
@@ -97,6 +99,18 @@ h2 {
 			}
 		}
 	}
+}
+.login {
+	position: absolute;
+  right: 290px;
+  top: 0px;
+  a {
+	  color: white; text-shadow: 0 1px 1px #CCC;
+    padding: 3px 20px;
+    background-color: #fe6035;
+    box-shadow: 1px 2px 1px #FBAB70;
+    font-size: 12px;
+  }
 }
 
 /* ---------------------- Introduction  ----------------------*/
