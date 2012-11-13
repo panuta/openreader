@@ -55,8 +55,8 @@ h2 {
 	position: fixed;
 	width: 100%;
 	height: 135px;
-/* 	background: #f9f9f4; */
-	background: url('../images/homepage/bg-repeat.png') repeat;
+	background: white;
+/* 	background: url('../images/homepage/bg-repeat.png') repeat; */
 	z-index: 9999;
 }
 #headerWrap {
@@ -120,8 +120,8 @@ h2 {
 /* ---------------------- Introduction  ----------------------*/
 .sec1, .plan {
 	padding-top: 90px;
-/* 	background-color: #f9f9f4;		 */
-	background: url('../images/homepage/bg-repeat.png') repeat;
+	background-color: white;		
+/* 	background: url('../images/homepage/bg-repeat.png') repeat; */
 	position: relative;
 	z-index: 99;
 	h3 { font-style: italic; }
@@ -158,9 +158,11 @@ h2 {
 /* ---------------------- Features ----------------------*/
 /* body, .bg-pattern, .sec1, .sec3, #header, .feature-item { background: url('../images/homepage/bg-repeat.png') repeat; } */
 /* body, #header, .bg-pattern { background: url('../images/homepage/bg-repeat.png') repeat; } */
+/*
 .bg {
 	background: url('../images/homepage/bg-repeat.png') repeat 0 -860px;
 }
+*/
 .bg-desc {
 	background: url('../images/homepage/feature-head-border.png') repeat center -550px;
 }
@@ -352,7 +354,7 @@ h2 {
 
 /* ---------------------- Price & Plan  ----------------------*/
 .sec3 {
-/* 	background: #f9f9f4; */
+	background: white;
 /* 	background: url('../images/homepage/bg-repeat.png') repeat; */
 	padding: 0px 0 30px;
 	.sec-wrapper {
@@ -573,7 +575,7 @@ h2 {
 /* ---------------------- Small Header ----------------------*/
 #header.small-header {
 	height: 55px;
-	background: #f9f9f4;
+	background: white;
 	#headerWrap {
 		margin-top: 0;
 		height: 55px;
