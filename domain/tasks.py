@@ -126,7 +126,7 @@ def send_notification_email_to_pay_service():
         invoice = organization.get_latest_invoice()
 
         if settings.TEST_PAYMENT_REMIND_EVERY_HOUR:
-            diff_date_days = datetime.datetime.now().hour - invoice.attempt
+            diff_date_days = (24 + datetime.datetime.now().hour - invoice.attempt) % 24
         else:
             diff_date_days = (datetime.date.today() - invoice.end_date).days
         if diff_date_days in [1, 4, 7, 10, 13, 16]:
