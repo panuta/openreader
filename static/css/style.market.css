@@ -585,6 +585,7 @@ h2 {
       padding: 5px 60px;
       border-radius: 5px;
       color: white;
+      font-size: 13px;
       font-family: HelveticaNeue-Light, "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; }
       #plan-form .register-box .register:hover {
         background: #966722; }
@@ -656,6 +657,15 @@ h2 {
   #register-form select {
     font-size: 16px;
     width: 320px !important; }
+
+.submitRegister {
+  border: 3px solid #CCC;
+  font-size: 20px;
+  color: white;
+  padding: 13px 50px;
+  border-radius: 10px;
+  background-color: #30AB62;
+  cursor: pointer; }
 
 .desc-contract, .desc-free {
   width: 285px;
