@@ -12,6 +12,7 @@ from django.db import models, transaction
 from django.db.models import Q
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 from django.utils import simplejson
 from django.utils.timezone import now
@@ -23,7 +24,7 @@ from common.utilities import format_abbr_datetime, humanize_file_size
 from accounts.permissions import get_backend as get_permission_backend
 
 from domain import functions as domain_functions
-from domain.models import OrganizationTag, PublicationTag, Publication, Organization, UserGroup, UserOrganizationInvitation, OrganizationGroup, UserOrganization, OrganizationShelf
+from domain.models import OrganizationTag, PublicationTag, Publication, Organization, UserGroup, UserOrganizationInvitation, OrganizationGroup, UserOrganization, OrganizationShelf, OrganizationPaypalPayment
 from domain.tasks import generate_thumbnails
 
 logger = logging.getLogger(settings.OPENREADER_LOGGER)
@@ -461,3 +462,12 @@ def ajax_query_organization_shelves(request, organization_slug):
         shelves_json.append({'id':shelf.id, 'name':shelf.name, 'document_count':shelf.num_of_documents})
 
     return response_json_success({'shelves':shelves_json})
+
+
+@csrf_exempt
+def ajax_exist_transaction(request, transaction_id):
+    try:
+        payment = OrganizationPaypalPayment.objects.get(transaction_id=transaction_id)
+        return response_json_success({'redirect_url': reverse('organization_make_payment', args=[payment.invoice.organization.slug])})
+    except OrganizationPaypalPayment.DoesNotExist:
+        return response_json_error('not-exists')

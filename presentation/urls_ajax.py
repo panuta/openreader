@@ -30,4 +30,7 @@ urlpatterns = patterns('presentation.views_ajax',
 
     url(r'^ajax/(?P<organization_slug>\w+)/query/shelves/$', 'ajax_query_organization_shelves', name='ajax_query_organization_shelves'),
 
+
+    # CHECK NOTIFY_COMPLETE
+    url(r'^ajax/transaction/(?P<transaction_id>\w+)/$', 'ajax_exist_transaction', name='ajax_exist_transaction'),
 )

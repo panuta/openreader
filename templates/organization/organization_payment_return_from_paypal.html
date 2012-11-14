@@ -1,0 +1,31 @@
+{% extends 'base_single.html' %}
+{% load i18n %}
+
+{% block html_head %}
+{{ block.super }}
+<script>
+    var condition = false;
+    var transaction_id = '{{ transaction_id }}';
+    var redirect_url = '';
+    var check = function(){
+        $.post('/ajax/transaction/'+ transaction_id +'/', {}, function(response) {
+            if(response.status == 'success') {
+                condition = true;
+                redirect_url = response.redirect_url;
+            }else{
+                condition = false;
+            }
+        }, 'json');
+        if(condition){
+            window.location = redirect_url;
+        }
+    }
+
+    setInterval(check, 3000);
+</script>
+{% endblock %}
+
+{% block body_single %}
+
+<p class="waiting-process">The system is processing. Please wait.</p>
+{% endblock %}

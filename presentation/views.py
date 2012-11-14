@@ -538,10 +538,13 @@ def organization_return_from_paypal(request):
     print request
     print 'return--------------------------'
 
-    # transaction_id = request.GET.get('tx')
+    transaction_id = request.GET.get('tx')
     # payment = get_object_or_404(OrganizationPaypalPayment, transaction_id=transaction_id)
     # return redirect('organization_make_payment', organization_slug=payment.invoice.organization.slug)
-    return redirect('view_user_home')
+    # return redirect('view_user_home')
+    return render(request, 'organization/organization_payment_return_from_paypal.html', {
+        'transaction_id': transaction_id,
+    })
 
 # User Invitation
 
