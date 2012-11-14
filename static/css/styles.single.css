@@ -600,7 +600,7 @@ p.headline {
 }
 #select-lang ul li {
   display: inline;
-  margin-left: 20px;
+  margin: 0 20px 0 0 !important;
 }
 #select-lang ul li a {
   display: inline;
@@ -609,4 +609,21 @@ p.headline {
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   border-radius: 4px;
+}
+/*
+* Payment
+*/
+.waiting {
+  margin: 10px auto 0;
+  background: url('../images/ajax-loader.gif') no-repeat 0 0;
+  width: 31px;
+  height: 31px;
+  text-indent: -9999em;
+}
+.waiting-process {
+  font-size: 17px;
+  text-shadow: 0 1px 1px white;
+  color: #333;
+  margin: 10px 0 100px 0;
+  font-style: italic;
 }
