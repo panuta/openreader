@@ -700,6 +700,12 @@ h2 {
   position: relative;
   height: 400px;
   overflow: hidden; }
+  .feature-desc-list .faq {
+    left: 137px; }
+  .feature-desc-list .privacy {
+    left: 462px; }
+  .feature-desc-list .terms {
+    right: 128px; }
 
 .after-click {
   position: absolute;

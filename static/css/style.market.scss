@@ -805,6 +805,9 @@ h2 {
  position: relative;
  height: 400px;
  overflow: hidden;
+ .faq {	left: 137px; }
+ .privacy { left: 462px; }
+ .terms { right: 128px; }
 }
 
 .after-click {
@@ -822,6 +825,7 @@ h2 {
 		font-size: 15px;
 	}
 }
+
 
 /* Error-Text  */
 .error-text {
