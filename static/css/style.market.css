@@ -84,9 +84,9 @@ h2 {
   .login a {
     color: white;
     text-shadow: 0 1px 1px #CCC;
-    padding: 3px 20px;
+    padding: 4px 20px 6px;
     background-color: #fe6035;
-    box-shadow: 1px 2px 1px #FBAB70;
+    /*     box-shadow: 1px 2px 1px #FBAB70; */
     font-size: 12px; }
 
 /* ---------------------- Introduction  ----------------------*/
@@ -136,7 +136,7 @@ h2 {
   background: url("../images/homepage/feature-head-border.png") repeat center -550px; }
 
 .sec2 {
-  background: url("../images/homepage/feature-head-border.png") no-repeat center -20px;
+  background: url("../images/homepage/feature-head-border.png") no-repeat center top;
   /*
   	width: 960px;
   	margin: 0 auto;
@@ -193,19 +193,19 @@ h2 {
       .features li .showr:hover, .features li .showr.active, .enterprise-features li .showr:hover, .enterprise-features li .showr.active, .feature-item li .showr:hover, .feature-item li .showr.active {
         background-position: -230px 0; }
     .features li .showr-4, .features li .showr-5, .features li .showr-6, .enterprise-features li .showr-4, .enterprise-features li .showr-5, .enterprise-features li .showr-6, .feature-item li .showr-4, .feature-item li .showr-5, .feature-item li .showr-6 {
-      background: url("../images/homepage/feature4_6.png") no-repeat 0 0; }
+      background: url("../images/homepage/feature4_6.png") no-repeat 1px 0; }
       .features li .showr-4:hover, .features li .showr-4.active, .features li .showr-5:hover, .features li .showr-5.active, .features li .showr-6:hover, .features li .showr-6.active, .enterprise-features li .showr-4:hover, .enterprise-features li .showr-4.active, .enterprise-features li .showr-5:hover, .enterprise-features li .showr-5.active, .enterprise-features li .showr-6:hover, .enterprise-features li .showr-6.active, .feature-item li .showr-4:hover, .feature-item li .showr-4.active, .feature-item li .showr-5:hover, .feature-item li .showr-5.active, .feature-item li .showr-6:hover, .feature-item li .showr-6.active {
-        background-position: -228px 0; }
-    .features li .showr-2, .features li .showr-5, .features li .showr-8, .enterprise-features li .showr-2, .enterprise-features li .showr-5, .enterprise-features li .showr-8, .feature-item li .showr-2, .feature-item li .showr-5, .feature-item li .showr-8 {
-      background-position: 0 -246px; }
-      .features li .showr-2:hover, .features li .showr-2.active, .features li .showr-5:hover, .features li .showr-5.active, .features li .showr-8:hover, .features li .showr-8.active, .enterprise-features li .showr-2:hover, .enterprise-features li .showr-2.active, .enterprise-features li .showr-5:hover, .enterprise-features li .showr-5.active, .enterprise-features li .showr-8:hover, .enterprise-features li .showr-8.active, .feature-item li .showr-2:hover, .feature-item li .showr-2.active, .feature-item li .showr-5:hover, .feature-item li .showr-5.active, .feature-item li .showr-8:hover, .feature-item li .showr-8.active {
-        background-position: -230px -246px; }
+        background-position: -229px 0; }
+    .features li .showr-2, .features li .showr-5, .enterprise-features li .showr-2, .enterprise-features li .showr-5, .feature-item li .showr-2, .feature-item li .showr-5 {
+      background-position: -3px -246px; }
+      .features li .showr-2:hover, .features li .showr-2.active, .features li .showr-5:hover, .features li .showr-5.active, .enterprise-features li .showr-2:hover, .enterprise-features li .showr-2.active, .enterprise-features li .showr-5:hover, .enterprise-features li .showr-5.active, .feature-item li .showr-2:hover, .feature-item li .showr-2.active, .feature-item li .showr-5:hover, .feature-item li .showr-5.active {
+        background-position: -233px -246px; }
     .features li .showr-3, .enterprise-features li .showr-3, .feature-item li .showr-3 {
-      background-position: 1px -492px; }
+      background-position: -2px -492px; }
       .features li .showr-3:hover, .features li .showr-3.active, .enterprise-features li .showr-3:hover, .enterprise-features li .showr-3.active, .feature-item li .showr-3:hover, .feature-item li .showr-3.active {
-        background-position: -229px -492px; }
+        background-position: -232px -492px; }
     .features li .showr-6, .enterprise-features li .showr-6, .feature-item li .showr-6 {
-      background-position: 0 -492px; }
+      background-position: 1px -492px; }
       .features li .showr-6:hover, .features li .showr-6.active, .enterprise-features li .showr-6:hover, .enterprise-features li .showr-6.active, .feature-item li .showr-6:hover, .feature-item li .showr-6.active {
         background-position: -229px -492px; }
     .features li .showr-7, .features li .showr-8, .features li .showr-9, .enterprise-features li .showr-7, .enterprise-features li .showr-8, .enterprise-features li .showr-9, .feature-item li .showr-7, .feature-item li .showr-8, .feature-item li .showr-9 {
@@ -700,6 +700,12 @@ h2 {
   position: relative;
   height: 400px;
   overflow: hidden; }
+  .feature-desc-list .faq {
+    left: 137px; }
+  .feature-desc-list .privacy {
+    left: 462px; }
+  .feature-desc-list .terms {
+    right: 128px; }
 
 .after-click {
   position: absolute;

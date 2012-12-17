@@ -110,9 +110,9 @@ h2 {
   top: 0px;
   a {
 	  color: white; text-shadow: 0 1px 1px #CCC;
-    padding: 3px 20px;
+    padding: 4px 20px 6px;
     background-color: #fe6035;
-    box-shadow: 1px 2px 1px #FBAB70;
+/*     box-shadow: 1px 2px 1px #FBAB70; */
     font-size: 12px;
   }
 }
@@ -167,7 +167,7 @@ h2 {
 	background: url('../images/homepage/feature-head-border.png') repeat center -550px;
 }
 .sec2 {
-	background: url('../images/homepage/feature-head-border.png') no-repeat center -20px;
+	background: url('../images/homepage/feature-head-border.png') no-repeat center top;
 	.sec-wrapper {
 		padding-top: 140px;
 	}
@@ -228,25 +228,25 @@ h2 {
 	  }
 	 }
  	 .showr-4, .showr-5, .showr-6 {
-	 	 background: url('../images/homepage/feature4_6.png') no-repeat 0 0;
+	 	 background: url('../images/homepage/feature4_6.png') no-repeat 1px 0;
 	 	  &:hover, &.active {
-			  background-position: -228px 0;
+			  background-position: -229px 0;
 		  }
 		}
-	 .showr-2, .showr-5, .showr-8 {
-		  background-position: 0 -246px;
+	 .showr-2, .showr-5 {
+		  background-position: -3px -246px;
 		  &:hover, &.active {
-			  background-position: -230px -246px;
+			  background-position: -233px -246px;
 		  }
 	  }
  	 .showr-3 { 
-			background-position: 1px -492px;
+			background-position: -2px -492px;
 		  &:hover, &.active {
-			  background-position: -229px -492px;
+			  background-position: -232px -492px;
 		  }
 		}
 	  .showr-6 { 
-		  background-position: 0 -492px;
+		  background-position: 1px -492px;
 		  &:hover, &.active {
 			  background-position: -229px -492px;
 		  } 
@@ -805,6 +805,9 @@ h2 {
  position: relative;
  height: 400px;
  overflow: hidden;
+ .faq {	left: 137px; }
+ .privacy { left: 462px; }
+ .terms { right: 128px; }
 }
 
 .after-click {
@@ -822,6 +825,7 @@ h2 {
 		font-size: 15px;
 	}
 }
+
 
 /* Error-Text  */
 .error-text {
