@@ -2,15 +2,23 @@
 
 from django import forms
 
+from common.countries import COUNTRY_CHOICES_WITH_BLANK
 from common.forms import StrippedCharField
 
 from domain.models import Organization, OrganizationInvitation
+
 
 class CreateOrganizationForm(forms.Form):
     organization_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'span6'}))
     organization_slug = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'span6'}))
     organization_prefix = StrippedCharField(max_length=100, widget=forms.TextInput(attrs={'class':'span4'}))
     admin_email = forms.EmailField(widget=forms.TextInput(attrs={'class':'span6'}))
+    organization_address = StrippedCharField(max_length=500)
+    organization_country = forms.ChoiceField(choices=COUNTRY_CHOICES_WITH_BLANK, widget=forms.Select(attrs={'style':'width:110px;'}))
+    organization_contract_type = forms.ChoiceField(choices=Organization.CONTRACT_TYPE_CHOICES, widget=forms.Select(attrs={'style':'width:110px;'}))
+    organization_contract_month_remain = StrippedCharField(max_length=30)
+    organization_tel = StrippedCharField(max_length=30)
+    organization_email = forms.EmailField(widget=forms.TextInput(attrs={'class':'span6'}))
 
     def clean_organization_slug(self):
         organization_slug = self.cleaned_data['organization_slug']
