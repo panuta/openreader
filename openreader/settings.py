@@ -220,7 +220,7 @@ from celery.schedules import crontab
 from datetime import timedelta
 from domain import tasks
 
-TEST_PAYMENT_REMIND_EVERY_HOUR = True
+TEST_PAYMENT_REMIND_EVERY_HOUR = False
 
 CELERYBEAT_SCHEDULE = {
     'decide-on-first-month-everydays': {
