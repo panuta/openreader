@@ -1,6 +1,9 @@
 # -*- encoding: utf-8 -*-
 
+import re
+
 from django import forms
+from django.utils.translation import ugettext
 
 from common.countries import COUNTRY_CHOICES_WITH_BLANK
 from common.forms import StrippedCharField
@@ -23,9 +26,12 @@ class CreateOrganizationForm(forms.Form):
     def clean_organization_slug(self):
         organization_slug = self.cleaned_data['organization_slug']
 
-        if Organization.objects.filter(slug=organization_slug).exists():
-            raise forms.ValidationError(u'ชื่อย่อบริษัทนี้ซ้ำกับชื่ออื่นๆ ในระบบ')
-        
+        if not re.match('^[A-Za-z0-9]*$', organization_slug):
+            raise forms.ValidationError(ugettext('Company url name must contains only characters and numbers.'))
+
+        if Organization.objects.filter(slug__iexact=organization_slug).exists() or OrganizationInvitation.objects.filter(organization_slug=organization_slug).exists():
+            raise forms.ValidationError(ugettext('This company url name is already exists in the system.'))
+
         return organization_slug
     
 class EditOrganizationForm(forms.Form):
@@ -39,6 +45,9 @@ class EditOrganizationForm(forms.Form):
 
     def clean_organization_slug(self):
         organization_slug = self.cleaned_data['organization_slug']
+
+        if not re.match('^[A-Za-z0-9]*$', organization_slug):
+            raise forms.ValidationError(ugettext('Company url name must contains only characters and numbers.'))
 
         if Organization.objects.filter(slug=organization_slug).exclude(id=self.organization.id).exists():
             raise forms.ValidationError(u'ชื่อย่อบริษัทนี้ซ้ำกับชื่ออื่นๆ ในระบบ')

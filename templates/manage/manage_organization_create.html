@@ -20,7 +20,7 @@
       {{form.non_field_errors}}
       
         <div class="clearfix"><label for="id_organization_name">{% trans 'Organization name' %}</label><div class="input">{{form.organization_name}}{{form.organization_name.errors}}</div></div>
-        <div class="clearfix"><label for="id_organization_slug">{% trans 'Organization abbreviate name' %}</label><div class="input">{{form.organization_slug}}<span class="help-block">{% trans 'Organization abbreviate name that not duplicated with other organization' %}</span>{{form.organization_slug.errors}}</div></div>
+        <div class="clearfix"><label for="id_organization_slug">{% trans 'Organization url name' %}</label><div class="input">{{form.organization_slug}}<span class="help-block">{% trans 'Organization abbreviate name that not duplicated with other organization' %}</span>{{form.organization_slug.errors}}</div></div>
         <div class="clearfix"><label for="id_organization_prefix">{% trans 'Organization prefix' %}</label><div class="input">{{form.organization_prefix}}<span class="help-block">{% trans 'such as 'Company' 'Publisher' 'Department' etc.' %}</span>{{form.organization_prefix.errors}}</div></div>
 
         <div class="clearfix"><label for="id_admin_email">{% trans 'Administrator email' %}</label><div class="input">{{form.admin_email}}{{form.admin_email.errors}}</div></div>
