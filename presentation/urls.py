@@ -20,7 +20,6 @@ urlpatterns = patterns('presentation.views',
 
     # Manage User
     url(r'^org/(?P<organization_slug>\w+)/manage/users/add/$', 'add_organization_user', name='add_organization_user'),
-    url(r'^org/(?P<organization_slug>\w+)/manage/users/summarize/$', 'summarize_organization_users', name='summarize_organization_users'),
 
     # User Invitation
     url(r'^org/(?P<organization_slug>\w+)/manage/users/invited/$', 'view_organization_invited_users', name='view_organization_invited_users'),

@@ -95,10 +95,6 @@ def ajax_bringback_organization_user(request, organization_user_id):
         if not get_permission_backend(request).can_manage_user(request.user, organization):
             raise Http404
 
-        invoice = organization.get_latest_invoice()
-        if (user_organization.modified + relativedelta(months=+1)).date() < invoice.end_date:
-            organization.update_latest_invoice()
-
         user_organization.is_active = True
         user_organization.modified = datetime.datetime.now()
         user_organization.save()

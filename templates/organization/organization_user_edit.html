@@ -10,12 +10,16 @@ $(document).ready(function () {
   $("#id_groups").chosen();
   
   $('#remove-user-modal button[type="submit"]').on('click', function(e) {
-    document.forms["remove-user"].submit();
+    $.post('{% url ajax_remove_organization_user user_organization.id %}', {}, function(response) {
+      window.location = response.redirect_url;
+    }, 'json');
     return false;
   });
 
   $('#bringback-user-modal button[type="submit"]').on('click', function(e) {
-    document.forms["bringback-user"].submit();
+    $.post('{% url ajax_bringback_organization_user user_organization.id %}', {}, function(response) {
+      window.location = response.redirect_url;
+    }, 'json');
     return false;
   });
 });
@@ -86,12 +90,6 @@ $(document).ready(function () {
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal">{% trans 'Cancel' %}</button>
         <button type="submit" class="btn btn-danger">{% trans 'Confirm' %}</button>
-        <form method="post" action="{% url summarize_organization_users organization.slug %}" name="bringback-user">
-            {% csrf_token %}
-            <input type="hidden" name="action" value="bringback-user" />
-            <input type="hidden" name="emails" value="{{ user_organization.user.email }}" />
-            <input type="hidden" name="user_organization_id" value="{{ user_organization.id }}" />
-        </form>
     </div>
 </div>
 <div class="modal hide" id="remove-user-modal">
@@ -102,12 +100,6 @@ $(document).ready(function () {
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal">{% trans 'Cancel' %}</button>
         <button type="submit" class="btn btn-danger">{% trans 'Confirm' %}</button>
-        <form method="post" action="{% url summarize_organization_users organization.slug %}" name="remove-user">
-            {% csrf_token %}
-            <input type="hidden" name="action" value="remove-user" />
-            <input type="hidden" name="emails" value="{{ user_organization.user.email }}" />
-            <input type="hidden" name="user_organization_id" value="{{ user_organization.id }}" />
-        </form>
     </div>
 </div>
 {% endblock %}

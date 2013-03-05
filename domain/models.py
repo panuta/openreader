@@ -1,7 +1,6 @@
 # -*- encoding: utf-8 -*-
 
 import datetime
-from dateutil.relativedelta import relativedelta
 import re
 import shortuuid
 import uuid
@@ -13,7 +12,6 @@ from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.template.loader import render_to_string
 from django.template.loader import render_to_string
 from django.utils import translation
 from django.utils.crypto import salted_hmac
@@ -30,7 +28,7 @@ SHA1_RE = re.compile('^[a-f0-9]{40}$')
 
 class UserProfileManager(models.Manager):
 
-    def create_user_profile(self, email, first_name, last_name, password, id_no=None, country=None, update_if_exists=False):
+    def create_user_profile(self, email, first_name, last_name, password, id_no='', country='', update_if_exists=False):
         try:
             user = User.objects.get(email=email)
             user_profile = user.get_profile()
@@ -99,22 +97,10 @@ class OrganizationAdminPermission(models.Model):
 # Organization
 
 class Organization(models.Model):
-    MONTHLY_CONTRACT = 1
-    YEARLY_CONTRACT = 2
-    CONTRACT_TYPE_CHOICES = (
-        (MONTHLY_CONTRACT, 'MONTHLY'),
-        (YEARLY_CONTRACT, 'YEARLY'),
-    )
     name = models.CharField(max_length=200)
     prefix = models.CharField(max_length=200, blank=True)
     slug = models.CharField(max_length=200, unique=True, db_index=True)
-    address = models.TextField()
-    country = models.CharField(max_length=3)
-    tel = models.CharField(max_length=20)
-    email = models.CharField(max_length=100)
 
-    contract_type = models.IntegerField(default=MONTHLY_CONTRACT, choices=CONTRACT_TYPE_CHOICES)
-    contract_month_remain = models.IntegerField(default=1)
     status = models.IntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='created_organizations')
@@ -126,16 +112,6 @@ class Organization(models.Model):
 
     def _get_organization_shelf_count(self):
         return OrganizationShelf.objects.filter(organization=self).count()
-
-    def get_latest_invoice(self):
-        return OrganizationInvoice.objects.filter(organization=self).latest('created')
-
-    def update_latest_invoice(self):
-        invoice = OrganizationInvoice.objects.filter(organization=self).latest('created')
-        invoice.new_people += 1
-        invoice.total = invoice.new_people * invoice.price
-        invoice.save()
-        return invoice
 
     shelf_count = property(_get_organization_shelf_count)
 
@@ -181,70 +157,22 @@ class UserGroup(models.Model):
         return '%s:%s' % (self.user_organization.user.get_profile().get_fullname(), self.group.name)
 
 
-CURRENCY_CHOICES = (
-    ('EUR', '€ - Euro'),
-)
-
-CURRENCY_CHOICES_WITH_BLANK = [('', '')] + list(CURRENCY_CHOICES)
-
-PAYMENT_STATUS_CHOICES = (
-    ('PENDING', 'Pending'),
-    ('PAID', 'Paid'),
-    ('REFUNDED', 'Refunded'),
-)
-
-class OrganizationInvoice(models.Model):
-    organization = models.ForeignKey(Organization)
-    invoice_code = models.CharField(max_length=20)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    price_unit = models.CharField(max_length=20, default='EUR', choices=CURRENCY_CHOICES_WITH_BLANK)
-    total = models.DecimalField(max_digits=10, decimal_places=2)
-    created = models.DateTimeField(auto_now_add=True)
-    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='PENDING')
-    attempt = models.IntegerField(default=0)
-    start_date = models.DateField()
-    end_date = models.DateField()
-    current_people = models.PositiveIntegerField(default=1)
-    new_people = models.PositiveIntegerField(default=1)
-
-    def __unicode__(self):
-        return '%s : %s' % (self.organization.slug, self.invoice_code)
-
-
-class OrganizationPaypalPayment(models.Model):
-    invoice = models.ForeignKey(OrganizationInvoice)
-    transaction_id = models.CharField(max_length=100)
-    amt = models.CharField(max_length=100)
-    payment_status = models.CharField(max_length=100)
-    pending_reason = models.CharField(max_length=100, blank=True)
-    protection_eligibility = models.CharField(max_length=100)
-    payment_date = models.DateTimeField()
-    payer_id = models.CharField(max_length=100)
-    verify_sign = models.CharField(max_length=100)
-    ipn_track_id = models.CharField(max_length=100)
-
-
 # Organization Invitation
 
 class OrganizationInvitationManager(models.Manager):
 
-    def create_invitation(self, organization_prefix, organization_name, organization_slug, admin_email, created_by, organization_address, organization_country, organization_tel, organization_contract_type, organization_contract_month_remain, organization_email):
+    def create_invitation(self, organization_prefix, organization_name, organization_slug, admin_email, created_by,):
         key_salt = 'domain.models.OrganizationInvitationManager' + settings.SECRET_KEY
         encode_key = (admin_email+organization_slug).encode('utf-8')
         invitation_key = salted_hmac(key_salt, encode_key).hexdigest()
 
         return self.create(
-            organization_prefix=organization_prefix,
             organization_name=organization_name,
             organization_slug=organization_slug,
+            organization_prefix=organization_prefix,
             invitation_key=invitation_key,
             admin_email=admin_email,
-            organization_address = organization_address,
-            organization_country = organization_country,
-            organization_tel = organization_tel,
-            organization_contract_type = organization_contract_type,
-            organization_contract_month_remain = organization_contract_month_remain,
-            organization_email = organization_email,
+            created_by=created_by,
         )
 
     def claim_invitation(self, invitation, user, is_default=False):
@@ -252,13 +180,8 @@ class OrganizationInvitationManager(models.Manager):
         organization = Organization.objects.create(
             name = invitation.organization_name,
             slug = invitation.organization_slug,
-            address = invitation.organization_address,
-            country = invitation.organization_country,
-            tel = invitation.organization_tel,
-            contract_type = invitation.organization_contract_type,
-            contract_month_remain = invitation.organization_contract_month_remain,
-            created_by = user,
-            email = invitation.organization_email,
+            prefix=invitation.organization_prefix,
+            created_by=invitation.created_by
         )
         
         # TODO Create UserOrganization
@@ -270,22 +193,6 @@ class OrganizationInvitationManager(models.Manager):
         user_organization.is_admin = True
         user_organization.save()
 
-        shortuuid.set_alphabet('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ')
-        temp_uuid = shortuuid.uuid()[0:10]
-        while OrganizationInvoice.objects.filter(invoice_code=temp_uuid).exists():
-            temp_uuid = shortuuid.uuid()[0:10]
-
-        price = 6.00 if organization.contract_type == Organization.YEARLY_CONTRACT else 7.50
-
-        OrganizationInvoice.objects.create(
-            organization = organization,
-            invoice_code = temp_uuid,
-            price = price,
-            total = price,
-            start_date = organization.created.date(),
-            end_date = organization.created.date() + relativedelta(months=+1, days=-1),
-        )
-
         invitation.delete()
         return user_organization
 
@@ -296,12 +203,7 @@ class OrganizationInvitation(models.Model):
     admin_email = models.CharField(max_length=100)
     invitation_key = models.CharField(max_length=40, unique=True)
     created = models.DateTimeField(auto_now_add=True)
-    organization_address = models.TextField()
-    organization_country = models.CharField(max_length=3)
-    organization_tel = models.CharField(max_length=20)
-    organization_contract_type = models.IntegerField(default=Organization.MONTHLY_CONTRACT, choices=Organization.CONTRACT_TYPE_CHOICES)
-    organization_contract_month_remain = models.IntegerField(default=1)
-    organization_email = models.CharField(max_length=100)
+    created_by = models.ForeignKey(User, related_name='created_organization_invitations')
 
     def __unicode__(self):
         return '%s' % (self.organization_name)
@@ -357,7 +259,6 @@ class UserInvitationManager(models.Manager):
             for group in invitation.groups.all():
                 UserGroup.objects.create(user_organization=user_organization, group=group)
 
-        invitation.organization.update_latest_invoice()
         invitation.delete()
         return user_organization
 
@@ -598,4 +499,3 @@ admin.site.register(Organization)
 admin.site.register(OrganizationGroup)
 admin.site.register(UserOrganization)
 admin.site.register(UserGroup)
-admin.site.register(OrganizationInvoice)

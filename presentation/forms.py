@@ -36,28 +36,6 @@ class UserProfileForm(forms.Form):
 
 # ORGANIZATION MANAGEMENT
 
-class OrganizationRegisterForm(forms.Form):
-    organization_name = StrippedCharField(max_length=200)
-    organization_slug = forms.CharField(max_length=200)
-    organization_address = StrippedCharField(max_length=500)
-    organization_country = forms.ChoiceField(choices=COUNTRY_CHOICES_WITH_BLANK, widget=forms.Select(attrs={'style':'width:110px;'}))
-    organization_tel = StrippedCharField(max_length=30)
-    organization_email = forms.EmailField(widget=forms.TextInput(attrs={'class':'span6'}))
-
-    admin_email = forms.EmailField(widget=forms.TextInput(attrs={'class':'span6'}))
-
-    def clean_organization_slug(self):
-        organization_slug = self.cleaned_data['organization_slug']
-
-        if not re.match('^[A-Za-z0-9]*$', organization_slug):
-            raise forms.ValidationError(ugettext('Company url name must contains only characters and numbers.'))
-
-        if Organization.objects.filter(slug__iexact=organization_slug).exists() or OrganizationInvitation.objects.filter(organization_slug=organization_slug).exists():
-            raise forms.ValidationError(ugettext('This company url name is already exists in the system.'))
-
-        return organization_slug
-
-
 class AddOrganizationUserForm(forms.Form):
     email = forms.EmailField(widget=forms.TextInput(attrs={'class':'input-normal'}))
     first_name = StrippedCharField(max_length=200, widget=forms.TextInput(attrs={'class':'input-normal'}))

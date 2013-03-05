@@ -152,12 +152,6 @@ def create_organization(request):
             organization_slug = form.cleaned_data['organization_slug']
             organization_prefix = form.cleaned_data['organization_prefix']
             admin_email = form.cleaned_data['admin_email']
-            organization_address = form.cleaned_data['organization_address']
-            organization_country = form.cleaned_data['organization_country']
-            organization_tel = form.cleaned_data['organization_tel']
-            organization_contract_type = form.cleaned_data['organization_contract_type']
-            organization_contract_month_remain = form.cleaned_data['organization_contract_month_remain']
-            organization_email = form.cleaned_data['organization_email']
 
             # Send invitation
             try:
@@ -169,12 +163,6 @@ def create_organization(request):
                     organization_slug, 
                     admin_email, 
                     request.user,
-                    organization_address,
-                    organization_country,
-                    organization_tel,
-                    organization_contract_type,
-                    organization_contract_month_remain,
-                    organization_email,
                 )
             else:
                 invitation = OrganizationInvitation.objects.create_invitation(
@@ -183,12 +171,6 @@ def create_organization(request):
                     organization_slug, 
                     user.email, 
                     request.user,
-                    organization_address,
-                    organization_country,
-                    organization_tel,
-                    organization_contract_type,
-                    organization_contract_month_remain,
-                    organization_email,
                 )
                 
             if invitation:
