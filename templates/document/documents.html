@@ -63,36 +63,6 @@ $(document).ready(function () {
     </div></div></div>
 
     <div class="span3 documents_sidebar">
-        {% if is_decide_on_first_month %}
-        <div class="content decide-on-first-month"><div class="inner-content clearfix">
-            <h3><i class="icon-star"></i> {% trans 'Notify' %}</h3>
-                <p>
-                {% trans 'The free trial will expire on' %} {{invoice.end_date|format_date}}.
-                {% trans 'You can continue to use Openreader by pay the service with PAYPAL at the link below' %}.
-                </p>
-                <a class="btn pull-right" href="{% url organization_make_payment organization.slug %}">{% trans 'Pay now' %}</a>
-        </div></div>
-        {% elif is_ready_to_pay %}
-        <div class="content decide-on-first-month"><div class="inner-content clearfix">
-            <h3><i class="icon-star"></i> {% trans 'Notify' %}</h3>
-                <p>
-                {% trans 'Please pay your service for the last month at the link below.' %}
-                </p>
-                <a class="btn pull-right" href="{% url organization_make_payment organization.slug %}">{% trans 'Pay now' %}</a>
-        </div></div>
-        {% endif %}
-
-        {% if is_organization_admin %}
-        <div class="content decide-on-first-month"><div class="inner-content clearfix">
-            <h3><i class="icon-star"></i> {% trans 'Summarize' %}</h3>
-            <ul>
-                <li>{% trans 'Total current user' %}: {{ invoice.new_people }} {% trans 'users' %}</li>
-                {% if invited_users %}<li>{% trans 'Waiting for accept' %}: {{ invited_users }} {% trans 'users' %}</li>{% endif %}
-                <li>{% trans 'Service price' %}: &#8364;  {{ invoice.total }}</li>
-            </ul>
-        </div></div>
-        {% endif %}
-
         <div class="content"><div class="inner-content">
         <h3><i class="icon-list-alt"></i> {% trans 'Latest files' %}</h3>
         {% if not recent_publications %}<div class="no_recent">{% trans 'No latest files' %}</div>{% endif %}
