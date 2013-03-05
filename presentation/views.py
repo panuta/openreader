@@ -102,25 +102,6 @@ def view_organization_profile(request, organization_slug):
     return render(request, 'organization/organization_profile.html', {
         'organization':organization,
         'statistics':statistics,
-        'is_organization_admin': UserOrganization.objects.filter(organization=organization, user=request.user, is_admin=True).exists(),
-    })
-
-
-def remove_organization(request, organization_slug):
-    organization = get_object_or_404(Organization, slug=organization_slug)
-
-    if not UserOrganization.objects.filter(organization=organization, user=request.user, is_admin=True).exists():
-        raise Http404
-
-    if organization.contract_type != Organization.MONTHLY_CONTRACT:
-        raise Http404
-
-    if request.method == 'POST':
-        domain_functions.remove_organization(organization)
-        return redirect('view_user_home')
-
-    return render(request, 'organization/organization_remove.html', {
-        'organization': organization,
     })
 
 

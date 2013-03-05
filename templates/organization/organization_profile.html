@@ -27,11 +27,6 @@
                 <li>Total active user <strong>{{ statistics.active_user_count }} users</strong></li>
             </ul>
         </div>
-        {% if is_organization_admin and organization.contract_type == organization.MONTHLY_CONTRACT %}
-        <div class="delete-panel">
-            <a href="{% url remove_organization organization.slug %}">{% trans 'Remove organization' %}</a>
-        </div>
-        {% endif %}
     </div></div>
 </div></div>
 {% endblock %}
