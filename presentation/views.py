@@ -1,10 +1,7 @@
 # -*- encoding: utf-8 -*-
 import datetime
 import logging
-import shortuuid
 from dateutil.relativedelta import relativedelta
-
-from paypal.standard.forms import PayPalPaymentsForm
 
 from django.conf import settings
 from django.contrib import messages
@@ -12,17 +9,12 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.models import User
-from django.core.mail import EmailMultiAlternatives
 from django.core.files.uploadedfile import UploadedFile
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.template.loader import render_to_string
-from django.utils import translation
-from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 
 from private_files.views import get_file as private_files_get_file
@@ -289,159 +281,9 @@ def add_organization_user(request, organization_slug):
         'organization': organization,
     })
 
-# PAYMENT
-# ----------------------------------------------------------------------------------------------------------------------
-@login_required
-def organization_make_payment(request, organization_slug):
-    organization = get_object_or_404(Organization, slug=organization_slug)
-
-    invoice = organization.get_latest_invoice()
-
-    paypal_dict = {
-        "cmd": "_xclick",
-        "business": settings.PAYPAL_RECEIVER_EMAIL,
-        "amount": invoice.price,
-        "quantity": invoice.new_people,
-        "currency_code": invoice.price_unit,
-        "item_name": "Service price for Openreader from %s to %s" % (format_abbr_date(invoice.start_date), format_abbr_date(invoice.end_date)),
-        "invoice": invoice.invoice_code,
-        "notify_url": request.build_absolute_uri(reverse('organization_notify_from_paypal')),
-        "return_url": request.build_absolute_uri(reverse('organization_return_from_paypal')),
-        "cancel_return": request.build_absolute_uri(reverse('organization_make_payment', args=[organization_slug])),
-    }
-
-    # Create the instance.
-    form = PayPalPaymentsForm(initial=paypal_dict, button_type="buy")
-
-    return render(request, 'organization/organization_payment.html', {
-        'organization': organization,
-        'form': form,
-        'invoice': invoice,
-        'is_paymentable': datetime.date.today() > invoice.end_date,
-        'payments': OrganizationPaypalPayment.objects.filter(invoice__organization__slug=organization_slug),
-    })
-
-@csrf_exempt
-def organization_notify_from_paypal(request):
-    print request
-    print 'notify--------------------------'
-
-    invoice_code = request.POST.get('invoice')
-    invoice = get_object_or_404(OrganizationInvoice, invoice_code=invoice_code)
-
-    payment_date = request.POST.get('payment_date').rsplit(' ', 1)[0]
-    payment_date = datetime.datetime.strptime(payment_date, '%H:%M:%S %b %d, %Y')
-
-    OrganizationPaypalPayment.objects.create(
-        invoice = invoice,
-        transaction_id = request.POST.get('txn_id'),
-        amt = request.POST.get('mc_gross'),
-        payment_status = request.POST.get('payment_status'),
-        pending_reason = request.POST.get('pending_reason'),
-        protection_eligibility = request.POST.get('protection_eligibility'),
-        payment_date = payment_date,
-        payer_id = request.POST.get('payer_id'),
-        verify_sign = request.POST.get('verify_sign'),
-        ipn_track_id = request.POST.get('ipn_track_id'),
-    )
-
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-
-    if request.POST.get('payment_status') == 'Completed' and \
-       ip == '173.0.82.126' and \
-       float(request.POST.get('mc_gross', '0')) == invoice.total:
-
-        if invoice.payment_status != 'PAID':
-
-            invoice.payment_status = 'PAID'
-            invoice.save()
-
-            # REDUCE MONTLY REMAIN
-            price_rate = invoice.price
-            organization = invoice.organization
-            if organization.contract_type == Organization.YEARLY_CONTRACT:
-                organization.contract_month_remain -= 1
-                if organization.contract_month_remain == 1:
-                    organization.contract_type = Organization.MONTHLY_CONTRACT
-                    price_rate = 7.50
-                organization.save()
-
-            # TODO: CREATE NEW INVOICE FOR NEXT MONTH
-            shortuuid.set_alphabet('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ')
-            temp_uuid = shortuuid.uuid()[0:10]
-            while OrganizationInvoice.objects.filter(invoice_code=temp_uuid).exists():
-                temp_uuid = shortuuid.uuid()[0:10]
-
-            new_user_count = UserOrganization.objects.filter(organization=organization, is_active=True).count() + UserOrganization.objects.filter(organization=organization, is_active=False, modified__gt=invoice.end_date).count()
-
-            OrganizationInvoice.objects.create(
-                organization = invoice.organization,
-                invoice_code = temp_uuid,
-                price = price_rate,
-                total = new_user_count * price_rate,
-                start_date = invoice.end_date + relativedelta(days=+1),
-                end_date = invoice.end_date + relativedelta(months=+1),
-                current_people = invoice.new_people,
-                new_people = new_user_count,
-            )
-
-            # TODO: SEND RECIEPT EMAIL
-            html_email_body = render_to_string('organization/emails/payment_receipt.html', {
-                'organization': invoice.organization,
-                'settings': settings,
-                'invoice': invoice,
-            })
-            text_email_body = strip_tags(html_email_body)
-            subject = 'Receipt for %s on Openreader from %s to %s' % (invoice.organization.name, format_abbr_date(invoice.start_date), format_abbr_date(invoice.end_date))
-            send_to_emails = list(UserOrganization.objects.filter(organization=invoice.organization, is_admin=True).values_list('user__email', flat=True))
-
-            if organization.email not in send_to_emails:
-                send_to_emails.append(organization.email)
-
-            msg = EmailMultiAlternatives(
-                subject,
-                text_email_body,
-                settings.EMAIL_ADDRESS_NO_REPLY,
-                send_to_emails
-            )
-            msg.attach_alternative(html_email_body, "text/html")
-
-            try:
-                msg.send()
-                print True
-            except:
-                import sys
-                print sys.exc_info()
-    elif ip == '173.0.82.126':
-        pass
-
-        # TODO: SAVE ATTEMPT FOR RECURRING SYSTEM
-        # invoice.attempt = invoice.attempt + 1
-        # invoice.save()
-
-        # TODO: CHECK LIMIT ATTEMP == 5
-
-    return HttpResponse('success')
-
-
-def organization_return_from_paypal(request):
-    print request
-    print 'return--------------------------'
-
-    transaction_id = request.GET.get('tx')
-    # payment = get_object_or_404(OrganizationPaypalPayment, transaction_id=transaction_id)
-    # return redirect('organization_make_payment', organization_slug=payment.invoice.organization.slug)
-    # return redirect('view_user_home')
-    return render(request, 'organization/organization_payment_return_from_paypal.html', {
-        'transaction_id': transaction_id,
-    })
 
 # User Invitation
-
+# ----------------------------------------------------------------------------------------------------------------------
 @require_GET
 @login_required
 def view_organization_invited_users(request, organization_slug):
