@@ -8,11 +8,6 @@ urlpatterns = patterns('presentation.views',
     url(r'^my/$', 'view_my_profile', name='view_my_profile'),
     url(r'^my/account/change_password/$', 'change_my_account_password', name='change_my_account_password'),
 
-    # ORGANIZATION REGISTER #####################################################################################################
-    url(r'^org/plan/$', 'plan_organization', name='plan_organization'),
-    url(r'^org/register/$', 'register_organization', name='register_organization'),
-    url(r'^org/register/done/$', 'register_organization_done', name='register_organization_done'),
-
     # Manage Organization
 
     url(r'^org/(?P<organization_slug>\w+)/profile/$', 'view_organization_profile', name='view_organization_profile'),
