@@ -1,9 +1,11 @@
+from django.conf import settings
 from django.conf.urls import patterns, include, url
-
 from django.contrib import admin
+from django.core.urlresolvers import reverse_lazy
+from django.views.generic.base import RedirectView
+
 admin.autodiscover()
 
-from django.conf import settings
 
 urlpatterns = patterns('',
 
@@ -15,7 +17,7 @@ urlpatterns = patterns('',
     url('management/', include('management.urls')),
     url('management/', include('management.urls_ajax')),
 
-    url(r'^accounts/logout/$', 'django.contrib.auth.views.logout', {'next_page':'/'},name='auth_logout'),
+    url(r'^accounts/logout/$', 'django.contrib.auth.views.logout', {'next_page':reverse_lazy('view_user_home')},name='auth_logout'),
     url(r'^accounts/password_reset/$', 'django.contrib.auth.views.password_reset', name='auth_password_reset'),
     url(r'^accounts/password_reset/done/$', 'django.contrib.auth.views.password_reset_done', name='auth_password_reset_done'),
     url(r'^accounts/reset/(?P<uidb36>[0-9A-Za-z]{1,13})-(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', 'django.contrib.auth.views.password_reset_confirm', name='auth_password_reset_confirm'),
