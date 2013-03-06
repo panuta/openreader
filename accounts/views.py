@@ -17,7 +17,7 @@ def auth_login(request):
 @login_required
 def view_user_home(request):
     if request.user.is_superuser:
-        return redirect('/management/')
+        return redirect('manage_front')
 
     user_organizations = UserOrganization.objects.filter(user=request.user, is_active=True).order_by('-is_default', 'created')
     if user_organizations:

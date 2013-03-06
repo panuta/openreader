@@ -11,7 +11,7 @@
 
 {% block body %}
 <div class="container single-container">
-  <!--div class="logo"><a href="/">OpenReader</a></div-->
+  <!--div class="logo"><a href="{% url view_user_home %}">OpenReader</a></div-->
   <a href="https://openreaderplatform.com" class="logo">OpenReader</a>
   <div class="row">{% block body_single %}{% endblock %}</div>
 </div>

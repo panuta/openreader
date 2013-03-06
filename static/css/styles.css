@@ -35,7 +35,7 @@ a.danger:hover {
 /* PAGE
 ==================================================================================================== */
 body {
-  background: url(/static/images/bg-wood.jpg);
+  background: url(../images/bg-wood.jpg);
 }
 .navbar .nav .active > a,
 .navbar .nav .active > a:hover {
@@ -45,7 +45,7 @@ body {
   position: relative;
 }
 .navbar .navbar-inner {
-  background: url(/static/images/bg-topbar.png);
+  background: url(../images/bg-topbar.png);
   padding: 10px 0;
 }
 .navbar .navbar-inner .container {
@@ -66,7 +66,7 @@ body {
   font-size: 20px;
   font-weight: normal;
   line-height: 1;
-  background: url(/static/images/logo-small.png) no-repeat 10px 3px;
+  background: url(../images/logo-small.png) no-repeat 10px 3px;
   width: 40px;
   height: 20px;
   text-indent: -9999em;
@@ -379,7 +379,7 @@ table tr.checked td {
   border: 1px dashed #CCC;
   padding: 15px 15px 15px 45px;
   margin-bottom: 20px;
-  background: url(/static/images/icons/danger_icon.png) 15px 50% no-repeat;
+  background: url(../images/icons/danger_icon.png) 15px 50% no-repeat;
 }
 .delete-panel a.danger:link,
 .delete-panel a.danger:active,
@@ -513,25 +513,25 @@ table tr.checked td {
   display: block;
 }
 .content-sidebar ul li.shelf-all {
-  background: url(/static/images/menu/shelf-all.png) 10px 50% transparent no-repeat;
+  background: url(../images/menu/shelf-all.png) 10px 50% transparent no-repeat;
 }
 .content-sidebar ul li.organization {
-  background: url(/static/images/menu/organization.png) 10px 50% transparent no-repeat;
+  background: url(../images/menu/organization.png) 10px 50% transparent no-repeat;
 }
 .content-sidebar ul li.user {
-  background: url(/static/images/menu/user.png) 10px 50% transparent no-repeat;
+  background: url(../images/menu/user.png) 10px 50% transparent no-repeat;
 }
 .content-sidebar ul li.group {
-  background: url(/static/images/menu/group.png) 10px 50% transparent no-repeat;
+  background: url(../images/menu/group.png) 10px 50% transparent no-repeat;
 }
 .content-sidebar ul li.my_profile {
-  background: url(/static/images/menu/my_profile.png) 10px 50% transparent no-repeat;
+  background: url(../images/menu/my_profile.png) 10px 50% transparent no-repeat;
 }
 .content-sidebar ul li.my_account {
-  background: url(/static/images/menu/my_account.png) 10px 50% transparent no-repeat;
+  background: url(../images/menu/my_account.png) 10px 50% transparent no-repeat;
 }
 .content-sidebar ul li.add {
-  background: url(/static/images/menu/add.png) 10px 50% transparent no-repeat;
+  background: url(../images/menu/add.png) 10px 50% transparent no-repeat;
   border: 1px dashed #CCC;
   margin-top: 15px;
 }
@@ -548,79 +548,79 @@ table tr.checked td {
   color: #666;
 }
 .shelf.basic1-006 {
-  background: url(/static/images/shelficons/16/basic1-006.png) 14px 17px transparent no-repeat;
+  background: url(../images/shelficons/16/basic1-006.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic1-041 {
-  background: url(/static/images/shelficons/16/basic1-041.png) 14px 17px transparent no-repeat;
+  background: url(../images/shelficons/16/basic1-041.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic1-049 {
-  background: url(/static/images/shelficons/16/basic1-049.png) 14px 17px transparent no-repeat;
+  background: url(../images/shelficons/16/basic1-049.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic1-052 {
-  background: url(/static/images/shelficons/16/basic1-052.png) 14px 17px transparent no-repeat;
+  background: url(../images/shelficons/16/basic1-052.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic1-054 {
-  background: url(/static/images/shelficons/16/basic1-054.png) 14px 17px transparent no-repeat;
+  background: url(../images/shelficons/16/basic1-054.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic1-106 {
-  background: url(/static/images/shelficons/16/basic1-106.png) 14px 17px transparent no-repeat;
+  background: url(../images/shelficons/16/basic1-106.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic1-129 {
-  background: url(/static/images/shelficons/16/basic1-129.png) 14px 17px transparent no-repeat;
+  background: url(../images/shelficons/16/basic1-129.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-001 {
-  background: url(/static/images/shelficons/16/basic2-001.png) 14px 17px transparent no-repeat;
+  background: url(../images/shelficons/16/basic2-001.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-011 {
-  background: url(/static/images/shelficons/16/basic2-011.png) 14px 17px transparent no-repeat;
+  background: url(../images/shelficons/16/basic2-011.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-018 {
-  background: url(/static/images/shelficons/16/basic2-018.png) 14px 17px transparent no-repeat;
+  background: url(../images/shelficons/16/basic2-018.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-057 {
-  background: url(/static/images/shelficons/16/basic2-057.png) 14px 17px transparent no-repeat;
+  background: url(../images/shelficons/16/basic2-057.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-092 {
-  background: url(/static/images/shelficons/16/basic2-092.png) 14px 17px transparent no-repeat;
+  background: url(../images/shelficons/16/basic2-092.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-096 {
-  background: url(/static/images/shelficons/16/basic2-096.png) 14px 17px transparent no-repeat;
+  background: url(../images/shelficons/16/basic2-096.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-102 {
-  background: url(/static/images/shelficons/16/basic2-102.png) 14px 17px transparent no-repeat;
+  background: url(../images/shelficons/16/basic2-102.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-106 {
-  background: url(/static/images/shelficons/16/basic2-106.png) 14px 17px transparent no-repeat;
+  background: url(../images/shelficons/16/basic2-106.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-114 {
-  background: url(/static/images/shelficons/16/basic2-114.png) 14px 17px transparent no-repeat;
+  background: url(../images/shelficons/16/basic2-114.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-117 {
-  background: url(/static/images/shelficons/16/basic2-117.png) 14px 17px transparent no-repeat;
+  background: url(../images/shelficons/16/basic2-117.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-142 {
-  background: url(/static/images/shelficons/16/basic2-142.png) 14px 17px transparent no-repeat;
+  background: url(../images/shelficons/16/basic2-142.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-197 {
-  background: url(/static/images/shelficons/16/basic2-197.png) 14px 17px transparent no-repeat;
+  background: url(../images/shelficons/16/basic2-197.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-238 {
-  background: url(/static/images/shelficons/16/basic2-238.png) 14px 17px transparent no-repeat;
+  background: url(../images/shelficons/16/basic2-238.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-253 {
-  background: url(/static/images/shelficons/16/basic2-253.png) 14px 17px transparent no-repeat;
+  background: url(../images/shelficons/16/basic2-253.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-256 {
-  background: url(/static/images/shelficons/16/basic2-256.png) 14px 17px transparent no-repeat;
+  background: url(../images/shelficons/16/basic2-256.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-258 {
-  background: url(/static/images/shelficons/16/basic2-258.png) 14px 17px transparent no-repeat;
+  background: url(../images/shelficons/16/basic2-258.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-267 {
-  background: url(/static/images/shelficons/16/basic2-267.png) 14px 17px transparent no-repeat;
+  background: url(../images/shelficons/16/basic2-267.png) 14px 17px transparent no-repeat;
 }
 .shelf.basic2-268 {
-  background: url(/static/images/shelficons/16/basic2-268.png) 14px 17px transparent no-repeat;
+  background: url(../images/shelficons/16/basic2-268.png) 14px 17px transparent no-repeat;
 }
 /* PAGES
 ==================================================================================================== */
@@ -1461,7 +1461,7 @@ table tr.checked td {
 .pagination_bar .goto {
   width: 76px;
   height: 26px;
-  background: url(/static/images/pagination/nav.png) no-repeat;
+  background: url(../images/pagination/nav.png) no-repeat;
   text-align: center;
   display: inline-block;
   line-height: 26px;
@@ -1477,7 +1477,7 @@ table tr.checked td {
 .pagination_bar .page {
   width: 36px;
   height: 26px;
-  background: url(/static/images/pagination/page.png) center top no-repeat;
+  background: url(../images/pagination/page.png) center top no-repeat;
   text-align: center;
   display: inline-block;
   line-height: 26px;

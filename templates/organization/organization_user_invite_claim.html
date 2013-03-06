@@ -11,7 +11,7 @@
     {% if logout_first %}
       <p class="headline">{% trans 'This logged in account is not match to accepted invitation account' %}<br/>{% trans 'Please log out' %}</p>
       <p><a href="{% url auth_logout %}?next={% url claim_user_invitation invitation.invitation_key %}" class="btn btn-danger">{% trans 'Logout' %}</a></p>
-      <p>{% trans 'or' %} <a href="/" class="link">{% trans 'Back to homepage' %}</a></p>
+      <p>{% trans 'or' %} <a href="{% url view_user_home %}" class="link">{% trans 'Back to homepage' %}</a></p>
     {% endif %}
 
     {% if first_time %}

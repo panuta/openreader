@@ -35,7 +35,7 @@ a.danger:hover {
 /* PAGE
 ==================================================================================================== */
 body {
-  background: url(/static/images/bg-wood.jpg);
+  background: url(../images/bg-wood.jpg);
 }
 .navbar .nav .active > a,
 .navbar .nav .active > a:hover {
@@ -45,7 +45,7 @@ body {
   position: relative;
 }
 .navbar .navbar-inner {
-  background: url(/static/images/bg-topbar.png);
+  background: url(../images/bg-topbar.png);
   padding: 10px 0;
 }
 .navbar .navbar-inner .container {
@@ -66,7 +66,7 @@ body {
   font-size: 20px;
   font-weight: normal;
   line-height: 1;
-  background: url(/static/images/logo-small.png) no-repeat 10px 3px;
+  background: url(../images/logo-small.png) no-repeat 10px 3px;
   width: 40px;
   height: 20px;
   text-indent: -9999em;
@@ -379,7 +379,7 @@ table tr.checked td {
   border: 1px dashed #CCC;
   padding: 15px 15px 15px 45px;
   margin-bottom: 20px;
-  background: url(/static/images/icons/danger_icon.png) 15px 50% no-repeat;
+  background: url(../images/icons/danger_icon.png) 15px 50% no-repeat;
 }
 .delete-panel a.danger:link,
 .delete-panel a.danger:active,
@@ -486,7 +486,7 @@ table tr.checked td {
   width: 400px;
 }
 body {
-  background: url(/static/images/bg-wood.jpg);
+  background: url(../images/bg-wood.jpg);
 }
 .single-container .outer-container .inner-container {
   padding: 20px 5px;
@@ -515,7 +515,7 @@ body {
   color: #777;
   text-align: center;
   margin: 80px 0px 40px;
-  background: url(/static/images/logo.png) no-repeat top center;
+  background: url(../images/logo.png) no-repeat top center;
   text-indent: -999em;
   height: 60px;
 }

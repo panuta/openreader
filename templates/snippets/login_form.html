@@ -16,7 +16,7 @@
 
   <div class="form_actions">
     <button type="submit" class="btn primary login_button">{% trans 'Login' %}</button>
-    <a href="/accounts/password_reset/">{% trans 'Forget password' %}?</a>
+    <a href="{% url auth_password_reset %}">{% trans 'Forget password' %}?</a>
   </div>
 
 </form>
