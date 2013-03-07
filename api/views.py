@@ -198,3 +198,21 @@ def api_request_secret_key(request):
     result['key'] = unicode(ciphertext, 'utf-16')
 
     return HttpResponse(simplejson.dumps(result))
+
+
+def api_banner(request):
+    results = []
+    result1 = {
+        'index': 1,
+        'img': "http://opendream.co.th/files/opendream_logo.png",
+        'link': 'http://opendream.co.th/'
+    }
+    result2 = {
+        'index': 2,
+        'img': "http://opendream.co.th/sites/all/themes/opendream/images/dreamer-04.png",
+        'link': 'http://www.thaihealth.or.th/'
+    }
+    results.append(result1)
+    results.append(result2)
+    return HttpResponse(simplejson.dumps(results))
+
