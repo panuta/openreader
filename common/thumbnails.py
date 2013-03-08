@@ -1,5 +1,8 @@
 import subprocess, sys, traceback, os, logging
-import Image
+try:
+    from PIL import Image
+except ImportError:
+    import Image
 
 from django.conf import settings
 

@@ -80,7 +80,7 @@ $(document).ready(function () {
             $('#publication-modal .modal-body').html('<div class="panel-message"><i class="loading"></i> '+ gettext('Loading') +'</div>');
             $('#publication-modal .modal-footer .publication').hide();
 
-            $.get('/ajax/publication/' + uid + '/query/', {}, function(response) {
+            $.get('{% url ajax_query_publication uid %}', {}, function(response) {
                 if(response.status == 'success') {
                     var publication_form = '';
 
@@ -138,7 +138,7 @@ $(document).ready(function () {
 
             $('#replace_file_input').fileupload({
                 dataType: 'json',
-                url: '/org/' + var_organization_slug + '/documents/replace/',
+                url: '{% url replace_publication var_organization_slug %}',
                 formData: function (form) {
                     return [{name:"publication_id", value:$('#publication-modal').data('uid')}];
                 },
@@ -205,7 +205,7 @@ $(document).ready(function () {
             $('#publication-modal .delete_form .submit_delete_button').on('click', function() {
                 var uid = $('#publication-modal').data('uid');
 
-                $.post('/ajax/' + var_organization_slug + '/publication/delete/', {uid:uid}, function(response) {
+                $.post('{% url ajax_delete_publication var_organization_slug %}', {uid:uid}, function(response) {
                     $('#publication-modal').trigger('publication_deleted', [uid]);
                     $('#publication-modal').modal('hide');
                 });
@@ -229,7 +229,7 @@ $(document).ready(function () {
         var description = $('#id_publication_description').val();
         var tagnames = $('#id_publication_tags').val();
 
-        $.post('/ajax/' + var_organization_slug + '/publication/edit/', {uid:uid, title:title, description:description, tags:tagnames}, function(response) {
+        $.post('{% url ajax_edit_publication var_organization_slug %}', {uid:uid, title:title, description:description, tags:tagnames}, function(response) {
             if(response.status == 'success') {
                 _addModalMessage('publication-modal', gettext('Save successful'), 'success');
                 $('#publication-modal').trigger('publication_updated', [uid, title, tagnames]);
@@ -277,7 +277,7 @@ function initializeDocumentsPage() {
 
     $('#id_upload_file').fileupload({
         dataType: 'json',
-        url: '/org/' + var_organization_slug + '/documents/upload/',
+        url: '{% url upload_publication var_organization_slug %}',
         limitConcurrentUploads: 5,
         formData: function (form) {
             return [{name:"shelf", value:form.find('select option:selected').val()}];
@@ -362,7 +362,7 @@ function initializeDocumentsPage() {
     });
 
     $('#publication-modal').on('publication_deleted', function(e, uid) {
-        $.get('/ajax/' + var_organization_slug + '/query/shelves/', {}, function(response) {
+        $.get('{% url ajax_query_organization_shelves var_organization_slug %}', {}, function(response) {
             if(response.status == 'success') {
                 for(var i=0; i<response.shelves.length; i++) {
                     var shelf = response.shelves[i];
@@ -408,7 +408,7 @@ function initializeDocumentsShelfPage(shelf_id) {
 
     $('#id_upload_file').fileupload({
         dataType: 'json',
-        url: '/org/' + var_organization_slug + '/documents/upload/',
+        url: '{% url upload_publication var_organization_slug %}',
         limitConcurrentUploads: 5,
         dropZone: $('.upload_tool'),
         formData: function (form) {
@@ -592,7 +592,7 @@ function initializeDocumentsShelfPage(shelf_id) {
             publications.push($(this).closest('tr').attr('id'));
         });
 
-        $.post('/ajax/' + var_organization_slug + '/publication/delete/', {uid:publications}, function(response) {
+        $.post('{% url ajax_delete_publication var_organization_slug %}', {uid:publications}, function(response) {
             $('#delete-files-confirmation-modal').modal('hide');
 
             if(response.status == 'success') {
