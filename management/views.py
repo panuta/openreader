@@ -7,7 +7,7 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import ugettext as _
 
-from domain.models import User, UserProfile, Organization, OrganizationAdminPermission, OrganizationGroup, OrganizationInvitation
+from domain.models import User, UserProfile, Organization, OrganizationAdminPermission, OrganizationGroup, OrganizationInvitation, OrganizationBanner
 from presentation.forms import ClaimOrganizationUserAdminForm, ClaimOrganizationExistUserAdminForm
 
 from forms import *
@@ -212,4 +212,45 @@ def edit_organization(request, organization_slug):
             'organization_prefix': organization.prefix,
         })
     return render(request, 'manage/manage_organization_edit.html', {'organization':organization,'form':form})
+
+
+# BANNER ######################################################################
+
+@login_required
+def manage_banners(request):
+    if not request.user.is_superuser:
+        raise Http404
+
+    banners = OrganizationBanner.objects.all()
+
+    return render(request, 'manage/manage_banners_list.html', {'banners':banners, })
+
+
+@login_required
+def manage_banner_create(request):
+    if not request.user.is_superuser:
+        raise Http404
+
+    if request.method == 'POST':
+        form = OrganizationBannerForm(request.POST, request.FILES)
+        if form.is_valid():
+            organization = form.cleaned_data['organization']
+            order = form.cleaned_data['order']
+            image = form.cleaned_data['image']
+            link = form.cleaned_data['link']
+            print organization
+            print order
+            print image
+            print link
+            OrganizationBanner.objects.create(
+                organization = organization,
+                order = order,
+                image = image,
+                link = link,
+            )
+            return redirect('manage_banners')
+    else:
+        form = OrganizationBannerForm()
+
+    return render(request, 'manage/manage_banner_create.html', {'form': form,})
 

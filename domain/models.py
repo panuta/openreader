@@ -479,6 +479,23 @@ class PublicationTag(models.Model):
     publication = models.ForeignKey(Publication)
     tag = models.ForeignKey(OrganizationTag)
 
+
+
+def banner_media_dir(instance, filename):
+    splitted = filename.split('.')
+    return '%s/%s/%s.%s' % (settings.BANNER_ROOT, instance.organization.id, shortuuid.uuid(), splitted[-1])
+
+# BANNER
+class OrganizationBanner(models.Model):
+    organization = models.ForeignKey(Organization)
+    order = models.PositiveIntegerField()
+    image = models.ImageField(upload_to=banner_media_dir)
+    link = models.URLField()
+
+    class Meta:
+        ordering = ['order']
+
+
 # ORGANIZATION SERVER
 
 class OrganizationDownloadServer(models.Model):

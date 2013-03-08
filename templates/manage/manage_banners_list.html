@@ -1,0 +1,36 @@
+{% extends 'manage/manage_base.html' %}
+{% load helper_tags %}
+{% load i18n %}
+
+{% block manage_head_title %}Banner{% endblock %}
+{% block topnav %}{% include 'manage/snippets/manage_topnav.html' with active_menu='banner' %}{% endblock %}
+
+{% block body_authenticated %}
+<div class="container-fluid container-body">
+    <div class="content-full"><div class="content-inner">
+        <legend>Banner</legend>
+        <div class="page_actions"><a href="{% url manage_banner_create %}" class="btn">Add banner</a></div>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Organization</th>
+                    <th>Order</th>
+                    <th>Image</th>
+                    <th>Link</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for banner in banners %}
+                <tr>
+                    <td>{{ banner.organization.name }}</td>
+                    <td>{{ banner.order }}</td>
+                    <td>{{ banner.image }}</td>
+                    <td>{{ banner.link }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div></div>
+</div>
+{% endblock %}

@@ -10,5 +10,7 @@ urlpatterns = patterns('management.views',
     url(r'^organizations/invited/$', 'view_organizations_invited', name='view_organizations_invited'),
 
     url(r'^organization/(?P<organization_slug>\w+)/edit/$', 'edit_organization', name='edit_organization'),
-    
+
+    url(r'^banners/$', 'manage_banners', name="manage_banners"),
+    url(r'^banner/create/$', 'manage_banner_create', name="manage_banner_create"),
 )

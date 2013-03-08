@@ -1,0 +1,59 @@
+{% extends 'manage/manage_base.html' %}
+{% load helper_tags %}
+{% load i18n %}
+
+{% block manage_head_title %}Banner{% endblock %}
+{% block topnav %}{% include 'manage/snippets/manage_topnav.html' with active_menu='banner' %}{% endblock %}
+
+{% block body_authenticated %}
+<div class="container-fluid container-body">
+    <div class="content-full"><div class="content-inner">
+        <legend>Banner</legend>
+        <form method="post" enctype="multipart/form-data" class="form-horizontal">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="control-group">
+                <label class="control-label">Organization</label>
+                <div class="controls">
+                    {{ form.organization }}
+                </div>
+                <div class="error">
+                    {{ form.organization.errors }}
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">Order</label>
+                <div class="controls">
+                    {{ form.order }}
+                </div>
+                <div class="error">
+                    {{ form.order.errors }}
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">Image</label>
+                <div class="controls">
+                    {{ form.image }}
+                </div>
+                <div class="error">
+                    {{ form.image.errors }}
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">Link</label>
+                <div class="controls">
+                    {{ form.link }}
+                </div>
+                <div class="error">
+                    {{ form.link.errors }}
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+                    <button type="submit" class="btn">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div></div>
+</div>
+{% endblock %}

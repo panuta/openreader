@@ -8,7 +8,7 @@ from django.utils.translation import ugettext
 from common.countries import COUNTRY_CHOICES_WITH_BLANK
 from common.forms import StrippedCharField
 
-from domain.models import Organization, OrganizationInvitation
+from domain.models import Organization, OrganizationInvitation, OrganizationBanner
 
 
 class CreateOrganizationForm(forms.Form):
@@ -71,4 +71,21 @@ class EditOrganizationInvitationForm(forms.Form):
             raise forms.ValidationError(u'ชื่อย่อบริษัทนี้ซ้ำกับชื่ออื่นๆ ในคำขอเพิ่มบริษัท')
         
         return organization_slug
-    
+
+
+class OrganizationBannerForm(forms.Form):
+    organization = forms.ModelChoiceField(queryset=Organization.objects.all())
+    order = forms.IntegerField()
+    image = forms.ImageField()
+    link = forms.URLField(widget=forms.TextInput(attrs={'class':'span6'}))
+
+    def clean(self):
+        cleaned_data = super(OrganizationBannerForm, self).clean()
+
+        organization = cleaned_data.get('organization')
+        order = cleaned_data.get('order')
+
+        if OrganizationBanner.objects.filter(organization=organization, order=order).exists():
+            raise forms.ValidationError(u'This orgnaization and order has already exists.')
+
+        return cleaned_data
