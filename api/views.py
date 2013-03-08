@@ -212,7 +212,7 @@ def api_banner(request):
         for banner in OrganizationBanner.objects.filter(organization__in=organization_list):
             result = {
                 'index': banner.order,
-                'img': '%s%s' % (settings.WEBSITE_DOMAIN, banner.image.url),
+                'img': '%s%s' % (settings.WEBSITE_URL, banner.image.url),
                 'link': banner.link,
             }
             results.append(result)
