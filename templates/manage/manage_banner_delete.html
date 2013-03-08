@@ -1,0 +1,20 @@
+{% extends 'manage/manage_base.html' %}
+{% load helper_tags %}
+{% load i18n %}
+
+{% block manage_head_title %}Banner{% endblock %}
+{% block topnav %}{% include 'manage/snippets/manage_topnav.html' with active_menu='banner' %}{% endblock %}
+
+{% block body_authenticated %}
+<div class="container-fluid container-body">
+    <div class="content-full"><div class="content-inner">
+        <legend>Banner</legend>
+        <h4>คุณต้องการที่จะลบแบนเนอร์ของ {{ banner.organization.name }} ลำดับ {{ banner.order }}</h4>
+        <form method="post" class="form-horizontal">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Confirm</button>
+            <a href="{% url manage_banners %}" class="btn">Cancel</a>
+        </form>
+    </div></div>
+</div>
+{% endblock %}

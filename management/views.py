@@ -250,3 +250,17 @@ def manage_banner_create(request):
 
     return render(request, 'manage/manage_banner_create.html', {'form': form,})
 
+
+@login_required
+def manage_banner_delete(request, banner_id):
+    if not request.user.is_superuser:
+        raise Http404
+
+    banner = get_object_or_404(OrganizationBanner, id=banner_id)
+
+    if request.method == 'POST':
+        banner.delete()
+        return redirect('manage_banners')
+    else:
+        return render(request, 'manage/manage_banner_delete.html', {'banner': banner, })
+

@@ -11,6 +11,7 @@ urlpatterns = patterns('management.views',
 
     url(r'^organization/(?P<organization_slug>\w+)/edit/$', 'edit_organization', name='edit_organization'),
 
-    url(r'^banners/$', 'manage_banners', name="manage_banners"),
-    url(r'^banner/create/$', 'manage_banner_create', name="manage_banner_create"),
+    url(r'^banners/$', 'manage_banners', name='manage_banners'),
+    url(r'^banner/create/$', 'manage_banner_create', name='manage_banner_create'),
+    url(r'^banner/(?P<banner_id>\d+)/delete/$', 'manage_banner_delete', name='manage_banner_delete'),
 )
