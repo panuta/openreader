@@ -489,7 +489,7 @@ def banner_media_dir(instance, filename):
 class OrganizationBanner(models.Model):
     organization = models.ForeignKey(Organization)
     order = models.PositiveIntegerField()
-    image = models.ImageField(upload_to=banner_media_dir)
+    image = models.ImageField(upload_to=banner_media_dir, max_length=500)
     link = models.URLField()
 
     class Meta:

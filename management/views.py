@@ -238,10 +238,6 @@ def manage_banner_create(request):
             order = form.cleaned_data['order']
             image = form.cleaned_data['image']
             link = form.cleaned_data['link']
-            print organization
-            print order
-            print image
-            print link
             OrganizationBanner.objects.create(
                 organization = organization,
                 order = order,

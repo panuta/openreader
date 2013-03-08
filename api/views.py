@@ -201,18 +201,19 @@ def api_request_secret_key(request):
 
 
 def api_banner(request):
-    results = []
-    result1 = {
-        'index': 1,
-        'img': "http://opendream.co.th/files/opendream_logo.png",
-        'link': 'http://opendream.co.th/'
-    }
-    result2 = {
-        'index': 2,
-        'img': "http://opendream.co.th/sites/all/themes/opendream/images/dreamer-04.png",
-        'link': 'http://www.thaihealth.or.th/'
-    }
-    results.append(result1)
-    results.append(result2)
-    return HttpResponse(simplejson.dumps(results))
+    if _has_required_parameters(request, ['organization']):
+        email = _get_email(request)
+        user_profile = UserProfile.objects.get(user__email=email)
+
+        organization_list = UserOrganization.objects.filter(user=user_profile.user, is_active=True).values_list('organization', flat=True)
+
+        results = []
+        for banner in OrganizationBanner.objects.filter(organization__in=organization_list):
+            result = {
+                'index': banner.order,
+                'img': banner.image.url,
+                'link': banner.order,
+            }
+            results.append(result)
+        return HttpResponse(simplejson.dumps(results))
 
