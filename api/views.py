@@ -200,6 +200,7 @@ def api_request_secret_key(request):
     return HttpResponse(simplejson.dumps(result))
 
 
+@logged_in_or_basicauth()
 def api_banner(request):
     if _has_required_parameters(request, ['organization']):
         email = _get_email(request)
@@ -211,7 +212,7 @@ def api_banner(request):
         for banner in OrganizationBanner.objects.filter(organization__in=organization_list):
             result = {
                 'index': banner.order,
-                'img': banner.image.url,
+                'img': '%s%s' % (settings.WEBSITE_DOMAIN, banner.image.url),
                 'link': banner.order,
             }
             results.append(result)

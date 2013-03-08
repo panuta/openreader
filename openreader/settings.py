@@ -229,8 +229,6 @@ PAGINATION_DEFAULT_PAGINATION = 50
 PUBLICATION_PREFIX = '/publication'
 PUBLICATION_ROOT = MEDIA_ROOT + PUBLICATION_PREFIX
 
-BANNER_ROOT = MEDIA_ROOT + '/banner'
-
 MAX_PUBLICATION_FILE_SIZE = 300000000 # 300mb
 MAX_PUBLICATION_FILE_SIZE_TEXT = '300 เมกะไบต์'
 
@@ -241,7 +239,7 @@ DOWNLOAD_LINK_EXPIRE_IN = 180 # Minutes
 # Thumbnail
 THUMBNAIL_ROOT = PUBLICATION_ROOT + '/thumbnails'
 THUMBNAIL_TEMP_ROOT = MEDIA_ROOT + '/thumbnails_temp' # Use when generating thumbnails
-THUMBNAIL_URL = MEDIA_URL + '/publication/thumbnails'
+THUMBNAIL_URL = MEDIA_URL + 'publication/thumbnails'
 
 THUMBNAIL_SIZES = (
     ('small', (70, 85)),

@@ -483,7 +483,7 @@ class PublicationTag(models.Model):
 
 def banner_media_dir(instance, filename):
     splitted = filename.split('.')
-    return '%s/%s/%s.%s' % (settings.BANNER_ROOT, instance.organization.id, shortuuid.uuid(), splitted[-1])
+    return './banner/%s/%s.%s' % (instance.organization.id, shortuuid.uuid(), splitted[-1])
 
 # BANNER
 class OrganizationBanner(models.Model):
