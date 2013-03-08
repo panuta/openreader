@@ -213,7 +213,7 @@ def api_banner(request):
             result = {
                 'index': banner.order,
                 'img': '%s%s' % (settings.WEBSITE_DOMAIN, banner.image.url),
-                'link': banner.order,
+                'link': banner.link,
             }
             results.append(result)
         return HttpResponse(simplejson.dumps(results))
