@@ -5,13 +5,35 @@
 {% block manage_head_title %}Banner{% endblock %}
 {% block topnav %}{% include 'manage/snippets/manage_topnav.html' with active_menu='banner' %}{% endblock %}
 
+{% block extra_head %}
+<script>
+$(document).ready(function () {
+    $('#banner-list td:last a').on('click', function() {
+        banner_id = $(this).attr('id');
+        row = $(this).closest('tr');
+    });
+
+    $('#delete-banner-modal button[type="submit"]').on('click', function(e) {
+        var url = '{% url ajax_manage_banner_delete 98769999 %}'.replace (98769999, banner_id);
+        $.post(url, {}, function(response) {
+            if(response.status == 'success'){
+                $('#delete-banner-modal').modal('hide');
+                row.remove();
+            }
+        }, 'json');
+        return false;
+    });
+});
+</script>
+{% endblock %}
+
 {% block body_authenticated %}
 <div class="container-fluid container-body">
     <div class="content-full"><div class="content-inner">
         <legend>Banner</legend>
         <div class="page_actions"><a href="{% url manage_banner_create %}" class="btn">Add banner</a></div>
 
-        <table class="table">
+        <table class="table" id="banner-list">
             <thead>
                 <tr>
                     <th>Organization</th>
@@ -28,7 +50,7 @@
                     <td>{{ banner.order }}</td>
                     <td>{{ banner.image }}</td>
                     <td>{{ banner.link }}</td>
-                    <th><a href="{% url manage_banner_delete banner.id %}" class="btn btn-danger">Delete</a></th>
+                    <td><a href="#delete-banner-modal" id="{{ banner.id }}" data-toggle="modal" class="btn btn-danger">Delete</a></td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -36,4 +58,14 @@
     </div></div>
 </div>
 
+<div class="modal hide" id="delete-banner-modal">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>Delete banner ?</h3>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal">{% trans 'Cancel' %}</button>
+        <button type="submit" class="btn btn-danger">{% trans 'Confirm' %}</button>
+    </div>
+</div>
 {% endblock %}

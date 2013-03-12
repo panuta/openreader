@@ -11,7 +11,7 @@ from django.views.decorators.http import require_GET, require_POST
 from common.shortcuts import response_json_success, response_json_error
 
 from accounts.permissions import get_backend as get_permission_backend
-from domain.models import OrganizationInvitation
+from domain.models import OrganizationInvitation, OrganizationBanner
 
 @require_POST
 @login_required
@@ -46,3 +46,20 @@ def ajax_cancel_organization_invitation(request, invitation_id):
         return response_json_success({'redirect_url':reverse('view_organizations_invited')})
     else:
         raise Http404
+
+
+@login_required
+@require_POST
+def ajax_manage_banner_delete(request, banner_id):
+    if not request.user.is_superuser:
+        raise Http404
+
+    try:
+        banner = OrganizationBanner.objects.get(id=banner_id)
+    except OrganizationBanner.DoesNotExist:
+        return response_json_error({'error': 'banner-not-found'})
+
+    banner.delete()
+    messages.success(request, u'ลบแบนเนอร์เรียบร้อย')
+    return response_json_success()
+
