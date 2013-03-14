@@ -40,7 +40,7 @@ $(document).ready(function () {
             <ul>
                 {% for shelf in shelves %}
                 <li class="shelf {{ shelf.icon|default:settings.DEFAULT_SHELF_ICON }}" id="shelf-{{ shelf.id }}">
-                    <div class="shelf_name"><a href="{% url view_documents_by_shelf organization.slug shelf.id %}">{{ shelf.name }}</a></div>
+                    <div class="shelf_name"><a href="{% url view_documents_by_shelf organization.slug shelf.id %}">{{ shelf.name }} [{{ shelf.priority }}]</a></div>
                     <div class="details"><span class="num_files">{{ shelf.num_of_documents }} {% if shelf.num_of_documents > 1 %}{% trans 'files' %}{% else %}{% trans 'file' %}{% endif %}</span></div>
                 </li>
                 {% endfor %}

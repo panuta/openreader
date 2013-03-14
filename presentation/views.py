@@ -537,15 +537,19 @@ def create_document_shelf(request, organization_slug):
         raise Http404
 
     if request.method == 'POST':
-        print request.POST
-        form = OrganizationShelfForm(request.POST)
+        form = OrganizationShelfForm(request.POST, request.FILES)
         if form.is_valid():
             name = form.cleaned_data['name']
             auto_sync = form.cleaned_data['auto_sync']
             shelf_icon = form.cleaned_data['shelf_icon']
             archive = form.cleaned_data['archive']
+            priority = form.cleaned_data['priority']
 
-            shelf = OrganizationShelf.objects.create(organization=organization, name=name, auto_sync=auto_sync, archive=archive, icon=shelf_icon, created_by=request.user)
+            shelf = OrganizationShelf.objects.create(organization=organization, name=name, auto_sync=auto_sync, archive=archive, icon=shelf_icon, created_by=request.user, priority=priority)
+            if form.cleaned_data.get('banner'):
+                banner = form.cleaned_data.get('banner')
+                shelf.banner.save(banner.name, banner)
+
             _persist_shelf_permissions(request, organization, shelf)
 
             messages.success(request, _('Create shelf successful'))
@@ -566,12 +570,17 @@ def edit_document_shelf(request, organization_slug, shelf_id):
         raise Http404
 
     if request.method == 'POST':
-        form = OrganizationShelfForm(request.POST)
+        form = OrganizationShelfForm(request.POST, request.FILES)
         if form.is_valid():
             shelf.name = form.cleaned_data['name']
             shelf.auto_sync = form.cleaned_data['auto_sync']
             shelf.archive = form.cleaned_data['archive']
             shelf.icon = form.cleaned_data['shelf_icon']
+            shelf.priority = form.cleaned_data['priority']
+            if form.cleaned_data.get('banner'):
+                shelf.banner.delete()
+                banner = form.cleaned_data.get('banner')
+                shelf.banner.save(banner.name, banner)
             shelf.save()
 
             _persist_shelf_permissions(request, organization, shelf)
@@ -580,7 +589,7 @@ def edit_document_shelf(request, organization_slug, shelf_id):
             return redirect('view_documents_by_shelf', organization_slug=organization.slug, shelf_id=shelf.id)
 
     else:
-        form = OrganizationShelfForm(initial={'name':shelf.name, 'auto_sync':shelf.auto_sync, 'archive':shelf.archive, 'shelf_icon':shelf.icon})
+        form = OrganizationShelfForm(initial={'name':shelf.name, 'auto_sync':shelf.auto_sync, 'archive':shelf.archive, 'shelf_icon':shelf.icon, 'priority': shelf.priority, 'banner': shelf.banner,})
 
     return render(request, 'document/shelf_modify.html', {'organization':organization, 'form':form, 'shelf':shelf, 'shelf_type':'edit'})
 
@@ -611,6 +620,8 @@ def delete_document_shelf(request, organization_slug, shelf_id):
             OrganizationShelfPermission.objects.filter(shelf=shelf).delete()
             GroupShelfPermission.objects.filter(shelf=shelf).delete()
             UserShelfPermission.objects.filter(shelf=shelf).delete()
+            if shelf.banner:
+                shelf.banner.delete()
             shelf.delete()
 
             return redirect('view_documents', organization_slug=organization.slug)

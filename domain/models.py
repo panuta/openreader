@@ -389,6 +389,11 @@ class PublicationRevision(models.Model):
 """
 
 # SHELF
+def organization_shelf_banner_media_dir(instance, filename):
+    splitted = filename.split('.')
+    return './shelf_banner/%s/%s/%s.%s' % (instance.organization.id, instance.id, shortuuid.uuid(), splitted[-1])
+
+
 class OrganizationShelfManager(models.Manager):
 
     def archive(self, user, shelf_ids):
@@ -407,6 +412,7 @@ class OrganizationShelfManager(models.Manager):
         else:
             return shelf.archive 
 
+
 class OrganizationShelf(models.Model):
     organization = models.ForeignKey(Organization)
     name = models.CharField(max_length=200)
@@ -416,6 +422,9 @@ class OrganizationShelf(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='created_organization_shelves')
     archive = models.BooleanField(default=False) # shelf-level archive flag
+
+    banner = models.ImageField(upload_to=organization_shelf_banner_media_dir, null=True, max_length=500)
+    priority = models.PositiveIntegerField(default=0)
 
     objects = objects = OrganizationShelfManager()
 

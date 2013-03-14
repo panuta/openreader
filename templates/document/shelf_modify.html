@@ -111,7 +111,7 @@ $(document).ready(function () {
             <h2>{% trans 'Edit shelf' %}</h2>
         {% endif %}
 
-        <form method="POST" action=".">
+        <form method="POST" action="." enctype="multipart/form-data">
             {% csrf_token %}
             {{form.non_field_errors}}
 
@@ -135,6 +135,16 @@ $(document).ready(function () {
                 <div class="controls shelf-icon-controls">
                     <input type="hidden" name="shelf_icon" id="id_shelf_icon" value="{{form.shelf_icon.value}}" /><img src="{{STATIC_URL}}images/shelficons/24/{{form.shelf_icon.value}}.png" /><button class="btn btn-small" data-toggle="modal" data-target="#shelf_icons_modal">{% trans 'Change icon' %}</button>
                 </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="id_banner">Shelf banner</label>
+                <div class="controls">{{form.banner}}{{form.banner.errors}}</div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="id_priority">Priority</label>
+                <div class="controls">{{form.priority}}{{form.priority.errors}}<span class="help-block">Higher vaule, Higher priority</span></div>
             </div>
 
             <div class="control-group">

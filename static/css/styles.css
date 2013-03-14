@@ -1281,6 +1281,10 @@ table tr.checked td {
   vertical-align: middle;
   margin-right: 15px;
 }
+.modify_shelf_page #banner-clear_id,
+.modify_shelf_page label[for="banner-clear_id"] {
+  display: none;
+}
 .modify_shelf_page .shelf-permission-controls {
   margin: 10px 0px 10px;
 }
