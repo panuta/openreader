@@ -18,17 +18,28 @@ def generate_thumbnails(publication):
         return _generate_image_thumbnail(publication)
     elif publication.file_ext == 'pdf':
         return _generate_pdf_thumbnail(publication)
+    elif publication.file_ext == 'youtube':
+        return True
     
     return False
 
 def get_thumbnail_url(publication, size):
-    if publication.has_thumbnail:
-        return '%s%s/%s.%s.jpg' % (settings.THUMBNAIL_URL, publication.get_parent_folder(), publication.uid, size)
-    else:
-        if publication.is_processing:
-            return PROCESSING_THUMBNAIL_URL
-        else:
+    if publication.file_ext == 'youtube':
+        try:
+            f = open('%s%s' % (settings.PUBLICATION_ROOT, publication.get_download_rel_path()), 'r')
+            lines = f.readlines()
+            f.close()
+            return 'http://img.youtube.com/vi/%s/0.jpg' % lines[0]
+        except:
             return NO_THUMBNAIL_URL
+    else:
+        if publication.has_thumbnail:
+            return '%s%s/%s.%s.jpg' % (settings.THUMBNAIL_URL, publication.get_parent_folder(), publication.uid, size)
+        else:
+            if publication.is_processing:
+                return PROCESSING_THUMBNAIL_URL
+            else:
+                return NO_THUMBNAIL_URL
 
 def delete_thumbnails(publication):
     for thumbnail_size in settings.THUMBNAIL_SIZES:
