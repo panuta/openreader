@@ -13,6 +13,8 @@ var MAX_PUBLICATION_FILE_SIZE_TEXT = '{{ settings.MAX_PUBLICATION_FILE_SIZE_TEXT
 $(document).ready(function () {
     initializeDocumentsShelfPage("{{ shelf.id }}");
 
+    $('#id_upload_shelf').chosen();
+
     $('.documents_table .js-open-publication').live('click', function() {
         $('#publication-modal').on('publication_deleted', function() {
             $('.documents_table .js-open-publication[uid="' + $('#publication-modal').data('uid') + '"]').closest('tr').remove();
@@ -71,7 +73,7 @@ $(document).ready(function () {
         <div class="upload_tool hide">
             <form>
                 <label for="id_upload_shelf">{% trans 'Select shelf' %}</label>
-                <select id="id_upload_shelf" class="js-upload-tool-shelf-input"><option></option>{% for shelf in uploadable_shelves %}<option value="{{ shelf.id }}">{{ shelf.name }}</option>{% endfor %}</select>
+                <select multiple id="id_upload_shelf" class="js-upload-tool-shelf-input"><option></option>{% for shelf in uploadable_shelves %}<option value="{{ shelf.id }}">{{ shelf.name }}</option>{% endfor %}</select>
                 <span class="js-upload-tool-file-input"><label for="id_upload_file">{% trans 'Choose file' %}</label><input type="file" id="id_upload_file" multiple="" /></span>
             </form>
         </div>

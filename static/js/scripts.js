@@ -63,6 +63,7 @@ $('.js-open-publication').live('click', function() {
 });
 
 $(document).ready(function () {
+
     $('#publication-modal').on('show', function() {
         _removeModalMessage('publication-modal');
         $('#publication-modal .modal-body > :not(.publication)').remove();
@@ -83,11 +84,10 @@ $(document).ready(function () {
             $.get('/ajax/publication/' + uid + '/query/', {}, function(response) {
                 if(response.status == 'success') {
                     var publication_form = '';
-
                     if(response.readonly == 'true') {
                         publication_form = $('<div class="publication"><div class="left"><div class="thumbnail"><img src="' + response.thumbnail_url + '" /></div><ul class="file_info"><li>'+ gettext('File') +' <span class="file_ext">' + response.file_ext.toUpperCase() + '</span></li><li>'+ gettext('Size') +' <span class="file_size">' + response.file_size_text + '</span></li></ul></div><div class="right"><form class="publication_form"><div class="control-group"><label class="control-label" for="id_publication_title">'+ gettext('Document title') +'</label><div class="controls"><input type="text" id="id_publication_title" readonly="readonly" value="' + response.title + '"/></div></div><div class="control-group"><label class="control-label" for="id_publication_description">'+ gettext('Description') +'</label><div class="controls"><textarea id="id_publication_description" readonly="readonly">' + response.description + '</textarea></div></div><div class="control-group"><label class="control-label" for="id_publication_tags">'+ gettext('Tags') +'</label><div class="controls"><input type="text" id="id_publication_tags" readonly="readonly" value="' + response.tag_names + '"/></div></div></form></div></div>')
                     } else {
-                        publication_form = $('<div class="publication"><div class="left"><div class="thumbnail"><img src="' + response.thumbnail_url + '" /></div><ul class="file_info"><li>'+ gettext('File') +' <span class="file_ext">' + response.file_ext.toUpperCase() + '</span></li><li>'+ gettext('Size') +' <span class="file_size">' + response.file_size_text + '</span></li></ul><div class="actions"><a href="#" class="btn btn-mini replace_button">'+ gettext('Change file') +'</a><a href="#" class="btn btn-mini delete_button">'+ gettext('Delete file') +'</a></div></div><div class="right"><form class="publication_form"><div class="control-group"><label class="control-label" for="id_publication_title">'+ gettext('Document title') +'</label><div class="controls"><input type="text" id="id_publication_title" value="' + response.title + '"/></div></div><div class="control-group"><label class="control-label" for="id_publication_description">'+ gettext('Description') +'</label><div class="controls"><textarea id="id_publication_description">' + response.description + '</textarea></div></div><div class="control-group"><label class="control-label" for="id_publication_tags">'+ gettext('Tags') +'</label><div class="controls"><input type="text" id="id_publication_tags" value="' + response.tag_names + '"/></div></div><button class="btn btn-primary save_button"><i class="icon-pencil icon-white"></i> '+ gettext('Save') +'</button></form></div></div>')
+                        publication_form = $('<div class="publication"><div class="left"><div class="thumbnail"><img src="' + response.thumbnail_url + '" /></div><ul class="file_info"><li>'+ gettext('File') +' <span class="file_ext">' + response.file_ext.toUpperCase() + '</span></li><li>'+ gettext('Size') +' <span class="file_size">' + response.file_size_text + '</span></li></ul><div class="actions"><a href="#" class="btn btn-mini replace_button">'+ gettext('Change file') +'</a><a href="#" class="btn btn-mini delete_button">'+ gettext('Delete file') +'</a></div></div><div class="right"><form class="publication_form"><div class="control-group"><label class="control-label" for="id_publication_title">'+ gettext('Document title') +'</label><div class="controls"><input type="text" id="id_publication_title" value="' + response.title + '"/></div></div><div class="control-group"><label class="control-label" for="id_publication_description">'+ gettext('Description') +'</label><div class="controls"><textarea id="id_publication_description">' + response.description + '</textarea></div></div><div class="control-group"><label class="control-label" for="id_publication_tags">'+ gettext('Tags') +'</label><div class="controls"><input type="text" id="id_publication_tags" value="' + response.tag_names + '"/></div></div><div class="control-group"><label class="control-label" for="id_publication_shelves">Shelves</label><div class="controls"><select multiple="multiple" data-placeholder="Select shelves" name="publication_shelves" id="id_publication_shelves">'+ response.shelf_options +'</select></div></div><button class="btn btn-primary save_button"><i class="icon-pencil icon-white"></i> '+ gettext('Save') +'</button></form></div></div>')
                     }
 
                     $('#publication-modal .modal-header h3').text(response.title);
@@ -228,8 +228,9 @@ $(document).ready(function () {
         var title = $('#id_publication_title').val();
         var description = $('#id_publication_description').val();
         var tagnames = $('#id_publication_tags').val();
+        var shelves = $('#id_publication_shelves').val();
 
-        $.post('/ajax/' + var_organization_slug + '/publication/edit/', {uid:uid, title:title, description:description, tags:tagnames}, function(response) {
+        $.post('/ajax/' + var_organization_slug + '/publication/edit/', {uid:uid, title:title, description:description, tags:tagnames, shelves:shelves}, function(response) {
             if(response.status == 'success') {
                 _addModalMessage('publication-modal', gettext('Save successful'), 'success');
                 $('#publication-modal').trigger('publication_updated', [uid, title, tagnames]);
@@ -254,19 +255,19 @@ function initializeDocumentsPage() {
 
     $('.js-upload-publication').on('click', function() {
         $('.upload_tool select option:first').attr('selected', true);
-        $('.js-upload-tool-file-input').hide();
+        // $('.js-upload-tool-file-input').hide();
         $('.upload_tool').slideToggle('fast');
         return true;
     });
 
-    $('.js-upload-tool-shelf-input').on('change', function() {
-        var selected_value = $(this).find('option:selected').val();
-        if(selected_value) {
-            $('.js-upload-tool-file-input').show();
-        } else {
-            $('.js-upload-tool-file-input').hide();
-        }
-    });
+    // $('.js-upload-tool-shelf-input').on('change', function() {
+    //     var selected_value = $(this).find('option:selected').val();
+    //     if(selected_value) {
+    //         $('.js-upload-tool-file-input').show();
+    //     } else {
+    //         $('.js-upload-tool-file-input').hide();
+    //     }
+    // });
 
     $('.js-dismiss-uploading').live('click', function() {
         $(this).closest('li').fadeOut('fast', function() {
@@ -280,7 +281,7 @@ function initializeDocumentsPage() {
         url: '/org/' + var_organization_slug + '/documents/upload/',
         limitConcurrentUploads: 5,
         formData: function (form) {
-            return [{name:"shelf", value:form.find('select option:selected').val()}];
+            return [{name:"shelves", value:form.find('select').val()}];
         },
         add: function(e, data) {
             $('.no_shelf').remove();
@@ -313,7 +314,14 @@ function initializeDocumentsPage() {
                 data.context.addClass('uploaded').html('<div class="filename"><em>' + file.name + '</em> '+gettext('Uploaded on')+' ' + responseObject.uploaded + '</div><div class="file_title"><button class="btn btn-small js-open-publication" title="' + responseObject.title + '" uid="' + responseObject.uid + '">'+gettext('Edit document')+'</button></div>');
 
                 // Update num of files in shelf
-                $('#shelf-' + responseObject.shelf + ' .num_files').text($('#shelf-' + responseObject.shelf + ' .num_files').text().split(' ')[0] * 1 + 1 + ' ' + +gettext('file'));
+                for(var i=0; i<responseObject.shelves.length; i++){
+                    console.log(responseObject.shelves[i]);
+                    var file = gettext('files')
+                    if( $('#shelf-' + responseObject.shelves[i] + ' .num_files').text() == '0 file' ){
+                        file = gettext('file')
+                    }
+                    $('#shelf-' + responseObject.shelves[i] + ' .num_files').text($('#shelf-' + responseObject.shelves[i] + ' .num_files').text().split(' ')[0] * 1 + 1 + ' ' + file);
+                }
 
                 _appendRecentDocuments(responseObject.uid, responseObject.title, responseObject.uploaded);
                 
@@ -385,7 +393,7 @@ function initializeDocumentsShelfPage(shelf_id) {
     // UPLOAD TOOL -----------------------------------------------------------------------------------------------------
 
     $('.js-upload-publication').on('click', function() {
-        $('.upload_tool select option[value="' + shelf_id + '"]').attr('selected', true);
+        // $('.upload_tool select option[value="' + shelf_id + '"]').attr('selected', true);
         $('.upload_tool').slideToggle('fast');
         return true;
     });
@@ -412,7 +420,7 @@ function initializeDocumentsShelfPage(shelf_id) {
         limitConcurrentUploads: 5,
         dropZone: $('.upload_tool'),
         formData: function (form) {
-            return [{name:"shelf", value:form.find('select option:selected').val()}];
+            return [{name:"shelves", value:form.find('select').val()}];
         },
         add: function(e, data) {
             var file = data.files[0];

@@ -23,7 +23,7 @@ from common.utilities import format_abbr_datetime, humanize_file_size
 from accounts.permissions import get_backend as get_permission_backend
 
 from domain import functions as domain_functions
-from domain.models import OrganizationTag, PublicationTag, Publication, Organization, UserGroup, UserOrganizationInvitation, OrganizationGroup, UserOrganization, OrganizationShelf
+from domain.models import OrganizationTag, PublicationTag, Publication, Organization, UserGroup, UserOrganizationInvitation, OrganizationGroup, UserOrganization, OrganizationShelf, PublicationShelf
 from domain.tasks import generate_thumbnails
 
 logger = logging.getLogger(settings.OPENREADER_LOGGER)
@@ -174,6 +174,13 @@ def ajax_query_publication(request, publication_uid):
     if not permission_backend.can_view_publication(request.user, publication.organization, {'publication':publication}):
         raise Http404
 
+    shelf_options = ''
+    for shelf in OrganizationShelf.objects.all():
+        selected = ''
+        if shelf in publication.shelves.all():
+            selected = ' selected="selected"'
+        shelf_options += '<option value="%s"%s>%s</option>' % (shelf.id, selected, shelf.name)
+
     return response_json_success({
         'uid': str(publication.uid),
         'title': publication.title,
@@ -184,6 +191,7 @@ def ajax_query_publication(request, publication_uid):
         'file_ext': publication.file_ext,
         'file_size_text': humanize_file_size(publication.uploaded_file.file.size),
         'shelves': ','.join([str(shelf.id) for shelf in publication.shelves.all()]),
+        'shelf_options': shelf_options,
 
         'thumbnail_url': publication.get_large_thumbnail(),
         'download_url': reverse('download_publication', args=[publication.uid]),
@@ -196,17 +204,20 @@ def ajax_query_publication(request, publication_uid):
 @login_required
 def upload_publication(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
+    shelves_id = request.POST.get('shelves')
+    shelves_id = shelves_id.strip(',').split(',')
+    shelves = []
+    for shelf_id in shelves_id:
+        if shelf_id:
+            shelf = get_object_or_404(OrganizationShelf, pk=shelf_id)
+        else:
+            transaction.rollback()
+            raise Http404
 
-    shelf_id = request.POST.get('shelf')
-    if shelf_id:
-        shelf = get_object_or_404(OrganizationShelf, pk=shelf_id)
-    else:
-        transaction.rollback()
-        raise Http404
-
-    if shelf.organization.id != organization.id or not get_permission_backend(request).can_upload_shelf(request.user, organization, {'shelf':shelf}):
-        transaction.rollback()
-        raise Http404
+        if shelf.organization.id != organization.id or not get_permission_backend(request).can_upload_shelf(request.user, organization, {'shelf':shelf}):
+            transaction.rollback()
+            raise Http404
+        shelves.append(shelf)
 
     try:
         file = request.FILES[u'files[]']
@@ -216,7 +227,7 @@ def upload_publication(request, organization_slug):
             return response_json_error('file-size-exceed')
 
         uploading_file = UploadedFile(file)
-        publication = domain_functions.upload_publication(request, uploading_file, organization, shelf)
+        publication = domain_functions.upload_publication(request, uploading_file, organization, shelves)
 
         if not publication:
             transaction.rollback()
@@ -236,7 +247,7 @@ def upload_publication(request, organization_slug):
             'title': publication.title,
             'file_ext':publication.file_ext,
             'file_size_text': humanize_file_size(uploading_file.file.size),
-            'shelf':shelf.id if shelf else '',
+            'shelves': shelves_id,
             'uploaded':format_abbr_datetime(publication.uploaded),
             'thumbnail_url':publication.get_large_thumbnail(),
             'download_url': reverse('download_publication', args=[publication.uid])
@@ -312,6 +323,7 @@ def ajax_edit_publication(request, organization_slug):
     title = request.POST.get('title')
     description = request.POST.get('description')
     tag_names = request.POST.get('tags')
+    shelves = request.POST.getlist('shelves[]')
 
     try:
         publication = Publication.objects.get(uid=publication_uid)
@@ -344,6 +356,15 @@ def ajax_edit_publication(request, organization_slug):
 
             PublicationTag.objects.get_or_create(publication=publication, tag=tag)
             saved_tag_names.append(tag_name)
+
+    PublicationShelf.objects.filter(publication=publication).delete()
+    for shelf_id in shelves:
+        try:
+            shelf = OrganizationShelf.objects.get(id=shelf_id)
+        except OrganizationShelf.DoesNotExist:
+            continue
+
+        PublicationShelf.objects.create(publication=publication, shelf=shelf, created_by=request.user)
 
     return response_json_success({'tag_names':saved_tag_names})
 

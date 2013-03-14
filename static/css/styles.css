@@ -685,6 +685,9 @@ table tr.checked td {
 #publication-modal .right form #id_publication_tags {
   width: 370px;
 }
+#publication-modal .right form #id_publication_shelves {
+  width: 370px;
+}
 #publication-modal .right form .actions {
   margin-top: 20px;
 }
@@ -709,12 +712,6 @@ table tr.checked td {
   border: 1px dashed #CCC;
   margin-bottom: 20px;
   padding: 15px;
-  /*
-        .chzn-container {
-            margin-bottom: 0px;
-            vertical-align: -5px;
-        }*/
-
 }
 .documents_page .upload_tool label {
   color: #444;
@@ -724,6 +721,10 @@ table tr.checked td {
 }
 .documents_page .upload_tool select {
   margin: 0px 20px 0px 0px;
+}
+.documents_page .upload_tool .chzn-container {
+  margin-bottom: 0px;
+  vertical-align: -5px;
 }
 .documents_page .breadcrumb {
   margin-bottom: 20px;

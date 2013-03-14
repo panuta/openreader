@@ -10,7 +10,7 @@ from domain.models import Publication, PublicationShelf, OrganizationShelf, Orga
 
 logger = logging.getLogger(settings.OPENREADER_LOGGER)
 
-def upload_publication(request, uploading_file, organization, shelf):
+def upload_publication(request, uploading_file, organization, shelves):
     (file_path, file_name, file_ext) = split_filepath(uploading_file.name)
     publication = Publication.objects.create(organization=organization, title=file_name, original_file_name=file_name, file_ext=file_ext, uploaded_by=request.user)
 
@@ -21,7 +21,8 @@ def upload_publication(request, uploading_file, organization, shelf):
         logger.critical(traceback.format_exc(sys.exc_info()[2]))
         return None
 
-    PublicationShelf.objects.create(publication=publication, shelf=shelf, created_by=request.user)
+    for shelf in shelves:
+        PublicationShelf.objects.create(publication=publication, shelf=shelf, created_by=request.user)
 
     return publication
 

@@ -25,6 +25,10 @@
                         <label class="control-label" for="id_publication_tags">{% trans 'Tags' %}</label>
                         <div class="controls"><input type="text" id="id_publication_tags"/></div>
                     </div>
+                    <div class="control-group">
+                        <label class="control-label" for="id_publication_shelves">Shelves</label>
+                        <div class="controls"><select multiple="multiple" data-placeholder="Select shelves" name="publication_shelves" id="id_publication_shelves"></select></div>
+                    </div>
 
                     <button class="btn btn-primary save_button"><i class="icon-pencil icon-white"></i> {% trans 'Save' %}</button>
                 </form>
