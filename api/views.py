@@ -81,6 +81,7 @@ def list_publication(request):
         for shelf in shelves:
             shelf_dict = model_to_dict(shelf)
             shelf_dict['archive'] = OrganizationShelf.objects.is_archive(user_profile.user, shelf)
+            shelf_dict['banner'] = request.build_absolute_uri(shelf.banner.url)
             shelf_dict['publications'] = []
             for publication in shelf.publication_set.all():
                 publication_dict = model_to_dict(publication)
