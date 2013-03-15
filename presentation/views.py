@@ -429,7 +429,7 @@ def view_documents(request, organization_slug):
 
     shelves = get_permission_backend(request).get_viewable_shelves(request.user, organization)
     uploadable_shelves = get_permission_backend(request).get_uploadable_shelves(request.user, organization)
-    recent_publications = Publication.objects.filter(shelves__in=shelves).order_by('-uploaded')[:10]
+    recent_publications = Publication.objects.filter(shelves__in=shelves).distinct().order_by('-uploaded')[:10]
 
     return render(request, 'document/documents.html', {
         'organization': organization,
