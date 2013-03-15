@@ -578,7 +578,8 @@ def edit_document_shelf(request, organization_slug, shelf_id):
             shelf.icon = form.cleaned_data['shelf_icon']
             shelf.priority = form.cleaned_data['priority']
             if form.cleaned_data.get('banner'):
-                shelf.banner.delete()
+                if shelf.banner:
+                    shelf.banner.delete()
                 banner = form.cleaned_data.get('banner')
                 shelf.banner.save(banner.name, banner)
             shelf.save()
