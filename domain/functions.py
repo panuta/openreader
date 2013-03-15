@@ -52,6 +52,7 @@ def delete_publication(publication):
         delete_thumbnails(publication)
 
     publication.uploaded_file.delete()
+    publication.publicationshelf_set.all().delete()
     publication.delete()
 
 

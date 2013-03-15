@@ -396,7 +396,19 @@ def ajax_delete_publication(request, organization_slug):
     if not publications:
         return response_json_error('invalid-publication')
 
-    domain_functions.delete_publications(publications)
+    if request.POST.get('shelf'):
+        for publication in publications:
+            if PublicationShelf.objects.filter(publication=publication).count() == 1:
+                domain_functions.delete_publication(publication)
+            else:
+                try:
+                    shelf = OrganizationShelf.objects.get(id=request.POST.get('shelf'))
+                except OrganizationShelf.DoesNotExist:
+                    raise Http404
+
+                PublicationShelf.objects.filter(publication=publication, shelf=shelf).delete()
+    else:
+        domain_functions.delete_publications(publications)
 
     return response_json_success()
 

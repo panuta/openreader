@@ -600,7 +600,7 @@ function initializeDocumentsShelfPage(shelf_id) {
             publications.push($(this).closest('tr').attr('id'));
         });
 
-        $.post('/ajax/' + var_organization_slug + '/publication/delete/', {uid:publications}, function(response) {
+        $.post('/ajax/' + var_organization_slug + '/publication/delete/', {uid:publications, shelf:shelf_id}, function(response) {
             $('#delete-files-confirmation-modal').modal('hide');
 
             if(response.status == 'success') {

@@ -603,13 +603,13 @@ def delete_document_shelf(request, organization_slug, shelf_id):
         raise Http404
 
     if request.method == 'POST':
-        print request.POST
         if 'submit-delete' in request.POST:
             to_delete_documents = request.POST.get('delete_documents') == 'on'
 
             if to_delete_documents:
                 for publication in Publication.objects.filter(shelves__in=[shelf]):
-                    domain_functions.delete_publication(publication)
+                    if PublicationShelf.objects.filter(publication=publication).count() == 1:
+                        domain_functions.delete_publication(publication)
 
                 messages.success(request, _('Delete shelf and all files in group successful'))
 

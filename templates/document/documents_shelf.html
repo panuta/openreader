@@ -85,7 +85,7 @@ $(document).ready(function () {
             <div class="inner">
                 <span class="check"><input type="checkbox"/></span>
                 <a href="#add-tags-modal" class="btn-small btn add_tag_button disabled" data-toggle="modal"><i class="icon-tag"></i> {% trans 'Add tags' %}</a>
-                <a href="#delete-files-confirmation-modal" class="btn-small btn disabled" data-toggle="modal"><i class="icon-trash"></i> {% trans 'Delete file' %}</a>
+                <a href="#delete-files-confirmation-modal" class="btn-small btn disabled" data-toggle="modal"><i class="icon-trash"></i> Remove file from shelf</a>
             </div>
         </div>
         {% endcan %}
@@ -131,10 +131,23 @@ $(document).ready(function () {
     </div>
 </div>
 
+{% comment %}
 <div class="modal hide" id="delete-files-confirmation-modal">
     <div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>{% trans 'Confirm deleting file' %}</h3></div>
     <div class="modal-footer">
         <button class="btn btn-danger" type="submit">{% trans 'Confirm deleting file' %} <span></span> {% trans 'file' %}</button>
+        <button class="btn" data-dismiss="modal">{% trans 'Cancel' %}</button>
+    </div>
+</div>
+{% endcomment %}
+
+<div class="modal hide" id="delete-files-confirmation-modal">
+    <div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>Remove file from shelf</h3></div>
+    <div class="modal-body">
+        If this file only in this shelf, it will also be deleted.
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-danger" type="submit">Confirm removing file <span></span> {% trans 'file' %}</button>
         <button class="btn" data-dismiss="modal">{% trans 'Cancel' %}</button>
     </div>
 </div>
