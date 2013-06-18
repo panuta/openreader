@@ -4,8 +4,9 @@ import md5
 import base64
 from StringIO import StringIO
 
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseServerError
 from django.shortcuts import redirect, render
 from django.core import serializers
@@ -200,23 +201,26 @@ def api_request_secret_key(request):
     return HttpResponse(simplejson.dumps(result))
 
 
+# http://admin%40openreader.com:1q2w3e4r@10.0.1.111:8000/api/banner/
 @logged_in_or_basicauth()
 def api_banner(request):
-    if _has_required_parameters(request, ['organization']):
-        email = _get_email(request)
-        user_profile = UserProfile.objects.get(user__email=email)
+    email = _get_email(request)
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        return HttpResponse(simplejson.dumps({'status': 404, 'msg': 'Wrong parameters'}))
 
-        organization_list = UserOrganization.objects.filter(user=user_profile.user, is_active=True).values_list('organization', flat=True)
+    organization_list = UserOrganization.objects.filter(user=user, is_active=True).values_list('organization', flat=True)
 
-        results = []
-        for banner in OrganizationBanner.objects.filter(organization__in=organization_list):
-            result = {
-                'index': banner.order,
-                'img': '%s%s' % (settings.WEBSITE_URL, banner.image.url),
-                'link': banner.link,
-            }
-            results.append(result)
-        return HttpResponse(simplejson.dumps(results))
+    results = []
+    for banner in OrganizationBanner.objects.filter(organization__in=organization_list):
+        result = {
+            'index': banner.order,
+            'img': '%s%s' % (settings.WEBSITE_URL, banner.image.url),
+            'link': banner.link,
+        }
+        results.append(result)
+    return HttpResponse(simplejson.dumps(results))
 
 
 '''
@@ -231,4 +235,5 @@ def api_email_subscription(request):
         UserSubscription.objects.get_or_create(email=email, fbuid=fbuid)
         return HttpResponse(simplejson.dumps({'status': 200, 'msg': 'Success'}))
     else:
-        return HttpResponse(simplejson.dumps({'status': 404, 'msg': 'Success'}))
+        return HttpResponse(simplejson.dumps({'status': 404, 'msg': 'Wrong parameters'}))
+
