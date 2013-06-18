@@ -11,6 +11,7 @@ from django.shortcuts import redirect, render
 from django.core import serializers
 from django.forms.models import model_to_dict
 from django.core.urlresolvers import reverse
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET
 from django.utils import simplejson
 from django.utils.importlib import import_module
@@ -19,7 +20,6 @@ from private_files.views import get_file as private_files_get_file
 from common.fileservers import generate_download_url
 
 from accounts.permissions import get_backend as get_permission_backend
-from models import *
 from domain.models import *
 
 
@@ -218,3 +218,17 @@ def api_banner(request):
             results.append(result)
         return HttpResponse(simplejson.dumps(results))
 
+
+'''
+curl --data 'email=haroro@kmail.com&fbuid=23456' http://admin%40openreader.com:1q2w3e4r@10.0.1.111:8000/api/subscription/
+'''
+@csrf_exempt
+@logged_in_or_basicauth()
+def api_email_subscription(request):
+    email = request.POST.get('email')
+    if email:
+        fbuid = request.POST.get('fbuid', '')
+        UserSubscription.objects.get_or_create(email=email, fbuid=fbuid)
+        return HttpResponse(simplejson.dumps({'status': 200, 'msg': 'Success'}))
+    else:
+        return HttpResponse(simplejson.dumps({'status': 404, 'msg': 'Success'}))

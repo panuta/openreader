@@ -78,6 +78,16 @@ class UserProfile(models.Model):
         except:
             return None
 
+
+class UserSubscription(models.Model):
+    email = models.EmailField()
+    fbuid = models.CharField(max_length=100, blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return self.email
+
+
 # Admin Permissions
 class OrganizationAdminPermission(models.Model):
     name_en = models.CharField(max_length=200)
