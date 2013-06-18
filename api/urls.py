@@ -10,4 +10,5 @@ urlpatterns = patterns('api.views',
     url(r'^subscription/$', 'api_email_subscription', name='api_email_subscription'),
 
     url(r'^banner/$', 'api_banner', name='api_banner'),
+    url(r'^knowledge/$', 'api_knowledge', name='api_knowledge'),
 )

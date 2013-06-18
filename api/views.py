@@ -223,6 +223,28 @@ def api_banner(request):
     return HttpResponse(simplejson.dumps(results))
 
 
+# http://admin%40openreader.com:1q2w3e4r@10.0.1.111:8000/api/knowledge/
+@logged_in_or_basicauth()
+def api_knowledge(request):
+    email = _get_email(request)
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        return HttpResponse(simplejson.dumps({'status': 404, 'msg': 'Wrong parameters'}))
+
+    organization_list = UserOrganization.objects.filter(user=user, is_active=True).values_list('organization', flat=True)
+
+    results = []
+    for knowledge in OrganizationKnowledge.objects.filter(organization__in=organization_list):
+        result = {
+            'img': '%s%s' % (settings.WEBSITE_URL, knowledge.image.url),
+            'link': knowledge.link,
+            'weight': knowledge.weight,
+        }
+        results.append(result)
+    return HttpResponse(simplejson.dumps(results))
+
+
 '''
 curl --data 'email=haroro@kmail.com&fbuid=23456' http://admin%40openreader.com:1q2w3e4r@10.0.1.111:8000/api/subscription/
 '''
