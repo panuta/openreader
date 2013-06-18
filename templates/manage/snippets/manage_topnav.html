@@ -4,4 +4,5 @@
 <ul class="nav">
   <li{% if active_menu == "management" %} class="active"{% endif %}><a href="{% url manage_organizations %}">บริษัท</a></li>
   <li{% if active_menu == "banner" %} class="active"{% endif %}><a href="{% url manage_banners %}">แบนเนอร์</a></li>
+  <li{% if active_menu == "knowledge" %} class="active"{% endif %}><a href="{% url manage_knowledge %}">สาระน่ารู้</a></li>
 </ul>

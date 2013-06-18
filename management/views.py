@@ -7,7 +7,7 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import ugettext as _
 
-from domain.models import User, UserProfile, Organization, OrganizationAdminPermission, OrganizationGroup, OrganizationInvitation, OrganizationBanner
+from domain.models import User, UserProfile, Organization, OrganizationAdminPermission, OrganizationGroup, OrganizationInvitation, OrganizationBanner, OrganizationKnowledge
 from presentation.forms import ClaimOrganizationUserAdminForm, ClaimOrganizationExistUserAdminForm
 
 from forms import *
@@ -263,4 +263,56 @@ def manage_banner_delete(request, banner_id):
         return redirect('manage_banners')
     else:
         return render(request, 'manage/manage_banner_delete.html', {'banner': banner, })
+
+
+# KNOWLEDGE ######################################################################
+
+@login_required
+def manage_knowledge(request):
+    if not request.user.is_superuser:
+        raise Http404
+
+    knowledge_list = OrganizationKnowledge.objects.all()
+
+    return render(request, 'manage/manage_knowledge_list.html', {'knowledge_list':knowledge_list, })
+
+
+@login_required
+def manage_knowledge_create(request):
+    if not request.user.is_superuser:
+        raise Http404
+
+    if request.method == 'POST':
+        form = OrganizationKnowledgeForm(request.POST, request.FILES)
+        if form.is_valid():
+            organization = form.cleaned_data['organization']
+            weight = form.cleaned_data['weight']
+            image = form.cleaned_data['image']
+            link = form.cleaned_data['link']
+            OrganizationKnowledge.objects.create(
+                organization = organization,
+                weight = weight,
+                image = image,
+                link = link,
+            )
+            return redirect('manage_knowledge')
+    else:
+        form = OrganizationKnowledgeForm()
+
+    return render(request, 'manage/manage_knowledge_create.html', {'form': form,})
+
+
+@login_required
+def manage_knowledge_delete(request, knowledge_id):
+    if not request.user.is_superuser:
+        raise Http404
+
+    knowledge = get_object_or_404(OrganizationKnowledge, id=knowledge_id)
+
+    if request.method == 'POST':
+        knowledge.delete()
+        return redirect('manage_knowledge')
+    else:
+        return render(request, 'manage/manage_knowledge_delete.html', {'knowledge': knowledge, })
+
 

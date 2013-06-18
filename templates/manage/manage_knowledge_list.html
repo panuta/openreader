@@ -1,0 +1,72 @@
+{% extends 'manage/manage_base.html' %}
+{% load helper_tags %}
+{% load i18n %}
+
+{% block manage_head_title %}Knowledge{% endblock %}
+{% block topnav %}{% include 'manage/snippets/manage_topnav.html' with active_menu='knowledge' %}{% endblock %}
+
+{% block extra_head %}
+<script>
+$(document).ready(function () {
+    $('#knowledge-list td:last a').on('click', function() {
+        knowledge_id = $(this).attr('id');
+        row = $(this).closest('tr');
+    });
+
+    $('#delete-knowledge-modal button[type="submit"]').on('click', function(e) {
+        var url = '{% url ajax_manage_knowledge_delete 98769999 %}'.replace (98769999, knowledge_id);
+        $.post(url, {}, function(response) {
+            if(response.status == 'success'){
+                $('#delete-knowledge-modal').modal('hide');
+                _showAlertBar('ลบสาระน่ารู้เรียบร้อย', 'success', true);
+                row.remove();
+            }
+        }, 'json');
+        return false;
+    });
+});
+</script>
+{% endblock %}
+
+{% block body_authenticated %}
+<div class="container-fluid container-body">
+    <div class="content-full"><div class="content-inner">
+        <legend>Knowledge</legend>
+        <div class="page_actions"><a href="{% url manage_knowledge_create %}" class="btn">Add knowledge</a></div>
+
+        <table class="table" id="knowledge-list">
+            <thead>
+                <tr>
+                    <th>Organization</th>
+                    <th>Weight</th>
+                    <th>Image</th>
+                    <th>Link</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for knowledge in knowledge_list %}
+                <tr>
+                    <td>{{ knowledge.organization.name }}</td>
+                    <td>{{ knowledge.weight }}</td>
+                    <td>{{ knowledge.image }}</td>
+                    <td>{{ knowledge.link }}</td>
+                    <td><a href="#delete-knowledge-modal" id="{{ knowledge.id }}" data-toggle="modal" class="btn btn-danger">Delete</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div></div>
+</div>
+
+<div class="modal hide" id="delete-knowledge-modal">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>Delete knowledge ?</h3>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal">{% trans 'Cancel' %}</button>
+        <button type="submit" class="btn btn-danger">{% trans 'Confirm' %}</button>
+    </div>
+</div>
+{% endblock %}

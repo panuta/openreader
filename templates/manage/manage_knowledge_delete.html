@@ -1,0 +1,20 @@
+{% extends 'manage/manage_base.html' %}
+{% load helper_tags %}
+{% load i18n %}
+
+{% block manage_head_title %}Knowledge{% endblock %}
+{% block topnav %}{% include 'manage/snippets/manage_topnav.html' with active_menu='knowledge' %}{% endblock %}
+
+{% block body_authenticated %}
+<div class="container-fluid container-body">
+    <div class="content-full"><div class="content-inner">
+        <legend>Knowledge</legend>
+        <h4>คุณต้องการที่จะลบสาระน่ารู้ของ {{ knowledge.organization.name }}</h4>
+        <form method="post" class="form-horizontal">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Confirm</button>
+            <a href="{% url manage_banners %}" class="btn">Cancel</a>
+        </form>
+    </div></div>
+</div>
+{% endblock %}

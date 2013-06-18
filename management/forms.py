@@ -75,7 +75,7 @@ class EditOrganizationInvitationForm(forms.Form):
 
 class OrganizationBannerForm(forms.Form):
     organization = forms.ModelChoiceField(queryset=Organization.objects.all())
-    order = forms.IntegerField()
+    order = forms.IntegerField(min_value=0)
     image = forms.ImageField()
     link = forms.URLField(widget=forms.TextInput(attrs={'class':'span6'}))
 
@@ -89,3 +89,12 @@ class OrganizationBannerForm(forms.Form):
             raise forms.ValidationError(u'This orgnaization and order has already exists.')
 
         return cleaned_data
+
+
+class OrganizationKnowledgeForm(forms.Form):
+    organization = forms.ModelChoiceField(queryset=Organization.objects.all())
+    weight = forms.IntegerField(min_value=0)
+    image = forms.ImageField()
+    link = forms.URLField(widget=forms.TextInput(attrs={'class':'span6'}))
+
+

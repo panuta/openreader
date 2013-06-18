@@ -18,6 +18,7 @@ $(document).ready(function () {
         $.post(url, {}, function(response) {
             if(response.status == 'success'){
                 $('#delete-banner-modal').modal('hide');
+                _showAlertBar('ลบแบนเนอร์เรียบร้อย', 'success', true);
                 row.remove();
             }
         }, 'json');

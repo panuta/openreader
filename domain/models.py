@@ -506,6 +506,22 @@ class OrganizationBanner(models.Model):
         ordering = ['order']
 
 
+def knowledge_media_dir(instance, filename):
+    splitted = filename.split('.')
+    return './knowledge/%s/%s.%s' % (instance.organization.id, shortuuid.uuid(), splitted[-1])
+
+# KNOWLEDGE
+class OrganizationKnowledge(models.Model):
+    organization = models.ForeignKey(Organization)
+    weight = models.PositiveIntegerField()
+    image = models.ImageField(upload_to=banner_media_dir, max_length=500)
+    link = models.URLField()
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-weight']
+
+
 # ORGANIZATION SERVER
 
 class OrganizationDownloadServer(models.Model):

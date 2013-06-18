@@ -14,4 +14,8 @@ urlpatterns = patterns('management.views',
     url(r'^banners/$', 'manage_banners', name='manage_banners'),
     url(r'^banner/create/$', 'manage_banner_create', name='manage_banner_create'),
     url(r'^banner/(?P<banner_id>\d+)/delete/$', 'manage_banner_delete', name='manage_banner_delete'),
+
+    url(r'^knowledge/$', 'manage_knowledge', name='manage_knowledge'),
+    url(r'^knowledge/create/$', 'manage_knowledge_create', name='manage_knowledge_create'),
+    url(r'^knowledge/(?P<knowledge_id>\d+)/delete/$', 'manage_knowledge_delete', name='manage_knowledge_delete'),
 )

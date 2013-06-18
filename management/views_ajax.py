@@ -11,7 +11,8 @@ from django.views.decorators.http import require_GET, require_POST
 from common.shortcuts import response_json_success, response_json_error
 
 from accounts.permissions import get_backend as get_permission_backend
-from domain.models import OrganizationInvitation, OrganizationBanner
+from domain.models import OrganizationInvitation, OrganizationBanner, OrganizationKnowledge
+
 
 @require_POST
 @login_required
@@ -60,6 +61,21 @@ def ajax_manage_banner_delete(request, banner_id):
         return response_json_error({'error': 'banner-not-found'})
 
     banner.delete()
-    messages.success(request, u'ลบแบนเนอร์เรียบร้อย')
+    return response_json_success()
+
+
+
+@login_required
+@require_POST
+def ajax_manage_knowledge_delete(request, knowledge_id):
+    if not request.user.is_superuser:
+        raise Http404
+
+    try:
+        knowledge = OrganizationKnowledge.objects.get(id=knowledge_id)
+    except OrganizationKnowledge.DoesNotExist:
+        return response_json_error({'error': 'knowledge-not-found'})
+
+    knowledge.delete()
     return response_json_success()
 
