@@ -807,4 +807,15 @@ msgstr "ส่งคำขอถึงผู้ใช้เรียบร้อ
 msgid "Cannot send email"
 msgstr "ไม่สามารถส่งอีเมลได้"
 
+# Publication weight choice
+msgid "Classification"
+msgstr "จำแนกตาม"
 
+msgid "general"
+msgstr "หนังสือทั่วไป"
+
+msgid "recommended"
+msgstr "หนังสือแนะนำ"
+
+msgid "featured"
+msgstr "หนังสือเด่น"

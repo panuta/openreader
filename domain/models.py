@@ -330,6 +330,12 @@ def is_downloadable(request, instance):
 def publication_media_dir(instance, filename):
     return '%s/%s/%s' % (settings.PUBLICATION_ROOT, instance.organization.id, filename)
 
+publication_choices = (
+    (0, u'general'),
+    (5, u'recommended'),
+    (10, u'featured'),
+)
+
 class Publication(models.Model):
     organization = models.ForeignKey(Organization)
 
@@ -353,6 +359,8 @@ class Publication(models.Model):
     modified_by = models.ForeignKey(User, related_name='modified_publications', null=True, blank=True)
     replaced = models.DateTimeField(null=True, blank=True)
     replaced_by = models.ForeignKey(User, related_name='replaced_publications', null=True, blank=True)
+
+    weight = models.PositiveIntegerField(default=0, choices=publication_choices)
 
     def __unicode__(self):
         return '%s' % (self.title)

@@ -25,6 +25,16 @@
                         <label class="control-label" for="id_publication_tags">{% trans 'Tags' %}</label>
                         <div class="controls"><input type="text" id="id_publication_tags"/></div>
                     </div>
+                    <div class="control-group">
+                        <label class="control-label" for="id_classification">{% trans 'Classification' %}</label>
+                        <div class="controls">
+                            <select id="id_classification" name="classification">
+                                <option value="0">{% trans 'general' %}</option>
+                                <option value="5">{% trans 'recommended' %}</option>
+                                <option value="10">{% trans 'featured' %}</option>
+                            </select>
+                        </div>
+                    </div>
 
                     <button class="btn btn-primary save_button"><i class="icon-pencil icon-white"></i> {% trans 'Save' %}</button>
                 </form>

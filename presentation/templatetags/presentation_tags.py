@@ -95,6 +95,21 @@ def shelf_user_permission_radio(user_permission):
 
 
 @register.simple_tag
+def publication_weight_select(publication):
+    return '\
+        <option%s value="0">%s</option>\
+        <option%s value="5">%s</option>\
+        <option%s value="10">%s</option>' % (
+            ' selected="selected"' if publication.weight == 0 else '',
+            _('general'),
+            ' selected="selected"' if publication.weight == 5 else '',
+            _('recommended'),
+            ' selected="selected"' if publication.weight == 10 else '',
+            _('featured'),
+        )
+
+
+@register.simple_tag
 def generate_shelf_icons():
     li_html = []
     for icon in settings.SHELF_ICONS:

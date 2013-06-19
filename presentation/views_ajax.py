@@ -25,6 +25,8 @@ from accounts.permissions import get_backend as get_permission_backend
 from domain import functions as domain_functions
 from domain.models import OrganizationTag, PublicationTag, Publication, Organization, UserGroup, UserOrganizationInvitation, OrganizationGroup, UserOrganization, OrganizationShelf
 from domain.tasks import generate_thumbnails
+from presentation.templatetags.presentation_tags import publication_weight_select
+
 
 logger = logging.getLogger(settings.OPENREADER_LOGGER)
 
@@ -189,6 +191,8 @@ def ajax_query_publication(request, publication_uid):
         'download_url': reverse('download_publication', args=[publication.uid]),
 
         'readonly': 'true' if not permission_backend.can_edit_publication(request.user, publication.organization, {'publication':publication}) else 'false',
+
+        'publication_weight_select': publication_weight_select(publication),
     })
 
 @transaction.commit_on_success
@@ -312,6 +316,7 @@ def ajax_edit_publication(request, organization_slug):
     title = request.POST.get('title')
     description = request.POST.get('description')
     tag_names = request.POST.get('tags')
+    classification = request.POST.get('classification')
 
     try:
         publication = Publication.objects.get(uid=publication_uid)
@@ -326,6 +331,7 @@ def ajax_edit_publication(request, organization_slug):
 
     publication.title = title
     publication.description = description
+    publication.weight = classification
     publication.modified = now()
     publication.modified_by = request.user
     publication.save()
