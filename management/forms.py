@@ -3,6 +3,8 @@
 import re
 
 from django import forms
+from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext
 
 from common.countries import COUNTRY_CHOICES_WITH_BLANK
@@ -90,6 +92,13 @@ class OrganizationBannerForm(forms.Form):
 
         return cleaned_data
 
+    def clean_image(self):
+        image = self.cleaned_data.get('image', False)
+        if image and image._size > settings.MAX_BANNER_IMAGE_FILE_SIZE:
+            raise ValidationError( '%s is too big. Max allowed file size is %dKB.' % (image._name, settings.MAX_BANNER_IMAGE_FILE_SIZE/1024))
+
+        return image
+
 
 class OrganizationKnowledgeForm(forms.Form):
     organization = forms.ModelChoiceField(queryset=Organization.objects.all())
@@ -98,4 +107,10 @@ class OrganizationKnowledgeForm(forms.Form):
     image = forms.ImageField()
     link = forms.URLField(widget=forms.TextInput(attrs={'class':'span6'}))
 
+    def clean_image(self):
+        image = self.cleaned_data.get('image', False)
+        if image and image._size > settings.MAX_KNOWLEDGE_IMAGE_FILE_SIZE:
+            raise ValidationError( '%s is too big. Max allowed file size is %dKB.' % (image._name, settings.MAX_KNOWLEDGE_IMAGE_FILE_SIZE/1024))
+
+        return image
 

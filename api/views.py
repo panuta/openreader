@@ -95,6 +95,8 @@ def list_publication(request):
                 
                 publication_dict['large_thumbnail'] = request.build_absolute_uri(publication.get_large_thumbnail())
                 publication_dict['small_thumbnail'] = request.build_absolute_uri(publication.get_small_thumbnail())
+
+                publication_dict['num_download'] = publication.num_download
                 
                 if publication.uploaded:
                     publication_dict['uploaded'] = publication.uploaded.strftime("%Y-%m-%d %H:%M:%S")
@@ -151,6 +153,14 @@ def request_download_publication(request, publication_uid):
 
     if not get_permission_backend(request).get_publication_access(user, publication):
         return HttpResponse('No permissions', status=403)
+
+    email = request.GET.get('email')
+    try:
+        subscriber = UserSubscription.objects.get(email=email)
+    except UserSubscription.DoesNotExist:
+        pass
+    else:
+        PublicationDownloadHistory.objects.get_or_create(publication=publication, subscriber=subscriber)
 
     # ----- CDN support is not available for NBTC -----
     # server_urls = []
@@ -237,7 +247,7 @@ def api_knowledge(request):
     results = []
     for knowledge in OrganizationKnowledge.objects.filter(organization__in=organization_list):
         result = {
-            'img': '%s%s' % (settings.WEBSITE_URL, knowledge.image.url),
+            'image': '%s%s' % (settings.WEBSITE_URL, knowledge.image.url),
             'link': knowledge.link,
             'title': knowledge.title,
             'weight': knowledge.weight,

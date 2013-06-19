@@ -388,6 +388,10 @@ class Publication(models.Model):
         else:
             return '%s/%s' % (self.get_parent_folder(), self.uid)
 
+    @property
+    def num_download(self):
+        return PublicationDownloadHistory.objects.filter(publication=self).count()
+
 """
 class PublicationRevision(models.Model):
     uid = models.CharField(max_length=200, db_index=True)
@@ -497,6 +501,15 @@ class PublicationTag(models.Model):
     publication = models.ForeignKey(Publication)
     tag = models.ForeignKey(OrganizationTag)
 
+
+# User Subscription Download History
+class PublicationDownloadHistory(models.Model):
+    publication = models.ForeignKey(Publication)
+    subscriber = models.ForeignKey(UserSubscription)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return '%s downloaded %s' % (self.subscriber.email, self.publication.title)
 
 
 def banner_media_dir(instance, filename):
