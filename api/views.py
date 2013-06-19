@@ -237,7 +237,7 @@ def api_knowledge(request):
     results = []
     for knowledge in OrganizationKnowledge.objects.filter(organization__in=organization_list):
         result = {
-            'img': '%s%s' % (settings.WEBSITE_URL, knowledge.image.url),
+            'image': '%s%s' % (settings.WEBSITE_URL, knowledge.image.url),
             'link': knowledge.link,
             'title': knowledge.title,
             'weight': knowledge.weight,
