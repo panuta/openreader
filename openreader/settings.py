@@ -138,6 +138,7 @@ INSTALLED_APPS = (
     'debug_toolbar',
     'djcelery',
     'djkombu',
+    'djsupervisor',
     
     'accounts',
     'domain',
