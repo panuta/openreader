@@ -93,6 +93,7 @@ class OrganizationBannerForm(forms.Form):
 
 class OrganizationKnowledgeForm(forms.Form):
     organization = forms.ModelChoiceField(queryset=Organization.objects.all())
+    title = StrippedCharField(max_length=255, widget=forms.TextInput(attrs={'class':'span6'}))
     weight = forms.IntegerField(min_value=0)
     image = forms.ImageField()
     link = forms.URLField(widget=forms.TextInput(attrs={'class':'span6'}))

@@ -286,11 +286,13 @@ def manage_knowledge_create(request):
         form = OrganizationKnowledgeForm(request.POST, request.FILES)
         if form.is_valid():
             organization = form.cleaned_data['organization']
+            title = form.cleaned_data['title']
             weight = form.cleaned_data['weight']
             image = form.cleaned_data['image']
             link = form.cleaned_data['link']
             OrganizationKnowledge.objects.create(
                 organization = organization,
+                title = title,
                 weight = weight,
                 image = image,
                 link = link,

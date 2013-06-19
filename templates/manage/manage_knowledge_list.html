@@ -38,6 +38,7 @@ $(document).ready(function () {
             <thead>
                 <tr>
                     <th>Organization</th>
+                    <th>Title</th>
                     <th>Weight</th>
                     <th>Image</th>
                     <th>Link</th>
@@ -48,6 +49,7 @@ $(document).ready(function () {
                 {% for knowledge in knowledge_list %}
                 <tr>
                     <td>{{ knowledge.organization.name }}</td>
+                    <td>{{ knowledge.title }}</td>
                     <td>{{ knowledge.weight }}</td>
                     <td>{{ knowledge.image }}</td>
                     <td>{{ knowledge.link }}</td>

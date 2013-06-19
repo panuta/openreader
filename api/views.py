@@ -239,7 +239,9 @@ def api_knowledge(request):
         result = {
             'img': '%s%s' % (settings.WEBSITE_URL, knowledge.image.url),
             'link': knowledge.link,
+            'title': knowledge.title,
             'weight': knowledge.weight,
+            'created': datetime.datetime.strftime(knowledge.created, '%d/%m/%Y %H:%M:%S'),
         }
         results.append(result)
     return HttpResponse(simplejson.dumps(results))
