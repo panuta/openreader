@@ -336,6 +336,11 @@ def ajax_edit_publication(request, organization_slug):
     publication.modified_by = request.user
     publication.save()
 
+    if publication.weight:
+        for other_pub in Publication.objects.filter(weight=publication.weight).exclude(id=publication.id):
+            other_pub.weight = 0
+            other_pub.save()
+
     PublicationTag.objects.filter(publication=publication).delete()
 
     saved_tag_names = []

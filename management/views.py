@@ -252,6 +252,36 @@ def manage_banner_create(request):
 
 
 @login_required
+def manage_banner_edit(request, banner_id):
+    if not request.user.is_superuser:
+        raise Http404
+
+    banner = get_object_or_404(OrganizationBanner, id=banner_id)
+
+    if request.method == 'POST':
+        form = EditOrganizationBannerForm(banner, request.POST, request.FILES)
+        if form.is_valid():
+            banner.organization = form.cleaned_data['organization']
+            banner.order = form.cleaned_data['order']
+            banner.link = form.cleaned_data['link']
+            image = form.cleaned_data['image']
+            if image:
+                banner.image.delete()
+                banner.image.save(image.name, image)
+
+            banner.save()
+            return redirect('manage_banners')
+    else:
+        form = EditOrganizationBannerForm(banner, initial={
+            'organization': banner.organization,
+            'order': banner.order,
+            'link': banner.link,
+        })
+
+    return render(request, 'manage/manage_banner_create.html', {'form': form,})
+
+
+@login_required
 def manage_banner_delete(request, banner_id):
     if not request.user.is_superuser:
         raise Http404
@@ -303,6 +333,37 @@ def manage_knowledge_create(request):
 
     return render(request, 'manage/manage_knowledge_create.html', {'form': form,})
 
+
+@login_required
+def manage_knowledge_edit(request, knowledge_id):
+    if not request.user.is_superuser:
+        raise Http404
+
+    knowledge = get_object_or_404(OrganizationKnowledge, id=knowledge_id)
+
+    if request.method == 'POST':
+        form = EditOrganizationKnowledgeForm(request.POST, request.FILES)
+        if form.is_valid():
+            knowledge.organization = form.cleaned_data['organization']
+            knowledge.title = form.cleaned_data['title']
+            knowledge.weight = form.cleaned_data['weight']
+            knowledge.link = form.cleaned_data['link']
+            image = form.cleaned_data['image']
+            if image:
+                knowledge.image.delete()
+                knowledge.image.save(image.name, image)
+
+            knowledge.save()
+            return redirect('manage_knowledge')
+    else:
+        form = EditOrganizationKnowledgeForm(initial={
+            'organization': knowledge.organization,
+            'title': knowledge.title,
+            'weight': knowledge.weight,
+            'link': knowledge.link,
+        })
+
+    return render(request, 'manage/manage_knowledge_create.html', {'form': form,})
 
 @login_required
 def manage_knowledge_delete(request, knowledge_id):

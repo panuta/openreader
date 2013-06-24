@@ -42,6 +42,7 @@ $(document).ready(function () {
                     <th>Weight</th>
                     <th>Image</th>
                     <th>Link</th>
+                    <th>Edit</th>
                     <th>Delete</th>
                 </tr>
             </thead>
@@ -53,6 +54,7 @@ $(document).ready(function () {
                     <td>{{ knowledge.weight }}</td>
                     <td>{{ knowledge.image }}</td>
                     <td>{{ knowledge.link }}</td>
+                    <td><a href="{% url manage_knowledge_edit knowledge.id %}" class="btn">Edit</a></td>
                     <td><a href="#delete-knowledge-modal" id="{{ knowledge.id }}" data-toggle="modal" class="btn btn-danger">Delete</a></td>
                 </tr>
                 {% endfor %}

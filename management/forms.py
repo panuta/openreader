@@ -100,11 +100,55 @@ class OrganizationBannerForm(forms.Form):
         return image
 
 
+class EditOrganizationBannerForm(forms.Form):
+    organization = forms.ModelChoiceField(queryset=Organization.objects.all())
+    order = forms.IntegerField(min_value=0)
+    image = forms.ImageField(required=False)
+    link = forms.URLField(widget=forms.TextInput(attrs={'class':'span6'}))
+
+    def __init__(self, banner, *args, **kwargs):
+        forms.Form.__init__(self, *args, **kwargs)
+        self.banner = banner
+
+    def clean(self):
+        cleaned_data = super(EditOrganizationBannerForm, self).clean()
+
+        organization = cleaned_data.get('organization')
+        order = cleaned_data.get('order')
+
+        if OrganizationBanner.objects.filter(organization=organization, order=order).exclude(id=self.banner.id).exists():
+            raise forms.ValidationError(u'This orgnaization and order has already exists.')
+
+        return cleaned_data
+
+    def clean_image(self):
+        image = self.cleaned_data.get('image', False)
+        if image and image._size > settings.MAX_BANNER_IMAGE_FILE_SIZE:
+            raise ValidationError( '%s is too big. Max allowed file size is %dKB.' % (image._name, settings.MAX_BANNER_IMAGE_FILE_SIZE/1024))
+
+        return image
+
+
 class OrganizationKnowledgeForm(forms.Form):
     organization = forms.ModelChoiceField(queryset=Organization.objects.all())
     title = StrippedCharField(max_length=255, widget=forms.TextInput(attrs={'class':'span6'}))
     weight = forms.IntegerField(min_value=0)
     image = forms.ImageField()
+    link = forms.URLField(widget=forms.TextInput(attrs={'class':'span6'}))
+
+    def clean_image(self):
+        image = self.cleaned_data.get('image', False)
+        if image and image._size > settings.MAX_KNOWLEDGE_IMAGE_FILE_SIZE:
+            raise ValidationError( '%s is too big. Max allowed file size is %dKB.' % (image._name, settings.MAX_KNOWLEDGE_IMAGE_FILE_SIZE/1024))
+
+        return image
+
+
+class EditOrganizationKnowledgeForm(forms.Form):
+    organization = forms.ModelChoiceField(queryset=Organization.objects.all())
+    title = StrippedCharField(max_length=255, widget=forms.TextInput(attrs={'class':'span6'}))
+    weight = forms.IntegerField(min_value=0)
+    image = forms.ImageField(required=False)
     link = forms.URLField(widget=forms.TextInput(attrs={'class':'span6'}))
 
     def clean_image(self):
