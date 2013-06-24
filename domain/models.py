@@ -536,7 +536,7 @@ class OrganizationKnowledge(models.Model):
     title = models.CharField(max_length=255)
     organization = models.ForeignKey(Organization)
     weight = models.PositiveIntegerField()
-    image = models.ImageField(upload_to=banner_media_dir, max_length=500)
+    image = models.ImageField(upload_to=knowledge_media_dir, max_length=500)
     link = models.URLField()
     created = models.DateTimeField(auto_now_add=True)
 

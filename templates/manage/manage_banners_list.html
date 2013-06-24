@@ -41,6 +41,7 @@ $(document).ready(function () {
                     <th>Order</th>
                     <th>Image</th>
                     <th>Link</th>
+                    <th>Edit</th>
                     <th>Delete</th>
                 </tr>
             </thead>
@@ -51,6 +52,7 @@ $(document).ready(function () {
                     <td>{{ banner.order }}</td>
                     <td>{{ banner.image }}</td>
                     <td>{{ banner.link }}</td>
+                    <td><a href="{% url manage_banner_edit banner.id %}" class="btn">Edit</a></td>
                     <td><a href="#delete-banner-modal" id="{{ banner.id }}" data-toggle="modal" class="btn btn-danger">Delete</a></td>
                 </tr>
                 {% endfor %}
