@@ -263,9 +263,9 @@ curl --data 'email=haroro@kmail.com&fbuid=23456' http://admin%40openreader.com:1
 @csrf_exempt
 @logged_in_or_basicauth()
 def api_email_subscription(request):
-    email = request.POST.get('email')
+    email = request.GET.get('email')
     if email:
-        fbuid = request.POST.get('fbuid', '')
+        fbuid = request.GET.get('fbuid', '')
         UserSubscription.objects.get_or_create(email=email, fbuid=fbuid)
         return HttpResponse(simplejson.dumps({'status': 200, 'msg': 'Success'}))
     else:
