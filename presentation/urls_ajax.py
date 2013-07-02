@@ -30,4 +30,7 @@ urlpatterns = patterns('presentation.views_ajax',
 
     url(r'^ajax/(?P<organization_slug>\w+)/query/shelves/$', 'ajax_query_organization_shelves', name='ajax_query_organization_shelves'),
 
+    # BANNER
+    url(r'^ajax/(?P<organization_slug>\w+)/banner/(?P<banner_id>\d+)/delete/$', 'ajax_organization_banner_delete', name="ajax_organization_banner_delete"),
+    url(r'^ajax/(?P<organization_slug>\w+)/knowledge/(?P<knowledge_id>\d+)/delete/$', 'ajax_organization_knowledge_delete', name="ajax_organization_knowledge_delete"),
 )

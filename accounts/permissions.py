@@ -83,6 +83,38 @@ class DefaultUserPermissionBackend(object):
 
         return OrganizationAdminPermission.objects.get(code_name='manage_shelf') in group_permissions
 
+    @staticmethod
+    def can_manage_banner(user, organization, parameters={}):
+        try:
+            user_organization = UserOrganization.objects.get(user=user, organization=organization, is_active=True)
+            user_groups = UserGroup.objects.filter(user_organization=user_organization)
+            group_permissions = []
+            for group in user_groups:
+                group_permissions.extend(group.group.admin_permissions.all())
+        except UserOrganization.DoesNotExist:
+            return False
+
+        if user_organization.is_admin:
+            return True
+
+        return OrganizationAdminPermission.objects.get(code_name='manage_banner') in group_permissions
+
+    @staticmethod
+    def can_manage_knowledge(user, organization, parameters={}):
+        try:
+            user_organization = UserOrganization.objects.get(user=user, organization=organization, is_active=True)
+            user_groups = UserGroup.objects.filter(user_organization=user_organization)
+            group_permissions = []
+            for group in user_groups:
+                group_permissions.extend(group.group.admin_permissions.all())
+        except UserOrganization.DoesNotExist:
+            return False
+
+        if user_organization.is_admin:
+            return True
+
+        return OrganizationAdminPermission.objects.get(code_name='manage_knowledge') in group_permissions
+
     # Publication Permissions
 
     @staticmethod

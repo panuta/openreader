@@ -1,0 +1,60 @@
+{% extends 'base_authenticated.html' %}
+{% load helper_tags %}
+{% load i18n %}
+
+{% block head_title %}Knowledge{% endblock %}
+{% block topnav %}{% include 'snippets/organization_topnav.html' with active_menu='knowledge' %}{% endblock %}
+
+{% block body_authenticated %}
+<div class="container-fluid container-body">
+    <div class="content-full"><div class="content-inner">
+        <legend>{{ organization.name }}'s Knowledge</legend>
+        <form method="post" enctype="multipart/form-data" class="form-horizontal organization-knowledge-form">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="control-group">
+                <label class="control-label">Title</label>
+                <div class="controls">
+                    {{ form.title }}
+                </div>
+                <div class="error">
+                    {{ form.title.errors }}
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">Weight</label>
+                <div class="controls">
+                    {{ form.weight }}
+                </div>
+                <div class="error">
+                    {{ form.weight.errors }}
+                </div>
+                <div class="help-block">The higher value, the more important.</div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">Image</label>
+                <div class="controls">
+                    {{ form.image }}
+                </div>
+                <div class="error">
+                    {{ form.image.errors }}
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">Link</label>
+                <div class="controls">
+                    {{ form.link }}
+                </div>
+                <div class="error">
+                    {{ form.link.errors }}
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+                    <button type="submit" class="btn">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div></div>
+</div>
+{% endblock %}
