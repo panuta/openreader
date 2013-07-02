@@ -9,7 +9,7 @@
 <div class="container-fluid container-body">
     <div class="content-full"><div class="content-inner">
         <legend>Knowledge</legend>
-        <form method="post" enctype="multipart/form-data" class="form-horizontal">
+        <form method="post" enctype="multipart/form-data" class="form-horizontal organization-knowledge-form">
             {% csrf_token %}
             {{ form.non_field_errors }}
             <div class="control-group">
@@ -38,6 +38,7 @@
                 <div class="error">
                     {{ form.weight.errors }}
                 </div>
+                <div class="help-block">The higher value, the more important.</div>
             </div>
             <div class="control-group">
                 <label class="control-label">Image</label>
