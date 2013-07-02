@@ -524,7 +524,7 @@ class OrganizationBanner(models.Model):
     link = models.URLField()
 
     class Meta:
-        ordering = ['order']
+        ordering = ['-order']
 
 
 def knowledge_media_dir(instance, filename):
