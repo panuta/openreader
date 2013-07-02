@@ -211,7 +211,7 @@ def api_request_secret_key(request):
     return HttpResponse(simplejson.dumps(result))
 
 
-# http://admin%40openreader.com:1q2w3e4r@10.0.1.111:8000/api/banner/
+# http://admin%40openreader.com:1q2w3e4r@10.0.1.111:8000/api/banner/?organization=opendream
 @logged_in_or_basicauth()
 def api_banner(request):
     email = _get_email(request)
@@ -220,12 +220,16 @@ def api_banner(request):
     except User.DoesNotExist:
         return HttpResponse(simplejson.dumps({'status': 404, 'msg': 'Wrong parameters'}))
 
-    organization_list = UserOrganization.objects.filter(user=user, is_active=True).values_list('organization', flat=True)
+    organization = request.GET.get('organization')
+    try:
+        organization = Organization.objects.get(slug=organization)
+    except Organization.DoesNotExist:
+        return HttpResponse(simplejson.dumps({'status': 404, 'msg': 'Organization does not exist.'}))
 
     results = []
-    for banner in OrganizationBanner.objects.filter(organization__in=organization_list):
+    for banner in OrganizationBanner.objects.filter(organization=organization):
         result = {
-            'index': banner.order,
+            'weight': banner.order,
             'img': '%s%s' % (settings.WEBSITE_URL, banner.image.url),
             'link': banner.link,
         }
@@ -233,7 +237,7 @@ def api_banner(request):
     return HttpResponse(simplejson.dumps(results))
 
 
-# http://admin%40openreader.com:1q2w3e4r@10.0.1.111:8000/api/knowledge/
+# http://admin%40openreader.com:1q2w3e4r@10.0.1.111:8000/api/knowledge/?organization=opendream
 @logged_in_or_basicauth()
 def api_knowledge(request):
     email = _get_email(request)
@@ -242,10 +246,14 @@ def api_knowledge(request):
     except User.DoesNotExist:
         return HttpResponse(simplejson.dumps({'status': 404, 'msg': 'Wrong parameters'}))
 
-    organization_list = UserOrganization.objects.filter(user=user, is_active=True).values_list('organization', flat=True)
+    organization = request.GET.get('organization')
+    try:
+        organization = Organization.objects.get(slug=organization)
+    except Organization.DoesNotExist:
+        return HttpResponse(simplejson.dumps({'status': 404, 'msg': 'Organization does not exist.'}))
 
     results = []
-    for knowledge in OrganizationKnowledge.objects.filter(organization__in=organization_list):
+    for knowledge in OrganizationKnowledge.objects.filter(organization=organization):
         result = {
             'image': '%s%s' % (settings.WEBSITE_URL, knowledge.image.url),
             'link': knowledge.link,
