@@ -1,42 +1,24 @@
-{% extends 'manage/manage_base.html' %}
+{% extends 'base_authenticated.html' %}
 {% load helper_tags %}
 {% load i18n %}
 
-{% block manage_head_title %}Knowledge{% endblock %}
-{% block topnav %}{% include 'manage/snippets/manage_topnav.html' with active_menu='knowledge' %}{% endblock %}
+{% block head_title %}Banner{% endblock %}
+{% block topnav %}{% include 'snippets/organization_topnav.html' with active_menu='banner' %}{% endblock %}
 
 {% block body_authenticated %}
 <div class="container-fluid container-body">
     <div class="content-full"><div class="content-inner">
-        <legend>Knowledge</legend>
-        <form method="post" enctype="multipart/form-data" class="form-horizontal organization-knowledge-form">
+        <legend>{{ organization.name }}'s Banner</legend>
+        <form method="post" enctype="multipart/form-data" class="form-horizontal organization-banner-form">
             {% csrf_token %}
             {{ form.non_field_errors }}
             <div class="control-group">
-                <label class="control-label">Organization</label>
-                <div class="controls">
-                    {{ form.organization }}
-                </div>
-                <div class="error">
-                    {{ form.organization.errors }}
-                </div>
-            </div>
-            <div class="control-group">
-                <label class="control-label">Title</label>
-                <div class="controls">
-                    {{ form.title }}
-                </div>
-                <div class="error">
-                    {{ form.title.errors }}
-                </div>
-            </div>
-            <div class="control-group">
                 <label class="control-label">Weight</label>
                 <div class="controls">
-                    {{ form.weight }}
+                    {{ form.order }}
                 </div>
                 <div class="error">
-                    {{ form.weight.errors }}
+                    {{ form.order.errors }}
                 </div>
                 <div class="help-block">The higher value, the more important.</div>
             </div>

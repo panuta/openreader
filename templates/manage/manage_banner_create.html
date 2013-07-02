@@ -9,7 +9,7 @@
 <div class="container-fluid container-body">
     <div class="content-full"><div class="content-inner">
         <legend>Banner</legend>
-        <form method="post" enctype="multipart/form-data" class="form-horizontal">
+        <form method="post" enctype="multipart/form-data" class="form-horizontal organization-banner-form">
             {% csrf_token %}
             {{ form.non_field_errors }}
             <div class="control-group">
@@ -22,13 +22,14 @@
                 </div>
             </div>
             <div class="control-group">
-                <label class="control-label">Order</label>
+                <label class="control-label">Weight</label>
                 <div class="controls">
                     {{ form.order }}
                 </div>
                 <div class="error">
                     {{ form.order.errors }}
                 </div>
+                <div class="help-block">The higher value, the more important.</div>
             </div>
             <div class="control-group">
                 <label class="control-label">Image</label>

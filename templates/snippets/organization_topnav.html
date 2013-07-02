@@ -10,4 +10,12 @@
   {% endcan %}
   <li{% if active_menu == "organization" %} class="active"{% endif %}>
     <a href="{% url view_organization_profile organization.slug %}" class="nav_top_link"><i class="icon-cog icon-white"></i> {% trans 'Organization' %}</a></li>
+  {% can user 'can_manage_banner' organization %}
+  <li{% if active_menu == "banner" %} class="active"{% endif %}>
+    <a href="{% url organization_banners organization.slug %}" class="nav_top_link"><i class="icon-th-large icon-white"></i> {% trans 'Banner' %}</a></li>
+  {% endcan %}
+  {% can user 'can_manage_banner' organization %}
+  <li{% if active_menu == "knowledge" %} class="active"{% endif %}>
+    <a href="{% url organization_knowledge organization.slug %}" class="nav_top_link"><i class="icon-list-alt icon-white"></i> {% trans 'Knowledge' %}</a></li>
+  {% endcan %}
 </ul>

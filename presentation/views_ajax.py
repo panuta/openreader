@@ -23,7 +23,7 @@ from common.utilities import format_abbr_datetime, humanize_file_size
 from accounts.permissions import get_backend as get_permission_backend
 
 from domain import functions as domain_functions
-from domain.models import OrganizationTag, PublicationTag, Publication, Organization, UserGroup, UserOrganizationInvitation, OrganizationGroup, UserOrganization, OrganizationShelf
+from domain.models import OrganizationTag, PublicationTag, Publication, Organization, UserGroup, UserOrganizationInvitation, OrganizationGroup, UserOrganization, OrganizationShelf, OrganizationBanner, OrganizationKnowledge
 from domain.tasks import generate_thumbnails
 from presentation.templatetags.presentation_tags import publication_weight_select
 
@@ -468,3 +468,37 @@ def ajax_query_organization_shelves(request, organization_slug):
         shelves_json.append({'id':shelf.id, 'name':shelf.name, 'document_count':shelf.num_of_documents})
 
     return response_json_success({'shelves':shelves_json})
+
+
+@login_required
+@require_POST
+def ajax_organization_banner_delete(request, organization_slug, banner_id):
+    organization = get_object_or_404(Organization, slug=organization_slug)
+    if not get_permission_backend(request).can_manage_banner(request.user, organization):
+        raise Http404
+
+    try:
+        banner = OrganizationBanner.objects.get(id=banner_id)
+    except OrganizationBanner.DoesNotExist:
+        return response_json_error({'error': 'banner-not-found'})
+
+    banner.delete()
+    return response_json_success()
+
+
+
+@login_required
+@require_POST
+def ajax_organization_knowledge_delete(request, organization_slug, knowledge_id):
+    organization = get_object_or_404(Organization, slug=organization_slug)
+    if not get_permission_backend(request).can_manage_knowledge(request.user, organization):
+        raise Http404
+
+    try:
+        knowledge = OrganizationKnowledge.objects.get(id=knowledge_id)
+    except OrganizationKnowledge.DoesNotExist:
+        return response_json_error({'error': 'knowledge-not-found'})
+
+    knowledge.delete()
+    return response_json_success()
+

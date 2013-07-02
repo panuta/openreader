@@ -3,6 +3,7 @@
 import re
 
 from django import forms
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.validators import email_re
 from django.utils.translation import ugettext, ugettext_lazy as _
@@ -10,7 +11,7 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from common.countries import COUNTRY_CHOICES_WITH_BLANK
 from common.forms import StrippedCharField
 
-from domain.models import OrganizationGroup, UserOrganizationInvitation, UserOrganization, OrganizationAdminPermission, OrganizationShelf, Organization, OrganizationInvitation
+from domain.models import OrganizationGroup, UserOrganizationInvitation, UserOrganization, OrganizationAdminPermission, OrganizationShelf, Organization, OrganizationInvitation, OrganizationBanner
 
 # USER ACCOUNT #########################################################################################################
 
@@ -185,4 +186,60 @@ class OrganizationShelfForm(forms.Form):
     auto_sync = forms.BooleanField(required=False)
     archive = forms.BooleanField(required=False)
     shelf_icon = forms.CharField(max_length=100)
+
+
+# BANNER ########################################################################################################
+class OrganizationBannerForm(forms.Form):
+    order = forms.IntegerField(min_value=0)
+    image = forms.ImageField()
+    link = forms.URLField(widget=forms.TextInput(attrs={'class':'span6'}))
+
+    def clean_image(self):
+        image = self.cleaned_data.get('image', False)
+        if image and image._size > settings.MAX_BANNER_IMAGE_FILE_SIZE:
+            raise ValidationError( '%s is too big. Max allowed file size is %dKB.' % (image._name, settings.MAX_BANNER_IMAGE_FILE_SIZE/1024))
+
+        return image
+
+
+class EditOrganizationBannerForm(forms.Form):
+    order = forms.IntegerField(min_value=0)
+    image = forms.ImageField(required=False)
+    link = forms.URLField(widget=forms.TextInput(attrs={'class':'span6'}))
+
+    def clean_image(self):
+        image = self.cleaned_data.get('image', False)
+        if image and image._size > settings.MAX_BANNER_IMAGE_FILE_SIZE:
+            raise ValidationError( '%s is too big. Max allowed file size is %dKB.' % (image._name, settings.MAX_BANNER_IMAGE_FILE_SIZE/1024))
+
+        return image
+
+
+# KNOWLEDGE ########################################################################################################
+class OrganizationKnowledgeForm(forms.Form):
+    title = StrippedCharField(max_length=255, widget=forms.TextInput(attrs={'class':'span6'}))
+    weight = forms.IntegerField(min_value=0)
+    image = forms.ImageField()
+    link = forms.URLField(widget=forms.TextInput(attrs={'class':'span6'}))
+
+    def clean_image(self):
+        image = self.cleaned_data.get('image', False)
+        if image and image._size > settings.MAX_KNOWLEDGE_IMAGE_FILE_SIZE:
+            raise ValidationError( '%s is too big. Max allowed file size is %dKB.' % (image._name, settings.MAX_KNOWLEDGE_IMAGE_FILE_SIZE/1024))
+
+        return image
+
+
+class EditOrganizationKnowledgeForm(forms.Form):
+    title = StrippedCharField(max_length=255, widget=forms.TextInput(attrs={'class':'span6'}))
+    weight = forms.IntegerField(min_value=0)
+    image = forms.ImageField(required=False)
+    link = forms.URLField(widget=forms.TextInput(attrs={'class':'span6'}))
+
+    def clean_image(self):
+        image = self.cleaned_data.get('image', False)
+        if image and image._size > settings.MAX_KNOWLEDGE_IMAGE_FILE_SIZE:
+            raise ValidationError( '%s is too big. Max allowed file size is %dKB.' % (image._name, settings.MAX_KNOWLEDGE_IMAGE_FILE_SIZE/1024))
+
+        return image
 

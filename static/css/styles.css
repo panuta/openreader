@@ -1415,7 +1415,7 @@ table tr.checked td {
   margin: 0px 0px 6px 20px;
 }
 .organization_users_page .user_invitations {
-  border: 1px dashed;
+  border: 1px dashed rgba(150, 124, 82, 0.19);
   border-radius: 5px;
   padding: 10px 15px;
   margin-bottom: 20px;
@@ -1554,4 +1554,10 @@ table tr.checked td {
 .invite-email {
   padding-bottom: 20px;
   border-bottom: 1px dashed #ccc;
+}
+.organization-banner-form .help-block {
+  margin-left: 150px;
+}
+.organization-knowledge-form .help-block {
+  margin-left: 150px;
 }

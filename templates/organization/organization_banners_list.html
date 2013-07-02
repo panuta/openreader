@@ -1,9 +1,9 @@
-{% extends 'manage/manage_base.html' %}
+{% extends 'base_authenticated.html' %}
 {% load helper_tags %}
 {% load i18n %}
 
-{% block manage_head_title %}Banner{% endblock %}
-{% block topnav %}{% include 'manage/snippets/manage_topnav.html' with active_menu='banner' %}{% endblock %}
+{% block head_title %}Banner{% endblock %}
+{% block topnav %}{% include 'snippets/organization_topnav.html' with active_menu='banner' %}{% endblock %}
 
 {% block extra_head %}
 <script>
@@ -14,7 +14,7 @@ $(document).ready(function () {
     });
 
     $('#delete-banner-modal button[type="submit"]').on('click', function(e) {
-        var url = '{% url ajax_manage_banner_delete 98769999 %}'.replace (98769999, banner_id);
+        var url = '{% url ajax_organization_banner_delete organization.slug 98769999 %}'.replace (98769999, banner_id);
         $.post(url, {}, function(response) {
             if(response.status == 'success'){
                 $('#delete-banner-modal').modal('hide');
@@ -31,13 +31,12 @@ $(document).ready(function () {
 {% block body_authenticated %}
 <div class="container-fluid container-body">
     <div class="content-full"><div class="content-inner">
-        <legend>Banner</legend>
-        <div class="page_actions"><a href="{% url manage_banner_create %}" class="btn">Add banner</a></div>
+        <legend>{{ organization.name }}'s Banner</legend>
+        <div class="page_actions"><a href="{% url organization_banner_create organization.slug %}" class="btn">Add banner</a></div>
 
         <table class="table" id="banner-list">
             <thead>
                 <tr>
-                    <th>Organization</th>
                     <th>Weight</th>
                     <th>Image</th>
                     <th>Link</th>
@@ -48,11 +47,10 @@ $(document).ready(function () {
             <tbody>
                 {% for banner in banners %}
                 <tr>
-                    <td>{{ banner.organization.name }}</td>
                     <td>{{ banner.order }}</td>
                     <td>{{ banner.image }}</td>
                     <td>{{ banner.link }}</td>
-                    <td><a href="{% url manage_banner_edit banner.id %}" class="btn">Edit</a></td>
+                    <td><a href="{% url organization_banner_edit organization.slug banner.id %}" class="btn">Edit</a></td>
                     <td><a href="#delete-banner-modal" id="{{ banner.id }}" data-toggle="modal" class="btn btn-danger">Delete</a></td>
                 </tr>
                 {% endfor %}

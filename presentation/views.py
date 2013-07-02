@@ -620,3 +620,181 @@ def delete_document_shelf(request, organization_slug, shelf_id):
 
     shelf_documents_count = Publication.objects.filter(shelves__in=[shelf]).count()
     return render(request, 'document/shelf_delete.html', {'organization':organization, 'shelf_documents_count':shelf_documents_count, 'shelf':shelf, 'shelf_type':'delete'})
+
+
+# BANNER ######################################################################
+@login_required
+def organization_banners(request, organization_slug):
+    organization = get_object_or_404(Organization, slug=organization_slug)
+
+    if not get_permission_backend(request).can_manage_banner(request.user, organization):
+        raise Http404
+
+    banners = OrganizationBanner.objects.filter(organization=organization).order_by('-order')
+
+    return render(request, 'organization/organization_banners_list.html', {'organization':organization, 'banners':banners, })
+
+
+@login_required
+def organization_banner_create(request, organization_slug):
+    organization = get_object_or_404(Organization, slug=organization_slug)
+
+    if not get_permission_backend(request).can_manage_banner(request.user, organization):
+        raise Http404
+
+    if request.method == 'POST':
+        form = OrganizationBannerForm(request.POST, request.FILES)
+        if form.is_valid():
+            order = form.cleaned_data['order']
+            image = form.cleaned_data['image']
+            link = form.cleaned_data['link']
+            OrganizationBanner.objects.create(
+                organization = organization,
+                order = order,
+                image = image,
+                link = link,
+            )
+            return redirect('organization_banners', organization_slug=organization.slug)
+    else:
+        form = OrganizationBannerForm()
+
+    return render(request, 'organization/organization_banner_create.html', {'organization':organization, 'form': form,})
+
+
+@login_required
+def organization_banner_edit(request, organization_slug, banner_id):
+    organization = get_object_or_404(Organization, slug=organization_slug)
+
+    if not get_permission_backend(request).can_manage_banner(request.user, organization):
+        raise Http404
+
+    banner = get_object_or_404(OrganizationBanner, id=banner_id)
+
+    if request.method == 'POST':
+        form = EditOrganizationBannerForm(request.POST, request.FILES)
+        if form.is_valid():
+            banner.order = form.cleaned_data['order']
+            banner.link = form.cleaned_data['link']
+            image = form.cleaned_data['image']
+            if image:
+                banner.image.delete()
+                banner.image.save(image.name, image)
+
+            banner.save()
+            return redirect('organization_banners', organization_slug=organization.slug)
+    else:
+        form = EditOrganizationBannerForm(initial={
+            'order': banner.order,
+            'link': banner.link,
+        })
+
+    return render(request, 'organization/organization_banner_create.html', {'organization':organization, 'form': form,})
+
+
+@login_required
+def organization_banner_delete(request, organization_slug, banner_id):
+    organization = get_object_or_404(Organization, slug=organization_slug)
+
+    if not get_permission_backend(request).can_manage_banner(request.user, organization):
+        raise Http404
+
+    banner = get_object_or_404(OrganizationBanner, id=banner_id)
+
+    if request.method == 'POST':
+        banner.delete()
+        return redirect('organization_banners', organization_slug=organization.slug)
+    else:
+        return render(request, 'organization/organization_banner_delete.html', {'organization':organization, 'banner': banner, })
+
+
+# KNOWLEDGE ######################################################################
+
+@login_required
+def organization_knowledge(request, organization_slug):
+    organization = get_object_or_404(Organization, slug=organization_slug)
+
+    if not get_permission_backend(request).can_manage_banner(request.user, organization):
+        raise Http404
+
+    knowledge_list = OrganizationKnowledge.objects.filter(organization=organization).order_by('-weight')
+
+    return render(request, 'organization/organization_knowledge_list.html', {'organization':organization, 'knowledge_list':knowledge_list, })
+
+
+@login_required
+def organization_knowledge_create(request, organization_slug):
+    organization = get_object_or_404(Organization, slug=organization_slug)
+
+    if not get_permission_backend(request).can_manage_banner(request.user, organization):
+        raise Http404
+
+    if request.method == 'POST':
+        form = OrganizationKnowledgeForm(request.POST, request.FILES)
+        if form.is_valid():
+            title = form.cleaned_data['title']
+            weight = form.cleaned_data['weight']
+            image = form.cleaned_data['image']
+            link = form.cleaned_data['link']
+            OrganizationKnowledge.objects.create(
+                organization = organization,
+                title = title,
+                weight = weight,
+                image = image,
+                link = link,
+            )
+            return redirect('organization_knowledge', organization_slug=organization.slug)
+    else:
+        form = OrganizationKnowledgeForm()
+
+    return render(request, 'organization/organization_knowledge_create.html', {'organization':organization, 'form': form,})
+
+
+@login_required
+def organization_knowledge_edit(request, organization_slug, knowledge_id):
+    organization = get_object_or_404(Organization, slug=organization_slug)
+
+    if not get_permission_backend(request).can_manage_banner(request.user, organization):
+        raise Http404
+
+    knowledge = get_object_or_404(OrganizationKnowledge, id=knowledge_id)
+
+    if request.method == 'POST':
+        form = EditOrganizationKnowledgeForm(request.POST, request.FILES)
+        if form.is_valid():
+            knowledge.title = form.cleaned_data['title']
+            knowledge.weight = form.cleaned_data['weight']
+            knowledge.link = form.cleaned_data['link']
+            image = form.cleaned_data['image']
+            if image:
+                knowledge.image.delete()
+                knowledge.image.save(image.name, image)
+
+            knowledge.save()
+            return redirect('organization_knowledge', organization_slug=organization.slug)
+    else:
+        form = EditOrganizationKnowledgeForm(initial={
+            'organization': knowledge.organization,
+            'title': knowledge.title,
+            'weight': knowledge.weight,
+            'link': knowledge.link,
+        })
+
+    return render(request, 'organization/organization_knowledge_create.html', {'organization':organization, 'form': form,})
+
+@login_required
+def organization_knowledge_delete(request, organization_slug, knowledge_id):
+    organization = get_object_or_404(Organization, slug=organization_slug)
+
+    if not get_permission_backend(request).can_manage_banner(request.user, organization):
+        raise Http404
+
+    knowledge = get_object_or_404(OrganizationKnowledge, id=knowledge_id)
+
+    if request.method == 'POST':
+        knowledge.delete()
+        return redirect('organization_knowledge', organization_slug=organization.slug)
+    else:
+        return render(request, 'organization/organization_knowledge_delete.html', {'organization':organization, 'knowledge': knowledge, })
+
+
+
