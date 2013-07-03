@@ -50,8 +50,8 @@ $(document).ready(function () {
                 <tr>
                     <td>{{ banner.organization.name }}</td>
                     <td>{{ banner.order }}</td>
-                    <td>{{ banner.image }}</td>
-                    <td>{{ banner.link }}</td>
+                    <td><a href="{{ banner.image.url }}">{{ banner.image }}</a></td>
+                    <td><a href="{{ banner.link }}">{{ banner.link }}</a></td>
                     <td><a href="{% url manage_banner_edit banner.id %}" class="btn">Edit</a></td>
                     <td><a href="#delete-banner-modal" id="{{ banner.id }}" data-toggle="modal" class="btn btn-danger">Delete</a></td>
                 </tr>

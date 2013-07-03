@@ -52,8 +52,8 @@ $(document).ready(function () {
                     <td>{{ knowledge.organization.name }}</td>
                     <td>{{ knowledge.title }}</td>
                     <td>{{ knowledge.weight }}</td>
-                    <td>{{ knowledge.image }}</td>
-                    <td>{{ knowledge.link }}</td>
+                    <td><a href="{{ knowledge.image.url }}">{{ knowledge.image }}</a></td>
+                    <td><a href="{{ knowledge.link }}">{{ knowledge.link }}</a></td>
                     <td><a href="{% url manage_knowledge_edit knowledge.id %}" class="btn">Edit</a></td>
                     <td><a href="#delete-knowledge-modal" id="{{ knowledge.id }}" data-toggle="modal" class="btn btn-danger">Delete</a></td>
                 </tr>

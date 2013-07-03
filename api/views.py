@@ -226,6 +226,11 @@ def api_banner(request):
     except Organization.DoesNotExist:
         return HttpResponse(simplejson.dumps({'status': 404, 'msg': 'Organization does not exist.'}))
 
+    try:
+        user_organization = UserOrganization.objects.get(user=user, organization=organization)
+    except UserOrganization.DoesNotExist:
+        return HttpResponse(simplejson.dumps({'status': 404, 'msg': 'User does not in this organization.'}))
+
     results = []
     for banner in OrganizationBanner.objects.filter(organization=organization):
         result = {
@@ -252,6 +257,11 @@ def api_knowledge(request):
     except Organization.DoesNotExist:
         return HttpResponse(simplejson.dumps({'status': 404, 'msg': 'Organization does not exist.'}))
 
+    try:
+        user_organization = UserOrganization.objects.get(user=user, organization=organization)
+    except UserOrganization.DoesNotExist:
+        return HttpResponse(simplejson.dumps({'status': 404, 'msg': 'User does not in this organization.'}))
+
     results = []
     for knowledge in OrganizationKnowledge.objects.filter(organization=organization):
         result = {
@@ -274,7 +284,14 @@ def api_email_subscription(request):
     email = request.GET.get('email')
     if email:
         fbuid = request.GET.get('fbuid', '')
-        UserSubscription.objects.get_or_create(email=email, fbuid=fbuid)
+        try:
+            user_subcription = UserSubscription.objects.get(email=email)
+        except UserSubscription.DoesNotExist:
+            UserSubscription.objects.create(email=email, fbuid=fbuid)
+        else:
+            user_subcription.fbuid = user_subcription.fbuid or fbuid
+            user_subcription.save()
+
         return HttpResponse(simplejson.dumps({'status': 200, 'msg': 'Success'}))
     else:
         return HttpResponse(simplejson.dumps({'status': 404, 'msg': 'Wrong parameters'}))
