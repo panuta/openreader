@@ -234,6 +234,9 @@ $(document).ready(function () {
             if(response.status == 'success') {
                 _addModalMessage('publication-modal', gettext('Save successful'), 'success');
                 $('#publication-modal').trigger('publication_updated', [uid, title, tagnames]);
+                $('.filename .' + classification).remove();
+                $('#'+ uid +' .filename .label-classification').remove();
+                $('#'+ uid +' .filename a').before('<span class="label label-info label-classification '+ classification +'">'+ classification +'</span>');
             } else {
                 var error_message = gettext('Cannot save file');
                 if(response.error == 'publication-notfound') error_message = gettext('File not found in system');

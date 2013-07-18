@@ -92,7 +92,10 @@ $(document).ready(function () {
                         {% can user 'can_upload_shelf' organization shelf=shelf %}<td class="row_checkbox"><input type="checkbox" /></td>{% endcan %}
                         <td class="download"><a href="{% url download_publication publication.uid %}" title="{% trans 'Download file' %} {{publication.file_ext|upper}}" data-content="{% trans 'File size' %} {{publication.uploaded_file.size|file_size}}">{% trans 'Download file' %}</a></td>
                         <td class="file">
-                            <div class="filename"><a href="#" class="js-open-publication" uid="{{ publication.uid }}" title="{{ publication.title }}">{{publication.title}}</a></div>
+                            <div class="filename">
+                                <span class="label label-info label-classification {{ publication.classification }}">{{ publication.classification }}</span>
+                                <a href="#" class="js-open-publication" uid="{{ publication.uid }}" title="{{ publication.title }}">{{publication.title}}</a>
+                            </div>
                             <div class="uploaded">{% trans 'Uploaded on' %} {{publication.uploaded|format_abbr_datetime}} {% if publication.is_processing %} <span class="processing">{% trans 'Processing' %}</span>{% endif %}</div>
                             <div class="tag">{% print_publication_tags publication %}</div>
                         </td>

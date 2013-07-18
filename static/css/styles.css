@@ -934,6 +934,12 @@ table tr.checked td {
   color: #bb8c54 !important;
   text-shadow: none;
 }
+.documents_page .documents_table td.file .filename .label-classification {
+  margin-right: 10px;
+}
+.documents_page .documents_table td.file .filename .general {
+  display: none;
+}
 .documents_page .documents_table td.file .uploaded {
   color: #777;
   font-size: 0.95em;
