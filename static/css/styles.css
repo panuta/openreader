@@ -940,6 +940,12 @@ table tr.checked td {
 .documents_page .documents_table td.file .filename .general {
   display: none;
 }
+.documents_page .documents_table td.file .filename .label-weight {
+  margin-right: 10px;
+}
+.documents_page .documents_table td.file .filename .weight-0 {
+  display: none;
+}
 .documents_page .documents_table td.file .uploaded {
   color: #777;
   font-size: 0.95em;

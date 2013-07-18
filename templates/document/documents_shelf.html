@@ -94,6 +94,7 @@ $(document).ready(function () {
                         <td class="file">
                             <div class="filename">
                                 <span class="label label-info label-classification {{ publication.classification }}">{{ publication.classification }}</span>
+                                <span class="label label-success label-weight weight-{{ publication.weight }}">{{ publication.get_weight_display }}</span>
                                 <a href="#" class="js-open-publication" uid="{{ publication.uid }}" title="{{ publication.title }}">{{publication.title}}</a>
                             </div>
                             <div class="uploaded">{% trans 'Uploaded on' %} {{publication.uploaded|format_abbr_datetime}} {% if publication.is_processing %} <span class="processing">{% trans 'Processing' %}</span>{% endif %}</div>

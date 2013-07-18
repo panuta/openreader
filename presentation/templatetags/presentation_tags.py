@@ -8,7 +8,7 @@ from django.utils.translation import ugettext as _
 
 register = template.Library()
 
-from domain.models import OrganizationGroup, UserOrganization, UserOrganizationInvitation, OrganizationShelf, OrganizationShelfPermission, GroupShelfPermission, publication_classification_choices
+from domain.models import OrganizationGroup, UserOrganization, UserOrganizationInvitation, OrganizationShelf, OrganizationShelfPermission, GroupShelfPermission, publication_classification_choices, publication_weight_choices
 
 from accounts.permissions import get_backend as get_permission_backend
 
@@ -99,6 +99,14 @@ def publication_classification_select(publication):
     html = ''
     for choice in publication_classification_choices:
         html += '<option%s value="%s">%s</option>' % (' selected="selected"' if publication.classification == choice[0] else '', choice[0], choice[1])
+    return html
+
+
+@register.simple_tag
+def publication_weight_select(publication):
+    html = ''
+    for choice in publication_weight_choices:
+        html += '<option%s value="%s">%s</option>' % (' selected="selected"' if publication.weight == choice[0] else '', choice[0], choice[1])
     return html
 
 

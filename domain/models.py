@@ -337,11 +337,11 @@ publication_classification_choices = (
 )
 
 publication_weight_choices = (
-    (4, 4),
-    (3, 3),
-    (2, 2),
-    (1, 1),
     (0, 0),
+    (4, '1st'),
+    (3, '2nd'),
+    (2, '3rd'),
+    (1, '4th'),
 )
 
 class Publication(models.Model):
@@ -369,7 +369,7 @@ class Publication(models.Model):
     replaced_by = models.ForeignKey(User, related_name='replaced_publications', null=True, blank=True)
 
     classification = models.CharField(max_length=255, default='general', choices=publication_classification_choices)
-    weight = models.PositiveIntegerField(default=0, choices=publication_classification_choices)
+    weight = models.PositiveIntegerField(default=0, choices=publication_weight_choices)
 
     def __unicode__(self):
         return '%s' % (self.title)
