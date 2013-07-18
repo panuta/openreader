@@ -8,7 +8,7 @@ from django.utils.translation import ugettext as _
 
 register = template.Library()
 
-from domain.models import OrganizationGroup, UserOrganization, UserOrganizationInvitation, OrganizationShelf, OrganizationShelfPermission, GroupShelfPermission
+from domain.models import OrganizationGroup, UserOrganization, UserOrganizationInvitation, OrganizationShelf, OrganizationShelfPermission, GroupShelfPermission, publication_classification_choices
 
 from accounts.permissions import get_backend as get_permission_backend
 
@@ -96,17 +96,10 @@ def shelf_user_permission_radio(user_permission):
 
 @register.simple_tag
 def publication_classification_select(publication):
-    return '\
-        <option%s value="general">%s</option>\
-        <option%s value="recommended">%s</option>\
-        <option%s value="featured">%s</option>' % (
-            ' selected="selected"' if publication.classification == 'general' else '',
-            _('general'),
-            ' selected="selected"' if publication.classification == 'recommended' else '',
-            _('recommended'),
-            ' selected="selected"' if publication.classification == 'featured' else '',
-            _('featured'),
-        )
+    html = ''
+    for choice in publication_classification_choices:
+        html += '<option%s value="%s">%s</option>' % (' selected="selected"' if publication.classification == choice[0] else '', choice[0], choice[1])
+    return html
 
 
 @register.simple_tag
