@@ -337,7 +337,7 @@ def ajax_edit_publication(request, organization_slug):
     publication.save()
 
     if publication.classification:
-        for other_pub in Publication.objects.filter(classification=publication.classification).exclude(id=publication.id):
+        for other_pub in Publication.objects.filter(classification=publication.classification, shelves__in=publication.shelves.all()).exclude(id=publication.id):
             other_pub.classification = 'general'
             other_pub.save()
 
