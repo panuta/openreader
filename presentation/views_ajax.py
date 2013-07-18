@@ -25,7 +25,7 @@ from accounts.permissions import get_backend as get_permission_backend
 from domain import functions as domain_functions
 from domain.models import OrganizationTag, PublicationTag, Publication, Organization, UserGroup, UserOrganizationInvitation, OrganizationGroup, UserOrganization, OrganizationShelf, OrganizationBanner, OrganizationKnowledge
 from domain.tasks import generate_thumbnails
-from presentation.templatetags.presentation_tags import publication_weight_select
+from presentation.templatetags.presentation_tags import publication_classification_select, publication_weight_select
 
 
 logger = logging.getLogger(settings.OPENREADER_LOGGER)
@@ -192,6 +192,7 @@ def ajax_query_publication(request, publication_uid):
 
         'readonly': 'true' if not permission_backend.can_edit_publication(request.user, publication.organization, {'publication':publication}) else 'false',
 
+        'publication_classification_select': publication_classification_select(publication),
         'publication_weight_select': publication_weight_select(publication),
     })
 
@@ -317,6 +318,7 @@ def ajax_edit_publication(request, organization_slug):
     description = request.POST.get('description')
     tag_names = request.POST.get('tags')
     classification = request.POST.get('classification')
+    weight = request.POST.get('weight')
 
     try:
         publication = Publication.objects.get(uid=publication_uid)
@@ -331,13 +333,19 @@ def ajax_edit_publication(request, organization_slug):
 
     publication.title = title
     publication.description = description
-    publication.weight = classification
+    publication.classification = classification
+    publication.weight = int(weight)
     publication.modified = now()
     publication.modified_by = request.user
     publication.save()
 
+    if publication.classification:
+        for other_pub in Publication.objects.filter(classification=publication.classification, shelves__in=publication.shelves.all()).exclude(id=publication.id):
+            other_pub.classification = 'general'
+            other_pub.save()
+
     if publication.weight:
-        for other_pub in Publication.objects.filter(weight=publication.weight).exclude(id=publication.id):
+        for other_pub in Publication.objects.filter(weight=publication.weight, shelves__in=publication.shelves.all()).exclude(id=publication.id):
             other_pub.weight = 0
             other_pub.save()
 
@@ -356,7 +364,7 @@ def ajax_edit_publication(request, organization_slug):
             PublicationTag.objects.get_or_create(publication=publication, tag=tag)
             saved_tag_names.append(tag_name)
 
-    return response_json_success({'tag_names':saved_tag_names})
+    return response_json_success({'tag_names':saved_tag_names, 'weight_display': publication.get_weight_display()})
 
 
 @require_POST
