@@ -95,16 +95,16 @@ def shelf_user_permission_radio(user_permission):
 
 
 @register.simple_tag
-def publication_weight_select(publication):
+def publication_classification_select(publication):
     return '\
-        <option%s value="0">%s</option>\
-        <option%s value="5">%s</option>\
-        <option%s value="10">%s</option>' % (
-            ' selected="selected"' if publication.weight == 0 else '',
+        <option%s value="general">%s</option>\
+        <option%s value="recommended">%s</option>\
+        <option%s value="featured">%s</option>' % (
+            ' selected="selected"' if publication.classification == 'general' else '',
             _('general'),
-            ' selected="selected"' if publication.weight == 5 else '',
+            ' selected="selected"' if publication.classification == 'recommended' else '',
             _('recommended'),
-            ' selected="selected"' if publication.weight == 10 else '',
+            ' selected="selected"' if publication.classification == 'featured' else '',
             _('featured'),
         )
 

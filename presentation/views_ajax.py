@@ -25,7 +25,7 @@ from accounts.permissions import get_backend as get_permission_backend
 from domain import functions as domain_functions
 from domain.models import OrganizationTag, PublicationTag, Publication, Organization, UserGroup, UserOrganizationInvitation, OrganizationGroup, UserOrganization, OrganizationShelf, OrganizationBanner, OrganizationKnowledge
 from domain.tasks import generate_thumbnails
-from presentation.templatetags.presentation_tags import publication_weight_select
+from presentation.templatetags.presentation_tags import publication_classification_select
 
 
 logger = logging.getLogger(settings.OPENREADER_LOGGER)
@@ -192,7 +192,7 @@ def ajax_query_publication(request, publication_uid):
 
         'readonly': 'true' if not permission_backend.can_edit_publication(request.user, publication.organization, {'publication':publication}) else 'false',
 
-        'publication_weight_select': publication_weight_select(publication),
+        'publication_classification_select': publication_classification_select(publication),
     })
 
 @transaction.commit_on_success
@@ -331,14 +331,14 @@ def ajax_edit_publication(request, organization_slug):
 
     publication.title = title
     publication.description = description
-    publication.weight = classification
+    publication.classification = classification
     publication.modified = now()
     publication.modified_by = request.user
     publication.save()
 
-    if publication.weight:
-        for other_pub in Publication.objects.filter(weight=publication.weight).exclude(id=publication.id):
-            other_pub.weight = 0
+    if publication.classification:
+        for other_pub in Publication.objects.filter(classification=publication.classification).exclude(id=publication.id):
+            other_pub.classification = 'general'
             other_pub.save()
 
     PublicationTag.objects.filter(publication=publication).delete()
