@@ -80,7 +80,7 @@ $(document).ready(function () {
             $('#publication-modal .modal-body').html('<div class="panel-message"><i class="loading"></i> '+ gettext('Loading') +'</div>');
             $('#publication-modal .modal-footer .publication').hide();
 
-            $.get('/openreader/ajax/publication/' + uid + '/query/', {}, function(response) {
+            $.get('/ajax/publication/' + uid + '/query/', {}, function(response) {
                 if(response.status == 'success') {
                     var publication_form = '';
 
@@ -138,7 +138,7 @@ $(document).ready(function () {
 
             $('#replace_file_input').fileupload({
                 dataType: 'json',
-                url: '/openreader/org/' + var_organization_slug + '/documents/replace/',
+                url: '/org/' + var_organization_slug + '/documents/replace/',
                 formData: function (form) {
                     return [{name:"publication_id", value:$('#publication-modal').data('uid')}];
                 },
@@ -150,7 +150,7 @@ $(document).ready(function () {
                     } else {
                         var uid = $('#publication-modal').data('uid');
                         $('#publication-modal .right .panel').html('<div class="uploading"><div class="upload_progressbar"></div><button class="btn">' + gettext('Cancel') + '</button></div>');
-                        $('#publication-modal .right .panel .upload_progressbar').progressBar({width:262, height:20, boxImage:'/openreader/static/libs/progressbar/images/progressbar.png', barImage:{0:'/openreader/static/libs/progressbar/images/progressbg.png', 30:'/openreader/static/libs/progressbar/images/progressbg.png', 70:'/static/libs/progressbar/images/progressbg.png'}});
+                        $('#publication-modal .right .panel .upload_progressbar').progressBar({width:262, height:20, boxImage:'/static/libs/progressbar/images/progressbar.png', barImage:{0:'/static/libs/progressbar/images/progressbg.png', 30:'/static/libs/progressbar/images/progressbg.png', 70:'/static/libs/progressbar/images/progressbg.png'}});
 
                         data.submit();
 
@@ -205,7 +205,7 @@ $(document).ready(function () {
             $('#publication-modal .delete_form .submit_delete_button').on('click', function() {
                 var uid = $('#publication-modal').data('uid');
 
-                $.post('/openreader/ajax/' + var_organization_slug + '/publication/delete/', {uid:uid}, function(response) {
+                $.post('/ajax/' + var_organization_slug + '/publication/delete/', {uid:uid}, function(response) {
                     $('#publication-modal').trigger('publication_deleted', [uid]);
                     $('#publication-modal').modal('hide');
                 });
@@ -231,7 +231,7 @@ $(document).ready(function () {
         var classification = $('#id_classification').val();
         var weight = $('#id_weight').val();
 
-        $.post('/openreader/ajax/' + var_organization_slug + '/publication/edit/', {uid:uid, title:title, description:description, tags:tagnames, classification:classification, weight:weight}, function(response) {
+        $.post('/ajax/' + var_organization_slug + '/publication/edit/', {uid:uid, title:title, description:description, tags:tagnames, classification:classification, weight:weight}, function(response) {
             if(response.status == 'success') {
                 _addModalMessage('publication-modal', gettext('Save successful'), 'success');
                 $('#publication-modal').trigger('publication_updated', [uid, title, tagnames]);
@@ -286,7 +286,7 @@ function initializeDocumentsPage() {
 
     $('#id_upload_file').fileupload({
         dataType: 'json',
-        url: '/openreader/org/' + var_organization_slug + '/documents/upload/',
+        url: '/org/' + var_organization_slug + '/documents/upload/',
         limitConcurrentUploads: 5,
         formData: function (form) {
             return [{name:"shelf", value:form.find('select option:selected').val()}];
@@ -301,7 +301,7 @@ function initializeDocumentsPage() {
 
             } else {
                 var uploading_row = $('<li class="uploading"><button class="btn btn-small js-cancel-upload">'+gettext('Cancel')+'</button><div class="filename">'+gettext('Uploading')+' <em>' + file.name + '</em></div><div class="upload_progressbar"></div></li>');
-                uploading_row.find('.upload_progressbar').progressBar({width:262, height:20, boxImage:'/openreader/static/libs/progressbar/images/progressbar.png', barImage:{0:'/openreader/static/libs/progressbar/images/progressbg.png', 30:'/openreader/static/libs/progressbar/images/progressbg.png', 70:'/openreader/static/libs/progressbar/images/progressbg.png'}});
+                uploading_row.find('.upload_progressbar').progressBar({width:262, height:20, boxImage:'/static/libs/progressbar/images/progressbar.png', barImage:{0:'/static/libs/progressbar/images/progressbg.png', 30:'/static/libs/progressbar/images/progressbg.png', 70:'/static/libs/progressbar/images/progressbg.png'}});
                 uploading_row.prependTo('.js-uploading');
 
                 uploading_row.data('data', data);
@@ -371,7 +371,7 @@ function initializeDocumentsPage() {
     });
 
     $('#publication-modal').on('publication_deleted', function(e, uid) {
-        $.get('/openreader/ajax/' + var_organization_slug + '/query/shelves/', {}, function(response) {
+        $.get('/ajax/' + var_organization_slug + '/query/shelves/', {}, function(response) {
             if(response.status == 'success') {
                 for(var i=0; i<response.shelves.length; i++) {
                     var shelf = response.shelves[i];
@@ -417,7 +417,7 @@ function initializeDocumentsShelfPage(shelf_id) {
 
     $('#id_upload_file').fileupload({
         dataType: 'json',
-        url: '/openreader/org/' + var_organization_slug + '/documents/upload/',
+        url: '/org/' + var_organization_slug + '/documents/upload/',
         limitConcurrentUploads: 5,
         dropZone: $('.upload_tool'),
         formData: function (form) {
@@ -431,7 +431,7 @@ function initializeDocumentsShelfPage(shelf_id) {
 
             } else {
                 var uploading_row = $('<li class="uploading"><button class="btn btn-small js-cancel-upload">' + gettext('Cancel') +'</button><div class="filename">' + gettext('Uploading') +' <em>' + file.name + '</em></div><div class="upload_progressbar"></div></li>');
-                uploading_row.find('.upload_progressbar').progressBar({width:262, height:20, boxImage:'/openreader/static/libs/progressbar/images/progressbar.png', barImage:{0:'/openreader/static/libs/progressbar/images/progressbg.png', 30:'/openreader/static/libs/progressbar/images/progressbg.png', 70:'/openreader/static/libs/progressbar/images/progressbg.png'}});
+                uploading_row.find('.upload_progressbar').progressBar({width:262, height:20, boxImage:'/static/libs/progressbar/images/progressbar.png', barImage:{0:'/static/libs/progressbar/images/progressbg.png', 30:'/static/libs/progressbar/images/progressbg.png', 70:'/static/libs/progressbar/images/progressbg.png'}});
                 uploading_row.prependTo('.js-uploading');
 
                 uploading_row.data('data', data);
@@ -559,7 +559,7 @@ function initializeDocumentsShelfPage(shelf_id) {
         });
 
         if(tags) {
-            $.post('/openreader/ajax/' + var_organization_slug + '/publication/tag/add/', {tags:tags, publication:publications}, function(response) {
+            $.post('/ajax/' + var_organization_slug + '/publication/tag/add/', {tags:tags, publication:publications}, function(response) {
                 if(response.status == 'success') {
                     for(var i=0; i<publications.length; i++){
                         for(var j=0; j<response.tag_names.length; j++) {
@@ -601,7 +601,7 @@ function initializeDocumentsShelfPage(shelf_id) {
             publications.push($(this).closest('tr').attr('id'));
         });
 
-        $.post('/openreader/ajax/' + var_organization_slug + '/publication/delete/', {uid:publications}, function(response) {
+        $.post('/ajax/' + var_organization_slug + '/publication/delete/', {uid:publications}, function(response) {
             $('#delete-files-confirmation-modal').modal('hide');
 
             if(response.status == 'success') {
