@@ -20,10 +20,35 @@
       {{form.non_field_errors}}
       
         <div class="clearfix"><label for="id_organization_name">{% trans 'Organization name' %}</label><div class="input">{{form.organization_name}}{{form.organization_name.errors}}</div></div>
-        <div class="clearfix"><label for="id_organization_slug">{% trans 'Organization abbreviate name' %}</label><div class="input">{{form.organization_slug}}<span class="help-block">{% trans 'Organization abbreviate name that not duplicated with other organization' %}</span>{{form.organization_slug.errors}}</div></div>
+        <div class="clearfix"><label for="id_organization_slug">{% trans 'Organization url name' %}</label><div class="input">{{form.organization_slug}}<span class="help-block">{% trans 'Organization abbreviate name that not duplicated with other organization' %}</span>{{form.organization_slug.errors}}</div></div>
         <div class="clearfix"><label for="id_organization_prefix">{% trans 'Organization prefix' %}</label><div class="input">{{form.organization_prefix}}<span class="help-block">{% trans 'such as 'Company' 'Publisher' 'Department' etc.' %}</span>{{form.organization_prefix.errors}}</div></div>
 
         <div class="clearfix"><label for="id_admin_email">{% trans 'Administrator email' %}</label><div class="input">{{form.admin_email}}{{form.admin_email.errors}}</div></div>
+
+        <div class="title">
+            <span>Company address</span><br />{{ form.organization_address }}
+            <span class="error-text">{{ form.organization_address.errors }}</span>
+        </div>
+        <div class="title">
+            <span>Country</span><br />{{ form.organization_country }}
+            <span class="error-text">{{ form.organization_country.errors }}</span>
+        </div>
+        <div class="title">
+            <span>Contract type</span><br />{{ form.organization_contract_type }}
+            <span class="error-text">{{ form.organization_contract_type.errors }}</span>
+        </div>
+        <div class="title">
+            <span>Contract Months</span><br />{{ form.organization_contract_month_remain }}
+            <span class="error-text">{{ form.organization_contract_month_remain.errors }}</span>
+        </div>
+        <div class="title">
+            <span>Contact number</span><br />{{ form.organization_tel }}
+            <span class="error-text">{{ form.organization_tel.errors }}</span>
+        </div>
+        <div class="title">
+            <span>Company email</span><br />{{ form.organization_email }}
+            <span class="error-text">{{ form.organization_email.errors }}</span>
+        </div>
 
         <div class="form-actions">
           <button type="submit" class="btn primary">{% trans 'Add organization' %}</button>

@@ -220,7 +220,7 @@ from celery.schedules import crontab
 from datetime import timedelta
 from domain import tasks
 
-TEST_PAYMENT_REMIND_EVERY_HOUR = True
+TEST_PAYMENT_REMIND_EVERY_HOUR = False
 
 CELERYBEAT_SCHEDULE = {
     'decide-on-first-month-everydays': {
@@ -283,8 +283,8 @@ DEFAULT_SHELF_ICON = 'basic1-006'
 SHELF_ICONS = ['basic1-006', 'basic1-041', 'basic1-049', 'basic1-052', 'basic1-054', 'basic1-106', 'basic1-129', 'basic2-001', 'basic2-011', 'basic2-018', 'basic2-057', 'basic2-092', 'basic2-096', 'basic2-102', 'basic2-106', 'basic2-114', 'basic2-117', 'basic2-142', 'basic2-197', 'basic2-238', 'basic2-253', 'basic2-256', 'basic2-258', 'basic2-267', 'basic2-268']
 
 # PAYPAL
-PAYPAL_IDENTITY_TOKEN = 'hRc3sUDb6s5VPiY7l79fbN2qKTYf0Sk8Y1LIwosSidLUFXYDJAlpyx58xEO'
-PAYPAL_RECEIVER_EMAIL = 'sell_1350615922_biz@hotmail.com'
+PAYPAL_IDENTITY_TOKEN = 'vhk6xm8LOT2JL_VLuisFQaxam5Ox764-02gQu7hg2SwZDBOUxnQ6CUHqJLO'
+PAYPAL_RECEIVER_EMAIL = 'kengggg@gmail.com'
 
 #######################################################
 
