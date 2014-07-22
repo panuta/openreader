@@ -7,6 +7,8 @@ openreader.log
 .idea
 openreader/settings_local.py
 celerybeat-schedule
+sitestatic
+celeryd.pid
 
 #Translations
 *.mo
