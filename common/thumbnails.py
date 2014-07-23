@@ -11,10 +11,12 @@ PROCESSING_THUMBNAIL_URL = settings.STATIC_URL + 'images/thumbnail_processing.jp
 logger = logging.getLogger(settings.OPENREADER_LOGGER)
 
 def generate_thumbnails(publication):
-    if publication.file_ext in ('jpg', 'jpeg', 'png', 'gif', 'psd'):
+    if publication.file_ext.lower() in ('jpg', 'jpeg', 'png', 'gif', 'psd'):
         return _generate_image_thumbnail(publication)
-    elif publication.file_ext == 'pdf':
+    elif publication.file_ext.lower() == 'pdf':
         return _generate_pdf_thumbnail(publication)
+    elif publication.file_ext.lower() in ('mov', 'avi', 'mp4', 'flv', '3gp', 'ogg', 'webm', 'mpeg', 'm4v', 'mkv', 'wmv'):
+        return _generate_video_thumbnail(publication)
     
     return False
 
@@ -61,15 +63,21 @@ def _generate_image_thumbnail(publication):
         logger.error('Generating image thumbnail [%s] - %s' % (publication.uid, traceback.format_exc(sys.exc_info()[2])))
         return False
 
-def _generate_pdf_thumbnail(publication):
+def _generate_base_thumbnail(publication, file_type, command='', callback=None):
     try:
         (file_path, file_name, file_ext) = split_filepath(publication.uploaded_file.path)
 
         temp_file = '%s%s.png' % (settings.THUMBNAIL_TEMP_ROOT, publication.uid)
         if not os.path.exists(settings.THUMBNAIL_TEMP_ROOT):
             os.makedirs(settings.THUMBNAIL_TEMP_ROOT)
-        
-        subprocess.call(['pdfdraw', '-r', '100', '-o', temp_file, publication.uploaded_file.path, '1'])
+
+        if command:
+            command = command % (temp_file, publication.uploaded_file.path)
+            command = command.split(' ')
+            subprocess.call(command)
+
+        if callback:
+            callback(temp_file, publication.uploaded_file.path)
 
         im = Image.open(temp_file)
         if im.mode != 'RGB':
@@ -79,20 +87,36 @@ def _generate_pdf_thumbnail(publication):
 
         if not os.path.exists(thumbnail_path):
             os.makedirs(thumbnail_path)
-        
+
         for thumbnail_size in settings.THUMBNAIL_SIZES:
             thumb_im = im.copy()
             thumb_im.thumbnail(thumbnail_size[1], Image.ANTIALIAS)
             fullpath = '%s%s.%s.jpg' % (thumbnail_path, file_name, thumbnail_size[0])
             thumb_im.save(fullpath, 'JPEG')
-        
+
         try:
             os.remove(temp_file)
         except:
             logger.error(traceback.format_exc(sys.exc_info()[2]))
-        
+
         return True
 
     except:
-        logger.error('Generating PDF thumbnail [%s] - %s' % (publication.uid, traceback.format_exc(sys.exc_info()[2])))
+        logger.error('Generating %s thumbnail [%s] - %s' % (file_type, publication.uid, traceback.format_exc(sys.exc_info()[2])))
         return False
+
+def _generate_pdf_thumbnail(publication):
+    command = 'pdfdraw -r 100 -o %s %s 1'
+    return _generate_base_thumbnail(publication, 'PDF', command=command)
+
+def _generate_video_thumbnail(publication):
+
+    def video_thumbnail(temp_file, uploaded_file):
+        from ffvideo import VideoStream
+        vs = VideoStream(uploaded_file)
+        frame = vs.get_frame_at_sec(2)
+        frame.image().save(temp_file)
+
+    return _generate_base_thumbnail(publication, 'VIDEO', callback=video_thumbnail)
+
+    

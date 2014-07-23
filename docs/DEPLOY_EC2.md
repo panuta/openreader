@@ -76,6 +76,16 @@ Step 4 - Install necessary packages
 
 5. Install MuPDF from http://www.mupdf.com/
 
+    ```
+    $ sudo apt-get install mupdf mupdf-tools
+    ```
+
+6. Install FFMPEG
+
+    ```
+    $ sudo apt-get install ffmpeg cython libavutil-dev libavcodec-dev libavformat-dev libswscale-dev
+    ```
+
 Step 5 - Install EC2 API Tools
 ------------------------------------------
 
